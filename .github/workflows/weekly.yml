@@ -24,16 +24,17 @@ jobs:
         run: printf '%s' "$GOOGLE_CREDENTIALS_JSON" > service_account.json
         env:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
-      - name: Update, retrain, forecast
+      - name: Retrain and forecast
         run: python autorun.py all
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
+          CLOUD: '1'
       - name: Save data and model
         run: |
           git config user.name "tennis-bot"
           git config user.email "tennis-bot@users.noreply.github.com"
           git add data state
           git diff --cached --quiet || git commit -m "Data update $(date -u +%F)"
-          git push
+          git pull --rebase origin main && git push
