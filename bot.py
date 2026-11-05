@@ -217,28 +217,23 @@ async def cb_go(cq: CallbackQuery) -> None:
 
 @router.message(F.document & F.document.file_name.endswith('.xlsx'))
 async def on_xlsx(msg: Message, bot: Bot) -> None:
-    """Свежий файл tennis-data: сохранить, пересобрать состояние, рассчитать бумажные ставки."""
+    """Свежий файл tennis-data: сохранить, отправить в GitHub (облако), переобучить модель на компьютере."""
     if not allowed(msg.from_user.id):
         return
     tmp = TMP / f'upd_{msg.message_id}.xlsx'
     await bot.download(msg.document.file_id, destination=tmp)
-    df = await run_blocking(pd.read_excel, tmp)
-    tour = str(df.columns[0]).upper()
-    if tour not in ('WTA', 'ATP') or 'Date' not in df:
-        await msg.answer('Это не файл tennis-data.co.uk (первый столбец должен быть WTA или ATP).'); return
-    season = int(pd.to_datetime(df.Date).dt.year.max())
-    dst = C.TENNIS_DATA / f'{season}_{tour}.xlsx'
-    tmp.replace(dst)
-    await msg.answer(f'Сохранено: {dst.name} ({len(df)} матчей, по {pd.to_datetime(df.Date).max().date()}). '
-                     f'Пересобираю состояние игроков (1–2 минуты)…')
-    import state as ST
-    model = await run_blocking(ST.build, tour.lower(), False)
-    await run_blocking(ST.save, model)
-    P._MODELS.pop(tour.lower(), None)
-    await msg.answer(esc(model.test_report))
-    global JOURNAL
-    JOURNAL = JOURNAL or J.Journal()
-    await msg.answer(await run_blocking(JOURNAL.settle))
+    import updater
+    import ghsync
+    try:
+        rep = await run_blocking(updater.save_file, tmp.read_bytes())
+    except Exception as e:
+        await msg.answer(esc(f'Файл не принят: {e}')); return
+    push = await run_blocking(ghsync.push_tennis_data)
+    await msg.answer(esc(f'Сохранено: {rep}\n' + '\n'.join(push) + '\nПереобучаю модель на компьютере (1–2 минуты)…'))
+    reps = await run_blocking(updater.rebuild)
+    P._MODELS.clear(); P._FRESH.clear()
+    await msg.answer(esc('\n'.join(reps) + ('\nОблако переобучится на этом файле при ближайшем запуске weekly (пн, ср) '
+                                              'или сразу, если запустить weekly вручную.' if ghsync.enabled() else '')))
 
 
 @router.message(Command('stats'))
@@ -291,8 +286,10 @@ async def update(msg: Message) -> None:
 
 
 def _update_local() -> str:
+    import ghsync
     import updater
-    log = updater.update_all() + updater.rebuild()
+    log = updater.update_all()
+    log += ghsync.push_tennis_data() + updater.rebuild()
     P._MODELS.clear(); P._FRESH.clear()
     return '\n'.join(log)
 

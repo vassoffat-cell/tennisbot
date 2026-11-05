@@ -93,7 +93,8 @@ def fresh(tour: str) -> str:
         return f'форма докатана по ESPN: +{n} матчей'
     except Exception as e:
         _FRESH[tour] = now - pd.Timedelta(hours=2)          # повторить не раньше чем через час
-        return f'ESPN недоступен ({e.__class__.__name__}) — форма по tennis-data'
+        n = live.apply_store(md)
+        return f'ESPN недоступен ({e.__class__.__name__}); из сохранённых результатов +{n} матчей'
 
 
 def forecast(m: Match) -> tuple[FC.Forecast, str]:

@@ -54,6 +54,9 @@ def collect(auto: pd.DataFrame) -> dict[str, list[espn.EspnMatch]]:
     for tour in TOURS:
         st = P.model(tour).state
         td_last = getattr(st, 'td_last', st.last_date).date()
+        stored = live.load_store(tour)
+        if not stored.empty:
+            td_last = max(td_last, stored.date.max().date())                 # уже сохранённое не скачиваем повторно
         start = max(min(td_last, today - dt.timedelta(days=3)), today - dt.timedelta(days=21))
         days = set(_days(start, today + dt.timedelta(days=1)))
         pend = auto[(auto.tour.astype(str).str.lower() == tour) & (auto.settled.astype(str).str.strip() == '')]

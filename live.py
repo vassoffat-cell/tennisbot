@@ -1,8 +1,8 @@
 """Связка живых данных ESPN с моделью: опознание игроков, покрытие турнира, свежая форма между обновлениями tennis-data.
 
-Модель пересобирается раз в неделю по tennis-data. Между пересборками результаты ESPN «докатываются» в состояние
-игроков в памяти (Elo, усталость, отдых, личные встречи, смена покрытия) — прогноз всегда видит вчерашние матчи.
-На диск такое состояние не пишется: при следующей пересборке те же матчи придут из tennis-data без дублей.
+Модель переобучается по tennis-data. Результаты ESPN копятся в data/espn/{tour}.csv и «докатываются» в состояние
+игроков (Elo, усталость, отдых, личные встречи, смена покрытия) — прогноз всегда видит вчерашние матчи, даже если
+tennis-data давно не обновлялся. Докатываются только матчи новее последней даты tennis-data, поэтому дублей нет.
 """
 from __future__ import annotations
 
@@ -92,31 +92,78 @@ def _fuzzy(name: str, players: pd.DataFrame, active: set) -> tuple[float | None,
     return (c[0][0] if ok else None), c[0][1], c[0][2]
 
 
-def refresh(model, matches: list[EspnMatch], players: pd.DataFrame) -> int:
-    """Докатить в состояние модели доигранные матчи ESPN после последней даты tennis-data. Возвращает число матчей."""
+STORE_COLS = ['espn_id', 'date', 'location', 'event', 'round', 'ridx', 'major', 'winner_id', 'loser_id', 'winner', 'loser',
+              'score', 'status']
+
+
+def store_path(tour: str):
+    import config as C
+    return C.DATA / 'espn' / f'{tour}.csv'
+
+
+def load_store(tour: str) -> pd.DataFrame:
+    f = store_path(tour)
+    if not f.exists():
+        return pd.DataFrame(columns=STORE_COLS)
+    df = pd.read_csv(f, dtype={'espn_id': str})
+    df['date'] = pd.to_datetime(df.date)
+    return df
+
+
+def persist(model, matches: list[EspnMatch], players: pd.DataFrame) -> int:
+    """Сохранить доигранные матчи основного тура в data/espn/{tour}.csv (накопительно, без дублей).
+    Так форма игроков не теряется, даже если tennis-data долго не обновляется."""
+    tour = model.tour
+    old = load_store(tour)
+    have = set(old.espn_id.astype(str))
+    act = active_ids(model.state)
+    rows = []
+    for m in matches:
+        if (not m.completed or m.qualifying or m.id in have
+                or not (m.major or known_location(tour, m.location))):
+            continue
+        ids = [identify(nm, players, act) for nm in m.names]
+        if any(i[0] is None for i in ids):
+            continue
+        wi = m.winner
+        w, l = ids[wi], ids[1 - wi]
+        score = ' '.join(f'{a}-{b}' if wi == 0 else f'{b}-{a}' for a, b in m.sets)      # с позиции победителя
+        rows.append(dict(espn_id=m.id, date=m.start.normalize(), location=m.location, event=m.event, round=m.round,
+                         ridx=m.ridx, major=int(m.major), winner_id=w[0], loser_id=l[0], winner=w[1], loser=l[1],
+                         score=score, status=m.status))
+    if rows:
+        df = pd.concat([old, pd.DataFrame(rows)], ignore_index=True)
+        df['date'] = pd.to_datetime(df.date)
+        df = df.sort_values(['date', 'ridx'], kind='stable')
+        f = store_path(tour)
+        f.parent.mkdir(parents=True, exist_ok=True)
+        df.assign(date=df.date.dt.strftime('%Y-%m-%d'))[STORE_COLS].to_csv(f, index=False)
+    return len(rows)
+
+
+def apply_store(model) -> int:
+    """Докатить в состояние модели сохранённые матчи ESPN после последней даты tennis-data. Возвращает число матчей."""
     st = model.state
     if not hasattr(st, 'td_last'):
         st.td_last = st.last_date
     if not hasattr(st, 'applied'):
         st.applied = set()
-    act = active_ids(st)
-    n = 0
-    for m in sorted(matches, key=lambda x: x.start):
-        if (not m.completed or m.qualifying or m.id in st.applied or m.start.normalize() <= st.td_last
-                or not known_location(model.tour, m.location)):
-            continue
-        ids = [identify(nm, players, act)[0] for nm in m.names]
-        if None in ids:
-            continue
-        w, l = (ids[0], ids[1]) if m.winner == 0 else (ids[1], ids[0])
-        date = m.start.normalize()
-        r = SimpleNamespace(winner_id=w, loser_id=l, Surface=surface_for(model.tour, m.location, date), Date=date,
+    df = load_store(model.tour)
+    df = df[(df.date > st.td_last) & ~df.espn_id.astype(str).isin(st.applied)].sort_values(['date', 'ridx'], kind='stable')
+    for r in df.itertuples(index=False):
+        x = SimpleNamespace(winner_id=float(r.winner_id), loser_id=float(r.loser_id),
+                            Surface=surface_for(model.tour, r.location, r.date), Date=r.date,
                             w_svpt=np.nan, l_svpt=np.nan, w_1stWon=np.nan, w_2ndWon=np.nan, l_1stWon=np.nan, l_2ndWon=np.nan,
-                            WRank=np.nan, LRank=np.nan, ridx=m.ridx, season=date.year, Location=m.location)
-        st.update(r)
-        st.applied.add(m.id)
-        n += 1
-    return n
+                            WRank=np.nan, LRank=np.nan, ridx=int(r.ridx), season=r.date.year, Location=r.location)
+        st.update(x)
+        st.applied.add(str(r.espn_id))
+    return len(df)
+
+
+def refresh(model, matches: list[EspnMatch], players: pd.DataFrame) -> int:
+    """Сохранить свежие результаты ESPN и докатить в форму всё, что новее tennis-data."""
+    persist(model, matches, players)
+    return apply_store(model)
 
 
 def utc_today() -> dt.date:

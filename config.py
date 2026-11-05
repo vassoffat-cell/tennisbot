@@ -43,3 +43,5 @@ SHEET_ID = os.getenv('SHEET_ID', '')                                  # ID Googl
 GOOGLE_CREDENTIALS = os.getenv('GOOGLE_CREDENTIALS', str(ROOT / 'service_account.json'))
 ALLOWED_USERS = {int(x) for x in os.getenv('ALLOWED_USERS', '').replace(' ', '').split(',') if x}
 TESSERACT_CMD = os.getenv('TESSERACT_CMD', 'tesseract')
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')      # отправка файлов tennis-data с компьютера в облако (ghsync.py)
+GITHUB_REPO = os.getenv('GITHUB_REPO', '')        # например vassoffat-cell/tennisbot
