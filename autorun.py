@@ -368,6 +368,74 @@ def summary(store: J.Store) -> tuple[pd.DataFrame, str]:
     return pd.DataFrame(rows, columns=['показатель', 'значение']), '\n'.join(lines)
 
 
+# ======================================================================== отчёт каждые 10 матчей
+REPORT_EVERY = 10
+BACKTEST = {'ll': 0.616, 'acc': 0.654}           # проверка 2023–2026 (WTA 0.6158 / 65.1 %, ATP 0.6155 / 65.7 %)
+
+
+def _ll(p1: np.ndarray, w1: np.ndarray) -> float:
+    return float(np.mean(-np.log(np.clip(np.where(w1, p1, 1 - p1), 1e-6, 1))))
+
+
+def progress_report(df: pd.DataFrame) -> list[str]:
+    """Отчёт для Telegram (HTML-блоки): последние 10 доигранных матчей + качество модели на всех доигранных."""
+    e = notify.esc
+    fin = df[df.status.astype(str) == 'FIN'].copy()
+    if fin.empty:
+        return []
+    fin['p1n'] = fin.p1.map(J.num); fin['w1'] = fin.winner.map(J.num) == 1
+    fin = fin.sort_values('start_utc')
+    n = len(fin)
+    p1, w1 = fin.p1n.values, fin.w1.values
+    first, last = str(fin.start_utc.iloc[0])[:10], str(fin.start_utc.iloc[-1])[:10]
+    head = (f'📈 <b>Отчёт модели · {n} доигранных матчей</b>\n'
+            f'Период: {first} — {last}. Перешлите этот отчёт в чат с Claude для разбора.')
+    lines = ['<b>Последние 10:</b>']
+    for r in fin.tail(REPORT_EVERY).itertuples(index=False):
+        fav = 1 if r.p1n >= 0.5 else 2
+        pf = r.p1n if fav == 1 else 1 - r.p1n
+        ok = (fav == 1) == bool(r.w1)
+        name = r.player1 if fav == 1 else r.player2
+        sc = str(r.score) if fav == 1 else ' '.join('-'.join(x.split('-')[::-1]) for x in str(r.score).split())
+        lines.append(f"{'✅' if ok else '❌'} {e(r.tour)} {e(name)} {pf * 100:.0f}% · {e(sc)}")      # счёт с позиции фаворита
+    recent = '\n'.join(lines)
+    ll, acc = _ll(p1, w1), float(np.mean((p1 >= 0.5) == w1))
+    brier = float(np.mean((p1 - w1) ** 2))
+    q = [f'<b>Качество на всех {n}:</b>',
+         f'Лог-лосс: <b>{ll:.4f}</b> (бэктест {BACKTEST["ll"]:.3f}; меньше — лучше)',
+         f'Угадано победителей: <b>{acc * 100:.1f}%</b> (бэктест {BACKTEST["acc"] * 100:.1f}%)',
+         f'Brier: {brier:.4f}']
+    for t in ('WTA', 'ATP'):
+        m = fin.tour.astype(str) == t
+        if m.sum():
+            q.append(f'{t}: n={int(m.sum())}, лог-лосс {_ll(p1[m.values], w1[m.values]):.4f}, '
+                     f'угадано {np.mean((p1[m.values] >= 0.5) == w1[m.values]) * 100:.1f}%')
+    pf = np.maximum(p1, 1 - p1); hit = (p1 >= 0.5) == w1
+    cal = ['<b>Калибровка (прогноз / факт / n):</b>']
+    for lo in (0.5, 0.6, 0.7, 0.8, 0.9):
+        msk = (pf >= lo) & (pf < lo + 0.1 + (1e-9 if lo == 0.9 else 0))
+        if msk.sum():
+            cal.append(f'{lo * 100:.0f}–{lo * 100 + 10:.0f}%: {pf[msk].mean() * 100:.0f}% / {hit[msk].mean() * 100:.0f}% / {int(msk.sum())}')
+    k, nk = calibration(df)
+    cal.append(f'Самокалибровка k = {k:.3f} ' + (f'(по {nk} матчам)' if nk >= 30 else '(включится после 30 матчей)'))
+    mk = []
+    a1, a2 = fin.avg_1.map(J.num), fin.avg_2.map(J.num)
+    okm = ((a1 > 1) & (a2 > 1)).values
+    if okm.sum() >= 10:
+        pm = np.array([devig([x, y])[0] for x, y in zip(a1[okm], a2[okm])])
+        ll_m, ll_s = _ll(pm, w1[okm]), _ll(p1[okm], w1[okm])
+        mk.append(f'<b>Против рынка</b> (n={int(okm.sum())}): модель {ll_s:.4f} · рынок {ll_m:.4f} → '
+                  f'{"модель точнее" if ll_s < ll_m else "рынок точнее"}')
+    for bk, nm in (('b365', 'Bet365'), ('avg', 'средний'), ('max', 'максимум')):
+        pnl = df[f'pnl_{bk}'].map(J.num).dropna()
+        if len(pnl) >= 2:
+            ci = 1.96 * pnl.std(ddof=1) / len(pnl) ** 0.5 * 100
+            mk.append(f'ROI ({nm}): {pnl.mean() * 100:+.1f}% ± {ci:.1f}% · ставок {len(pnl)}')
+    if not mk:
+        mk.append('Сравнение с рынком и ROI появятся после недельных файлов tennis-data с этими матчами.')
+    return [head, recent, '\n'.join(q), '\n'.join(cal), '\n'.join(mk)]
+
+
 # ======================================================================== режимы
 def retrain_due(now_utc: pd.Timestamp | None = None) -> bool:
     """Переобучение через день в 00:00 по Ташкенту, начиная с RETRAIN_ANCHOR (запуск в 00:00 может прийти с задержкой)."""
@@ -404,7 +472,12 @@ def daily(dry: bool = False, store: J.Store | None = None) -> str:
         print('\n'.join(log)); print('\n\n'.join(blocks)); print('\n'.join(skipped))
         return 'dry'
     store.append('auto_forecasts', new_rows)
-    settle_auto(store, by_id)
+    n_before = int((auto.status.astype(str) == 'FIN').sum())
+    after = settle_auto(store, by_id)
+    n_after = int((after.status.astype(str) == 'FIN').sum())
+    if n_after // REPORT_EVERY > n_before // REPORT_EVERY:            # пройдена очередная десятка доигранных матчей
+        notify.send_blocks(progress_report(store.read('auto_forecasts')))
+        log.append(f'отчёт отправлен: {n_after} доигранных матчей')
     manual = J.Journal(store).settle(manual_results(matches, store))
     if blocks:
         notify.send_blocks(blocks)
