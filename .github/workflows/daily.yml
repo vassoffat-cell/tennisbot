@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '17 1,7,13,19 * * *'
   workflow_dispatch: {}
+permissions:
+  contents: write
 concurrency:
   group: tennis
   cancel-in-progress: false
@@ -28,3 +30,11 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
+          CLOUD: '1'
+      - name: Save ESPN results
+        run: |
+          git config user.name "tennis-bot"
+          git config user.email "tennis-bot@users.noreply.github.com"
+          mkdir -p data/espn && git add data/espn
+          git diff --cached --quiet || git commit -m "ESPN results $(date -u +%F)"
+          git pull --rebase origin main && git push
