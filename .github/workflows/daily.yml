@@ -1,0 +1,30 @@
+name: daily
+on:
+  schedule:
+    - cron: '17 1,7,13,19 * * *'
+  workflow_dispatch: {}
+concurrency:
+  group: tennis
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-cloud.txt
+      - run: pip install -r requirements-cloud.txt
+      - name: Google key
+        run: printf '%s' "$GOOGLE_CREDENTIALS_JSON" > service_account.json
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+      - name: Forecast and settle
+        run: python autorun.py daily
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
