@@ -1,7 +1,7 @@
-name: daily
+name: tennis
 on:
   schedule:
-    - cron: '17 1,7,13,19 * * *'
+    - cron: '0 1,7,13,19 * * *'
   workflow_dispatch: {}
 permissions:
   contents: write
@@ -11,10 +11,10 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
           cache: pip
@@ -24,17 +24,19 @@ jobs:
         run: printf '%s' "$GOOGLE_CREDENTIALS_JSON" > service_account.json
         env:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
-      - name: Forecast and settle
-        run: python autorun.py daily
+      - name: Inbox, retrain, forecast, settle
+        run: python autorun.py auto
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
           CLOUD: '1'
-      - name: Save ESPN results
+      - name: Save data and model
+        if: always()
         run: |
           git config user.name "tennis-bot"
           git config user.email "tennis-bot@users.noreply.github.com"
-          mkdir -p data/espn && git add data/espn
-          git diff --cached --quiet || git commit -m "ESPN results $(date -u +%F)"
+          mkdir -p data/espn && git add data state
+          git diff --cached --quiet && exit 0
+          git commit -m "Data update $(date -u +%F)"
           ok=0; for i in 1 2 3; do git pull --rebase --autostash origin main && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]
