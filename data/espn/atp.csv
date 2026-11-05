@@ -1,0 +1,101 @@
+espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,score,status
+185131,2026-10-26,Basel,Swiss Indoors Basel,Round 1,1,0,200473,208363,Valentin Vacherot,Mariano Navone,6-3 7-6,STATUS_FINAL
+185136,2026-10-26,Basel,Swiss Indoors Basel,Round 1,1,0,132686,209983,Nuno Borges,Mika Brunold,6-3 6-1,STATUS_FINAL
+185182,2026-10-26,Vienna,Erste Bank Open,Round 1,1,0,126610,144869,Matteo Berrettini,Tomas Martin Etcheverry,6-3 6-4,STATUS_FINAL
+185141,2026-10-26,Basel,Swiss Indoors Basel,Round 1,1,0,127157,207678,Daniel Altmaier,Juan Manuel Cerundolo,6-7 7-6 6-4,STATUS_FINAL
+185195,2026-10-26,Vienna,Erste Bank Open,Round 1,1,0,200282,207830,Alex De Minaur,Tomas Machac,1-6 6-4 6-3,STATUS_FINAL
+185130,2026-10-26,Basel,Swiss Indoors Basel,Round 1,1,0,208029,111460,Holger Rune,Quentin Halys,6-4 6-7 7-6,STATUS_FINAL
+185176,2026-10-26,Vienna,Erste Bank Open,Round 1,1,0,209259,207985,Arthur Fery,Jacob Fearnley,5-1,STATUS_RETIRED
+185197,2026-10-26,Vienna,Erste Bank Open,Round 1,1,0,210150,209903,Jakub Mensik,Lukas Neumayer,6-2 6-2,STATUS_FINAL
+185177,2026-10-26,Vienna,Erste Bank Open,Round 1,1,0,209260,208286,Luciano Darderi,Matteo Arnaldi,7-5 6-2,STATUS_FINAL
+185175,2026-10-26,Vienna,Erste Bank Open,Round 1,1,0,210530,209414,Learner Tien,Luca Van Assche,6-3 6-1,STATUS_FINAL
+185137,2026-10-26,Basel,Swiss Indoors Basel,Round 1,1,0,134770,208502,Casper Ruud,Dominic Stricker,4-6 7-5 6-3,STATUS_FINAL
+185129,2026-10-27,Basel,Swiss Indoors Basel,Round 1,1,0,128034,200267,Hubert Hurkacz,Zizou Bergs,3-6 6-3 6-4,STATUS_FINAL
+185192,2026-10-27,Vienna,Erste Bank Open,Round 1,1,0,126205,126094,Tommy Paul,Andrey Rublev,7-5 6-2,STATUS_FINAL
+185132,2026-10-27,Basel,Swiss Indoors Basel,Round 1,1,0,212588,126214,Rafael Jodar,Alejandro Tabilo,6-4 6-2,STATUS_FINAL
+185140,2026-10-27,Basel,Swiss Indoors Basel,Round 1,1,0,208843,126239,Jerome Kym,Arthur Rinderknech,7-6 6-4,STATUS_FINAL
+185184,2026-10-27,Vienna,Erste Bank Open,Round 1,1,0,105173,209860,Adrian Mannarino,Ignacio Buse,0-6 7-5 6-4,STATUS_FINAL
+185181,2026-10-27,Vienna,Erste Bank Open,Round 1,1,0,207989,111575,Carlos Alcaraz,Karen Khachanov,6-4 7-6,STATUS_FINAL
+185134,2026-10-27,Basel,Swiss Indoors Basel,Round 1,1,0,209950,208659,Arthur Fils,Giovanni Mpetshi Perricard,7-6 7-5,STATUS_FINAL
+185144,2026-10-27,Basel,Swiss Indoors Basel,Round 1,1,0,210506,122298,Alex Michelsen,Botic Van De Zandschulp,5-7 6-3 6-3,STATUS_FINAL
+185188,2026-10-27,Vienna,Erste Bank Open,Round 1,1,0,100644,212021,Alexander Zverev,Martin Landaluce,7-5 3-6 7-6,STATUS_FINAL
+185139,2026-10-27,Basel,Swiss Indoors Basel,Round 1,1,0,210097,206499,Ben Shelton,Aleksandar Kovacevic,6-7 7-6 7-6,STATUS_FINAL
+185186,2026-10-27,Vienna,Erste Bank Open,Round 1,1,0,111815,202103,Cameron Norrie,Francisco Cerundolo,6-4 6-1,STATUS_FINAL
+185143,2026-10-27,Basel,Swiss Indoors Basel,Round 1,1,0,208103,104527,Jiri Lehecka,Stan Wawrinka,7-5 7-6,STATUS_FINAL
+185180,2026-10-27,Vienna,Erste Bank Open,Round 1,1,0,207925,105777,Flavio Cobolli,Grigor Dimitrov,6-4 3-6 6-3,STATUS_FINAL
+185135,2026-10-28,Basel,Swiss Indoors Basel,Round 1,1,0,105526,105870,Jan Lennard Struff,Yannick Hanfmann,6-4 6-3,STATUS_FINAL
+185191,2026-10-28,Vienna,Erste Bank Open,Round 1,1,0,134868,206909,Tallon Griekspoor,Brandon Nakashima,6-1 4-6 7-6,STATUS_FINAL
+185142,2026-10-28,Basel,Swiss Indoors Basel,Round 1,1,0,133430,200329,Denis Shapovalov,Remy Bertola,6-4 6-2,STATUS_FINAL
+185178,2026-10-28,Vienna,Erste Bank Open,Round 1,1,0,207518,126207,Lorenzo Musetti,Frances Tiafoe,7-6 7-5,STATUS_FINAL
+185133,2026-10-28,Basel,Swiss Indoors Basel,Round 1,1,0,104925,200005,Novak Djokovic,Ugo Humbert,4-6 6-3 6-4,STATUS_FINAL
+185179,2026-10-28,Vienna,Erste Bank Open,Round 1,1,0,105932,200514,Nikoloz Basilashvili,Jurij Rodionov,7-6 6-1,STATUS_FINAL
+185138,2026-10-28,Basel,Swiss Indoors Basel,Round 1,1,0,126203,208014,Taylor Fritz,Rinky Hijikata,6-4 7-6,STATUS_FINAL
+185145,2026-10-28,Basel,Swiss Indoors Basel,Round 2,2,0,132686,134770,Nuno Borges,Casper Ruud,1-6 6-3 6-4,STATUS_FINAL
+185185,2026-10-28,Vienna,Erste Bank Open,Round 2,2,0,105173,210150,Adrian Mannarino,Jakub Mensik,6-4 7-5,STATUS_FINAL
+185198,2026-10-28,Vienna,Erste Bank Open,Round 2,2,0,200282,210530,Alex De Minaur,Learner Tien,6-4 6-2,STATUS_FINAL
+185146,2026-10-28,Basel,Swiss Indoors Basel,Round 2,2,0,208029,128034,Holger Rune,Hubert Hurkacz,3-6 6-3 7-6,STATUS_FINAL
+185147,2026-10-29,Basel,Swiss Indoors Basel,Round 2,2,0,200473,212588,Valentin Vacherot,Rafael Jodar,7-6 2-6 7-6,STATUS_FINAL
+185187,2026-10-29,Vienna,Erste Bank Open,Round 2,2,0,106421,111815,Daniil Medvedev,Cameron Norrie,4-6 6-3 7-6,STATUS_FINAL
+185190,2026-10-29,Vienna,Erste Bank Open,Round 2,2,0,126205,209260,Tommy Paul,Luciano Darderi,6-1 6-1,STATUS_FINAL
+185152,2026-10-29,Basel,Swiss Indoors Basel,Round 2,2,0,209950,210506,Arthur Fils,Alex Michelsen,4-6 6-3 7-6,STATUS_FINAL
+185193,2026-10-29,Vienna,Erste Bank Open,Round 2,2,0,207989,105932,Carlos Alcaraz,Nikoloz Basilashvili,6-1 7-6,STATUS_FINAL
+185194,2026-10-29,Vienna,Erste Bank Open,Round 2,2,0,209259,207518,Arthur Fery,Lorenzo Musetti,6-4 5-7 6-4,STATUS_FINAL
+185150,2026-10-29,Basel,Swiss Indoors Basel,Round 2,2,0,208103,127157,Jiri Lehecka,Daniel Altmaier,7-5 6-4,STATUS_FINAL
+185148,2026-10-29,Basel,Swiss Indoors Basel,Round 2,2,0,126203,133430,Taylor Fritz,Denis Shapovalov,6-4 6-3,STATUS_FINAL
+185183,2026-10-29,Vienna,Erste Bank Open,Round 2,2,0,100644,134868,Alexander Zverev,Tallon Griekspoor,6-4 7-5,STATUS_FINAL
+185151,2026-10-29,Basel,Swiss Indoors Basel,Round 2,2,0,105526,104925,Jan Lennard Struff,Novak Djokovic,6-7 7-5 7-6,STATUS_FINAL
+185196,2026-10-29,Vienna,Erste Bank Open,Round 2,2,0,126610,207925,Matteo Berrettini,Flavio Cobolli,5-2,STATUS_RETIRED
+185149,2026-10-29,Basel,Swiss Indoors Basel,Round 2,2,0,208843,210097,Jerome Kym,Ben Shelton,6-3 6-7 7-6,STATUS_FINAL
+185201,2026-10-30,Vienna,Erste Bank Open,Quarterfinal,5,0,106421,105173,Daniil Medvedev,Adrian Mannarino,6-2 6-3,STATUS_FINAL
+185153,2026-10-30,Basel,Swiss Indoors Basel,Quarterfinal,5,0,200473,208029,Valentin Vacherot,Holger Rune,6-3 3-6 6-3,STATUS_FINAL
+185202,2026-10-30,Vienna,Erste Bank Open,Quarterfinal,5,0,207989,126205,Carlos Alcaraz,Tommy Paul,6-4 7-6,STATUS_FINAL
+185154,2026-10-30,Basel,Swiss Indoors Basel,Quarterfinal,5,0,126203,209950,Taylor Fritz,Arthur Fils,6-2 2-0,STATUS_RETIRED
+185199,2026-10-30,Vienna,Erste Bank Open,Quarterfinal,5,0,100644,209259,Alexander Zverev,Arthur Fery,6-0 6-2,STATUS_FINAL
+185155,2026-10-30,Basel,Swiss Indoors Basel,Quarterfinal,5,0,208103,208843,Jiri Lehecka,Jerome Kym,6-4 6-2,STATUS_FINAL
+185156,2026-10-30,Basel,Swiss Indoors Basel,Quarterfinal,5,0,105526,132686,Jan Lennard Struff,Nuno Borges,6-2 6-3,STATUS_FINAL
+185200,2026-10-30,Vienna,Erste Bank Open,Quarterfinal,5,0,200282,126610,Alex De Minaur,Matteo Berrettini,7-6 6-2,STATUS_FINAL
+185158,2026-10-31,Basel,Swiss Indoors Basel,Semifinal,6,0,200473,126203,Valentin Vacherot,Taylor Fritz,7-6 6-3,STATUS_FINAL
+185204,2026-10-31,Vienna,Erste Bank Open,Semifinal,6,0,207989,106421,Carlos Alcaraz,Daniil Medvedev,6-4 7-6,STATUS_FINAL
+185157,2026-10-31,Basel,Swiss Indoors Basel,Semifinal,6,0,208103,105526,Jiri Lehecka,Jan Lennard Struff,3-6 7-5 6-4,STATUS_FINAL
+185203,2026-10-31,Vienna,Erste Bank Open,Semifinal,6,0,200282,100644,Alex De Minaur,Alexander Zverev,6-4 1-6 7-6,STATUS_FINAL
+185205,2026-11-01,Vienna,Erste Bank Open,Final,7,0,207989,200282,Carlos Alcaraz,Alex De Minaur,6-1 6-4,STATUS_FINAL
+185159,2026-11-01,Basel,Swiss Indoors Basel,Final,7,0,200473,208103,Valentin Vacherot,Jiri Lehecka,2-6 6-3 6-3,STATUS_FINAL
+186456,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,208014,209260,Rinky Hijikata,Luciano Darderi,6-2 6-2,STATUS_FINAL
+186462,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,207518,128034,Lorenzo Musetti,Hubert Hurkacz,7-6 7-6,STATUS_FINAL
+186465,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,209860,200267,Ignacio Buse,Zizou Bergs,6-2 6-4,STATUS_FINAL
+186461,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,209414,208363,Luca Van Assche,Mariano Navone,6-3 7-5,STATUS_FINAL
+186468,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,212588,126214,Rafael Jodar,Alejandro Tabilo,6-2 6-3,STATUS_FINAL
+186448,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,111815,208286,Cameron Norrie,Matteo Arnaldi,6-4 1-6 6-3,STATUS_FINAL
+186469,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,134770,207678,Casper Ruud,Juan Manuel Cerundolo,6-3 6-2,STATUS_FINAL
+186447,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,208233,132283,Mattia Bellucci,Lorenzo Sonego,6-4 6-3,STATUS_FINAL
+186460,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,207830,208021,Tomas Machac,Kyrian Jacquet,7-6 6-1,STATUS_FINAL
+186459,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,144684,208169,Alex Molcan,Titouan Droguet,4-6 6-4 6-4,STATUS_FINAL
+186466,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,111575,133430,Karen Khachanov,Denis Shapovalov,6-3 6-7 1-4,STATUS_RETIRED
+186453,2026-11-02,Paris,Rolex Paris Masters,Round 1,1,0,200005,122298,Ugo Humbert,Botic Van De Zandschulp,7-6 6-7 6-3,STATUS_FINAL
+186446,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,126239,202103,Arthur Rinderknech,Francisco Cerundolo,3-6 7-6 2-0,STATUS_RETIRED
+186454,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,144869,126094,Tomas Martin Etcheverry,Andrey Rublev,6-4 6-7 7-6,STATUS_FINAL
+186474,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,111460,209259,Quentin Halys,Arthur Fery,7-6 7-5,STATUS_FINAL
+186467,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,132686,213608,Nuno Borges,Moise Kouame,6-3 6-1,STATUS_FINAL
+186455,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,126610,206909,Matteo Berrettini,Brandon Nakashima,6-4 3-6 7-6,STATUS_FINAL
+186458,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,104925,200473,Novak Djokovic,Valentin Vacherot,6-7 7-5 6-1,STATUS_FINAL
+186445,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,126205,208029,Tommy Paul,Holger Rune,7-5 6-4,STATUS_FINAL
+186451,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,210506,208103,Alex Michelsen,Jiri Lehecka,6-7 6-2 6-4,STATUS_FINAL
+186457,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,126203,126127,Taylor Fritz,Benjamin Bonzi,3-6 6-3 6-4,STATUS_FINAL
+186470,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,105526,210338,Jan Lennard Struff,Arthur Gea,7-6 6-3,STATUS_FINAL
+186477,2026-11-03,Paris,Rolex Paris Masters,Round 2,2,0,210097,111815,Ben Shelton,Cameron Norrie,6-3 6-4,STATUS_FINAL
+186484,2026-11-03,Paris,Rolex Paris Masters,Round 2,2,0,134770,212588,Casper Ruud,Rafael Jodar,6-3 6-4,STATUS_FINAL
+186488,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,126239,208233,Arthur Rinderknech,Mattia Bellucci,6-4 6-1,STATUS_FINAL
+186486,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,111460,126207,Quentin Halys,Frances Tiafoe,6-3 1-6 7-6,STATUS_FINAL
+186479,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,209414,210530,Luca Van Assche,Learner Tien,7-6 6-4,STATUS_FINAL
+186478,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,207518,100644,Lorenzo Musetti,Alexander Zverev,7-6 6-2,STATUS_FINAL
+186481,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,144869,200282,Tomas Martin Etcheverry,Alex De Minaur,7-6 6-3,STATUS_FINAL
+186483,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,209860,106421,Ignacio Buse,Daniil Medvedev,6-4 6-4,STATUS_FINAL
+186482,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,208014,104925,Rinky Hijikata,Novak Djokovic,2-6 6-3 6-3,STATUS_FINAL
+186490,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,126203,144684,Taylor Fritz,Alex Molcan,6-7 7-5 7-6,STATUS_FINAL
+186476,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,132686,111575,Nuno Borges,Karen Khachanov,6-3 6-4,STATUS_FINAL
+186489,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,126610,200005,Matteo Berrettini,Ugo Humbert,7-6 7-5,STATUS_FINAL
+186480,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,207989,210506,Carlos Alcaraz,Alex Michelsen,7-6 6-3,STATUS_FINAL
+186485,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,105526,202058,Jan Lennard Struff,Thiago Agustin Tirante,6-7 6-3 7-6,STATUS_FINAL
+186491,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,209950,207830,Arthur Fils,Tomas Machac,6-3 7-6,STATUS_FINAL
+186496,2026-11-05,Paris,Rolex Paris Masters,Round 3,3,0,126205,111460,Tommy Paul,Quentin Halys,7-6 6-4,STATUS_FINAL
+186497,2026-11-05,Paris,Rolex Paris Masters,Round 3,3,0,210097,126239,Ben Shelton,Arthur Rinderknech,3-6 6-4 7-6,STATUS_FINAL

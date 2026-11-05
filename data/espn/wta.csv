@@ -1,0 +1,98 @@
+espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,score,status
+185663,2026-10-26,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,219917,216133,Alycia Parks,Xin Yu Wang,6-1 7-6,STATUS_FINAL
+185712,2026-10-26,Guangzhou,Guangzhou Open,Round 1,1,0,221237,267439,Maria Timofeeva,Teodora Kostovic,6-4 6-1,STATUS_FINAL
+185716,2026-10-26,Guangzhou,Guangzhou Open,Round 1,1,0,221257,215910,Sinja Kraus,Panna Udvardy,6-4 6-2,STATUS_FINAL
+185666,2026-10-26,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,221883,214082,Talia Gibson,Daria Kasatkina,6-0 7-5,STATUS_FINAL
+185707,2026-10-26,Guangzhou,Guangzhou Open,Round 1,1,0,214388,220750,Anna Bondar,Daria Snigur,6-4 6-2,STATUS_FINAL
+185662,2026-10-26,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,210722,220416,Elise Mertens,Moyuka Uchijima,6-4 6-2,STATUS_FINAL
+185728,2026-10-26,Guangzhou,Guangzhou Open,Round 1,1,0,222559,260581,Han Shi,Alevtina Ibragimova,6-4 6-4,STATUS_FINAL
+185681,2026-10-26,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,223253,261963,Alexandra Eala,Mika Stojsavljevic,6-1 6-2,STATUS_FINAL
+185723,2026-10-26,Guangzhou,Guangzhou Open,Round 1,1,0,211279,236955,Harriet Dart,Tatiana Prozorova,6-4 2-6 6-2,STATUS_FINAL
+185679,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,233741,201514,Maya Joint,Sorana Cirstea,6-3 7-6,STATUS_FINAL
+185675,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,206420,215983,Ekaterina Alexandrova,Ann Li,6-4 6-4,STATUS_FINAL
+185711,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,259733,213550,Kaitlin Quevedo,Sofia Kenin,6-4 6-7 6-4,STATUS_FINAL
+185715,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,213525,215899,Jil Teichmann,Simona Waltert,7-5 6-2,STATUS_FINAL
+185726,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,202663,220435,Magda Linette,Anastasia Zakharova,7-6 6-4,STATUS_FINAL
+185673,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,201709,206289,Yulia Putintseva,Maria Sakkari,6-4 3-6 6-1,STATUS_FINAL
+185677,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,213710,220348,Cristina Bucsa,Diane Parry,7-5 6-1,STATUS_FINAL
+185709,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,220309,204427,Zeynep Sonmez,Sara Sorribes Tormo,6-1 4-6 6-2,STATUS_FINAL
+185668,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,205925,223360,Aliaksandra Sasnovich,Nikola Bartunkova,6-4 6-7 6-3,STATUS_FINAL
+185718,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,215035,220465,Dayana Yastremska,Katie Volynets,7-5 1-6 7-6,STATUS_FINAL
+185659,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,220367,221124,Leylah Fernandez,Himeno Sakatsume,6-2 6-4,STATUS_FINAL
+185705,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,214906,222045,Claire Liu,Antonia Ruzic,4-6 7-6 6-4,STATUS_FINAL
+185674,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,211768,211148,Naomi Osaka,Jasmine Paolini,6-3 7-6,STATUS_FINAL
+185661,2026-10-27,Tokyo,Toray Pan Pacific Open Tennis,Round 1,1,0,266376,238184,Mia Pohankova,Tereza Valentova,6-1 6-4,STATUS_FINAL
+185725,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,222145,221236,Janice Tjen,Polina Kudermetova,6-2 6-2,STATUS_FINAL
+185835,2026-10-27,Courmayeur,Valle D'Aosta Ladies Open,Round 1,1,0,223333,203575,Noma Noha Akugue,Danka Kovinic,7-6 6-1,STATUS_FINAL
+185724,2026-10-27,Guangzhou,Guangzhou Open,Round 1,1,0,260172,200748,Lilli Tagger,Venus Williams,6-2 6-2,STATUS_FINAL
+185830,2026-10-27,Courmayeur,Valle D'Aosta Ladies Open,Round 1,1,0,215453,223286,Marina Bassols Ribera,Victoria Jimenez Kasintseva,6-3 6-3,STATUS_FINAL
+185832,2026-10-27,Courmayeur,Valle D'Aosta Ladies Open,Round 1,1,0,215020,213646,Anna Blinkova,Dalma Galfi,6-3 6-2,STATUS_FINAL
+185708,2026-10-28,Guangzhou,Guangzhou Open,Round 1,1,0,211701,222290,Katerina Siniakova,Lanlana Tararudee,2-6 6-1 6-4,STATUS_FINAL
+185831,2026-10-28,Courmayeur,Valle D'Aosta Ladies Open,Round 1,1,0,222965,245077,Erika Andreeva,Yelyzaveta Kotliar,7-6 6-2,STATUS_FINAL
+185840,2026-10-28,Courmayeur,Valle D'Aosta Ladies Open,Round 1,1,0,221354,221905,Lisa Pigato,Robin Montgomery,6-0 7-6,STATUS_FINAL
+185680,2026-10-28,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,215872,206420,Kamilla Rakhimova,Ekaterina Alexandrova,6-4 4-6 7-6,STATUS_FINAL
+185682,2026-10-28,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,233741,213710,Maya Joint,Cristina Bucsa,6-1 2-6 6-4,STATUS_FINAL
+185669,2026-10-28,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,223670,205925,Diana Shnaider,Aliaksandra Sasnovich,6-3 5-7 6-3,STATUS_FINAL
+185710,2026-10-28,Guangzhou,Guangzhou Open,Round 2,2,0,211651,221257,Paula Badosa,Sinja Kraus,6-1 6-4,STATUS_FINAL
+185714,2026-10-28,Guangzhou,Guangzhou Open,Round 2,2,0,211279,222145,Harriet Dart,Janice Tjen,6-4 3-6 6-3,STATUS_FINAL
+185667,2026-10-28,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,223253,221883,Alexandra Eala,Talia Gibson,4-6 6-2 6-0,STATUS_FINAL
+185720,2026-10-28,Guangzhou,Guangzhou Open,Round 2,2,0,222559,215035,Han Shi,Dayana Yastremska,7-5 6-4,STATUS_FINAL
+185849,2026-10-28,Courmayeur,Valle D'Aosta Ladies Open,Round 2,2,0,223333,221626,Noma Noha Akugue,Linda Klimovicova,6-4 6-3,STATUS_FINAL
+185660,2026-10-29,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,219917,214040,Alycia Parks,Kimberly Birrell,6-3 6-1,STATUS_FINAL
+185678,2026-10-29,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,220367,210722,Leylah Fernandez,Elise Mertens,6-2 7-6,STATUS_FINAL
+185717,2026-10-29,Guangzhou,Guangzhou Open,Round 2,2,0,213525,220309,Jil Teichmann,Zeynep Sonmez,4-6 6-3 6-1,STATUS_FINAL
+185672,2026-10-29,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,266376,211768,Mia Pohankova,Naomi Osaka,6-3 7-5,STATUS_FINAL
+185676,2026-10-29,Tokyo,Toray Pan Pacific Open Tennis,Round 2,2,0,214981,201709,Elena Rybakina,Yulia Putintseva,6-2 6-3,STATUS_FINAL
+185727,2026-10-29,Guangzhou,Guangzhou Open,Round 2,2,0,259733,214388,Kaitlin Quevedo,Anna Bondar,7-5 6-3,STATUS_FINAL
+185719,2026-10-29,Guangzhou,Guangzhou Open,Round 2,2,0,260172,202663,Lilli Tagger,Magda Linette,6-2 6-2,STATUS_FINAL
+185845,2026-10-29,Courmayeur,Valle D'Aosta Ladies Open,Round 2,2,0,215453,222965,Marina Bassols Ribera,Erika Andreeva,6-4 7-6,STATUS_FINAL
+185850,2026-10-29,Courmayeur,Valle D'Aosta Ladies Open,Round 2,2,0,221039,214826,Elsa Jacquemot,Susan Bandecchi,6-7 6-2 6-3,STATUS_FINAL
+185684,2026-10-30,Tokyo,Toray Pan Pacific Open Tennis,Quarterfinal,5,0,215872,233741,Kamilla Rakhimova,Maya Joint,7-5 5-7 6-1,STATUS_FINAL
+185686,2026-10-30,Tokyo,Toray Pan Pacific Open Tennis,Quarterfinal,5,0,266376,219917,Mia Pohankova,Alycia Parks,7-6 6-3,STATUS_FINAL
+185729,2026-10-30,Guangzhou,Guangzhou Open,Quarterfinal,5,0,211279,211651,Harriet Dart,Paula Badosa,3-6 6-2 6-4,STATUS_FINAL
+185730,2026-10-30,Guangzhou,Guangzhou Open,Quarterfinal,5,0,259733,213525,Kaitlin Quevedo,Jil Teichmann,7-6 6-3,STATUS_FINAL
+185685,2026-10-30,Tokyo,Toray Pan Pacific Open Tennis,Quarterfinal,5,0,223670,223253,Diana Shnaider,Alexandra Eala,2-6 7-6 6-4,STATUS_FINAL
+185731,2026-10-30,Guangzhou,Guangzhou Open,Quarterfinal,5,0,260172,222559,Lilli Tagger,Han Shi,6-4 3-6 7-5,STATUS_FINAL
+185857,2026-10-30,Courmayeur,Valle D'Aosta Ladies Open,Quarterfinal,5,0,221406,215453,Alina Charaeva,Marina Bassols Ribera,6-4 6-4,STATUS_FINAL
+185687,2026-10-31,Tokyo,Toray Pan Pacific Open Tennis,Semifinal,6,0,220367,215872,Leylah Fernandez,Kamilla Rakhimova,7-5 6-3,STATUS_FINAL
+185688,2026-10-31,Tokyo,Toray Pan Pacific Open Tennis,Semifinal,6,0,223670,266376,Diana Shnaider,Mia Pohankova,6-4 7-6,STATUS_FINAL
+185734,2026-10-31,Guangzhou,Guangzhou Open,Semifinal,6,0,260172,259733,Lilli Tagger,Kaitlin Quevedo,6-2 6-0,STATUS_FINAL
+185853,2026-10-31,Courmayeur,Valle D'Aosta Ladies Open,Semifinal,6,0,223333,215020,Noma Noha Akugue,Anna Blinkova,6-4 6-3,STATUS_FINAL
+185854,2026-10-31,Courmayeur,Valle D'Aosta Ladies Open,Semifinal,6,0,221406,221039,Alina Charaeva,Elsa Jacquemot,6-2 4-6 6-1,STATUS_FINAL
+185689,2026-11-01,Tokyo,Toray Pan Pacific Open Tennis,Final,7,0,223670,220367,Diana Shnaider,Leylah Fernandez,6-4 5-7 6-2,STATUS_FINAL
+185735,2026-11-01,Guangzhou,Guangzhou Open,Final,7,0,211279,260172,Harriet Dart,Lilli Tagger,4-6 6-3 6-4,STATUS_FINAL
+185865,2026-11-01,Courmayeur,Valle D'Aosta Ladies Open,Final,7,0,221406,223333,Alina Charaeva,Noma Noha Akugue,6-3 6-4,STATUS_FINAL
+186624,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,211107,203530,Katie Boulter,Viktorija Golubic,6-2 7-6,STATUS_FINAL
+186625,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,214906,236955,Claire Liu,Tatiana Prozorova,6-2 6-4,STATUS_FINAL
+186622,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,205925,220465,Aliaksandra Sasnovich,Katie Volynets,6-3 6-2,STATUS_FINAL
+186617,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,223168,200748,Mary Stoiana,Venus Williams,6-2 6-3,STATUS_FINAL
+186581,2026-11-03,Chennai,Chennai Open,Round 1,1,0,221407,267439,Oksana Selekhmeteva,Teodora Kostovic,6-4 6-3,STATUS_FINAL
+186583,2026-11-03,Chennai,Chennai Open,Round 1,1,0,220466,213525,Joanna Garland,Jil Teichmann,6-3 6-4,STATUS_FINAL
+186577,2026-11-03,Chennai,Chennai Open,Round 1,1,0,221905,215910,Robin Montgomery,Panna Udvardy,6-4 1-6 6-1,STATUS_FINAL
+186623,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,221883,220716,Talia Gibson,Oleksandra Oliynykova,7-6 6-1,STATUS_FINAL
+186626,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,220309,215035,Zeynep Sonmez,Dayana Yastremska,6-4 6-2,STATUS_FINAL
+186584,2026-11-03,Chennai,Chennai Open,Round 1,1,0,220435,223325,Anastasia Zakharova,Polina Iatcenko,7-6 6-1,STATUS_FINAL
+186621,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,233741,213666,Maya Joint,Maddison Inglis,7-5 6-2,STATUS_FINAL
+186619,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,201514,221237,Sorana Cirstea,Maria Timofeeva,7-6 1-6 7-5,STATUS_FINAL
+186629,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,238184,221124,Tereza Valentova,Himeno Sakatsume,6-3 7-5,STATUS_FINAL
+186579,2026-11-03,Chennai,Chennai Open,Round 1,1,0,221236,215077,Polina Kudermetova,Viktoria Morvayova,6-3 4-6 6-1,STATUS_FINAL
+186582,2026-11-03,Chennai,Chennai Open,Round 1,1,0,261038,214839,Vaishnavi Adkar,Jodie Burrage,3-6 6-3 7-5,STATUS_FINAL
+186628,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,223253,263644,Alexandra Eala,Emerson Jones,6-4 6-3,STATUS_FINAL
+186589,2026-11-03,Chennai,Chennai Open,Round 1,1,0,220416,211685,Moyuka Uchijima,Rebecca Sramkova,6-3 6-2,STATUS_FINAL
+186615,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,239389,211651,Elena Pridankina,Paula Badosa,7-5,STATUS_RETIRED
+186587,2026-11-03,Chennai,Chennai Open,Round 1,1,0,202663,221434,Magda Linette,Aliona Falei,7-6 5-7 6-2,STATUS_FINAL
+186571,2026-11-03,Chennai,Chennai Open,Round 1,1,0,266722,203514,Maaya Rajeshwaran Revathi,Katarzyna Kawa,6-4 2-6 7-6,STATUS_FINAL
+186569,2026-11-03,Chennai,Chennai Open,Round 1,1,0,215988,216566,Mai Hontama,Mananchaya Sawangkaew,7-6 6-2,STATUS_FINAL
+186580,2026-11-03,Chennai,Chennai Open,Round 1,1,0,215899,246481,Simona Waltert,Sahaja Yamalapalli,6-4 3-6 6-3,STATUS_FINAL
+186616,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,222045,221406,Antonia Ruzic,Alina Charaeva,7-6 6-4,STATUS_FINAL
+186627,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,261963,213550,Mika Stojsavljevic,Sofia Kenin,6-3 4-6 6-4,STATUS_FINAL
+186633,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,205925,221883,Aliaksandra Sasnovich,Talia Gibson,6-1 5-7 7-6,STATUS_FINAL
+186638,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,214906,211107,Claire Liu,Katie Boulter,7-5 6-4,STATUS_FINAL
+186574,2026-11-04,Chennai,Chennai Open,Round 2,2,0,221236,221407,Polina Kudermetova,Oksana Selekhmeteva,6-3 6-0,STATUS_FINAL
+186632,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,206289,233741,Maria Sakkari,Maya Joint,4-6 6-3 6-3,STATUS_FINAL
+186576,2026-11-04,Chennai,Chennai Open,Round 2,2,0,222145,220466,Janice Tjen,Joanna Garland,7-6 6-1,STATUS_FINAL
+186631,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,222045,216133,Antonia Ruzic,Xin Yu Wang,6-3 4-6 6-2,STATUS_FINAL
+186639,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,220309,261963,Zeynep Sonmez,Mika Stojsavljevic,7-6 6-4,STATUS_FINAL
+186590,2026-11-05,Chennai,Chennai Open,Round 2,2,0,202663,220416,Magda Linette,Moyuka Uchijima,7-6 6-0,STATUS_FINAL
+186630,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,223253,238184,Alexandra Eala,Tereza Valentova,6-4 7-6,STATUS_FINAL
+186585,2026-11-05,Chennai,Chennai Open,Round 2,2,0,214593,215899,Lucrezia Stefanini,Simona Waltert,6-2 6-3,STATUS_FINAL
