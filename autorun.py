@@ -1,9 +1,11 @@
 """Автономный режим: работает без участия человека (в облаке GitHub Actions или на компьютере по расписанию).
 
-  python autorun.py daily    — 4 раза в сутки: расписание ESPN → свежая форма → прогноз на матчи ближайших 36 ч →
-                               лист auto_forecasts + сообщение в Telegram; расчёт доигранных матчей (авто и ручных)
-  python autorun.py weekly   — по понедельникам: скачать tennis-data → переобучить модель → подтянуть закрывающие
-                               коэффициенты к авто-прогнозам → бумажный результат → недельный отчёт
+  python autorun.py auto     — основной (облако, 00:00 / 06:00 / 12:00 / 18:00 по Ташкенту): входящие из Telegram
+                               (файлы tennis-data, /stats) → переобучение через день в 00:00 или при новых файлах →
+                               прогноз на матчи Большого шлема, 1000, 500, 250 и итоговых на 36 ч → таблица + Telegram →
+                               расчёт доигранных, самокалибровка по собственным ошибкам
+  python autorun.py daily    — только прогноз и расчёт
+  python autorun.py weekly   — только переобучение и отчёт
   python autorun.py all      — weekly, затем daily
 Ключ --dry: ничего не писать в таблицу и Telegram, только напечатать.
 """
@@ -71,8 +73,66 @@ def collect(auto: pd.DataFrame) -> dict[str, list[espn.EspnMatch]]:
     return out
 
 
+# ======================================================================== самокалибровка и уверенность
+def _logit(p):
+    p = np.clip(np.asarray(p, float), 1e-6, 1 - 1e-6)
+    return np.log(p / (1 - p))
+
+
+def calibration(auto: pd.DataFrame) -> tuple[float, int]:
+    """Самокалибровка по собственным доигранным прогнозам: P' = σ(k·logit P).
+    k > 1 — модель была слишком осторожной, k < 1 — слишком самоуверенной. Оценка сжимается к 1 с силой
+    CALIB_PRIOR матчей, поэтому на малой выборке поправка мала и растёт по мере накопления результатов."""
+    fin = auto[auto.status.astype(str) == 'FIN']
+    if fin.empty:
+        return 1.0, 0
+    raw = fin.p1_raw.map(J.num)
+    p = np.where(raw.notna(), raw, fin.p1.map(J.num))
+    y = (fin.winner.map(J.num) == 1).values.astype(float)
+    ok = ~np.isnan(p)
+    x, y = _logit(p[ok]), y[ok]
+    n = len(x)
+    if n < 30:
+        return 1.0, n
+    ks = np.linspace(0.5, 1.6, 221)
+    ll = [np.sum(np.logaddexp(0, k * x) - y * k * x) for k in ks]
+    k_hat = float(ks[int(np.argmin(ll))])
+    w = n / (n + C.CALIB_PRIOR)
+    return round(1 + w * (k_hat - 1), 4), n
+
+
+def confidence(p: float, n_min: int, auto: pd.DataFrame) -> int:
+    """Уверенность в прогнозе 1–5: объём данных по игрокам + фактическая точность модели на живых матчах
+    в той же корзине вероятности + сравнение с рынком (когда есть коэффициенты)."""
+    s = 3
+    s += -2 if n_min < 15 else -1 if n_min < 40 else 1 if n_min >= 120 else 0
+    fin = auto[auto.status.astype(str) == 'FIN']
+    if len(fin) >= 30:
+        p1 = fin.p1.map(J.num).values
+        w1 = (fin.winner.map(J.num) == 1).values
+        pf = np.maximum(p1, 1 - p1); hit = np.where(p1 >= 0.5, w1, ~w1)
+        lo = np.floor(max(p, 1 - p) * 10) / 10
+        m = (pf >= lo) & (pf < lo + 0.1)
+        if m.sum() >= 30:
+            gap = abs(pf[m].mean() - hit[m].mean())
+            s += 1 if gap < 0.03 else -1 if gap > 0.08 else 0
+        a1, a2 = fin.avg_1.map(J.num), fin.avg_2.map(J.num)
+        ok = (a1 > 1) & (a2 > 1)
+        if ok.sum() >= 100:
+            pm = np.array([devig([x, y])[0] for x, y in zip(a1[ok], a2[ok])])
+            wm = w1[ok.values]
+            ll_m = np.mean(-np.log(np.where(wm, pm, 1 - pm)))
+            ll_s = np.mean(-np.log(np.where(wm, p1[ok.values], 1 - p1[ok.values])))
+            s += -1 if ll_s > ll_m + 0.02 else 1 if ll_s < ll_m else 0
+    return int(np.clip(s, 1, 5))
+
+
+CONF_WORD = {1: 'очень низкая', 2: 'низкая', 3: 'средняя', 4: 'высокая', 5: 'очень высокая'}
+
+
 # ======================================================================== авто-прогноз
-def forecast_upcoming(tour: str, matches: list[espn.EspnMatch], done_ids: set[str]) -> tuple[list[dict], list[str]]:
+def forecast_upcoming(tour: str, matches: list[espn.EspnMatch], done_ids: set[str], auto: pd.DataFrame,
+                      k_cal: float) -> tuple[list[dict], list[str]]:
     md = P.model(tour)
     st, players = md.state, P._PLAYERS[tour]
     act = live.active_ids(st)
@@ -83,8 +143,9 @@ def forecast_upcoming(tour: str, matches: list[espn.EspnMatch], done_ids: set[st
             continue
         if not (now < m.start <= now + pd.Timedelta(hours=C.HORIZON_HOURS)):
             continue
-        if not (m.major or live.known_location(tour, m.location)):
-            continue                                            # 125 / челленджеры / выставки — вне модели
+        level = live.level_for(tour, m.location, m.start, m.major)
+        if level not in C.LEVELS:
+            continue                                            # 125 / челленджеры / ITF / выставки — не нужны
         ids = [live.identify(n, players, act) for n in m.names]
         if any(i[0] is None for i in ids):
             skipped.append(f'{m.names[0]} — {m.names[1]} ({m.event}): игрок не опознан '
@@ -94,17 +155,19 @@ def forecast_upcoming(tour: str, matches: list[espn.EspnMatch], done_ids: set[st
         surface = live.surface_for(tour, m.location, date)
         best_of = 5 if (m.major and tour == 'atp') else 3
         snap = st.snapshot(ids[0][0], ids[1][0], date, surface, m.location, date.year)
-        f = FC.fair(md, snap, best_of, 10 if m.major else 7)
-        p1 = f['p1']
+        p_raw = md.p_win(snap)
+        p1 = float(1 / (1 + np.exp(-k_cal * _logit(p_raw))))
+        f = FC.fair(md, snap, best_of, 10 if m.major else 7, p_override=p1)
+        n1, n2 = int(st.n.get(ids[0][0], 0)), int(st.n.get(ids[1][0], 0))
         row = dict(created=J.now_utc(), espn_id=m.id, tour=tour.upper(), event=m.event, location=m.location, surface=surface,
                    round=m.round, best_of=best_of, start_utc=m.start.strftime('%Y-%m-%d %H:%M'), start_local=J.to_local(m.start),
                    player1=ids[0][1], player2=ids[1][1], player1_id=float(ids[0][0]), player2_id=float(ids[1][0]),
-                   n1=int(st.n.get(ids[0][0], 0)), n2=int(st.n.get(ids[1][0], 0)),
-                   id_score1=round(ids[0][2], 3), id_score2=round(ids[1][2], 3),
+                   n1=n1, n2=n2, id_score1=round(ids[0][2], 3), id_score2=round(ids[1][2], 3),
                    p1=round(p1, 4), p2=round(1 - p1, 4), kfair1=round(1 / p1, 3), kfair2=round(1 / (1 - p1), 3),
                    kmin1=round((1 + C.EV_THRESHOLD) / p1, 3), kmin2=round((1 + C.EV_THRESHOLD) / (1 - p1), 3),
                    exp_total=round(f['exp_total'], 2), total_line=f['total_line'], p_over=round(f['p_over'], 4),
-                   hcp1_line=f['hcp1_line'], p_hcp1=round(f['p_hcp1'], 4), set1_p1=round(f['set1_p1'], 4))
+                   hcp1_line=f['hcp1_line'], p_hcp1=round(f['p_hcp1'], 4), set1_p1=round(f['set1_p1'], 4),
+                   level=level, p1_raw=round(p_raw, 4), calib_k=k_cal, confidence=confidence(p1, min(n1, n2), auto))
         for k in J.EXACT_COLS:
             if k in f:
                 row[k] = round(f[k], 4)
@@ -112,21 +175,52 @@ def forecast_upcoming(tour: str, matches: list[espn.EspnMatch], done_ids: set[st
     return rows, skipped
 
 
-def digest(rows: list[dict]) -> str:
-    """Сообщение в Telegram: прогноз на каждый матч и минимальный коэффициент для ставки (EV ≥ порога)."""
+LEVEL_RU = {'Grand Slam': 'Большой шлем', '1000': '1000', '500': '500', '250': '250', 'Finals': 'Итоговый турнир'}
+ROUND_RU = {'Final': 'финал', 'Semifinal': '1/2', 'Quarterfinal': '1/4', 'Round Robin': 'группа'}
+SURF_RU = {'Hard': 'хард', 'Clay': 'грунт', 'Grass': 'трава'}
+
+
+def _round_ru(r: str) -> str:
+    if r in ROUND_RU:
+        return ROUND_RU[r]
+    m = __import__('re').search(r'(\d+)', r)
+    return f'{m.group(1)}-й круг' if m else r
+
+
+def match_block(r: dict) -> str:
+    """Карточка матча (HTML)."""
+    e = notify.esc
+    p1, p2 = float(r['p1']), float(r['p2'])
+    fav, dog = (1, 2) if p1 >= p2 else (2, 1)
+    name = {1: r['player1'], 2: r['player2']}
+    prob = {1: p1, 2: p2}
+    kmin = {1: float(r['kmin1']), 2: float(r['kmin2'])}
+    po = float(r['p_over'])
+    t_side, t_p = ('Б', po) if po >= 0.5 else ('М', 1 - po)
+    conf = int(r.get('confidence') or 3)
+    lvl = LEVEL_RU.get(str(r.get('level')), str(r.get('level') or ''))
+    head = f"🎾 <b>{e(r['tour'])} {lvl}</b> · {e(r['event'])}"
+    sub = f"🕒 {e(r['start_local'])} · {e(_round_ru(str(r['round'])))} · {SURF_RU.get(r['surface'], r['surface'])}"
+    lines = [head, sub, f"<b>{e(r['player1'])}</b> — <b>{e(r['player2'])}</b>", '',
+             f"📊 Модель: {e(name[fav])} <b>{prob[fav] * 100:.0f}%</b> · {e(name[dog])} {prob[dog] * 100:.0f}%",
+             f"✅ Ставка: <b>П{fav} {e(name[fav])}</b> при кф ≥ <b>{kmin[fav]:.2f}</b>",
+             f"↔️ П{dog} {e(name[dog])} — только при кф ≥ {kmin[dog]:.2f}",
+             f"📏 Тотал {float(r['total_line']):g}: <b>{t_side}</b> {t_p * 100:.0f}% · кф ≥ {(1 + C.EV_THRESHOLD) / t_p:.2f}",
+             f"🎯 Уверенность: {'●' * conf}{'○' * (5 - conf)} {CONF_WORD[conf]}"]
+    if min(int(r['n1']), int(r['n2'])) < 15:
+        lines.append(f"⚠️ Мало данных: {min(int(r['n1']), int(r['n2']))} матч. у одного из игроков")
+    return '\n'.join(lines)
+
+
+def digest_blocks(rows: list[dict], k_cal: float, n_cal: int) -> list[str]:
     if not rows:
-        return ''
-    out = [f'Авто-прогноз: {len(rows)} матч(ей). Время — Ташкент. K≥ — минимальный коэффициент 1xBet, '
-           f'при котором ставка даёт EV ≥ {C.EV_THRESHOLD * 100:.0f}% по модели.', '']
-    for r in sorted(rows, key=lambda r: (r['start_utc'], r['tour'], r['event'])):
-        fav = 1 if r['p1'] >= 0.5 else 2
-        out.append(f"{r['start_local']} {r['tour']} {r['event']} · {r['round']} · {r['surface']}")
-        out.append(f"  {r['player1']} {r['p1'] * 100:.0f}% (K≥{r['kmin1']:.2f}) — {r['player2']} {r['p2'] * 100:.0f}% (K≥{r['kmin2']:.2f})")
-        h = r['hcp1_line'] if fav == 1 else -r['hcp1_line']
-        out.append(f"  тотал {r['total_line']:g}: Б {r['p_over'] * 100:.0f}% / М {(1 - r['p_over']) * 100:.0f}% · "
-                   f"фора Ф{fav}({h:+g}) ≈50% · 1-й сет П1 {r['set1_p1'] * 100:.0f}%"
-                   + (f" · мало данных ({min(r['n1'], r['n2'])} матч.)" if min(r['n1'], r['n2']) < 15 else ''))
-    return '\n'.join(out)
+        return []
+    head = (f"<b>Прогноз на ближайшие {C.HORIZON_HOURS} ч · {len(rows)} матч.</b>\n"
+            f"Время — Ташкент. «кф ≥» — минимальный коэффициент 1xBet, при котором ставка выгодна по модели "
+            f"(EV ≥ {C.EV_THRESHOLD * 100:.0f}%). Если в 1xBet меньше — пропуск."
+            + (f"\nСамокалибровка: k = {k_cal:.3f} по {n_cal} доигранным матчам." if n_cal >= 30 else ''))
+    rows = sorted(rows, key=lambda r: (r['start_utc'], r['tour'], r['event']))
+    return [head] + [match_block(r) for r in rows]
 
 
 # ======================================================================== расчёт
@@ -229,7 +323,9 @@ def attach_odds(store: J.Store) -> int:
 # ======================================================================== сводка
 def summary(store: J.Store) -> tuple[pd.DataFrame, str]:
     df = store.read('auto_forecasts')
-    rows = [('обновлено (UTC)', J.now_utc()), ('авто-прогнозов всего', len(df))]
+    k_cal, n_cal = calibration(df)
+    rows = [('обновлено (UTC)', J.now_utc()), ('авто-прогнозов всего', len(df)),
+            ('самокалибровка k (1 — без поправки)', k_cal), ('матчей для самокалибровки', n_cal)]
     fin = df[df.status.astype(str) == 'FIN'].copy()
     lines = []
     if not fin.empty:
@@ -273,62 +369,114 @@ def summary(store: J.Store) -> tuple[pd.DataFrame, str]:
 
 
 # ======================================================================== режимы
-def daily(dry: bool = False) -> str:
-    store = J.Store()
+def retrain_due(now_utc: pd.Timestamp | None = None) -> bool:
+    """Переобучение через день в 00:00 по Ташкенту, начиная с RETRAIN_ANCHOR (запуск в 00:00 может прийти с задержкой)."""
+    loc = (now_utc or _now()) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
+    return loc.hour < 3 and (loc.date() - C.RETRAIN_ANCHOR).days % 2 == 0
+
+
+def retrain(store: J.Store | None) -> list[str]:
+    import updater
+    log = updater.rebuild()
+    P._MODELS.clear()
+    if store is not None:
+        log.append(f'Коэффициенты tennis-data подтянуты к {attach_odds(store)} авто-прогнозам.')
+    return log
+
+
+def daily(dry: bool = False, store: J.Store | None = None) -> str:
+    store = store or J.Store()
     auto = store.read('auto_forecasts')
     matches = collect(auto)
     log = []
     for tour in TOURS:
         n = live.refresh(P.model(tour), matches[tour], P._PLAYERS[tour])
         log.append(f'{tour.upper()}: матчей ESPN {len(matches[tour])}, докатано в форму {n}')
+    k_cal, n_cal = calibration(auto)
     done = set(auto.espn_id.map(_id))
     new_rows, skipped = [], []
     for tour in TOURS:
-        r, s = forecast_upcoming(tour, matches[tour], done)
+        r, s = forecast_upcoming(tour, matches[tour], done, auto, k_cal)
         new_rows += r; skipped += s
     by_id = {m.id: m for tour in TOURS for m in matches[tour]}
+    blocks = digest_blocks(new_rows, k_cal, n_cal)
     if dry:
-        print('\n'.join(log)); print(digest(new_rows)); print('\n'.join(skipped))
+        print('\n'.join(log)); print('\n\n'.join(blocks)); print('\n'.join(skipped))
         return 'dry'
     store.append('auto_forecasts', new_rows)
-    settled = settle_auto(store, by_id)
-    j = J.Journal(store)
-    manual = j.settle(manual_results(matches, store))
-    msg = digest(new_rows)
-    if msg:
-        if skipped:
-            msg += '\n\nПропущено (игрок не опознан): ' + str(len(skipped))
-        notify.send(notify.esc(msg), pre=False)
+    settle_auto(store, by_id)
+    manual = J.Journal(store).settle(manual_results(matches, store))
+    if blocks:
+        notify.send_blocks(blocks)
     summ, _ = summary(store)
     store.write_all('summary', summ)
-    log += [f'новых прогнозов {len(new_rows)}, пропущено {len(skipped)}', manual]
+    log += [f'самокалибровка k={k_cal} (n={n_cal})', f'новых прогнозов {len(new_rows)}, пропущено {len(skipped)}', manual]
     log += skipped[:20]
     return '\n'.join(log)
 
 
 def weekly(dry: bool = False) -> str:
-    import updater
-    log = updater.update_all()
-    log += updater.rebuild()
-    P._MODELS.clear()
+    log = retrain(None if dry else J.Store())
     if dry:
         return '\n'.join(log)
     store = J.Store()
-    n = attach_odds(store)
-    summ, text = summary(store)
-    store.write_all('summary', summ)
-    report = ('Еженедельное обновление\n' + '\n'.join(log) + f'\nКоэффициенты подтянуты к {n} авто-прогнозам.\n\n'
-              + (text or 'Доигранных авто-прогнозов пока нет.'))
-    notify.send(notify.esc(report))
+    _, text = summary(store)
+    report = 'Модель переобучена\n' + '\n'.join(log) + '\n\n' + (text or 'Доигранных авто-прогнозов пока нет.')
+    notify.send(report)
     return report
+
+
+def handle_inbox(store: J.Store) -> tuple[bool, list[str]]:
+    """Файлы tennis-data и команды из Telegram. Возвращает (нужно ли переобучение, журнал)."""
+    import updater
+    files, cmds, note = notify.inbox()
+    log = [note] if note else []
+    need = False
+    for chat, name, raw in files:
+        try:
+            rep = updater.save_file(raw)
+            need = True
+            notify.reply(chat, f'Файл принят: {rep}. Модель переобучится в этом запуске.')
+            log.append(f'принят файл {name}: {rep}')
+        except Exception as e:
+            notify.reply(chat, f'Файл {name} не принят: {e}')
+    for chat, text in cmds:
+        t = text.lower().split('@')[0]
+        if t in ('/stats', '/статистика'):
+            _, s = summary(store)
+            notify.reply(chat, s or 'Доигранных авто-прогнозов пока нет.')
+        elif t == '/start':
+            notify.reply(chat, 'Бот работает в облаке: 4 раза в сутки присылает прогнозы на матчи Большого шлема, '
+                               '1000, 500 и 250. Раз в неделю пришлите сюда два файла 2026.xlsx с tennis-data.co.uk '
+                               '(WTA и ATP) — их заберёт ближайший запуск. /stats — качество модели.')
+        elif t.startswith('#ошибка'):
+            notify.reply(chat, text)
+    return need, log
+
+
+def auto_mode(dry: bool = False) -> str:
+    """Единый запуск 4 раза в сутки: входящие из Telegram → переобучение (через день в 00:00 или при новых файлах)
+    → прогноз и расчёт."""
+    store = J.Store()
+    need, log = (False, []) if dry else handle_inbox(store)
+    if need or retrain_due():
+        rep = retrain(None if dry else store)
+        log += rep
+        if not dry:
+            _, text = summary(store)
+            notify.send('Модель переобучена\n' + '\n'.join(rep) + ('\n\n' + text if text else ''))
+    log.append(daily(dry, store))
+    return '\n'.join(log)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument('mode', choices=['daily', 'weekly', 'all'])
+    ap.add_argument('mode', choices=['auto', 'daily', 'weekly', 'all'])
     ap.add_argument('--dry', action='store_true')
     a = ap.parse_args()
     try:
+        if a.mode == 'auto':
+            print(auto_mode(a.dry))
         if a.mode in ('weekly', 'all'):
             print(weekly(a.dry))
         if a.mode in ('daily', 'all'):
@@ -337,7 +485,7 @@ def main() -> None:
         tb = traceback.format_exc()
         print(tb)
         if not a.dry:
-            notify.send(notify.esc(f'Сбой авто-режима ({a.mode}):\n{tb[-1500:]}'))
+            notify.send(f'Сбой авто-режима ({a.mode}):\n{tb[-1500:]}')
         sys.exit(1)
 
 

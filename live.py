@@ -24,25 +24,67 @@ AUTO_MIN_SCORE, AUTO_MIN_GAP = 0.92, 0.03     # опознание без уча
 def _history(tour: str) -> pd.DataFrame:
     td = dataset.tennis_data(tour)
     td['Surface'] = td.Surface.replace({'Carpet': 'Hard'})
-    return td[['Date', 'Location', 'Tournament', 'Surface']].copy()
+    lvl = td['Series' if 'Series' in td else 'Tier'].astype(str)
+    return td.assign(Level=lvl.map(_level))[['Date', 'Location', 'Tournament', 'Surface', 'Level']].copy()
 
 
-def known_location(tour: str, location: str) -> bool:
-    """Турнир основного тура: город встречался в tennis-data (там только основной тур, без квалификаций и 125/челленджеров)."""
-    return bool(location) and location in set(_history(tour).Location)
+def _level(x: str) -> str:
+    """Категория турнира в единой шкале: Grand Slam, 1000, 500, 250, Finals."""
+    x = x.strip()
+    if x == 'Grand Slam':
+        return 'Grand Slam'
+    if x in ('Masters Cup', 'Tour Championships'):
+        return 'Finals'
+    if '1000' in x:
+        return '1000'
+    if '500' in x or x == 'Premier':
+        return '500'
+    if x.startswith(('ATP2', 'WTA2')) or x == 'International':
+        return '250'
+    return x
 
 
-def surface_for(tour: str, location: str, date: pd.Timestamp) -> str:
-    """Покрытие по самому свежему турниру в этом городе в тот же сезонный отрезок (Paris: ноябрь — хард, май — грунт)."""
+def _same_season_slot(tour: str, location: str, date: pd.Timestamp) -> pd.Series | None:
+    """Самый свежий турнир в этом городе в тот же отрезок сезона (Paris: ноябрь — Masters, май — Roland Garros)."""
     h = _history(tour)
     h = h[h.Location == location]
     if h.empty:
-        return 'Hard'
+        return None
     md = (h.Date.dt.month - date.month).abs()
     md = np.minimum(md, 12 - md)
     h = h.assign(md=md)
     h = h[h.md == h.md.min()]
-    return str(h.sort_values('Date').Surface.iloc[-1])
+    if h.md.iloc[0] > 1:                       # в этом городе в такое время года турнира основного тура не было
+        return None
+    return h.sort_values('Date').iloc[-1]
+
+
+def level_for(tour: str, location: str, date: pd.Timestamp, major: bool = False) -> str | None:
+    """Категория турнира или None, если это не основной тур (WTA 125, челленджеры, ITF, выставки)."""
+    if major:
+        return 'Grand Slam'
+    r = _same_season_slot(tour, location, date)
+    return None if r is None else str(r.Level)
+
+
+def eligible(tour: str, location: str, date: pd.Timestamp, major: bool = False) -> bool:
+    import config as C
+    return level_for(tour, location, date, major) in C.LEVELS
+
+
+def known_location(tour: str, location: str) -> bool:
+    """Город встречался в tennis-data (только основной тур)."""
+    return bool(location) and location in set(_history(tour).Location)
+
+
+def surface_for(tour: str, location: str, date: pd.Timestamp) -> str:
+    """Покрытие по самому свежему турниру в этом городе в тот же сезонный отрезок."""
+    r = _same_season_slot(tour, location, date)
+    if r is None:
+        h = _history(tour)
+        h = h[h.Location == location]
+        return str(h.sort_values('Date').Surface.iloc[-1]) if not h.empty else 'Hard'
+    return str(r.Surface)
 
 
 def active_ids(st) -> set:
@@ -120,7 +162,7 @@ def persist(model, matches: list[EspnMatch], players: pd.DataFrame) -> int:
     rows = []
     for m in matches:
         if (not m.completed or m.qualifying or m.id in have
-                or not (m.major or known_location(tour, m.location))):
+                or not eligible(tour, m.location, m.start, m.major)):
             continue
         ids = [identify(nm, players, act) for nm in m.names]
         if any(i[0] is None for i in ids):

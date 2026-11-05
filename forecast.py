@@ -74,10 +74,12 @@ def _settles(tab: str, market: str, line):
     return None
 
 
-def distribution(model: Model, snap: Snapshot, best_of: int = 3, final_tb_to: int = 7) -> tuple[Forecast, dict]:
-    """Распределение исходов матча, согласованное с моделью: разница подач подбирается так, чтобы P(A) цепи = P(A) модели."""
+def distribution(model: Model, snap: Snapshot, best_of: int = 3, final_tb_to: int = 7,
+                 p_override: float | None = None) -> tuple[Forecast, dict]:
+    """Распределение исходов матча, согласованное с моделью: разница подач подбирается так, чтобы P(A) цепи = P(A) модели
+    (или p_override — вероятность после самокалибровки)."""
     mom, smom = C.MOMENTUM[model.tour]
-    p_star = model.p_win(snap)
+    p_star = model.p_win(snap) if p_override is None else p_override
     dist = lambda d: match_distribution(np.clip(snap.pa_bc + d, 0.30, 0.95), np.clip(snap.pb_bc - d, 0.30, 0.95),
                                         best_of, final_tb_to, mom, smom)
     f = lambda d: MK.price(dist(d), MK.mk_winner(True))[0] - p_star
@@ -88,10 +90,10 @@ def distribution(model: Model, snap: Snapshot, best_of: int = 3, final_tb_to: in
     return fc, D
 
 
-def fair(model: Model, snap: Snapshot, best_of: int = 3, final_tb_to: int = 7) -> dict:
+def fair(model: Model, snap: Snapshot, best_of: int = 3, final_tb_to: int = 7, p_override: float | None = None) -> dict:
     """Справедливая роспись без котировок: победитель, тотал и фора по геймам на линии, ближайшей к 50/50,
     победитель 1-го сета, счёт по сетам. K_min — минимальный коэффициент, при котором EV ≥ порога."""
-    fc, D = distribution(model, snap, best_of, final_tb_to)
+    fc, D = distribution(model, snap, best_of, final_tb_to, p_override)
     pr = lambda s: MK.price(D, s)[0]
     tl = min((x + 0.5 for x in range(12, 50)), key=lambda L: abs(pr(MK.mk_total(L, True)) - 0.5))
     hl = min((x + 0.5 for x in range(-15, 15)), key=lambda h: abs(pr(MK.mk_handicap(True, h)) - 0.5))

@@ -34,7 +34,8 @@ AUTO_COLS = (['created', 'espn_id', 'tour', 'event', 'location', 'surface', 'rou
               'p1', 'p2', 'kfair1', 'kfair2', 'kmin1', 'kmin2', 'exp_total', 'total_line', 'p_over', 'hcp1_line', 'p_hcp1',
               'set1_p1'] + EXACT_COLS +
              ['status', 'winner', 'score', 'settled', 'logloss',
-              'b365_1', 'b365_2', 'avg_1', 'avg_2', 'max_1', 'max_2', 'bfe_1', 'bfe_2', 'bet_side', 'pnl_b365', 'pnl_avg', 'pnl_max'])
+              'b365_1', 'b365_2', 'avg_1', 'avg_2', 'max_1', 'max_2', 'bfe_1', 'bfe_2', 'bet_side', 'pnl_b365', 'pnl_avg', 'pnl_max',
+              'level', 'p1_raw', 'calib_k', 'confidence'])   # новые столбцы — только в конец, чтобы не сдвигать старые строки
 AUTO_RESULT_COLS = ['status', 'winner', 'score', 'settled', 'logloss']
 AUTO_ODDS_COLS = ['b365_1', 'b365_2', 'avg_1', 'avg_2', 'max_1', 'max_2', 'bfe_1', 'bfe_2', 'bet_side', 'pnl_b365', 'pnl_avg', 'pnl_max']
 SHEETS = {'forecasts': FORECAST_COLS, 'paper_bets': BET_COLS, 'auto_forecasts': AUTO_COLS, 'summary': ['показатель', 'значение']}
