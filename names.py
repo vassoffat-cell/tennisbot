@@ -1,142 +1,111 @@
-"""Поиск игроков по русскому написанию из 1xBet и перевод города турнира в обозначение tennis-data."""
+"""Сопоставление названий команд ESPN («Manchester United») с football-data («Man United»).
+Сначала словарь соответствий, затем нечёткий поиск среди команд страны (для еврокубков — всех стран).
+Неопознанные команды не угадываются: матч пропускается и попадает в журнал запуска."""
 from __future__ import annotations
 
 import difflib
 import re
 import unicodedata
 
-import pandas as pd
-
-TR = {'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y',
-      'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f',
-      'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'}
-
-CITIES = {  # город в шапке 1xBet → Location в tennis-data
-    'гонконг': 'Hong Kong', 'токио': 'Tokyo', 'осака': 'Osaka', 'гуанчжоу': 'Guangzhou', 'нинбо': 'Ningbo', 'ухань': 'Wuhan',
-    'пекин': 'Beijing', 'шанхай': 'Shanghai', 'ченду': 'Chengdu', 'чэнду': 'Chengdu', 'ханчжоу': 'Hangzhou', 'цзюцзян': 'Jiujiang',
-    'сеул': 'Seoul', 'сингапур': 'Singapore', 'алматы': 'Almaty', 'вена': 'Vienna', 'базель': 'Basel', 'париж': 'Paris',
-    'лион': 'Lyon', 'мец': 'Metz', 'стокгольм': 'Stockholm', 'брюссель': 'Brussels', 'турин': 'Turin', 'эр-рияд': 'Riyadh',
-    'рияд': 'Riyadh', 'мельбурн': 'Melbourne', 'брисбен': 'Brisbane', 'аделаида': 'Adelaide', 'окленд': 'Auckland',
-    'хобарт': 'Hobart', 'доха': 'Doha', 'дубай': 'Dubai', 'абу-даби': 'Abu Dhabi', 'индиан-уэллс': 'Indian Wells',
-    'майами': 'Miami', 'чарльстон': 'Charleston', 'штутгарт': 'Stuttgart', 'мадрид': 'Madrid', 'рим': 'Rome',
-    'страсбург': 'Strasbourg', 'рабат': 'Rabat', 'лондон': 'London', 'уимблдон': 'London', 'берлин': 'Berlin',
-    'бад-хомбург': 'Bad Homburg', 'истборн': 'Eastbourne', 'ноттингем': 'Nottingham', 'хертогенбос': "'s-Hertogenbosch",
-    'галле': 'Halle', 'мальорка': 'Mallorca', 'гамбург': 'Hamburg', 'бостад': 'Bastad', 'гштаад': 'Gstaad',
-    'кицбюэль': 'Kitzbuhel', 'умаг': 'Umag', 'вашингтон': 'Washington', 'монреаль': 'Montreal', 'торонто': 'Toronto',
-    'цинциннати': 'Cincinnati', 'кливленд': 'Cleveland', 'монтеррей': 'Monterrey', 'нью-йорк': 'New York',
-    'винстон-сейлем': 'Winston-Salem', 'гвадалахара': 'Guadalajara', 'сан-паулу': 'Sao Paulo', 'остравa': 'Ostrava',
-    'острава': 'Ostrava', 'прага': 'Prague', 'линц': 'Linz', 'клуж-напока': 'Cluj-Napoca', 'бухарест': 'Bucharest',
-    'яссы': 'Iasi', 'роттердам': 'Rotterdam', 'марсель': 'Marseille', 'монпелье': 'Montpellier', 'буэнос-айрес': 'Buenos Aires',
-    'рио-де-жанейро': 'Rio de Janeiro', 'сантьяго': 'Santiago', 'акапулько': 'Acapulco', 'мерида': 'Merida',
-    'остин': 'Austin', 'хьюстон': 'Houston', 'даллас': 'Dallas', 'делрей-бич': 'Delray Beach', 'мемфис': 'Memphis',
-    'марракеш': 'Marrakech', 'эшторил': 'Estoril', 'барселона': 'Barcelona', 'мюнхен': 'Munich', 'монте-карло': 'Monte Carlo',
-    'женева': 'Geneva', 'лос-кабос': 'Los Cabos', 'богота': 'Bogota', 'руан': 'Rouen', 'афины': 'Athens', 'ченнаи': 'Chennai',
-    'ролан гаррос': 'Paris', 'ролан-гаррос': 'Paris', 'открытый чемпионат австралии': 'Melbourne', 'открытый чемпионат сша': 'New York',
+ALIASES = {
+    # Англия
+    'manchester city': 'Man City', 'manchester united': 'Man United', 'nottingham forest': "Nott'm Forest",
+    'wolverhampton wanderers': 'Wolves', 'tottenham hotspur': 'Tottenham', 'newcastle united': 'Newcastle',
+    'west ham united': 'West Ham', 'brighton & hove albion': 'Brighton', 'brighton and hove albion': 'Brighton',
+    'afc bournemouth': 'Bournemouth', 'leeds united': 'Leeds', 'ipswich town': 'Ipswich', 'hull city': 'Hull',
+    'coventry city': 'Coventry', 'leicester city': 'Leicester', 'sheffield wednesday': 'Sheffield Weds',
+    'queens park rangers': 'QPR', 'west bromwich albion': 'West Brom', 'preston north end': 'Preston', 'stoke city': 'Stoke',
+    'swansea city': 'Swansea', 'cardiff city': 'Cardiff', 'norwich city': 'Norwich', 'birmingham city': 'Birmingham',
+    'blackburn rovers': 'Blackburn', 'bolton wanderers': 'Bolton', 'derby county': 'Derby', 'charlton athletic': 'Charlton',
+    'lincoln city': 'Lincoln', 'oxford united': 'Oxford', 'luton town': 'Luton', 'plymouth argyle': 'Plymouth',
+    # Испания
+    'atletico madrid': 'Ath Madrid', 'atletico de madrid': 'Ath Madrid', 'athletic club': 'Ath Bilbao',
+    'athletic bilbao': 'Ath Bilbao', 'real sociedad': 'Sociedad', 'celta vigo': 'Celta', 'celta de vigo': 'Celta',
+    'espanyol': 'Espanol', 'rcd espanyol': 'Espanol', 'rayo vallecano': 'Vallecano', 'real betis': 'Betis',
+    'deportivo alaves': 'Alaves', 'alaves': 'Alaves', 'deportivo la coruna': 'La Coruna', 'racing santander': 'Santander',
+    'real oviedo': 'Oviedo', 'sporting gijon': 'Sp Gijon', 'real valladolid': 'Valladolid', 'las palmas': 'Las Palmas',
+    'leganes': 'Leganes', 'real zaragoza': 'Zaragoza',
+    # Италия
+    'internazionale': 'Inter', 'inter milan': 'Inter', 'ac milan': 'Milan', 'hellas verona': 'Verona', 'as roma': 'Roma',
+    'ss lazio': 'Lazio', 'ssc napoli': 'Napoli',
+    # Германия
+    'borussia dortmund': 'Dortmund', 'eintracht frankfurt': 'Ein Frankfurt', '1 fc koln': 'FC Koln', 'fc cologne': 'FC Koln',
+    'koln': 'FC Koln', 'bayer leverkusen': 'Leverkusen', 'borussia monchengladbach': "M'gladbach", 'mainz': 'Mainz',
+    'mainz 05': 'Mainz', '1 fsv mainz 05': 'Mainz', 'hamburg sv': 'Hamburg', 'hamburger sv': 'Hamburg',
+    '1 fc heidenheim 1846': 'Heidenheim', 'tsg hoffenheim': 'Hoffenheim', 'st pauli': 'St Pauli', 'fc st pauli': 'St Pauli',
+    'vfb stuttgart': 'Stuttgart', '1 fc union berlin': 'Union Berlin', 'union berlin': 'Union Berlin',
+    'vfl wolfsburg': 'Wolfsburg', 'sv elversberg': 'Elversberg', 'sc paderborn 07': 'Paderborn', 'fc augsburg': 'Augsburg',
+    'sc freiburg': 'Freiburg', 'werder bremen': 'Werder Bremen',
+    # Франция
+    'paris saint germain': 'Paris SG', 'olympique marseille': 'Marseille', 'olympique lyonnais': 'Lyon', 'as monaco': 'Monaco',
+    'stade rennais': 'Rennes', 'stade brestois 29': 'Brest', 'stade brestois': 'Brest', 'losc lille': 'Lille',
+    'ogc nice': 'Nice', 'aj auxerre': 'Auxerre', 'le havre ac': 'Le Havre', 'saint etienne': 'St Etienne',
+    'as saint etienne': 'St Etienne', 'rc strasbourg': 'Strasbourg',
+    # Португалия
+    'sporting cp': 'Sp Lisbon', 'sporting lisbon': 'Sp Lisbon', 'sc braga': 'Sp Braga', 'braga': 'Sp Braga',
+    'fc porto': 'Porto', 'vitoria de guimaraes': 'Guimaraes', 'vitoria guimaraes': 'Guimaraes', 'vitoria sc': 'Guimaraes',
+    'estrela da amadora': 'Estrela', 'avs futebol': 'AVS', 'avs futebol sad': 'AVS', 'academico de viseu': 'Academico Viseu',
+    'sl benfica': 'Benfica',
+    # Турция
+    'istanbul basaksehir': 'Buyuksehyr', 'basaksehir': 'Buyuksehyr', 'goztepe': 'Goztep', 'fatih karagumruk': 'Karagumruk',
+    'caykur rizespor': 'Rizespor', 'gaziantep fk': 'Gaziantep', 'genclerbirligi': 'Genclerbirligi', 'amed sfk': 'Amedspor',
+    'corum fk': 'Corum',
+    # Нидерланды
+    'psv': 'PSV Eindhoven', 'fc twente': 'Twente', 'fc utrecht': 'Utrecht', 'fortuna sittard': 'For Sittard',
+    'fc groningen': 'Groningen', 'sc heerenveen': 'Heerenveen', 'heracles almelo': 'Heracles', 'nec nijmegen': 'Nijmegen',
+    'nec': 'Nijmegen', 'fc volendam': 'Volendam', 'pec zwolle': 'Zwolle', 'sc cambuur': 'Cambuur', 'ado den haag': 'Den Haag',
+    'az': 'AZ Alkmaar',
+    # Бельгия
+    'royal antwerp': 'Antwerp', 'krc genk': 'Genk', 'kaa gent': 'Gent', 'kv mechelen': 'Mechelen', 'oh leuven': 'Oud-Heverlee Leuven',
+    'union st gilloise': 'St. Gilloise', 'union saint gilloise': 'St. Gilloise', 'royale union saint gilloise': 'St. Gilloise',
+    'standard liege': 'Standard', 'sint truiden': 'St Truiden', 'zulte waregem': 'Waregem', 'raal la louviere': 'RAAL La Louviere',
+    'la louviere': 'RAAL La Louviere', 'lommel': 'Lommel SK', 'kv kortrijk': 'Kortrijk', 'sporting charleroi': 'Charleroi',
+    # Шотландия
+    'heart of midlothian': 'Hearts', 'st mirren': 'St Mirren', 'st johnstone': 'St Johnstone',
+    # Россия
+    'zenit st petersburg': 'Zenit', 'zenit saint petersburg': 'Zenit', 'fc krasnodar': 'Krasnodar', 'fc rostov': 'FK Rostov',
+    'rostov': 'FK Rostov', 'krylia sovetov': 'Krylya Sovetov', 'pari nizhny novgorod': 'Pari NN', 'baltika kaliningrad': 'Baltika',
+    'akhmat': 'Akhmat Grozny',
+    # еврокубковые написания (UEFA / openfootball)
+    'olympiakos piraeus': 'Olympiakos', 'pae olympiakos sfp': 'Olympiakos', 'olympiacos': 'Olympiakos', 'lille osc': 'Lille',
+    'sporting braga': 'Sp Braga', 'sporting clube de braga': 'Sp Braga', 'rsc anderlecht': 'Anderlecht',
+    'cska moskva': 'CSKA Moscow', 'lokomotiv moskva': 'Lokomotiv Moscow', 'spartak moskva': 'Spartak Moscow',
+    'paok saloniki': 'PAOK', 'aek athen': 'AEK', 'aek athens': 'AEK', 'aris saloniki': 'Aris', 'acf fiorentina': 'Fiorentina',
+    'lazio roma': 'Lazio', 'club atletico de madrid': 'Ath Madrid', 'fc internazionale milano': 'Inter',
+    'sport lisboa e benfica': 'Benfica', 'atalanta bc': 'Atalanta', 'sporting clube de portugal': 'Sp Lisbon',
+    '1899 hoffenheim': 'Hoffenheim', 'bor monchengladbach': "M'gladbach", 'feyenoord rotterdam': 'Feyenoord',
+    'real sociedad de futbol': 'Sociedad', 'olympique de marseille': 'Marseille', 'montpellier hsc': 'Montpellier',
+    'racing club de lens': 'Lens', 'rc lens': 'Lens', 'racing genk': 'Genk',
 }
-W_LAST = 0.65   # вес фамилии в сходстве; имя 0.35 — отсекает однофамильцев (Xu Yifan ≠ Mingge Xu)
-SLAM_WORDS = ('мельбурн', 'австрал', 'ролан', 'уимблдон', 'нью-йорк', 'сша', 'us open')
+DROP = r'\b(fc|cf|afc|sc|ac|as|ss|ssc|sv|vfl|vfb|tsg|rcd|cd|ud|sd|ca|club|calcio|sk|fk|kv|krc|kaa|bk)\b'
 
 
-RU_ALIASES = {  # написания, которые не выводятся транслитерацией (английское произношение)
-    'киз': 'keys', 'гауфф': 'gauff', 'гофф': 'gauff', 'свёнтек': 'swiatek', 'свентек': 'swiatek', 'швёнтек': 'swiatek',
-    'пегула': 'pegula', 'наварро': 'navarro', 'кеннин': 'kenin', 'андерсон': 'anderson', 'шелтон': 'shelton',
-    'тиафо': 'tiafoe', 'пол': 'paul', 'коллинз': 'collins', 'стивенс': 'stephens', 'джабир': 'jabeur', 'жабер': 'jabeur',
-    'осака': 'osaka', 'радукану': 'raducanu', 'бадоса': 'badosa', 'де минаур': 'deminaur', 'оже-альяссим': 'augeraliassime',
-    'монфис': 'monfils', 'ммо': 'mmoh', 'кордa': 'korda', 'корда': 'korda', 'хуркач': 'hurkacz', 'мюллер': 'muller',
-}
+def norm(s: str) -> str:
+    s = unicodedata.normalize('NFKD', str(s)).encode('ascii', 'ignore').decode().lower()
+    s = re.sub(r"[.\-'’]", ' ', s)
+    return re.sub(r'\s+', ' ', s).strip()
 
 
-def translit(s: str) -> list[str]:
-    """Латинские варианты русского написания: «Александра» → aleksandra, alexandra; китайские по Палладию: «Чжэн» → zheng."""
-    s = s.lower().strip()
-    base = ''.join(TR.get(ch, ch) for ch in s).replace('yuy', 'yu')
-    out = {base, base.replace('ks', 'x'), base.replace('kh', 'h'), base.replace('iy', 'y').replace('yy', 'y'),
-           base.replace('ye', 'e'), base.replace('dzh', 'j'), base.replace('zh', 'j')}
-    # Палладий → пиньинь: чж→zh, цз→j, ц(и)→q, с(и)→x, финальные -эн/-ан/-ин → -eng/-ang/-ing
-    py = base.replace('chzh', 'zh').replace('tsz', 'j').replace('tsi', 'qi').replace('si', 'xi').replace('syu', 'xu')
-    py = py.replace('yu', 'u') if py.startswith(('j', 'q', 'x')) else py
-    out |= {py, re.sub(r'(e|a|i|o)n($|[^aeiouyg])', r'\1ng\2', py), py.replace('ts', 'c')}
-    if s in RU_ALIASES:
-        out.add(RU_ALIASES[s])
-    return [re.sub(r'[^a-z]', '', v) for v in out]
+def _core(s: str) -> str:
+    return re.sub(r'\s+', ' ', re.sub(DROP, ' ', norm(s))).strip()
 
 
-def _plain(s: str) -> str:
-    return re.sub(r'[^a-z]', '', unicodedata.normalize('NFKD', str(s).lower()).encode('ascii', 'ignore').decode())
-
-
-def _skeleton(s: str) -> str:
-    """Согласный «скелет» фамилии: w→v, ks→x, без гласных и повторов («Соболенко» и «Sabalenka» → sblnk)."""
-    s = s.replace('w', 'v').replace('ks', 'x').replace('ck', 'k').replace('ph', 'f')
-    s = re.sub(r'c(?!h)', 'k', s)   # румынское/итальянское c = к: Cirstea ↔ Кырстя
-    s = re.sub(r'[aeiouy]', '', s)
-    return re.sub(r'(.)\1+', r'\1', s)
-
-
-def _sim(variants: list[str], target: str) -> float:
-    full = max(difflib.SequenceMatcher(None, v, target).ratio() for v in variants)
-    sk = max(difflib.SequenceMatcher(None, _skeleton(v), _skeleton(target)).ratio() for v in variants)
-    return max(full, 0.9 * sk)
-
-
-def find_player(name_ru: str, players: pd.DataFrame, active_ids: set) -> list[tuple[float, str, float]]:
-    """Три лучших кандидата: (player_id, имя латиницей, сходство 0–1). name_ru — «Имя Фамилия»."""
-    parts = name_ru.split()
-    if len(parts) >= 2:   # «Имя Фамилия», двойная фамилия «Хаддад Майя», обратный порядок «Чжу Линь» (китайские имена)
-        orders = [(translit(parts[-1]), translit(' '.join(parts[:-1]))), (translit(parts[0]), translit(' '.join(parts[1:])))]
-        if len(parts) >= 3:
-            orders.append((translit(' '.join(parts[-2:])), translit(' '.join(parts[:-2]))))
-    else:
-        orders = [(translit(parts[0]), None)]
-    cand = players[players.player_id.isin(active_ids)]
-    res = []
-    for pid, fn, ln in zip(cand.player_id, cand.name_first, cand.name_last):
-        l2, f2 = _plain(ln), _plain(fn)
-        score = max(W_LAST * _sim(lasts, l2) + (1 - W_LAST) * (_sim(firsts, f2) if firsts else 0.5) for lasts, firsts in orders)
-        res.append((pid, f'{fn} {ln}', score))
-    return sorted(res, key=lambda r: -r[2])[:3]
-
-
-def city(tournament_ru: str | None) -> str:
-    if not tournament_ru:
-        return ''
-    t = tournament_ru.lower().strip()
-    if t in CITIES:
-        return CITIES[t]
-    best = difflib.get_close_matches(t, list(CITIES), n=1, cutoff=0.75)
-    return CITIES[best[0]] if best else ''
-
-
-def is_slam(tournament_ru: str | None) -> bool:
-    t = (tournament_ru or '').lower()
-    return any(w in t for w in SLAM_WORDS)
-
-
-def find_latin(full: str, players: pd.DataFrame, active_ids: set) -> list[tuple[float, str, float]]:
-    """Поиск по латинскому имени (ESPN: «Pablo Carreno Busta», «Qinwen Zheng»): перебор разбиений на имя и
-    фамилию, прямой и обратный порядок. Три лучших кандидата: (player_id, имя, сходство 0–1)."""
-    toks = [_plain(t) for t in re.split(r'[\s\-]+', full) if _plain(t)]
-    if not toks:
-        return []
-    splits = []
-    for k in range(1, len(toks)):
-        splits.append((''.join(toks[:k]), ''.join(toks[k:])))      # имя, фамилия
-        splits.append((''.join(toks[k:]), ''.join(toks[:k])))      # обратный порядок
-    if len(toks) == 1:
-        splits.append(('', toks[0]))
-    cand = players[players.player_id.isin(active_ids)]
-    res = []
-    for pid, fn, ln in zip(cand.player_id, cand.name_first, cand.name_last):
-        f2, l2 = _plain(fn), _plain(ln)
-        best = 0.0
-        for f, l in splits:
-            sl = difflib.SequenceMatcher(None, l, l2).ratio()
-            if sl < 0.6:
-                continue
-            sf = difflib.SequenceMatcher(None, f, f2).ratio() if f else 0.5
-            if f and f2 and f[0] == f2[0]:
-                sf = max(sf, 0.6)                                    # «Alex» ↔ «Alexander»
-            best = max(best, W_LAST * sl + (1 - W_LAST) * sf)
-        if best:
-            res.append((pid, f'{fn} {ln}', best))
-    return sorted(res, key=lambda r: -r[2])[:3]
+def match(espn_name: str, candidates: set[str]) -> str | None:
+    """Название football-data для команды ESPN среди candidates или None."""
+    n = norm(espn_name)
+    if n in ALIASES and ALIASES[n] in candidates:
+        return ALIASES[n]
+    by_norm = {norm(c): c for c in candidates}
+    if n in by_norm:
+        return by_norm[n]
+    core = _core(espn_name)
+    by_core = {}
+    for c in candidates:
+        by_core.setdefault(_core(c), []).append(c)
+    if core in by_core and len(by_core[core]) == 1:
+        return by_core[core][0]
+    scored = sorted(((difflib.SequenceMatcher(None, core, k).ratio(), v[0]) for k, v in by_core.items() if len(v) == 1),
+                    reverse=True)
+    if scored and scored[0][0] >= 0.86 and (len(scored) == 1 or scored[0][0] - scored[1][0] >= 0.08):
+        return scored[0][1]
+    return None
