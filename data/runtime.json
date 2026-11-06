@@ -2,16 +2,17 @@
  "list_messages": [
   [
    570704006,
-   56
+   57
   ]
  ],
  "list_match_ids": [
-  "186492",
   "186493",
+  "186504",
+  "186593",
   "186594",
   "186643"
  ],
- "last_daily": "",
+ "last_daily": "2026-11-07",
  "last_retrain": "",
  "last_files": "2026-11-05",
  "last_reminder": ""
