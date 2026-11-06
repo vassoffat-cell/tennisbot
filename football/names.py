@@ -75,7 +75,8 @@ ALIASES = {
     'sport lisboa e benfica': 'Benfica', 'atalanta bc': 'Atalanta', 'sporting clube de portugal': 'Sp Lisbon',
     '1899 hoffenheim': 'Hoffenheim', 'bor monchengladbach': "M'gladbach", 'feyenoord rotterdam': 'Feyenoord',
     'real sociedad de futbol': 'Sociedad', 'olympique de marseille': 'Marseille', 'montpellier hsc': 'Montpellier',
-    'racing club de lens': 'Lens', 'rc lens': 'Lens',
+    'racing club de lens': 'Lens', 'rc lens': 'Lens', 'racing genk': 'Genk', 'ajax amsterdam': 'Ajax', 'gazovik orenburg': 'Orenburg',
+    'fc baltika kaliningrad': 'Baltika', 'c d nacional': 'Nacional', 'cd nacional': 'Nacional', 'deportivo': 'La Coruna',
 }
 DROP = r'\b(fc|cf|afc|sc|ac|as|ss|ssc|sv|vfl|vfb|tsg|rcd|cd|ud|sd|ca|club|calcio|sk|fk|kv|krc|kaa|bk)\b'
 

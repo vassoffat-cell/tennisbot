@@ -32,6 +32,7 @@ HORIZON_HOURS = 24
 RETRAIN_ANCHOR = _dt.date(2026, 11, 6)
 
 # турниры ESPN: код → (название, страна, дивизион football-data для уровня голов и домашнего поля, тип)
+# кубков Турции, России, Бельгии и Кубка лиги Португалии в ESPN нет (проверено по списку лиг 06.11.2026)
 COMPETITIONS = {
     'eng.1': ('АПЛ', 'ENG', 'E0', 'league'), 'esp.1': ('Ла Лига', 'ESP', 'SP1', 'league'),
     'ita.1': ('Серия A', 'ITA', 'I1', 'league'), 'ger.1': ('Бундеслига', 'GER', 'D1', 'league'),
@@ -45,9 +46,8 @@ COMPETITIONS = {
     'ita.coppa_italia': ('Кубок Италии', 'ITA', 'I1', 'cup'), 'ita.super_cup': ('Суперкубок Италии', 'ITA', 'I1', 'super'),
     'ger.dfb_pokal': ('Кубок Германии', 'GER', 'D1', 'cup'), 'ger.super_cup': ('Суперкубок Германии', 'GER', 'D1', 'super'),
     'fra.coupe_de_france': ('Кубок Франции', 'FRA', 'F1', 'cup'), 'fra.super_cup': ('Суперкубок Франции', 'FRA', 'F1', 'super'),
-    'por.taca.portugal': ('Кубок Португалии', 'POR', 'P1', 'cup'), 'por.liga_cup': ('Кубок лиги Португалии', 'POR', 'P1', 'cup'),
-    'tur.cup': ('Кубок Турции', 'TUR', 'T1', 'cup'), 'rus.cup': ('Кубок России', 'RUS', 'RUS', 'cup'),
-    'ned.cup': ('Кубок Нидерландов', 'NED', 'N1', 'cup'), 'bel.cup': ('Кубок Бельгии', 'BEL', 'B1', 'cup'),
+    'por.taca.portugal': ('Кубок Португалии', 'POR', 'P1', 'cup'),
+    'ned.cup': ('Кубок Нидерландов', 'NED', 'N1', 'cup'), 'ned.supercup': ('Суперкубок Нидерландов', 'NED', 'N1', 'super'),
     'sco.tennents': ('Кубок Шотландии', 'SCO', 'SC0', 'cup'), 'sco.cis': ('Кубок лиги Шотландии', 'SCO', 'SC0', 'cup'),
     'uefa.champions': ('Лига чемпионов', None, None, 'uefa'), 'uefa.europa': ('Лига Европы', None, None, 'uefa'),
     'uefa.europa.conf': ('Лига конференций', None, None, 'uefa'), 'uefa.super_cup': ('Суперкубок УЕФА', None, None, 'uefa_super'),

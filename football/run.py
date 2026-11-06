@@ -96,6 +96,7 @@ class Mapper:
         self.all = set(t.t)
         self.cache: dict[tuple, str | None] = {}
         self.missed: dict[str, str] = {}
+        self.missed_uefa = 0
 
     def __call__(self, name: str, comp: str) -> str | None:
         _, country, _, kind = C.COMPETITIONS[comp]
@@ -104,8 +105,10 @@ class Mapper:
             cand = self.all if country is None else self.by_c.get(country, set())
             r = names.match(name, cand)
             self.cache[k] = r
-            if r is None:
+            if r is None and country is not None:          # в еврокубках неопознанные — в основном клубы других стран
                 self.missed[name] = C.COMPETITIONS[comp][0]
+            elif r is None:
+                self.missed_uefa += 1
         return self.cache[k]
 
 
@@ -627,7 +630,7 @@ def run(dry: bool = False) -> str:
     runtime.save(rt)
     by_src = pd.Series([r['source'] for _, r, _ in items]).value_counts().to_dict()
     log += [f'прогнозов: новых {nn}, обновлено {nu} ({by_src}); рассчитано матчей {ns}, линий {nl}; кф football-data {no}',
-            f'пропущено {len(skipped)}; не опознано команд {len(mp.missed)}; время {time.time() - t0:.0f} с']
+            f'пропущено {len(skipped)}; не опознано команд: в чемпионатах и кубках {len(mp.missed)}, в еврокубках {mp.missed_uefa} (клубы других стран); время {time.time() - t0:.0f} с']
     return '\n'.join(log + skipped[:15] + [f'не опознано: {k} ({v})' for k, v in list(mp.missed.items())[:15]] + errs[:10])
 
 
