@@ -634,3 +634,12 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915824,uefa.europa.conf,uefa,,,2026-11-05 20:00,AS Monaco,FC Nordsjælland,Monaco,,2,0,FT,league-phase,0
 401879812,rus.1,league,RUS,RUS,2026-11-06 16:30,Lokomotiv Moscow,Rubin Kazan,Lokomotiv Moscow,Rubin Kazan,0,1,FT,2026-27-russian-premier-league,0
 401888256,tur.1,league,TUR,T1,2026-11-06 17:00,Gaziantep FK,Kasimpasa,Gaziantep,Kasimpasa,0,2,FT,2026-27-turkish-super-lig,0
+401875556,ned.1,league,NED,N1,2026-11-06 19:00,Willem II,PEC Zwolle,Willem II,Zwolle,1,1,FT,regular-season,0
+401884739,ger.1,league,GER,D1,2026-11-06 19:30,Hamburg SV,Borussia Mönchengladbach,Hamburg,M'gladbach,3,1,FT,2026-27-german-bundesliga,0
+401931085,eng.fa,cup,ENG,E0,2026-11-06 19:30,Bristol Rovers,Cambridge United,Bristol Rvs,Cambridge,2,0,FT,first-round,0
+401874815,ita.1,league,ITA,I1,2026-11-06 19:45,Venezia,Udinese,Venezia,Udinese,2,1,FT,2026-27-italian-serie-a,0
+401876405,fra.1,league,FRA,F1,2026-11-06 19:45,Toulouse,Strasbourg,Toulouse,Strasbourg,3,1,FT,2026-27-ligue-1,0
+401878951,bel.1,league,BEL,B1,2026-11-06 19:45,Standard Liege,Waasland-Beveren,Standard,Waasland-Beveren,3,0,FT,regular-season,0
+401931109,eng.fa,cup,ENG,E0,2026-11-06 19:45,Oxford City,Leicester City,Oxford City,Leicester,2,4,FT,first-round,0
+401879242,eng.1,league,ENG,E0,2026-11-06 20:00,Everton,Coventry City,Everton,Coventry,3,1,FT,2026-27-english-premier-league,0
+401882809,esp.1,league,ESP,SP1,2026-11-06 20:00,Sevilla,Alavés,Sevilla,Alaves,0,0,FT,2026-27-laliga,0
