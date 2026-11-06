@@ -1,0 +1,2252 @@
+date,comp,home,away,hg,ag,ko,home_fd,away_fd
+2019-09-18,uefa.cl,Club Brugge KV,Galatasaray,0,0,False,Club Brugge,Galatasaray
+2019-09-18,uefa.cl,Paris Saint-Germain,Real Madrid,3,0,False,Paris SG,Real Madrid
+2019-10-01,uefa.cl,Real Madrid,Club Brugge KV,2,2,False,Real Madrid,Club Brugge
+2019-10-01,uefa.cl,Galatasaray,Paris Saint-Germain,0,1,False,Galatasaray,Paris SG
+2019-10-22,uefa.cl,Club Brugge KV,Paris Saint-Germain,0,5,False,Club Brugge,Paris SG
+2019-10-22,uefa.cl,Galatasaray,Real Madrid,0,1,False,Galatasaray,Real Madrid
+2019-11-06,uefa.cl,Paris Saint-Germain,Club Brugge KV,1,0,False,Paris SG,Club Brugge
+2019-11-06,uefa.cl,Real Madrid,Galatasaray,6,0,False,Real Madrid,Galatasaray
+2019-11-26,uefa.cl,Galatasaray,Club Brugge KV,1,1,False,Galatasaray,Club Brugge
+2019-11-26,uefa.cl,Real Madrid,Paris Saint-Germain,2,2,False,Real Madrid,Paris SG
+2019-12-11,uefa.cl,Paris Saint-Germain,Galatasaray,5,0,False,Paris SG,Galatasaray
+2019-12-11,uefa.cl,Club Brugge KV,Real Madrid,1,3,False,Club Brugge,Real Madrid
+2019-09-18,uefa.cl,Olympiakos Piraeus,Tottenham Hotspur,2,2,False,Olympiakos,Tottenham
+2019-09-18,uefa.cl,Bayern München,Crvena Zvezda,3,0,False,Bayern Munich,
+2019-10-01,uefa.cl,Tottenham Hotspur,Bayern München,2,7,False,Tottenham,Bayern Munich
+2019-10-01,uefa.cl,Crvena Zvezda,Olympiakos Piraeus,3,1,False,,Olympiakos
+2019-10-22,uefa.cl,Tottenham Hotspur,Crvena Zvezda,5,0,False,Tottenham,
+2019-10-22,uefa.cl,Olympiakos Piraeus,Bayern München,2,3,False,Olympiakos,Bayern Munich
+2019-11-06,uefa.cl,Bayern München,Olympiakos Piraeus,2,0,False,Bayern Munich,Olympiakos
+2019-11-06,uefa.cl,Crvena Zvezda,Tottenham Hotspur,0,4,False,,Tottenham
+2019-11-26,uefa.cl,Tottenham Hotspur,Olympiakos Piraeus,4,2,False,Tottenham,Olympiakos
+2019-11-26,uefa.cl,Crvena Zvezda,Bayern München,0,6,False,,Bayern Munich
+2019-12-11,uefa.cl,Bayern München,Tottenham Hotspur,3,1,False,Bayern Munich,Tottenham
+2019-12-11,uefa.cl,Olympiakos Piraeus,Crvena Zvezda,1,0,False,Olympiakos,
+2019-09-18,uefa.cl,Shakhtar Donetsk,Manchester City,0,3,False,,Man City
+2019-09-18,uefa.cl,Dinamo Zagreb,Atalanta,4,0,False,,Atalanta
+2019-10-01,uefa.cl,Atalanta,Shakhtar Donetsk,1,2,False,Atalanta,
+2019-10-01,uefa.cl,Manchester City,Dinamo Zagreb,2,0,False,Man City,
+2019-10-22,uefa.cl,Manchester City,Atalanta,5,1,False,Man City,Atalanta
+2019-11-06,uefa.cl,Atalanta,Manchester City,1,1,False,Atalanta,Man City
+2019-11-26,uefa.cl,Manchester City,Shakhtar Donetsk,1,1,False,Man City,
+2019-11-26,uefa.cl,Atalanta,Dinamo Zagreb,2,0,False,Atalanta,
+2019-12-11,uefa.cl,Shakhtar Donetsk,Atalanta,0,3,False,,Atalanta
+2019-12-11,uefa.cl,Dinamo Zagreb,Manchester City,1,4,False,,Man City
+2019-09-18,uefa.cl,Atlético Madrid,Juventus,2,2,False,Ath Madrid,Juventus
+2019-09-18,uefa.cl,Bayer Leverkusen,Lokomotiv Moskva,1,2,False,Leverkusen,Lokomotiv Moscow
+2019-10-01,uefa.cl,Juventus,Bayer Leverkusen,3,0,False,Juventus,Leverkusen
+2019-10-01,uefa.cl,Lokomotiv Moskva,Atlético Madrid,0,2,False,Lokomotiv Moscow,Ath Madrid
+2019-10-22,uefa.cl,Atlético Madrid,Bayer Leverkusen,1,0,False,Ath Madrid,Leverkusen
+2019-10-22,uefa.cl,Juventus,Lokomotiv Moskva,2,1,False,Juventus,Lokomotiv Moscow
+2019-11-06,uefa.cl,Lokomotiv Moskva,Juventus,1,2,False,Lokomotiv Moscow,Juventus
+2019-11-06,uefa.cl,Bayer Leverkusen,Atlético Madrid,2,1,False,Leverkusen,Ath Madrid
+2019-11-26,uefa.cl,Lokomotiv Moskva,Bayer Leverkusen,0,2,False,Lokomotiv Moscow,Leverkusen
+2019-11-26,uefa.cl,Juventus,Atlético Madrid,1,0,False,Juventus,Ath Madrid
+2019-12-11,uefa.cl,Atlético Madrid,Lokomotiv Moskva,2,0,False,Ath Madrid,Lokomotiv Moscow
+2019-12-11,uefa.cl,Bayer Leverkusen,Juventus,0,2,False,Leverkusen,Juventus
+2019-09-17,uefa.cl,SSC Napoli,Liverpool FC,2,0,False,Napoli,Liverpool
+2019-09-17,uefa.cl,RB Salzburg,KRC Genk,6,2,False,,Genk
+2019-10-02,uefa.cl,KRC Genk,SSC Napoli,0,0,False,Genk,Napoli
+2019-10-02,uefa.cl,Liverpool FC,RB Salzburg,4,3,False,Liverpool,
+2019-10-23,uefa.cl,RB Salzburg,SSC Napoli,2,3,False,,Napoli
+2019-10-23,uefa.cl,KRC Genk,Liverpool FC,1,4,False,Genk,Liverpool
+2019-11-05,uefa.cl,Liverpool FC,KRC Genk,2,1,False,Liverpool,Genk
+2019-11-05,uefa.cl,SSC Napoli,RB Salzburg,1,1,False,Napoli,
+2019-11-27,uefa.cl,Liverpool FC,SSC Napoli,1,1,False,Liverpool,Napoli
+2019-11-27,uefa.cl,KRC Genk,RB Salzburg,1,4,False,Genk,
+2019-12-10,uefa.cl,SSC Napoli,KRC Genk,4,0,False,Napoli,Genk
+2019-12-10,uefa.cl,RB Salzburg,Liverpool FC,0,2,False,,Liverpool
+2019-09-17,uefa.cl,Inter,Slavia Praha,1,1,False,Inter,
+2019-09-17,uefa.cl,Borussia Dortmund,FC Barcelona,0,0,False,Dortmund,Barcelona
+2019-10-02,uefa.cl,Slavia Praha,Borussia Dortmund,0,2,False,,Dortmund
+2019-10-02,uefa.cl,FC Barcelona,Inter,2,1,False,Barcelona,Inter
+2019-10-23,uefa.cl,Inter,Borussia Dortmund,2,0,False,Inter,Dortmund
+2019-10-23,uefa.cl,Slavia Praha,FC Barcelona,1,2,False,,Barcelona
+2019-11-05,uefa.cl,FC Barcelona,Slavia Praha,0,0,False,Barcelona,
+2019-11-05,uefa.cl,Borussia Dortmund,Inter,3,2,False,Dortmund,Inter
+2019-11-27,uefa.cl,FC Barcelona,Borussia Dortmund,3,1,False,Barcelona,Dortmund
+2019-11-27,uefa.cl,Slavia Praha,Inter,1,3,False,,Inter
+2019-12-10,uefa.cl,Borussia Dortmund,Slavia Praha,2,1,False,Dortmund,
+2019-12-10,uefa.cl,Inter,FC Barcelona,1,2,False,Inter,Barcelona
+2019-09-17,uefa.cl,Olympique Lyonnais,Zenit St. Petersburg,1,1,False,Lyon,Zenit
+2019-09-17,uefa.cl,SL Benfica,RB Leipzig,1,2,False,Benfica,RB Leipzig
+2019-10-02,uefa.cl,Zenit St. Petersburg,SL Benfica,3,1,False,Zenit,Benfica
+2019-10-02,uefa.cl,RB Leipzig,Olympique Lyonnais,0,2,False,RB Leipzig,Lyon
+2019-10-23,uefa.cl,RB Leipzig,Zenit St. Petersburg,2,1,False,RB Leipzig,Zenit
+2019-10-23,uefa.cl,SL Benfica,Olympique Lyonnais,2,1,False,Benfica,Lyon
+2019-11-05,uefa.cl,Zenit St. Petersburg,RB Leipzig,0,2,False,Zenit,RB Leipzig
+2019-11-05,uefa.cl,Olympique Lyonnais,SL Benfica,3,1,False,Lyon,Benfica
+2019-11-27,uefa.cl,Zenit St. Petersburg,Olympique Lyonnais,2,0,False,Zenit,Lyon
+2019-11-27,uefa.cl,RB Leipzig,SL Benfica,2,2,False,RB Leipzig,Benfica
+2019-12-10,uefa.cl,SL Benfica,Zenit St. Petersburg,3,0,False,Benfica,Zenit
+2019-12-10,uefa.cl,Olympique Lyonnais,RB Leipzig,2,2,False,Lyon,RB Leipzig
+2019-09-17,uefa.cl,Chelsea FC,Valencia CF,0,1,False,Chelsea,Valencia
+2019-09-17,uefa.cl,AFC Ajax,Lille OSC,3,0,False,Ajax,Lille
+2019-10-02,uefa.cl,Valencia CF,AFC Ajax,0,3,False,Valencia,Ajax
+2019-10-02,uefa.cl,Lille OSC,Chelsea FC,1,2,False,Lille,Chelsea
+2019-10-23,uefa.cl,AFC Ajax,Chelsea FC,0,1,False,Ajax,Chelsea
+2019-10-23,uefa.cl,Lille OSC,Valencia CF,1,1,False,Lille,Valencia
+2019-11-05,uefa.cl,Chelsea FC,AFC Ajax,4,4,False,Chelsea,Ajax
+2019-11-05,uefa.cl,Valencia CF,Lille OSC,4,1,False,Valencia,Lille
+2019-11-27,uefa.cl,Valencia CF,Chelsea FC,2,2,False,Valencia,Chelsea
+2019-11-27,uefa.cl,Lille OSC,AFC Ajax,0,2,False,Lille,Ajax
+2019-12-10,uefa.cl,Chelsea FC,Lille OSC,2,1,False,Chelsea,Lille
+2019-12-10,uefa.cl,AFC Ajax,Valencia CF,0,1,False,Ajax,Valencia
+2020-02-18,uefa.cl,Borussia Dortmund,Paris Saint-Germain,2,1,True,Dortmund,Paris SG
+2020-02-18,uefa.cl,Atlético Madrid,Liverpool FC,1,0,True,Ath Madrid,Liverpool
+2020-02-19,uefa.cl,Atalanta,Valencia CF,4,1,True,Atalanta,Valencia
+2020-02-19,uefa.cl,Tottenham Hotspur,RB Leipzig,0,1,True,Tottenham,RB Leipzig
+2020-02-25,uefa.cl,Chelsea FC,Bayern München,0,3,True,Chelsea,Bayern Munich
+2020-02-25,uefa.cl,SSC Napoli,FC Barcelona,1,1,True,Napoli,Barcelona
+2020-02-26,uefa.cl,Real Madrid,Manchester City,1,2,True,Real Madrid,Man City
+2020-02-26,uefa.cl,Olympique Lyonnais,Juventus,1,0,True,Lyon,Juventus
+2020-03-10,uefa.cl,Valencia CF,Atalanta,3,4,True,Valencia,Atalanta
+2020-03-10,uefa.cl,RB Leipzig,Tottenham Hotspur,3,0,True,RB Leipzig,Tottenham
+2020-03-11,uefa.cl,Paris Saint-Germain,Borussia Dortmund,2,0,True,Paris SG,Dortmund
+2020-03-11,uefa.cl,Liverpool FC,Atlético Madrid,1,0,True,Liverpool,Ath Madrid
+2019-08-07,uefa.cl,Manchester City,Real Madrid,2,1,True,Man City,Real Madrid
+2019-08-07,uefa.cl,Juventus,Olympique Lyonnais,2,1,True,Juventus,Lyon
+2019-08-08,uefa.cl,Bayern München,Chelsea FC,4,1,True,Bayern Munich,Chelsea
+2019-08-08,uefa.cl,FC Barcelona,SSC Napoli,3,1,True,Barcelona,Napoli
+2019-08-12,uefa.cl,Atalanta,Paris Saint-Germain,1,2,True,Atalanta,Paris SG
+2019-08-13,uefa.cl,RB Leipzig,Atlético Madrid,2,1,True,RB Leipzig,Ath Madrid
+2019-08-14,uefa.cl,FC Barcelona,Bayern München,2,8,True,Barcelona,Bayern Munich
+2019-08-15,uefa.cl,Manchester City,Olympique Lyonnais,1,3,True,Man City,Lyon
+2019-08-18,uefa.cl,RB Leipzig,Paris Saint-Germain,0,3,True,RB Leipzig,Paris SG
+2019-08-19,uefa.cl,Olympique Lyonnais,Bayern München,0,3,True,Lyon,Bayern Munich
+2019-08-23,uefa.cl,Paris Saint-Germain,Bayern München,0,1,True,Paris SG,Bayern Munich
+2020-10-22,uefa.el,BSC Young Boys,AS Roma,1,2,False,,Roma
+2020-10-29,uefa.el,AS Roma,CSKA Sofia,0,0,False,Roma,
+2020-11-05,uefa.el,AS Roma,CFR Cluj,5,0,False,Roma,
+2020-11-26,uefa.el,CFR Cluj,AS Roma,0,2,False,,Roma
+2020-12-03,uefa.el,AS Roma,BSC Young Boys,3,1,False,Roma,
+2020-12-10,uefa.el,CSKA Sofia,AS Roma,3,1,False,,Roma
+2020-10-22,uefa.el,Rapid Wien,Arsenal FC,1,2,False,,Arsenal
+2020-10-29,uefa.el,Arsenal FC,Dundalk FC,3,0,False,Arsenal,
+2020-11-05,uefa.el,Arsenal FC,Molde FK,4,1,False,Arsenal,
+2020-11-26,uefa.el,Molde FK,Arsenal FC,0,3,False,,Arsenal
+2020-12-03,uefa.el,Arsenal FC,Rapid Wien,4,1,False,Arsenal,
+2020-12-10,uefa.el,Dundalk FC,Arsenal FC,2,4,False,,Arsenal
+2020-10-22,uefa.el,Bayer Leverkusen,OGC Nice,6,2,False,Leverkusen,Nice
+2020-10-29,uefa.el,Slavia Praha,Bayer Leverkusen,1,0,False,,Leverkusen
+2020-10-29,uefa.el,OGC Nice,Hapoel Be'er Sheva,1,0,False,Nice,
+2020-11-05,uefa.el,Hapoel Be'er Sheva,Bayer Leverkusen,2,4,False,,Leverkusen
+2020-11-05,uefa.el,Slavia Praha,OGC Nice,3,2,False,,Nice
+2020-11-26,uefa.el,Bayer Leverkusen,Hapoel Be'er Sheva,4,1,False,Leverkusen,
+2020-11-26,uefa.el,OGC Nice,Slavia Praha,1,3,False,Nice,
+2020-12-03,uefa.el,OGC Nice,Bayer Leverkusen,2,3,False,Nice,Leverkusen
+2020-12-10,uefa.el,Bayer Leverkusen,Slavia Praha,4,0,False,Leverkusen,
+2020-12-10,uefa.el,Hapoel Be'er Sheva,OGC Nice,1,0,False,,Nice
+2020-10-22,uefa.el,Lech Poznań,SL Benfica,2,4,False,,Benfica
+2020-10-22,uefa.el,Standard Liège,Rangers FC,0,2,False,Standard,Rangers
+2020-10-29,uefa.el,Rangers FC,Lech Poznań,1,0,False,Rangers,
+2020-10-29,uefa.el,SL Benfica,Standard Liège,3,0,False,Benfica,Standard
+2020-11-05,uefa.el,Lech Poznań,Standard Liège,3,1,False,,Standard
+2020-11-05,uefa.el,SL Benfica,Rangers FC,3,3,False,Benfica,Rangers
+2020-11-26,uefa.el,Standard Liège,Lech Poznań,2,1,False,Standard,
+2020-11-26,uefa.el,Rangers FC,SL Benfica,2,2,False,Rangers,Benfica
+2020-12-03,uefa.el,SL Benfica,Lech Poznań,4,0,False,Benfica,
+2020-12-03,uefa.el,Rangers FC,Standard Liège,3,2,False,Rangers,Standard
+2020-12-10,uefa.el,Lech Poznań,Rangers FC,0,2,False,,Rangers
+2020-12-10,uefa.el,Standard Liège,SL Benfica,2,2,False,Standard,Benfica
+2020-10-22,uefa.el,PSV Eindhoven,Granada CF,1,2,False,PSV Eindhoven,Granada
+2020-10-22,uefa.el,PAOK Saloniki,Omonia Nikosia,1,1,False,PAOK,
+2020-10-29,uefa.el,Granada CF,PAOK Saloniki,0,0,False,Granada,PAOK
+2020-10-29,uefa.el,Omonia Nikosia,PSV Eindhoven,1,2,False,,PSV Eindhoven
+2020-11-05,uefa.el,Omonia Nikosia,Granada CF,0,2,False,,Granada
+2020-11-05,uefa.el,PAOK Saloniki,PSV Eindhoven,4,1,False,PAOK,PSV Eindhoven
+2020-11-26,uefa.el,Granada CF,Omonia Nikosia,2,1,False,Granada,
+2020-11-26,uefa.el,PSV Eindhoven,PAOK Saloniki,3,2,False,PSV Eindhoven,PAOK
+2020-12-03,uefa.el,Granada CF,PSV Eindhoven,0,1,False,Granada,PSV Eindhoven
+2020-12-03,uefa.el,Omonia Nikosia,PAOK Saloniki,2,1,False,,PAOK
+2020-12-10,uefa.el,PAOK Saloniki,Granada CF,0,0,False,PAOK,Granada
+2020-12-10,uefa.el,PSV Eindhoven,Omonia Nikosia,4,0,False,PSV Eindhoven,
+2020-10-22,uefa.el,SSC Napoli,AZ Alkmaar,0,1,False,Napoli,AZ Alkmaar
+2020-10-22,uefa.el,HNK Rijeka,Real Sociedad,0,1,False,,Sociedad
+2020-10-29,uefa.el,AZ Alkmaar,HNK Rijeka,4,1,False,AZ Alkmaar,
+2020-10-29,uefa.el,Real Sociedad,SSC Napoli,0,1,False,Sociedad,Napoli
+2020-11-05,uefa.el,Real Sociedad,AZ Alkmaar,1,0,False,Sociedad,AZ Alkmaar
+2020-11-05,uefa.el,HNK Rijeka,SSC Napoli,1,2,False,,Napoli
+2020-11-26,uefa.el,AZ Alkmaar,Real Sociedad,0,0,False,AZ Alkmaar,Sociedad
+2020-11-26,uefa.el,SSC Napoli,HNK Rijeka,2,0,False,Napoli,
+2020-12-03,uefa.el,AZ Alkmaar,SSC Napoli,1,1,False,AZ Alkmaar,Napoli
+2020-12-03,uefa.el,Real Sociedad,HNK Rijeka,2,2,False,Sociedad,
+2020-12-10,uefa.el,HNK Rijeka,AZ Alkmaar,2,1,False,,AZ Alkmaar
+2020-12-10,uefa.el,SSC Napoli,Real Sociedad,1,1,False,Napoli,Sociedad
+2020-10-22,uefa.el,Sporting Braga,AEK Athen,3,0,False,Sp Braga,AEK
+2020-10-22,uefa.el,Leicester City,Zorya Lugansk,3,0,False,Leicester,
+2020-10-29,uefa.el,AEK Athen,Leicester City,1,2,False,AEK,Leicester
+2020-10-29,uefa.el,Zorya Lugansk,Sporting Braga,1,2,False,,Sp Braga
+2020-11-05,uefa.el,Zorya Lugansk,AEK Athen,1,4,False,,AEK
+2020-11-05,uefa.el,Leicester City,Sporting Braga,4,0,False,Leicester,Sp Braga
+2020-11-26,uefa.el,AEK Athen,Zorya Lugansk,0,3,False,AEK,
+2020-11-26,uefa.el,Sporting Braga,Leicester City,3,3,False,Sp Braga,Leicester
+2020-12-03,uefa.el,AEK Athen,Sporting Braga,2,4,False,AEK,Sp Braga
+2020-12-03,uefa.el,Zorya Lugansk,Leicester City,1,0,False,,Leicester
+2020-12-10,uefa.el,Leicester City,AEK Athen,2,0,False,Leicester,AEK
+2020-12-10,uefa.el,Sporting Braga,Zorya Lugansk,2,0,False,Sp Braga,
+2020-10-22,uefa.el,Celtic FC,AC Milan,1,3,False,Celtic,Milan
+2020-10-22,uefa.el,AC Sparta Praha,Lille OSC,1,4,False,,Lille
+2020-10-29,uefa.el,AC Milan,AC Sparta Praha,3,0,False,Milan,
+2020-10-29,uefa.el,Lille OSC,Celtic FC,2,2,False,Lille,Celtic
+2020-11-05,uefa.el,AC Milan,Lille OSC,0,3,False,Milan,Lille
+2020-11-05,uefa.el,Celtic FC,AC Sparta Praha,1,4,False,Celtic,
+2020-11-26,uefa.el,Lille OSC,AC Milan,1,1,False,Lille,Milan
+2020-11-26,uefa.el,AC Sparta Praha,Celtic FC,4,1,False,,Celtic
+2020-12-03,uefa.el,AC Milan,Celtic FC,4,2,False,Milan,Celtic
+2020-12-03,uefa.el,Lille OSC,AC Sparta Praha,2,1,False,Lille,
+2020-12-10,uefa.el,AC Sparta Praha,AC Milan,0,1,False,,Milan
+2020-12-10,uefa.el,Celtic FC,Lille OSC,3,2,False,Celtic,Lille
+2020-10-22,uefa.el,Villarreal CF,Sivasspor,5,3,False,Villarreal,Sivasspor
+2020-10-29,uefa.el,Sivasspor,Maccabi Tel Aviv,1,2,False,Sivasspor,
+2020-10-29,uefa.el,Qarabağ FK,Villarreal CF,1,3,False,,Villarreal
+2020-11-05,uefa.el,Sivasspor,Qarabağ FK,2,0,False,Sivasspor,
+2020-11-05,uefa.el,Villarreal CF,Maccabi Tel Aviv,4,0,False,Villarreal,
+2020-11-26,uefa.el,Maccabi Tel Aviv,Villarreal CF,1,1,False,,Villarreal
+2020-11-26,uefa.el,Qarabağ FK,Sivasspor,2,3,False,,Sivasspor
+2020-12-03,uefa.el,Sivasspor,Villarreal CF,0,1,False,Sivasspor,Villarreal
+2020-12-10,uefa.el,Villarreal CF,Qarabağ FK,3,0,False,Villarreal,
+2020-12-10,uefa.el,Maccabi Tel Aviv,Sivasspor,1,0,False,,Sivasspor
+2020-10-22,uefa.el,Tottenham Hotspur,LASK,3,0,False,Tottenham,
+2020-10-22,uefa.el,PFC Ludogorets Razgrad,Royal Antwerp FC,1,2,False,,Antwerp
+2020-10-29,uefa.el,Royal Antwerp FC,Tottenham Hotspur,1,0,False,Antwerp,Tottenham
+2020-11-05,uefa.el,PFC Ludogorets Razgrad,Tottenham Hotspur,1,3,False,,Tottenham
+2020-11-05,uefa.el,Royal Antwerp FC,LASK,0,1,False,Antwerp,
+2020-11-26,uefa.el,LASK,Royal Antwerp FC,0,2,False,,Antwerp
+2020-11-26,uefa.el,Tottenham Hotspur,PFC Ludogorets Razgrad,4,0,False,Tottenham,
+2020-12-03,uefa.el,LASK,Tottenham Hotspur,3,3,False,,Tottenham
+2020-12-03,uefa.el,Royal Antwerp FC,PFC Ludogorets Razgrad,3,1,False,Antwerp,
+2020-12-10,uefa.el,Tottenham Hotspur,Royal Antwerp FC,2,0,False,Tottenham,Antwerp
+2020-10-22,uefa.el,Wolfsberger AC,CSKA Moskva,1,1,False,,CSKA Moscow
+2020-10-22,uefa.el,Dinamo Zagreb,Feyenoord,0,0,False,,Feyenoord
+2020-10-29,uefa.el,CSKA Moskva,Dinamo Zagreb,0,0,False,CSKA Moscow,
+2020-10-29,uefa.el,Feyenoord,Wolfsberger AC,1,4,False,Feyenoord,
+2020-11-05,uefa.el,Feyenoord,CSKA Moskva,3,1,False,Feyenoord,CSKA Moscow
+2020-11-26,uefa.el,CSKA Moskva,Feyenoord,0,0,False,CSKA Moscow,Feyenoord
+2020-12-03,uefa.el,CSKA Moskva,Wolfsberger AC,0,1,False,CSKA Moscow,
+2020-12-03,uefa.el,Feyenoord,Dinamo Zagreb,0,2,False,Feyenoord,
+2020-12-10,uefa.el,Dinamo Zagreb,CSKA Moskva,3,1,False,,CSKA Moscow
+2020-12-10,uefa.el,Wolfsberger AC,Feyenoord,1,0,False,,Feyenoord
+2020-10-22,uefa.el,1899 Hoffenheim,Crvena Zvezda,2,0,False,Hoffenheim,
+2020-10-22,uefa.el,Slovan Liberec,KAA Gent,1,0,False,,Gent
+2020-10-29,uefa.el,KAA Gent,1899 Hoffenheim,1,4,False,Gent,Hoffenheim
+2020-11-05,uefa.el,1899 Hoffenheim,Slovan Liberec,5,0,False,Hoffenheim,
+2020-11-05,uefa.el,Crvena Zvezda,KAA Gent,2,1,False,,Gent
+2020-11-26,uefa.el,Slovan Liberec,1899 Hoffenheim,0,2,False,,Hoffenheim
+2020-11-26,uefa.el,KAA Gent,Crvena Zvezda,0,2,False,Gent,
+2020-12-03,uefa.el,Crvena Zvezda,1899 Hoffenheim,0,0,False,,Hoffenheim
+2020-12-03,uefa.el,KAA Gent,Slovan Liberec,1,2,False,Gent,
+2020-12-10,uefa.el,1899 Hoffenheim,KAA Gent,4,1,False,Hoffenheim,Gent
+2021-02-18,uefa.el,Dinamo Kiev,Club Brugge KV,1,1,True,,Club Brugge
+2021-02-18,uefa.el,Wolfsberger AC,Tottenham Hotspur,1,4,True,,Tottenham
+2021-02-18,uefa.el,Real Sociedad,Manchester United,0,4,True,Sociedad,Man United
+2021-02-18,uefa.el,Crvena Zvezda,AC Milan,2,2,True,,Milan
+2021-02-18,uefa.el,Slavia Praha,Leicester City,0,0,True,,Leicester
+2021-02-18,uefa.el,Sporting Braga,AS Roma,0,2,True,Sp Braga,Roma
+2021-02-18,uefa.el,FK Krasnodar,Dinamo Zagreb,2,3,True,Krasnodar,
+2021-02-18,uefa.el,BSC Young Boys,Bayer Leverkusen,4,3,True,,Leverkusen
+2021-02-18,uefa.el,Olympiakos Piraeus,PSV Eindhoven,4,2,True,Olympiakos,PSV Eindhoven
+2021-02-18,uefa.el,SL Benfica,Arsenal FC,1,1,True,Benfica,Arsenal
+2021-02-18,uefa.el,Royal Antwerp FC,Rangers FC,3,4,True,Antwerp,Rangers
+2021-02-18,uefa.el,RB Salzburg,Villarreal CF,0,2,True,,Villarreal
+2021-02-18,uefa.el,Molde FK,1899 Hoffenheim,3,3,True,,Hoffenheim
+2021-02-18,uefa.el,Granada CF,SSC Napoli,2,0,True,Granada,Napoli
+2021-02-18,uefa.el,Lille OSC,AFC Ajax,1,2,True,Lille,Ajax
+2021-02-24,uefa.el,Tottenham Hotspur,Wolfsberger AC,4,0,True,Tottenham,
+2021-02-25,uefa.el,Arsenal FC,SL Benfica,3,2,True,Arsenal,Benfica
+2021-02-25,uefa.el,Rangers FC,Royal Antwerp FC,5,2,True,Rangers,Antwerp
+2021-02-25,uefa.el,Villarreal CF,RB Salzburg,2,1,True,Villarreal,
+2021-02-25,uefa.el,1899 Hoffenheim,Molde FK,0,2,True,Hoffenheim,
+2021-02-25,uefa.el,SSC Napoli,Granada CF,2,1,True,Napoli,Granada
+2021-02-25,uefa.el,AFC Ajax,Lille OSC,2,1,True,Ajax,Lille
+2021-02-25,uefa.el,Club Brugge KV,Dinamo Kiev,0,1,True,Club Brugge,
+2021-02-25,uefa.el,Manchester United,Real Sociedad,0,0,True,Man United,Sociedad
+2021-02-25,uefa.el,AC Milan,Crvena Zvezda,1,1,True,Milan,
+2021-02-25,uefa.el,Leicester City,Slavia Praha,0,2,True,Leicester,
+2021-02-25,uefa.el,AS Roma,Sporting Braga,3,1,True,Roma,Sp Braga
+2021-02-25,uefa.el,Dinamo Zagreb,FK Krasnodar,1,0,True,,Krasnodar
+2021-02-25,uefa.el,Bayer Leverkusen,BSC Young Boys,0,2,True,Leverkusen,
+2021-02-25,uefa.el,PSV Eindhoven,Olympiakos Piraeus,2,1,True,PSV Eindhoven,Olympiakos
+2021-03-11,uefa.el,AFC Ajax,BSC Young Boys,3,0,True,Ajax,
+2021-03-11,uefa.el,Dinamo Kiev,Villarreal CF,0,2,True,,Villarreal
+2021-03-11,uefa.el,Manchester United,AC Milan,1,1,True,Man United,Milan
+2021-03-11,uefa.el,Slavia Praha,Rangers FC,1,1,True,,Rangers
+2021-03-11,uefa.el,AS Roma,Shakhtar Donetsk,3,0,True,Roma,
+2021-03-11,uefa.el,Olympiakos Piraeus,Arsenal FC,1,3,True,Olympiakos,Arsenal
+2021-03-11,uefa.el,Tottenham Hotspur,Dinamo Zagreb,2,0,True,Tottenham,
+2021-03-11,uefa.el,Granada CF,Molde FK,2,0,True,Granada,
+2021-03-18,uefa.el,Shakhtar Donetsk,AS Roma,1,2,True,,Roma
+2021-03-18,uefa.el,Arsenal FC,Olympiakos Piraeus,0,1,True,Arsenal,Olympiakos
+2021-03-18,uefa.el,Dinamo Zagreb,Tottenham Hotspur,2,0,True,,Tottenham
+2021-03-18,uefa.el,Molde FK,Granada CF,2,1,True,,Granada
+2021-03-18,uefa.el,BSC Young Boys,AFC Ajax,0,2,True,,Ajax
+2021-03-18,uefa.el,Villarreal CF,Dinamo Kiev,2,0,True,Villarreal,
+2021-03-18,uefa.el,AC Milan,Manchester United,0,1,True,Milan,Man United
+2021-03-18,uefa.el,Rangers FC,Slavia Praha,0,2,True,Rangers,
+2021-04-08,uefa.el,Granada CF,Manchester United,0,2,True,Granada,Man United
+2021-04-08,uefa.el,Arsenal FC,Slavia Praha,1,1,True,Arsenal,
+2021-04-08,uefa.el,AFC Ajax,AS Roma,1,2,True,Ajax,Roma
+2021-04-08,uefa.el,Dinamo Zagreb,Villarreal CF,0,1,True,,Villarreal
+2021-04-15,uefa.el,Manchester United,Granada CF,2,0,True,Man United,Granada
+2021-04-15,uefa.el,Slavia Praha,Arsenal FC,0,4,True,,Arsenal
+2021-04-15,uefa.el,AS Roma,AFC Ajax,1,1,True,Roma,Ajax
+2021-04-15,uefa.el,Villarreal CF,Dinamo Zagreb,2,1,True,Villarreal,
+2021-04-29,uefa.el,Manchester United,AS Roma,6,2,True,Man United,Roma
+2021-04-29,uefa.el,Villarreal CF,Arsenal FC,2,1,True,Villarreal,Arsenal
+2021-05-06,uefa.el,AS Roma,Manchester United,3,2,True,Roma,Man United
+2021-05-06,uefa.el,Arsenal FC,Villarreal CF,0,0,True,Arsenal,Villarreal
+2021-05-26,uefa.el,Villarreal CF,Manchester United,1,1,True,Villarreal,Man United
+2020-10-21,uefa.cl,RB Salzburg,Lokomotiv Moskva,2,2,False,,Lokomotiv Moscow
+2020-10-21,uefa.cl,Bayern München,Atlético Madrid,4,0,False,Bayern Munich,Ath Madrid
+2020-10-27,uefa.cl,Lokomotiv Moskva,Bayern München,1,2,False,Lokomotiv Moscow,Bayern Munich
+2020-10-27,uefa.cl,Atlético Madrid,RB Salzburg,3,2,False,Ath Madrid,
+2020-11-03,uefa.cl,Lokomotiv Moskva,Atlético Madrid,1,1,False,Lokomotiv Moscow,Ath Madrid
+2020-11-03,uefa.cl,RB Salzburg,Bayern München,2,6,False,,Bayern Munich
+2020-11-25,uefa.cl,Atlético Madrid,Lokomotiv Moskva,0,0,False,Ath Madrid,Lokomotiv Moscow
+2020-11-25,uefa.cl,Bayern München,RB Salzburg,3,1,False,Bayern Munich,
+2020-12-01,uefa.cl,Lokomotiv Moskva,RB Salzburg,1,3,False,Lokomotiv Moscow,
+2020-12-01,uefa.cl,Atlético Madrid,Bayern München,1,1,False,Ath Madrid,Bayern Munich
+2020-12-09,uefa.cl,Bayern München,Lokomotiv Moskva,2,0,False,Bayern Munich,Lokomotiv Moscow
+2020-12-09,uefa.cl,RB Salzburg,Atlético Madrid,0,2,False,,Ath Madrid
+2020-10-21,uefa.cl,Real Madrid,Shakhtar Donetsk,2,3,False,Real Madrid,
+2020-10-21,uefa.cl,Inter,Bor. Mönchengladbach,2,2,False,Inter,M'gladbach
+2020-10-27,uefa.cl,Shakhtar Donetsk,Inter,0,0,False,,Inter
+2020-10-27,uefa.cl,Bor. Mönchengladbach,Real Madrid,2,2,False,M'gladbach,Real Madrid
+2020-11-03,uefa.cl,Shakhtar Donetsk,Bor. Mönchengladbach,0,6,False,,M'gladbach
+2020-11-03,uefa.cl,Real Madrid,Inter,3,2,False,Real Madrid,Inter
+2020-11-25,uefa.cl,Bor. Mönchengladbach,Shakhtar Donetsk,4,0,False,M'gladbach,
+2020-11-25,uefa.cl,Inter,Real Madrid,0,2,False,Inter,Real Madrid
+2020-12-01,uefa.cl,Shakhtar Donetsk,Real Madrid,2,0,False,,Real Madrid
+2020-12-01,uefa.cl,Bor. Mönchengladbach,Inter,2,3,False,M'gladbach,Inter
+2020-12-09,uefa.cl,Inter,Shakhtar Donetsk,0,0,False,Inter,
+2020-12-09,uefa.cl,Real Madrid,Bor. Mönchengladbach,2,0,False,Real Madrid,M'gladbach
+2020-10-21,uefa.cl,Manchester City,FC Porto,3,1,False,Man City,Porto
+2020-10-21,uefa.cl,Olympiakos Piraeus,Olympique Marseille,1,0,False,Olympiakos,Marseille
+2020-10-27,uefa.cl,FC Porto,Olympiakos Piraeus,2,0,False,Porto,Olympiakos
+2020-10-27,uefa.cl,Olympique Marseille,Manchester City,0,3,False,Marseille,Man City
+2020-11-03,uefa.cl,FC Porto,Olympique Marseille,3,0,False,Porto,Marseille
+2020-11-03,uefa.cl,Manchester City,Olympiakos Piraeus,3,0,False,Man City,Olympiakos
+2020-11-25,uefa.cl,Olympiakos Piraeus,Manchester City,0,1,False,Olympiakos,Man City
+2020-11-25,uefa.cl,Olympique Marseille,FC Porto,0,2,False,Marseille,Porto
+2020-12-01,uefa.cl,FC Porto,Manchester City,0,0,False,Porto,Man City
+2020-12-01,uefa.cl,Olympique Marseille,Olympiakos Piraeus,2,1,False,Marseille,Olympiakos
+2020-12-09,uefa.cl,Manchester City,Olympique Marseille,3,0,False,Man City,Marseille
+2020-12-09,uefa.cl,Olympiakos Piraeus,FC Porto,0,2,False,Olympiakos,Porto
+2020-10-21,uefa.cl,AFC Ajax,Liverpool FC,0,1,False,Ajax,Liverpool
+2020-10-21,uefa.cl,FC Midtjylland,Atalanta,0,4,False,,Atalanta
+2020-10-27,uefa.cl,Atalanta,AFC Ajax,2,2,False,Atalanta,Ajax
+2020-10-27,uefa.cl,Liverpool FC,FC Midtjylland,2,0,False,Liverpool,
+2020-11-03,uefa.cl,Atalanta,Liverpool FC,0,5,False,Atalanta,Liverpool
+2020-11-03,uefa.cl,FC Midtjylland,AFC Ajax,1,2,False,,Ajax
+2020-11-25,uefa.cl,AFC Ajax,FC Midtjylland,3,1,False,Ajax,
+2020-11-25,uefa.cl,Liverpool FC,Atalanta,0,2,False,Liverpool,Atalanta
+2020-12-01,uefa.cl,Atalanta,FC Midtjylland,1,1,False,Atalanta,
+2020-12-01,uefa.cl,Liverpool FC,AFC Ajax,1,0,False,Liverpool,Ajax
+2020-12-09,uefa.cl,AFC Ajax,Atalanta,0,1,False,Ajax,Atalanta
+2020-12-09,uefa.cl,FC Midtjylland,Liverpool FC,1,1,False,,Liverpool
+2020-10-20,uefa.cl,Chelsea FC,Sevilla FC,0,0,False,Chelsea,Sevilla
+2020-10-20,uefa.cl,Stade Rennais,FK Krasnodar,1,1,False,Rennes,Krasnodar
+2020-10-28,uefa.cl,FK Krasnodar,Chelsea FC,0,4,False,Krasnodar,Chelsea
+2020-10-28,uefa.cl,Sevilla FC,Stade Rennais,1,0,False,Sevilla,Rennes
+2020-11-04,uefa.cl,Chelsea FC,Stade Rennais,3,0,False,Chelsea,Rennes
+2020-11-04,uefa.cl,Sevilla FC,FK Krasnodar,3,2,False,Sevilla,Krasnodar
+2020-11-24,uefa.cl,Stade Rennais,Chelsea FC,1,2,False,Rennes,Chelsea
+2020-11-24,uefa.cl,FK Krasnodar,Sevilla FC,1,2,False,Krasnodar,Sevilla
+2020-12-02,uefa.cl,FK Krasnodar,Stade Rennais,1,0,False,Krasnodar,Rennes
+2020-12-02,uefa.cl,Sevilla FC,Chelsea FC,0,4,False,Sevilla,Chelsea
+2020-12-08,uefa.cl,Chelsea FC,FK Krasnodar,1,1,False,Chelsea,Krasnodar
+2020-12-08,uefa.cl,Stade Rennais,Sevilla FC,1,3,False,Rennes,Sevilla
+2020-10-20,uefa.cl,Zenit St. Petersburg,Club Brugge KV,1,2,False,Zenit,Club Brugge
+2020-10-20,uefa.cl,Lazio Roma,Borussia Dortmund,3,1,False,Lazio,Dortmund
+2020-10-28,uefa.cl,Borussia Dortmund,Zenit St. Petersburg,2,0,False,Dortmund,Zenit
+2020-10-28,uefa.cl,Club Brugge KV,Lazio Roma,1,1,False,Club Brugge,Lazio
+2020-11-04,uefa.cl,Zenit St. Petersburg,Lazio Roma,1,1,False,Zenit,Lazio
+2020-11-04,uefa.cl,Club Brugge KV,Borussia Dortmund,0,3,False,Club Brugge,Dortmund
+2020-11-24,uefa.cl,Borussia Dortmund,Club Brugge KV,3,0,False,Dortmund,Club Brugge
+2020-11-24,uefa.cl,Lazio Roma,Zenit St. Petersburg,3,1,False,Lazio,Zenit
+2020-12-02,uefa.cl,Borussia Dortmund,Lazio Roma,1,1,False,Dortmund,Lazio
+2020-12-02,uefa.cl,Club Brugge KV,Zenit St. Petersburg,3,0,False,Club Brugge,Zenit
+2020-12-08,uefa.cl,Zenit St. Petersburg,Borussia Dortmund,1,2,False,Zenit,Dortmund
+2020-12-08,uefa.cl,Lazio Roma,Club Brugge KV,2,2,False,Lazio,Club Brugge
+2020-10-20,uefa.cl,Dinamo Kiev,Juventus,0,2,False,,Juventus
+2020-10-20,uefa.cl,FC Barcelona,Ferencvárosi TC,5,1,False,Barcelona,
+2020-10-28,uefa.cl,Juventus,FC Barcelona,0,2,False,Juventus,Barcelona
+2020-11-04,uefa.cl,FC Barcelona,Dinamo Kiev,2,1,False,Barcelona,
+2020-11-04,uefa.cl,Ferencvárosi TC,Juventus,1,4,False,,Juventus
+2020-11-24,uefa.cl,Dinamo Kiev,FC Barcelona,0,4,False,,Barcelona
+2020-11-24,uefa.cl,Juventus,Ferencvárosi TC,2,1,False,Juventus,
+2020-12-02,uefa.cl,Juventus,Dinamo Kiev,3,0,False,Juventus,
+2020-12-02,uefa.cl,Ferencvárosi TC,FC Barcelona,0,3,False,,Barcelona
+2020-12-08,uefa.cl,FC Barcelona,Juventus,0,3,False,Barcelona,Juventus
+2020-10-20,uefa.cl,RB Leipzig,İstanbul Başakşehir,2,0,False,RB Leipzig,Buyuksehyr
+2020-10-20,uefa.cl,Paris Saint-Germain,Manchester United,1,2,False,Paris SG,Man United
+2020-10-28,uefa.cl,İstanbul Başakşehir,Paris Saint-Germain,0,2,False,Buyuksehyr,Paris SG
+2020-10-28,uefa.cl,Manchester United,RB Leipzig,5,0,False,Man United,RB Leipzig
+2020-11-04,uefa.cl,İstanbul Başakşehir,Manchester United,2,1,False,Buyuksehyr,Man United
+2020-11-04,uefa.cl,RB Leipzig,Paris Saint-Germain,2,1,False,RB Leipzig,Paris SG
+2020-11-24,uefa.cl,Manchester United,İstanbul Başakşehir,4,1,False,Man United,Buyuksehyr
+2020-11-24,uefa.cl,Paris Saint-Germain,RB Leipzig,1,0,False,Paris SG,RB Leipzig
+2020-12-02,uefa.cl,İstanbul Başakşehir,RB Leipzig,3,4,False,Buyuksehyr,RB Leipzig
+2020-12-02,uefa.cl,Manchester United,Paris Saint-Germain,1,3,False,Man United,Paris SG
+2020-12-08,uefa.cl,RB Leipzig,Manchester United,3,2,False,RB Leipzig,Man United
+2020-12-09,uefa.cl,Paris Saint-Germain,İstanbul Başakşehir,5,1,False,Paris SG,Buyuksehyr
+2021-02-16,uefa.cl,RB Leipzig,Liverpool FC,0,2,True,RB Leipzig,Liverpool
+2021-02-16,uefa.cl,FC Barcelona,Paris Saint-Germain,1,4,True,Barcelona,Paris SG
+2021-02-17,uefa.cl,FC Porto,Juventus,2,1,True,Porto,Juventus
+2021-02-17,uefa.cl,Sevilla FC,Borussia Dortmund,2,3,True,Sevilla,Dortmund
+2021-02-23,uefa.cl,Lazio Roma,Bayern München,1,4,True,Lazio,Bayern Munich
+2021-02-23,uefa.cl,Atlético Madrid,Chelsea FC,0,1,True,Ath Madrid,Chelsea
+2021-02-24,uefa.cl,Bor. Mönchengladbach,Manchester City,0,2,True,M'gladbach,Man City
+2021-02-24,uefa.cl,Atalanta,Real Madrid,0,1,True,Atalanta,Real Madrid
+2021-03-09,uefa.cl,Juventus,FC Porto,2,1,True,Juventus,Porto
+2021-03-09,uefa.cl,Borussia Dortmund,Sevilla FC,2,2,True,Dortmund,Sevilla
+2021-03-10,uefa.cl,Liverpool FC,RB Leipzig,2,0,True,Liverpool,RB Leipzig
+2021-03-10,uefa.cl,Paris Saint-Germain,FC Barcelona,1,1,True,Paris SG,Barcelona
+2021-03-16,uefa.cl,Manchester City,Bor. Mönchengladbach,2,0,True,Man City,M'gladbach
+2021-03-16,uefa.cl,Real Madrid,Atalanta,3,1,True,Real Madrid,Atalanta
+2021-03-17,uefa.cl,Bayern München,Lazio Roma,2,1,True,Bayern Munich,Lazio
+2021-03-17,uefa.cl,Chelsea FC,Atlético Madrid,2,0,True,Chelsea,Ath Madrid
+2021-04-06,uefa.cl,Manchester City,Borussia Dortmund,2,1,True,Man City,Dortmund
+2021-04-06,uefa.cl,Real Madrid,Liverpool FC,3,1,True,Real Madrid,Liverpool
+2021-04-07,uefa.cl,FC Porto,Chelsea FC,0,2,True,Porto,Chelsea
+2021-04-07,uefa.cl,Bayern München,Paris Saint-Germain,2,3,True,Bayern Munich,Paris SG
+2021-04-13,uefa.cl,Chelsea FC,FC Porto,0,1,True,Chelsea,Porto
+2021-04-13,uefa.cl,Paris Saint-Germain,Bayern München,0,1,True,Paris SG,Bayern Munich
+2021-04-14,uefa.cl,Borussia Dortmund,Manchester City,1,2,True,Dortmund,Man City
+2021-04-14,uefa.cl,Liverpool FC,Real Madrid,0,0,True,Liverpool,Real Madrid
+2021-04-27,uefa.cl,Real Madrid,Chelsea FC,1,1,True,Real Madrid,Chelsea
+2021-04-28,uefa.cl,Paris Saint-Germain,Manchester City,1,2,True,Paris SG,Man City
+2021-05-04,uefa.cl,Manchester City,Paris Saint-Germain,2,0,True,Man City,Paris SG
+2021-05-05,uefa.cl,Chelsea FC,Real Madrid,2,0,True,Chelsea,Real Madrid
+2021-05-29,uefa.cl,Manchester City,Chelsea FC,0,1,True,Man City,Chelsea
+2021-09-16,uefa.el,Rangers FC,Olympique Lyonnais,0,2,False,Rangers,Lyon
+2021-09-30,uefa.el,Olympique Lyonnais,Brøndby IF,3,0,False,Lyon,
+2021-09-30,uefa.el,AC Sparta Praha,Rangers FC,1,0,False,,Rangers
+2021-10-21,uefa.el,Rangers FC,Brøndby IF,2,0,False,Rangers,
+2021-10-21,uefa.el,AC Sparta Praha,Olympique Lyonnais,3,4,False,,Lyon
+2021-11-04,uefa.el,Brøndby IF,Rangers FC,1,1,False,,Rangers
+2021-11-04,uefa.el,Olympique Lyonnais,AC Sparta Praha,3,0,False,Lyon,
+2021-11-25,uefa.el,Brøndby IF,Olympique Lyonnais,1,3,False,,Lyon
+2021-11-25,uefa.el,Rangers FC,AC Sparta Praha,2,0,False,Rangers,
+2021-12-09,uefa.el,Olympique Lyonnais,Rangers FC,1,1,False,Lyon,Rangers
+2021-09-16,uefa.el,AS Monaco,Sturm Graz,1,0,False,Monaco,
+2021-09-16,uefa.el,PSV Eindhoven,Real Sociedad,2,2,False,PSV Eindhoven,Sociedad
+2021-09-30,uefa.el,Real Sociedad,AS Monaco,1,1,False,Sociedad,Monaco
+2021-09-30,uefa.el,Sturm Graz,PSV Eindhoven,1,4,False,,PSV Eindhoven
+2021-10-21,uefa.el,PSV Eindhoven,AS Monaco,1,2,False,PSV Eindhoven,Monaco
+2021-10-21,uefa.el,Sturm Graz,Real Sociedad,0,1,False,,Sociedad
+2021-11-04,uefa.el,AS Monaco,PSV Eindhoven,0,0,False,Monaco,PSV Eindhoven
+2021-11-04,uefa.el,Real Sociedad,Sturm Graz,1,1,False,Sociedad,
+2021-11-25,uefa.el,AS Monaco,Real Sociedad,2,1,False,Monaco,Sociedad
+2021-11-25,uefa.el,PSV Eindhoven,Sturm Graz,2,0,False,PSV Eindhoven,
+2021-12-09,uefa.el,Sturm Graz,AS Monaco,1,1,False,,Monaco
+2021-12-09,uefa.el,Real Sociedad,PSV Eindhoven,3,0,False,Sociedad,PSV Eindhoven
+2021-09-15,uefa.el,Spartak Moskva,Legia Warszawa,0,1,False,Spartak Moscow,
+2021-09-16,uefa.el,Leicester City,SSC Napoli,2,2,False,Leicester,Napoli
+2021-09-30,uefa.el,Legia Warszawa,Leicester City,1,0,False,,Leicester
+2021-09-30,uefa.el,SSC Napoli,Spartak Moskva,2,3,False,Napoli,Spartak Moscow
+2021-10-20,uefa.el,Spartak Moskva,Leicester City,3,4,False,Spartak Moscow,Leicester
+2021-10-21,uefa.el,SSC Napoli,Legia Warszawa,3,0,False,Napoli,
+2021-11-04,uefa.el,Legia Warszawa,SSC Napoli,1,4,False,,Napoli
+2021-11-04,uefa.el,Leicester City,Spartak Moskva,1,1,False,Leicester,Spartak Moscow
+2021-11-24,uefa.el,Spartak Moskva,SSC Napoli,2,1,False,Spartak Moscow,Napoli
+2021-11-25,uefa.el,Leicester City,Legia Warszawa,3,1,False,Leicester,
+2021-12-09,uefa.el,Legia Warszawa,Spartak Moskva,0,1,False,,Spartak Moscow
+2021-12-09,uefa.el,SSC Napoli,Leicester City,3,2,False,Napoli,Leicester
+2021-09-16,uefa.el,Eintracht Frankfurt,Fenerbahçe,1,1,False,Ein Frankfurt,Fenerbahce
+2021-09-16,uefa.el,Olympiakos Piraeus,Royal Antwerp FC,2,1,False,Olympiakos,Antwerp
+2021-09-30,uefa.el,Royal Antwerp FC,Eintracht Frankfurt,0,1,False,Antwerp,Ein Frankfurt
+2021-09-30,uefa.el,Fenerbahçe,Olympiakos Piraeus,0,3,False,Fenerbahce,Olympiakos
+2021-10-21,uefa.el,Fenerbahçe,Royal Antwerp FC,2,2,False,Fenerbahce,Antwerp
+2021-10-21,uefa.el,Eintracht Frankfurt,Olympiakos Piraeus,3,1,False,Ein Frankfurt,Olympiakos
+2021-11-04,uefa.el,Olympiakos Piraeus,Eintracht Frankfurt,1,2,False,Olympiakos,Ein Frankfurt
+2021-11-04,uefa.el,Royal Antwerp FC,Fenerbahçe,0,3,False,Antwerp,Fenerbahce
+2021-11-25,uefa.el,Eintracht Frankfurt,Royal Antwerp FC,2,2,False,Ein Frankfurt,Antwerp
+2021-11-25,uefa.el,Olympiakos Piraeus,Fenerbahçe,1,0,False,Olympiakos,Fenerbahce
+2021-12-09,uefa.el,Fenerbahçe,Eintracht Frankfurt,1,1,False,Fenerbahce,Ein Frankfurt
+2021-12-09,uefa.el,Royal Antwerp FC,Olympiakos Piraeus,1,0,False,Antwerp,Olympiakos
+2021-09-16,uefa.el,Galatasaray,Lazio Roma,1,0,False,Galatasaray,Lazio
+2021-09-16,uefa.el,Lokomotiv Moskva,Olympique Marseille,1,1,False,Lokomotiv Moscow,Marseille
+2021-09-30,uefa.el,Olympique Marseille,Galatasaray,0,0,False,Marseille,Galatasaray
+2021-09-30,uefa.el,Lazio Roma,Lokomotiv Moskva,2,0,False,Lazio,Lokomotiv Moscow
+2021-10-21,uefa.el,Lazio Roma,Olympique Marseille,0,0,False,Lazio,Marseille
+2021-10-21,uefa.el,Lokomotiv Moskva,Galatasaray,0,1,False,Lokomotiv Moscow,Galatasaray
+2021-11-04,uefa.el,Galatasaray,Lokomotiv Moskva,1,1,False,Galatasaray,Lokomotiv Moscow
+2021-11-04,uefa.el,Olympique Marseille,Lazio Roma,2,2,False,Marseille,Lazio
+2021-11-25,uefa.el,Galatasaray,Olympique Marseille,4,2,False,Galatasaray,Marseille
+2021-11-25,uefa.el,Lokomotiv Moskva,Lazio Roma,0,3,False,Lokomotiv Moscow,Lazio
+2021-12-09,uefa.el,Lazio Roma,Galatasaray,0,0,False,Lazio,Galatasaray
+2021-12-09,uefa.el,Olympique Marseille,Lokomotiv Moskva,1,0,False,Marseille,Lokomotiv Moscow
+2021-09-16,uefa.el,Crvena Zvezda,Sporting Braga,2,1,False,,Sp Braga
+2021-09-30,uefa.el,Sporting Braga,FC Midtjylland,3,1,False,Sp Braga,
+2021-10-21,uefa.el,PFC Ludogorets Razgrad,Sporting Braga,0,1,False,,Sp Braga
+2021-11-04,uefa.el,Sporting Braga,PFC Ludogorets Razgrad,4,2,False,Sp Braga,
+2021-11-25,uefa.el,FC Midtjylland,Sporting Braga,3,2,False,,Sp Braga
+2021-12-09,uefa.el,Sporting Braga,Crvena Zvezda,1,1,False,Sp Braga,
+2021-09-16,uefa.el,Bayer Leverkusen,Ferencvárosi TC,2,1,False,Leverkusen,
+2021-09-16,uefa.el,Real Betis,Celtic FC,4,3,False,Betis,Celtic
+2021-09-30,uefa.el,Celtic FC,Bayer Leverkusen,0,4,False,Celtic,Leverkusen
+2021-09-30,uefa.el,Ferencvárosi TC,Real Betis,1,3,False,,Betis
+2021-10-19,uefa.el,Celtic FC,Ferencvárosi TC,2,0,False,Celtic,
+2021-10-21,uefa.el,Real Betis,Bayer Leverkusen,1,1,False,Betis,Leverkusen
+2021-11-04,uefa.el,Bayer Leverkusen,Real Betis,4,0,False,Leverkusen,Betis
+2021-11-04,uefa.el,Ferencvárosi TC,Celtic FC,2,3,False,,Celtic
+2021-11-25,uefa.el,Bayer Leverkusen,Celtic FC,3,2,False,Leverkusen,Celtic
+2021-11-25,uefa.el,Real Betis,Ferencvárosi TC,2,0,False,Betis,
+2021-12-09,uefa.el,Ferencvárosi TC,Bayer Leverkusen,1,0,False,,Leverkusen
+2021-12-09,uefa.el,Celtic FC,Real Betis,3,2,False,Celtic,Betis
+2021-09-16,uefa.el,Dinamo Zagreb,West Ham United,0,2,False,,West Ham
+2021-09-16,uefa.el,Rapid Wien,KRC Genk,0,1,False,,Genk
+2021-09-30,uefa.el,KRC Genk,Dinamo Zagreb,0,3,False,Genk,
+2021-09-30,uefa.el,West Ham United,Rapid Wien,2,0,False,West Ham,
+2021-10-21,uefa.el,West Ham United,KRC Genk,3,0,False,West Ham,Genk
+2021-11-04,uefa.el,KRC Genk,West Ham United,2,2,False,Genk,West Ham
+2021-11-25,uefa.el,Dinamo Zagreb,KRC Genk,1,1,False,,Genk
+2021-11-25,uefa.el,Rapid Wien,West Ham United,0,2,False,,West Ham
+2021-12-09,uefa.el,West Ham United,Dinamo Zagreb,0,1,False,West Ham,
+2021-12-09,uefa.el,KRC Genk,Rapid Wien,0,1,False,Genk,
+2022-02-17,uefa.el,FC Barcelona,SSC Napoli,1,1,False,Barcelona,Napoli
+2022-02-17,uefa.el,Zenit St. Petersburg,Real Betis,2,3,False,Zenit,Betis
+2022-02-17,uefa.el,Borussia Dortmund,Rangers FC,2,4,False,Dortmund,Rangers
+2022-02-17,uefa.el,FC Sheriff,Sporting Braga,2,0,False,,Sp Braga
+2022-02-17,uefa.el,Sevilla FC,Dinamo Zagreb,3,1,False,Sevilla,
+2022-02-17,uefa.el,Atalanta,Olympiakos Piraeus,2,1,False,Atalanta,Olympiakos
+2022-02-17,uefa.el,RB Leipzig,Real Sociedad,2,2,False,RB Leipzig,Sociedad
+2022-02-17,uefa.el,FC Porto,Lazio Roma,2,1,False,Porto,Lazio
+2022-02-24,uefa.el,Dinamo Zagreb,Sevilla FC,1,0,False,,Sevilla
+2022-02-24,uefa.el,Olympiakos Piraeus,Atalanta,0,3,False,Olympiakos,Atalanta
+2022-02-24,uefa.el,Real Sociedad,RB Leipzig,1,3,False,Sociedad,RB Leipzig
+2022-02-24,uefa.el,Lazio Roma,FC Porto,2,2,False,Lazio,Porto
+2022-02-24,uefa.el,SSC Napoli,FC Barcelona,2,4,False,Napoli,Barcelona
+2022-02-24,uefa.el,Real Betis,Zenit St. Petersburg,0,0,False,Betis,Zenit
+2022-02-24,uefa.el,Rangers FC,Borussia Dortmund,2,2,False,Rangers,Dortmund
+2022-02-24,uefa.el,Sporting Braga,FC Sheriff,2,0,False,Sp Braga,
+2022-03-09,uefa.el,FC Porto,Olympique Lyonnais,0,1,True,Porto,Lyon
+2022-03-09,uefa.el,Real Betis,Eintracht Frankfurt,1,2,True,Betis,Ein Frankfurt
+2022-03-10,uefa.el,Sevilla FC,West Ham United,1,0,True,Sevilla,West Ham
+2022-03-10,uefa.el,Rangers FC,Crvena Zvezda,3,0,True,Rangers,
+2022-03-10,uefa.el,Sporting Braga,AS Monaco,2,0,True,Sp Braga,Monaco
+2022-03-10,uefa.el,Atalanta,Bayer Leverkusen,3,2,True,Atalanta,Leverkusen
+2022-03-10,uefa.el,FC Barcelona,Galatasaray,0,0,True,Barcelona,Galatasaray
+2022-03-17,uefa.el,Crvena Zvezda,Rangers FC,2,1,True,,Rangers
+2022-03-17,uefa.el,AS Monaco,Sporting Braga,1,1,True,Monaco,Sp Braga
+2022-03-17,uefa.el,Bayer Leverkusen,Atalanta,0,1,True,Leverkusen,Atalanta
+2022-03-17,uefa.el,Galatasaray,FC Barcelona,1,2,True,Galatasaray,Barcelona
+2022-03-17,uefa.el,Olympique Lyonnais,FC Porto,1,1,True,Lyon,Porto
+2022-03-17,uefa.el,West Ham United,Sevilla FC,1,0,True,West Ham,Sevilla
+2022-03-17,uefa.el,Eintracht Frankfurt,Real Betis,0,1,True,Ein Frankfurt,Betis
+2022-04-07,uefa.el,RB Leipzig,Atalanta,1,1,True,RB Leipzig,Atalanta
+2022-04-07,uefa.el,Eintracht Frankfurt,FC Barcelona,1,1,True,Ein Frankfurt,Barcelona
+2022-04-07,uefa.el,West Ham United,Olympique Lyonnais,1,1,True,West Ham,Lyon
+2022-04-07,uefa.el,Sporting Braga,Rangers FC,1,0,True,Sp Braga,Rangers
+2022-04-14,uefa.el,Atalanta,RB Leipzig,0,2,True,Atalanta,RB Leipzig
+2022-04-14,uefa.el,FC Barcelona,Eintracht Frankfurt,2,3,True,Barcelona,Ein Frankfurt
+2022-04-14,uefa.el,Olympique Lyonnais,West Ham United,0,3,True,Lyon,West Ham
+2022-04-14,uefa.el,Rangers FC,Sporting Braga,2,1,True,Rangers,Sp Braga
+2022-04-28,uefa.el,RB Leipzig,Rangers FC,1,0,True,RB Leipzig,Rangers
+2022-04-28,uefa.el,West Ham United,Eintracht Frankfurt,1,2,True,West Ham,Ein Frankfurt
+2022-05-05,uefa.el,Rangers FC,RB Leipzig,3,1,True,Rangers,RB Leipzig
+2022-05-05,uefa.el,Eintracht Frankfurt,West Ham United,1,0,True,Ein Frankfurt,West Ham
+2022-05-18,uefa.el,Eintracht Frankfurt,Rangers FC,1,1,True,Ein Frankfurt,Rangers
+2021-09-15,uefa.cl,Manchester City,RB Leipzig,6,3,False,Man City,RB Leipzig
+2021-09-15,uefa.cl,Club Brugge KV,Paris Saint-Germain,1,1,False,Club Brugge,Paris SG
+2021-09-28,uefa.cl,Paris Saint-Germain,Manchester City,2,0,False,Paris SG,Man City
+2021-09-28,uefa.cl,RB Leipzig,Club Brugge KV,1,2,False,RB Leipzig,Club Brugge
+2021-10-19,uefa.cl,Club Brugge KV,Manchester City,1,5,False,Club Brugge,Man City
+2021-10-19,uefa.cl,Paris Saint-Germain,RB Leipzig,3,2,False,Paris SG,RB Leipzig
+2021-11-03,uefa.cl,RB Leipzig,Paris Saint-Germain,2,2,False,RB Leipzig,Paris SG
+2021-11-03,uefa.cl,Manchester City,Club Brugge KV,4,1,False,Man City,Club Brugge
+2021-11-24,uefa.cl,Manchester City,Paris Saint-Germain,2,1,False,Man City,Paris SG
+2021-11-24,uefa.cl,Club Brugge KV,RB Leipzig,0,5,False,Club Brugge,RB Leipzig
+2021-12-07,uefa.cl,RB Leipzig,Manchester City,2,1,False,RB Leipzig,Man City
+2021-12-07,uefa.cl,Paris Saint-Germain,Club Brugge KV,4,1,False,Paris SG,Club Brugge
+2021-09-15,uefa.cl,Atlético Madrid,FC Porto,0,0,False,Ath Madrid,Porto
+2021-09-15,uefa.cl,Liverpool FC,AC Milan,3,2,False,Liverpool,Milan
+2021-09-28,uefa.cl,FC Porto,Liverpool FC,1,5,False,Porto,Liverpool
+2021-09-28,uefa.cl,AC Milan,Atlético Madrid,1,2,False,Milan,Ath Madrid
+2021-10-19,uefa.cl,Atlético Madrid,Liverpool FC,2,3,False,Ath Madrid,Liverpool
+2021-10-19,uefa.cl,FC Porto,AC Milan,1,0,False,Porto,Milan
+2021-11-03,uefa.cl,AC Milan,FC Porto,1,1,False,Milan,Porto
+2021-11-03,uefa.cl,Liverpool FC,Atlético Madrid,2,0,False,Liverpool,Ath Madrid
+2021-11-24,uefa.cl,Liverpool FC,FC Porto,2,0,False,Liverpool,Porto
+2021-11-24,uefa.cl,Atlético Madrid,AC Milan,0,1,False,Ath Madrid,Milan
+2021-12-07,uefa.cl,FC Porto,Atlético Madrid,1,3,False,Porto,Ath Madrid
+2021-12-07,uefa.cl,AC Milan,Liverpool FC,1,2,False,Milan,Liverpool
+2021-09-15,uefa.cl,Beşiktaş,Borussia Dortmund,1,2,False,Besiktas,Dortmund
+2021-09-15,uefa.cl,Sporting CP,AFC Ajax,1,5,False,Sp Lisbon,Ajax
+2021-09-28,uefa.cl,AFC Ajax,Beşiktaş,2,0,False,Ajax,Besiktas
+2021-09-28,uefa.cl,Borussia Dortmund,Sporting CP,1,0,False,Dortmund,Sp Lisbon
+2021-10-19,uefa.cl,Beşiktaş,Sporting CP,1,4,False,Besiktas,Sp Lisbon
+2021-10-19,uefa.cl,AFC Ajax,Borussia Dortmund,4,0,False,Ajax,Dortmund
+2021-11-03,uefa.cl,Borussia Dortmund,AFC Ajax,1,3,False,Dortmund,Ajax
+2021-11-03,uefa.cl,Sporting CP,Beşiktaş,4,0,False,Sp Lisbon,Besiktas
+2021-11-24,uefa.cl,Beşiktaş,AFC Ajax,1,2,False,Besiktas,Ajax
+2021-11-24,uefa.cl,Sporting CP,Borussia Dortmund,3,1,False,Sp Lisbon,Dortmund
+2021-12-07,uefa.cl,AFC Ajax,Sporting CP,4,2,False,Ajax,Sp Lisbon
+2021-12-07,uefa.cl,Borussia Dortmund,Beşiktaş,5,0,False,Dortmund,Besiktas
+2021-09-15,uefa.cl,Inter,Real Madrid,0,1,False,Inter,Real Madrid
+2021-09-28,uefa.cl,Shakhtar Donetsk,Inter,0,0,False,,Inter
+2021-09-28,uefa.cl,Real Madrid,FC Sheriff,1,2,False,Real Madrid,
+2021-10-19,uefa.cl,Shakhtar Donetsk,Real Madrid,0,5,False,,Real Madrid
+2021-10-19,uefa.cl,Inter,FC Sheriff,3,1,False,Inter,
+2021-11-03,uefa.cl,Real Madrid,Shakhtar Donetsk,2,1,False,Real Madrid,
+2021-11-03,uefa.cl,FC Sheriff,Inter,1,3,False,,Inter
+2021-11-24,uefa.cl,Inter,Shakhtar Donetsk,2,0,False,Inter,
+2021-11-24,uefa.cl,FC Sheriff,Real Madrid,0,3,False,,Real Madrid
+2021-12-07,uefa.cl,Real Madrid,Inter,2,0,False,Real Madrid,Inter
+2021-09-14,uefa.cl,FC Barcelona,Bayern München,0,3,False,Barcelona,Bayern Munich
+2021-09-14,uefa.cl,Dinamo Kiev,SL Benfica,0,0,False,,Benfica
+2021-09-29,uefa.cl,SL Benfica,FC Barcelona,3,0,False,Benfica,Barcelona
+2021-09-29,uefa.cl,Bayern München,Dinamo Kiev,5,0,False,Bayern Munich,
+2021-10-20,uefa.cl,FC Barcelona,Dinamo Kiev,1,0,False,Barcelona,
+2021-10-20,uefa.cl,SL Benfica,Bayern München,0,4,False,Benfica,Bayern Munich
+2021-11-02,uefa.cl,Bayern München,SL Benfica,5,2,False,Bayern Munich,Benfica
+2021-11-02,uefa.cl,Dinamo Kiev,FC Barcelona,0,1,False,,Barcelona
+2021-11-23,uefa.cl,Dinamo Kiev,Bayern München,1,2,False,,Bayern Munich
+2021-11-23,uefa.cl,FC Barcelona,SL Benfica,0,0,False,Barcelona,Benfica
+2021-12-08,uefa.cl,Bayern München,FC Barcelona,3,0,False,Bayern Munich,Barcelona
+2021-12-08,uefa.cl,SL Benfica,Dinamo Kiev,2,0,False,Benfica,
+2021-09-14,uefa.cl,BSC Young Boys,Manchester United,2,1,False,,Man United
+2021-09-14,uefa.cl,Villarreal CF,Atalanta,2,2,False,Villarreal,Atalanta
+2021-09-29,uefa.cl,Atalanta,BSC Young Boys,1,0,False,Atalanta,
+2021-09-29,uefa.cl,Manchester United,Villarreal CF,2,1,False,Man United,Villarreal
+2021-10-20,uefa.cl,Manchester United,Atalanta,3,2,False,Man United,Atalanta
+2021-10-20,uefa.cl,BSC Young Boys,Villarreal CF,1,4,False,,Villarreal
+2021-11-02,uefa.cl,Atalanta,Manchester United,2,2,False,Atalanta,Man United
+2021-11-02,uefa.cl,Villarreal CF,BSC Young Boys,2,0,False,Villarreal,
+2021-11-23,uefa.cl,Villarreal CF,Manchester United,0,2,False,Villarreal,Man United
+2021-11-23,uefa.cl,BSC Young Boys,Atalanta,3,3,False,,Atalanta
+2021-12-08,uefa.cl,Manchester United,BSC Young Boys,1,1,False,Man United,
+2021-12-09,uefa.cl,Atalanta,Villarreal CF,2,3,False,Atalanta,Villarreal
+2021-09-14,uefa.cl,Sevilla FC,RB Salzburg,1,1,False,Sevilla,
+2021-09-14,uefa.cl,Lille OSC,VfL Wolfsburg,0,0,False,Lille,Wolfsburg
+2021-09-29,uefa.cl,RB Salzburg,Lille OSC,2,1,False,,Lille
+2021-09-29,uefa.cl,VfL Wolfsburg,Sevilla FC,1,1,False,Wolfsburg,Sevilla
+2021-10-20,uefa.cl,RB Salzburg,VfL Wolfsburg,3,1,False,,Wolfsburg
+2021-10-20,uefa.cl,Lille OSC,Sevilla FC,0,0,False,Lille,Sevilla
+2021-11-02,uefa.cl,VfL Wolfsburg,RB Salzburg,2,1,False,Wolfsburg,
+2021-11-02,uefa.cl,Sevilla FC,Lille OSC,1,2,False,Sevilla,Lille
+2021-11-23,uefa.cl,Lille OSC,RB Salzburg,1,0,False,Lille,
+2021-11-23,uefa.cl,Sevilla FC,VfL Wolfsburg,2,0,False,Sevilla,Wolfsburg
+2021-12-08,uefa.cl,RB Salzburg,Sevilla FC,1,0,False,,Sevilla
+2021-12-08,uefa.cl,VfL Wolfsburg,Lille OSC,1,3,False,Wolfsburg,Lille
+2021-09-14,uefa.cl,Chelsea FC,Zenit St. Petersburg,1,0,False,Chelsea,Zenit
+2021-09-14,uefa.cl,Malmö FF,Juventus,0,3,False,,Juventus
+2021-09-29,uefa.cl,Zenit St. Petersburg,Malmö FF,4,0,False,Zenit,
+2021-09-29,uefa.cl,Juventus,Chelsea FC,1,0,False,Juventus,Chelsea
+2021-10-20,uefa.cl,Zenit St. Petersburg,Juventus,0,1,False,Zenit,Juventus
+2021-10-20,uefa.cl,Chelsea FC,Malmö FF,4,0,False,Chelsea,
+2021-11-02,uefa.cl,Malmö FF,Chelsea FC,0,1,False,,Chelsea
+2021-11-02,uefa.cl,Juventus,Zenit St. Petersburg,4,2,False,Juventus,Zenit
+2021-11-23,uefa.cl,Chelsea FC,Juventus,4,0,False,Chelsea,Juventus
+2021-11-23,uefa.cl,Malmö FF,Zenit St. Petersburg,1,1,False,,Zenit
+2021-12-08,uefa.cl,Zenit St. Petersburg,Chelsea FC,3,3,False,Zenit,Chelsea
+2021-12-08,uefa.cl,Juventus,Malmö FF,1,0,False,Juventus,
+2022-02-15,uefa.cl,Sporting CP,Manchester City,0,5,True,Sp Lisbon,Man City
+2022-02-15,uefa.cl,Paris Saint-Germain,Real Madrid,1,0,True,Paris SG,Real Madrid
+2022-02-16,uefa.cl,RB Salzburg,Bayern München,1,1,True,,Bayern Munich
+2022-02-16,uefa.cl,Inter,Liverpool FC,0,2,True,Inter,Liverpool
+2022-02-22,uefa.cl,Chelsea FC,Lille OSC,2,0,True,Chelsea,Lille
+2022-02-22,uefa.cl,Villarreal CF,Juventus,1,1,True,Villarreal,Juventus
+2022-02-23,uefa.cl,SL Benfica,AFC Ajax,2,2,True,Benfica,Ajax
+2022-02-23,uefa.cl,Atlético Madrid,Manchester United,1,1,True,Ath Madrid,Man United
+2022-03-08,uefa.cl,Bayern München,RB Salzburg,7,1,True,Bayern Munich,
+2022-03-08,uefa.cl,Liverpool FC,Inter,0,1,True,Liverpool,Inter
+2022-03-09,uefa.cl,Manchester City,Sporting CP,0,0,True,Man City,Sp Lisbon
+2022-03-09,uefa.cl,Real Madrid,Paris Saint-Germain,3,1,True,Real Madrid,Paris SG
+2022-03-15,uefa.cl,AFC Ajax,SL Benfica,0,1,True,Ajax,Benfica
+2022-03-15,uefa.cl,Manchester United,Atlético Madrid,0,1,True,Man United,Ath Madrid
+2022-03-16,uefa.cl,Lille OSC,Chelsea FC,1,2,True,Lille,Chelsea
+2022-03-16,uefa.cl,Juventus,Villarreal CF,0,3,True,Juventus,Villarreal
+2022-04-05,uefa.cl,Manchester City,Atlético Madrid,1,0,True,Man City,Ath Madrid
+2022-04-05,uefa.cl,SL Benfica,Liverpool FC,1,3,True,Benfica,Liverpool
+2022-04-06,uefa.cl,Chelsea FC,Real Madrid,1,3,True,Chelsea,Real Madrid
+2022-04-06,uefa.cl,Villarreal CF,Bayern München,1,0,True,Villarreal,Bayern Munich
+2022-04-12,uefa.cl,Real Madrid,Chelsea FC,1,3,True,Real Madrid,Chelsea
+2022-04-12,uefa.cl,Bayern München,Villarreal CF,1,1,True,Bayern Munich,Villarreal
+2022-04-13,uefa.cl,Atlético Madrid,Manchester City,0,0,True,Ath Madrid,Man City
+2022-04-13,uefa.cl,Liverpool FC,SL Benfica,3,3,True,Liverpool,Benfica
+2022-04-26,uefa.cl,Manchester City,Real Madrid,4,3,True,Man City,Real Madrid
+2022-04-27,uefa.cl,Liverpool FC,Villarreal CF,2,0,True,Liverpool,Villarreal
+2022-05-03,uefa.cl,Villarreal CF,Liverpool FC,2,3,True,Villarreal,Liverpool
+2022-05-04,uefa.cl,Real Madrid,Manchester City,2,1,True,Real Madrid,Man City
+2022-05-28,uefa.cl,Liverpool FC,Real Madrid,0,1,True,Liverpool,Real Madrid
+2021-09-16,uefa.conf,FC Flora,KAA Gent,0,1,False,,Gent
+2021-09-30,uefa.conf,KAA Gent,Anorthosis Famagusta,2,0,False,Gent,
+2021-10-21,uefa.conf,Partizan,KAA Gent,0,1,False,,Gent
+2021-11-04,uefa.conf,KAA Gent,Partizan,1,1,False,Gent,
+2021-11-25,uefa.conf,Anorthosis Famagusta,KAA Gent,1,0,False,,Gent
+2021-12-09,uefa.conf,KAA Gent,FC Flora,1,0,False,Gent,
+2021-09-16,uefa.conf,AS Roma,CSKA Sofia,5,1,False,Roma,
+2021-09-30,uefa.conf,Zorya Lugansk,AS Roma,0,3,False,,Roma
+2021-10-21,uefa.conf,FK Bodø/Glimt,AS Roma,6,1,False,,Roma
+2021-11-04,uefa.conf,AS Roma,FK Bodø/Glimt,2,2,False,Roma,
+2021-11-25,uefa.conf,AS Roma,Zorya Lugansk,4,0,False,Roma,
+2021-12-09,uefa.conf,CSKA Sofia,AS Roma,2,3,False,,Roma
+2021-09-16,uefa.conf,Randers FC,AZ Alkmaar,2,2,False,,AZ Alkmaar
+2021-09-30,uefa.conf,AZ Alkmaar,FK Jablonec,1,0,False,AZ Alkmaar,
+2021-10-21,uefa.conf,CFR Cluj,AZ Alkmaar,0,1,False,,AZ Alkmaar
+2021-11-04,uefa.conf,AZ Alkmaar,CFR Cluj,2,0,False,AZ Alkmaar,
+2021-11-25,uefa.conf,FK Jablonec,AZ Alkmaar,1,1,False,,AZ Alkmaar
+2021-12-09,uefa.conf,AZ Alkmaar,Randers FC,1,0,False,AZ Alkmaar,
+2021-09-14,uefa.conf,Maccabi Haifa,Feyenoord,0,0,False,,Feyenoord
+2021-09-16,uefa.conf,Slavia Praha,1. FC Union Berlin,3,1,False,,Union Berlin
+2021-09-30,uefa.conf,1. FC Union Berlin,Maccabi Haifa,3,0,False,Union Berlin,
+2021-09-30,uefa.conf,Feyenoord,Slavia Praha,2,1,False,Feyenoord,
+2021-10-21,uefa.conf,Feyenoord,1. FC Union Berlin,3,1,False,Feyenoord,Union Berlin
+2021-11-04,uefa.conf,1. FC Union Berlin,Feyenoord,1,2,False,Union Berlin,Feyenoord
+2021-11-25,uefa.conf,Maccabi Haifa,1. FC Union Berlin,0,1,False,,Union Berlin
+2021-11-25,uefa.conf,Slavia Praha,Feyenoord,2,2,False,,Feyenoord
+2021-12-09,uefa.conf,1. FC Union Berlin,Slavia Praha,1,1,False,Union Berlin,
+2021-12-09,uefa.conf,Feyenoord,Maccabi Haifa,2,1,False,Feyenoord,
+2021-09-16,uefa.conf,Lincoln Red Imps,PAOK Saloniki,0,2,False,,PAOK
+2021-09-30,uefa.conf,PAOK Saloniki,Slovan Bratislava,1,1,False,PAOK,
+2021-10-21,uefa.conf,FC København,PAOK Saloniki,1,2,False,,PAOK
+2021-11-04,uefa.conf,PAOK Saloniki,FC København,1,2,False,PAOK,
+2021-11-25,uefa.conf,Slovan Bratislava,PAOK Saloniki,0,0,False,,PAOK
+2021-12-09,uefa.conf,PAOK Saloniki,Lincoln Red Imps,2,0,False,PAOK,
+2021-09-16,uefa.conf,NŠ Mura,Vitesse,0,2,False,,Vitesse
+2021-09-16,uefa.conf,Stade Rennais,Tottenham Hotspur,2,2,False,Rennes,Tottenham
+2021-09-30,uefa.conf,Tottenham Hotspur,NŠ Mura,5,1,False,Tottenham,
+2021-09-30,uefa.conf,Vitesse,Stade Rennais,1,2,False,Vitesse,Rennes
+2021-10-21,uefa.conf,NŠ Mura,Stade Rennais,1,2,False,,Rennes
+2021-10-21,uefa.conf,Vitesse,Tottenham Hotspur,1,0,False,Vitesse,Tottenham
+2021-11-04,uefa.conf,Stade Rennais,NŠ Mura,1,0,False,Rennes,
+2021-11-04,uefa.conf,Tottenham Hotspur,Vitesse,3,2,False,Tottenham,Vitesse
+2021-11-25,uefa.conf,NŠ Mura,Tottenham Hotspur,2,1,False,,Tottenham
+2021-11-25,uefa.conf,Stade Rennais,Vitesse,3,3,False,Rennes,Vitesse
+2021-12-09,uefa.conf,Tottenham Hotspur,Stade Rennais,0,3,False,Tottenham,Rennes
+2021-12-09,uefa.conf,Vitesse,NŠ Mura,3,1,False,Vitesse,
+2022-02-17,uefa.conf,PSV Eindhoven,Maccabi Tel Aviv,1,0,False,PSV Eindhoven,
+2022-02-17,uefa.conf,Fenerbahçe,Slavia Praha,2,3,False,Fenerbahce,
+2022-02-17,uefa.conf,FC Midtjylland,PAOK Saloniki,1,0,False,,PAOK
+2022-02-17,uefa.conf,Rapid Wien,Vitesse,2,1,False,,Vitesse
+2022-02-17,uefa.conf,Olympique Marseille,Qarabağ FK,3,1,False,Marseille,
+2022-02-17,uefa.conf,Leicester City,Randers FC,4,1,False,Leicester,
+2022-02-17,uefa.conf,Celtic FC,FK Bodø/Glimt,1,3,False,Celtic,
+2022-02-24,uefa.conf,Qarabağ FK,Olympique Marseille,0,3,False,,Marseille
+2022-02-24,uefa.conf,Maccabi Tel Aviv,PSV Eindhoven,1,1,False,,PSV Eindhoven
+2022-02-24,uefa.conf,Randers FC,Leicester City,1,3,False,,Leicester
+2022-02-24,uefa.conf,FK Bodø/Glimt,Celtic FC,2,0,False,,Celtic
+2022-02-24,uefa.conf,Slavia Praha,Fenerbahçe,3,2,False,,Fenerbahce
+2022-02-24,uefa.conf,PAOK Saloniki,FC Midtjylland,2,1,False,PAOK,
+2022-02-24,uefa.conf,Vitesse,Rapid Wien,2,0,False,Vitesse,
+2022-03-10,uefa.conf,PAOK Saloniki,KAA Gent,1,0,True,PAOK,Gent
+2022-03-10,uefa.conf,Vitesse,AS Roma,0,1,True,Vitesse,Roma
+2022-03-10,uefa.conf,Partizan,Feyenoord,2,5,True,,Feyenoord
+2022-03-10,uefa.conf,Olympique Marseille,FC Basel 1893,2,1,True,Marseille,
+2022-03-10,uefa.conf,Leicester City,Stade Rennais,2,0,True,Leicester,Rennes
+2022-03-10,uefa.conf,PSV Eindhoven,FC København,4,4,True,PSV Eindhoven,
+2022-03-10,uefa.conf,FK Bodø/Glimt,AZ Alkmaar,2,1,True,,AZ Alkmaar
+2022-03-17,uefa.conf,FC Basel 1893,Olympique Marseille,1,2,True,,Marseille
+2022-03-17,uefa.conf,Stade Rennais,Leicester City,2,1,True,Rennes,Leicester
+2022-03-17,uefa.conf,FC København,PSV Eindhoven,0,4,True,,PSV Eindhoven
+2022-03-17,uefa.conf,AZ Alkmaar,FK Bodø/Glimt,2,1,True,AZ Alkmaar,
+2022-03-17,uefa.conf,KAA Gent,PAOK Saloniki,1,2,True,Gent,PAOK
+2022-03-17,uefa.conf,AS Roma,Vitesse,1,1,True,Roma,Vitesse
+2022-03-17,uefa.conf,Feyenoord,Partizan,3,1,True,Feyenoord,
+2022-04-07,uefa.conf,Feyenoord,Slavia Praha,3,3,True,Feyenoord,
+2022-04-07,uefa.conf,FK Bodø/Glimt,AS Roma,2,1,True,,Roma
+2022-04-07,uefa.conf,Olympique Marseille,PAOK Saloniki,2,1,True,Marseille,PAOK
+2022-04-07,uefa.conf,Leicester City,PSV Eindhoven,0,0,True,Leicester,PSV Eindhoven
+2022-04-14,uefa.conf,PSV Eindhoven,Leicester City,1,2,True,PSV Eindhoven,Leicester
+2022-04-14,uefa.conf,AS Roma,FK Bodø/Glimt,4,0,True,Roma,
+2022-04-14,uefa.conf,Slavia Praha,Feyenoord,1,3,True,,Feyenoord
+2022-04-14,uefa.conf,PAOK Saloniki,Olympique Marseille,0,1,True,PAOK,Marseille
+2022-04-28,uefa.conf,Leicester City,AS Roma,1,1,True,Leicester,Roma
+2022-04-28,uefa.conf,Feyenoord,Olympique Marseille,3,2,True,Feyenoord,Marseille
+2022-05-05,uefa.conf,AS Roma,Leicester City,1,0,True,Roma,Leicester
+2022-05-05,uefa.conf,Olympique Marseille,Feyenoord,0,0,True,Marseille,Feyenoord
+2022-05-25,uefa.conf,AS Roma,Feyenoord,1,0,True,Roma,Feyenoord
+2022-09-08,uefa.el,FC Zürich,Arsenal FC,1,2,False,,Arsenal
+2022-09-08,uefa.el,PSV Eindhoven,FK Bodø/Glimt,1,1,False,PSV Eindhoven,
+2022-10-06,uefa.el,FC Zürich,PSV Eindhoven,1,5,False,,PSV Eindhoven
+2022-10-06,uefa.el,Arsenal FC,FK Bodø/Glimt,3,0,False,Arsenal,
+2022-10-13,uefa.el,FK Bodø/Glimt,Arsenal FC,0,1,False,,Arsenal
+2022-10-13,uefa.el,PSV Eindhoven,FC Zürich,5,0,False,PSV Eindhoven,
+2022-10-20,uefa.el,Arsenal FC,PSV Eindhoven,1,0,False,Arsenal,PSV Eindhoven
+2022-10-27,uefa.el,PSV Eindhoven,Arsenal FC,2,0,False,PSV Eindhoven,Arsenal
+2022-11-03,uefa.el,Arsenal FC,FC Zürich,1,0,False,Arsenal,
+2022-11-03,uefa.el,FK Bodø/Glimt,PSV Eindhoven,1,2,False,,PSV Eindhoven
+2022-09-08,uefa.el,Fenerbahçe,Dinamo Kiev,2,1,False,Fenerbahce,
+2022-09-08,uefa.el,AEK Larnaca,Stade Rennais,1,2,False,,Rennes
+2022-09-15,uefa.el,Stade Rennais,Fenerbahçe,2,2,False,Rennes,Fenerbahce
+2022-10-06,uefa.el,Stade Rennais,Dinamo Kiev,2,1,False,Rennes,
+2022-10-06,uefa.el,Fenerbahçe,AEK Larnaca,2,0,False,Fenerbahce,
+2022-10-13,uefa.el,Dinamo Kiev,Stade Rennais,0,1,False,,Rennes
+2022-10-13,uefa.el,AEK Larnaca,Fenerbahçe,1,2,False,,Fenerbahce
+2022-10-27,uefa.el,Fenerbahçe,Stade Rennais,3,3,False,Fenerbahce,Rennes
+2022-11-03,uefa.el,Dinamo Kiev,Fenerbahçe,0,2,False,,Fenerbahce
+2022-11-03,uefa.el,Stade Rennais,AEK Larnaca,1,1,False,Rennes,
+2022-09-08,uefa.el,PFC Ludogorets Razgrad,AS Roma,2,1,False,,Roma
+2022-09-08,uefa.el,HJK Helsinki,Real Betis,0,2,False,,Betis
+2022-09-15,uefa.el,AS Roma,HJK Helsinki,3,0,False,Roma,
+2022-09-15,uefa.el,Real Betis,PFC Ludogorets Razgrad,3,2,False,Betis,
+2022-10-06,uefa.el,AS Roma,Real Betis,1,2,False,Roma,Betis
+2022-10-13,uefa.el,Real Betis,AS Roma,1,1,False,Betis,Roma
+2022-10-27,uefa.el,PFC Ludogorets Razgrad,Real Betis,0,1,False,,Betis
+2022-10-27,uefa.el,HJK Helsinki,AS Roma,1,2,False,,Roma
+2022-11-03,uefa.el,AS Roma,PFC Ludogorets Razgrad,3,1,False,Roma,
+2022-11-03,uefa.el,Real Betis,HJK Helsinki,3,0,False,Betis,
+2022-09-08,uefa.el,Malmö FF,Sporting Braga,0,2,False,,Sp Braga
+2022-09-08,uefa.el,1. FC Union Berlin,Union Saint-Gilloise,0,1,False,Union Berlin,St. Gilloise
+2022-09-15,uefa.el,Sporting Braga,1. FC Union Berlin,1,0,False,Sp Braga,Union Berlin
+2022-09-15,uefa.el,Union Saint-Gilloise,Malmö FF,3,2,False,St. Gilloise,
+2022-10-06,uefa.el,Malmö FF,1. FC Union Berlin,0,1,False,,Union Berlin
+2022-10-06,uefa.el,Sporting Braga,Union Saint-Gilloise,1,2,False,Sp Braga,St. Gilloise
+2022-10-13,uefa.el,Union Saint-Gilloise,Sporting Braga,3,3,False,St. Gilloise,Sp Braga
+2022-10-13,uefa.el,1. FC Union Berlin,Malmö FF,1,0,False,Union Berlin,
+2022-10-27,uefa.el,1. FC Union Berlin,Sporting Braga,1,0,False,Union Berlin,Sp Braga
+2022-10-27,uefa.el,Malmö FF,Union Saint-Gilloise,0,2,False,,St. Gilloise
+2022-11-03,uefa.el,Sporting Braga,Malmö FF,2,1,False,Sp Braga,
+2022-11-03,uefa.el,Union Saint-Gilloise,1. FC Union Berlin,0,1,False,St. Gilloise,Union Berlin
+2022-09-08,uefa.el,Manchester United,Real Sociedad,0,1,False,Man United,Sociedad
+2022-09-15,uefa.el,Real Sociedad,Omonia Nikosia,2,1,False,Sociedad,
+2022-09-15,uefa.el,FC Sheriff,Manchester United,0,2,False,,Man United
+2022-10-06,uefa.el,FC Sheriff,Real Sociedad,0,2,False,,Sociedad
+2022-10-06,uefa.el,Omonia Nikosia,Manchester United,2,3,False,,Man United
+2022-10-13,uefa.el,Manchester United,Omonia Nikosia,1,0,False,Man United,
+2022-10-13,uefa.el,Real Sociedad,FC Sheriff,3,0,False,Sociedad,
+2022-10-27,uefa.el,Manchester United,FC Sheriff,3,0,False,Man United,
+2022-10-27,uefa.el,Omonia Nikosia,Real Sociedad,0,2,False,,Sociedad
+2022-11-03,uefa.el,Real Sociedad,Manchester United,0,1,False,Sociedad,Man United
+2022-09-08,uefa.el,Lazio Roma,Feyenoord,4,2,False,Lazio,Feyenoord
+2022-09-15,uefa.el,FC Midtjylland,Lazio Roma,5,1,False,,Lazio
+2022-09-15,uefa.el,Feyenoord,Sturm Graz,6,0,False,Feyenoord,
+2022-10-06,uefa.el,Sturm Graz,Lazio Roma,0,0,False,,Lazio
+2022-10-06,uefa.el,FC Midtjylland,Feyenoord,2,2,False,,Feyenoord
+2022-10-13,uefa.el,Feyenoord,FC Midtjylland,2,2,False,Feyenoord,
+2022-10-13,uefa.el,Lazio Roma,Sturm Graz,2,2,False,Lazio,
+2022-10-27,uefa.el,Lazio Roma,FC Midtjylland,2,1,False,Lazio,
+2022-10-27,uefa.el,Sturm Graz,Feyenoord,1,0,False,,Feyenoord
+2022-11-03,uefa.el,Feyenoord,Lazio Roma,1,0,False,Feyenoord,Lazio
+2022-09-08,uefa.el,FC Nantes,Olympiakos Piraeus,2,1,False,Nantes,Olympiakos
+2022-09-08,uefa.el,SC Freiburg,Qarabağ FK,2,1,False,Freiburg,
+2022-09-15,uefa.el,Olympiakos Piraeus,SC Freiburg,0,3,False,Olympiakos,Freiburg
+2022-09-15,uefa.el,Qarabağ FK,FC Nantes,3,0,False,,Nantes
+2022-10-06,uefa.el,Olympiakos Piraeus,Qarabağ FK,0,3,False,Olympiakos,
+2022-10-06,uefa.el,SC Freiburg,FC Nantes,2,0,False,Freiburg,Nantes
+2022-10-13,uefa.el,Qarabağ FK,Olympiakos Piraeus,0,0,False,,Olympiakos
+2022-10-13,uefa.el,FC Nantes,SC Freiburg,0,4,False,Nantes,Freiburg
+2022-10-27,uefa.el,SC Freiburg,Olympiakos Piraeus,1,1,False,Freiburg,Olympiakos
+2022-10-27,uefa.el,FC Nantes,Qarabağ FK,2,1,False,Nantes,
+2022-11-03,uefa.el,Olympiakos Piraeus,FC Nantes,0,2,False,Olympiakos,Nantes
+2022-11-03,uefa.el,Qarabağ FK,SC Freiburg,1,1,False,,Freiburg
+2022-09-08,uefa.el,Crvena Zvezda,AS Monaco,0,1,False,,Monaco
+2022-09-08,uefa.el,Ferencvárosi TC,Trabzonspor,3,2,False,,Trabzonspor
+2022-09-15,uefa.el,Trabzonspor,Crvena Zvezda,2,1,False,Trabzonspor,
+2022-09-15,uefa.el,AS Monaco,Ferencvárosi TC,0,1,False,Monaco,
+2022-10-06,uefa.el,AS Monaco,Trabzonspor,3,1,False,Monaco,Trabzonspor
+2022-10-13,uefa.el,Trabzonspor,AS Monaco,4,0,False,Trabzonspor,Monaco
+2022-10-27,uefa.el,Crvena Zvezda,Trabzonspor,2,1,False,,Trabzonspor
+2022-10-27,uefa.el,Ferencvárosi TC,AS Monaco,1,1,False,,Monaco
+2022-11-03,uefa.el,AS Monaco,Crvena Zvezda,4,1,False,Monaco,
+2022-11-03,uefa.el,Trabzonspor,Ferencvárosi TC,1,0,False,Trabzonspor,
+2023-02-16,uefa.el,FC Barcelona,Manchester United,2,2,False,Barcelona,Man United
+2023-02-16,uefa.el,Shakhtar Donetsk,Stade Rennais,2,1,False,,Rennes
+2023-02-16,uefa.el,AFC Ajax,1. FC Union Berlin,0,0,False,Ajax,Union Berlin
+2023-02-16,uefa.el,RB Salzburg,AS Roma,1,0,False,,Roma
+2023-02-16,uefa.el,Juventus,FC Nantes,1,1,False,Juventus,Nantes
+2023-02-16,uefa.el,Sporting CP,FC Midtjylland,1,1,False,Sp Lisbon,
+2023-02-16,uefa.el,Bayer Leverkusen,AS Monaco,2,3,False,Leverkusen,Monaco
+2023-02-16,uefa.el,Sevilla FC,PSV Eindhoven,3,0,False,Sevilla,PSV Eindhoven
+2023-02-23,uefa.el,FC Nantes,Juventus,0,3,False,Nantes,Juventus
+2023-02-23,uefa.el,FC Midtjylland,Sporting CP,0,4,False,,Sp Lisbon
+2023-02-23,uefa.el,AS Monaco,Bayer Leverkusen,2,3,False,Monaco,Leverkusen
+2023-02-23,uefa.el,PSV Eindhoven,Sevilla FC,2,0,False,PSV Eindhoven,Sevilla
+2023-02-23,uefa.el,Manchester United,FC Barcelona,2,1,False,Man United,Barcelona
+2023-02-23,uefa.el,Stade Rennais,Shakhtar Donetsk,1,0,False,Rennes,
+2023-02-23,uefa.el,1. FC Union Berlin,AFC Ajax,3,1,False,Union Berlin,Ajax
+2023-02-23,uefa.el,AS Roma,RB Salzburg,2,0,False,Roma,
+2023-03-09,uefa.el,1. FC Union Berlin,Union Saint-Gilloise,3,3,True,Union Berlin,St. Gilloise
+2023-03-09,uefa.el,Bayer Leverkusen,Ferencvárosi TC,2,0,True,Leverkusen,
+2023-03-09,uefa.el,Sporting CP,Arsenal FC,2,2,True,Sp Lisbon,Arsenal
+2023-03-09,uefa.el,AS Roma,Real Sociedad,2,0,True,Roma,Sociedad
+2023-03-09,uefa.el,Sevilla FC,Fenerbahçe,2,0,True,Sevilla,Fenerbahce
+2023-03-09,uefa.el,Juventus,SC Freiburg,1,0,True,Juventus,Freiburg
+2023-03-09,uefa.el,Manchester United,Real Betis,4,1,True,Man United,Betis
+2023-03-09,uefa.el,Shakhtar Donetsk,Feyenoord,1,1,True,,Feyenoord
+2023-03-16,uefa.el,Fenerbahçe,Sevilla FC,1,0,True,Fenerbahce,Sevilla
+2023-03-16,uefa.el,SC Freiburg,Juventus,0,2,True,Freiburg,Juventus
+2023-03-16,uefa.el,Real Betis,Manchester United,0,1,True,Betis,Man United
+2023-03-16,uefa.el,Feyenoord,Shakhtar Donetsk,7,1,True,Feyenoord,
+2023-03-16,uefa.el,Union Saint-Gilloise,1. FC Union Berlin,3,0,True,St. Gilloise,Union Berlin
+2023-03-16,uefa.el,Ferencvárosi TC,Bayer Leverkusen,0,2,True,,Leverkusen
+2023-03-16,uefa.el,Arsenal FC,Sporting CP,1,1,True,Arsenal,Sp Lisbon
+2023-03-16,uefa.el,Real Sociedad,AS Roma,0,0,True,Sociedad,Roma
+2023-04-13,uefa.el,Feyenoord,AS Roma,1,0,True,Feyenoord,Roma
+2023-04-13,uefa.el,Manchester United,Sevilla FC,2,2,True,Man United,Sevilla
+2023-04-13,uefa.el,Juventus,Sporting CP,1,0,True,Juventus,Sp Lisbon
+2023-04-13,uefa.el,Bayer Leverkusen,Union Saint-Gilloise,1,1,True,Leverkusen,St. Gilloise
+2023-04-20,uefa.el,Sevilla FC,Manchester United,3,0,True,Sevilla,Man United
+2023-04-20,uefa.el,Sporting CP,Juventus,1,1,True,Sp Lisbon,Juventus
+2023-04-20,uefa.el,Union Saint-Gilloise,Bayer Leverkusen,1,4,True,St. Gilloise,Leverkusen
+2023-04-20,uefa.el,AS Roma,Feyenoord,2,1,True,Roma,Feyenoord
+2023-05-11,uefa.el,Juventus,Sevilla FC,1,1,True,Juventus,Sevilla
+2023-05-11,uefa.el,AS Roma,Bayer Leverkusen,1,0,True,Roma,Leverkusen
+2023-05-18,uefa.el,Sevilla FC,Juventus,1,1,True,Sevilla,Juventus
+2023-05-18,uefa.el,Bayer Leverkusen,AS Roma,0,0,True,Leverkusen,Roma
+2023-05-31,uefa.el,Sevilla FC,AS Roma,1,1,True,Sevilla,Roma
+2022-09-07,uefa.cl,AFC Ajax,Rangers FC,4,0,False,Ajax,Rangers
+2022-09-07,uefa.cl,SSC Napoli,Liverpool FC,4,1,False,Napoli,Liverpool
+2022-09-13,uefa.cl,Liverpool FC,AFC Ajax,2,1,False,Liverpool,Ajax
+2022-09-14,uefa.cl,Rangers FC,SSC Napoli,0,3,False,Rangers,Napoli
+2022-10-04,uefa.cl,AFC Ajax,SSC Napoli,1,6,False,Ajax,Napoli
+2022-10-04,uefa.cl,Liverpool FC,Rangers FC,2,0,False,Liverpool,Rangers
+2022-10-12,uefa.cl,SSC Napoli,AFC Ajax,4,2,False,Napoli,Ajax
+2022-10-12,uefa.cl,Rangers FC,Liverpool FC,1,7,False,Rangers,Liverpool
+2022-10-26,uefa.cl,AFC Ajax,Liverpool FC,0,3,False,Ajax,Liverpool
+2022-10-26,uefa.cl,SSC Napoli,Rangers FC,3,0,False,Napoli,Rangers
+2022-11-01,uefa.cl,Rangers FC,AFC Ajax,1,3,False,Rangers,Ajax
+2022-11-01,uefa.cl,Liverpool FC,SSC Napoli,2,0,False,Liverpool,Napoli
+2022-09-07,uefa.cl,Atlético Madrid,FC Porto,2,1,False,Ath Madrid,Porto
+2022-09-07,uefa.cl,Club Brugge KV,Bayer Leverkusen,1,0,False,Club Brugge,Leverkusen
+2022-09-13,uefa.cl,Bayer Leverkusen,Atlético Madrid,2,0,False,Leverkusen,Ath Madrid
+2022-09-13,uefa.cl,FC Porto,Club Brugge KV,0,4,False,Porto,Club Brugge
+2022-10-04,uefa.cl,Club Brugge KV,Atlético Madrid,2,0,False,Club Brugge,Ath Madrid
+2022-10-04,uefa.cl,FC Porto,Bayer Leverkusen,2,0,False,Porto,Leverkusen
+2022-10-12,uefa.cl,Atlético Madrid,Club Brugge KV,0,0,False,Ath Madrid,Club Brugge
+2022-10-12,uefa.cl,Bayer Leverkusen,FC Porto,0,3,False,Leverkusen,Porto
+2022-10-26,uefa.cl,Club Brugge KV,FC Porto,0,4,False,Club Brugge,Porto
+2022-10-26,uefa.cl,Atlético Madrid,Bayer Leverkusen,2,2,False,Ath Madrid,Leverkusen
+2022-11-01,uefa.cl,FC Porto,Atlético Madrid,2,1,False,Porto,Ath Madrid
+2022-11-01,uefa.cl,Bayer Leverkusen,Club Brugge KV,0,0,False,Leverkusen,Club Brugge
+2022-09-07,uefa.cl,Inter,Bayern München,0,2,False,Inter,Bayern Munich
+2022-09-07,uefa.cl,FC Barcelona,Viktoria Plzeň,5,1,False,Barcelona,
+2022-09-13,uefa.cl,Viktoria Plzeň,Inter,0,2,False,,Inter
+2022-09-13,uefa.cl,Bayern München,FC Barcelona,2,0,False,Bayern Munich,Barcelona
+2022-10-04,uefa.cl,Bayern München,Viktoria Plzeň,5,0,False,Bayern Munich,
+2022-10-04,uefa.cl,Inter,FC Barcelona,1,0,False,Inter,Barcelona
+2022-10-12,uefa.cl,Viktoria Plzeň,Bayern München,2,4,False,,Bayern Munich
+2022-10-12,uefa.cl,FC Barcelona,Inter,3,3,False,Barcelona,Inter
+2022-10-26,uefa.cl,Inter,Viktoria Plzeň,4,0,False,Inter,
+2022-10-26,uefa.cl,FC Barcelona,Bayern München,0,3,False,Barcelona,Bayern Munich
+2022-11-01,uefa.cl,Bayern München,Inter,2,0,False,Bayern Munich,Inter
+2022-11-01,uefa.cl,Viktoria Plzeň,FC Barcelona,2,4,False,,Barcelona
+2022-09-07,uefa.cl,Eintracht Frankfurt,Sporting CP,0,3,False,Ein Frankfurt,Sp Lisbon
+2022-09-07,uefa.cl,Tottenham Hotspur,Olympique Marseille,2,0,False,Tottenham,Marseille
+2022-09-13,uefa.cl,Sporting CP,Tottenham Hotspur,2,0,False,Sp Lisbon,Tottenham
+2022-09-13,uefa.cl,Olympique Marseille,Eintracht Frankfurt,0,1,False,Marseille,Ein Frankfurt
+2022-10-04,uefa.cl,Olympique Marseille,Sporting CP,4,1,False,Marseille,Sp Lisbon
+2022-10-04,uefa.cl,Eintracht Frankfurt,Tottenham Hotspur,0,0,False,Ein Frankfurt,Tottenham
+2022-10-12,uefa.cl,Tottenham Hotspur,Eintracht Frankfurt,3,2,False,Tottenham,Ein Frankfurt
+2022-10-12,uefa.cl,Sporting CP,Olympique Marseille,0,2,False,Sp Lisbon,Marseille
+2022-10-26,uefa.cl,Eintracht Frankfurt,Olympique Marseille,2,1,False,Ein Frankfurt,Marseille
+2022-10-26,uefa.cl,Tottenham Hotspur,Sporting CP,1,1,False,Tottenham,Sp Lisbon
+2022-11-01,uefa.cl,Sporting CP,Eintracht Frankfurt,1,2,False,Sp Lisbon,Ein Frankfurt
+2022-11-01,uefa.cl,Olympique Marseille,Tottenham Hotspur,1,2,False,Marseille,Tottenham
+2022-09-06,uefa.cl,Dinamo Zagreb,Chelsea FC,1,0,False,,Chelsea
+2022-09-06,uefa.cl,RB Salzburg,AC Milan,1,1,False,,Milan
+2022-09-14,uefa.cl,AC Milan,Dinamo Zagreb,3,1,False,Milan,
+2022-09-14,uefa.cl,Chelsea FC,RB Salzburg,1,1,False,Chelsea,
+2022-10-05,uefa.cl,Chelsea FC,AC Milan,3,0,False,Chelsea,Milan
+2022-10-11,uefa.cl,AC Milan,Chelsea FC,0,2,False,Milan,Chelsea
+2022-10-25,uefa.cl,RB Salzburg,Chelsea FC,1,2,False,,Chelsea
+2022-10-25,uefa.cl,Dinamo Zagreb,AC Milan,0,4,False,,Milan
+2022-11-02,uefa.cl,AC Milan,RB Salzburg,4,0,False,Milan,
+2022-11-02,uefa.cl,Chelsea FC,Dinamo Zagreb,2,1,False,Chelsea,
+2022-09-06,uefa.cl,Celtic FC,Real Madrid,0,3,False,Celtic,Real Madrid
+2022-09-06,uefa.cl,RB Leipzig,Shakhtar Donetsk,1,4,False,RB Leipzig,
+2022-09-14,uefa.cl,Shakhtar Donetsk,Celtic FC,1,1,False,,Celtic
+2022-09-14,uefa.cl,Real Madrid,RB Leipzig,2,0,False,Real Madrid,RB Leipzig
+2022-10-05,uefa.cl,RB Leipzig,Celtic FC,3,1,False,RB Leipzig,Celtic
+2022-10-05,uefa.cl,Real Madrid,Shakhtar Donetsk,2,1,False,Real Madrid,
+2022-10-11,uefa.cl,Celtic FC,RB Leipzig,0,2,False,Celtic,RB Leipzig
+2022-10-11,uefa.cl,Shakhtar Donetsk,Real Madrid,1,1,False,,Real Madrid
+2022-10-25,uefa.cl,Celtic FC,Shakhtar Donetsk,1,1,False,Celtic,
+2022-10-25,uefa.cl,RB Leipzig,Real Madrid,3,2,False,RB Leipzig,Real Madrid
+2022-11-02,uefa.cl,Real Madrid,Celtic FC,5,1,False,Real Madrid,Celtic
+2022-11-02,uefa.cl,Shakhtar Donetsk,RB Leipzig,0,4,False,,RB Leipzig
+2022-09-06,uefa.cl,Borussia Dortmund,FC København,3,0,False,Dortmund,
+2022-09-06,uefa.cl,Sevilla FC,Manchester City,0,4,False,Sevilla,Man City
+2022-09-14,uefa.cl,Manchester City,Borussia Dortmund,2,1,False,Man City,Dortmund
+2022-09-14,uefa.cl,FC København,Sevilla FC,0,0,False,,Sevilla
+2022-10-05,uefa.cl,Sevilla FC,Borussia Dortmund,1,4,False,Sevilla,Dortmund
+2022-10-05,uefa.cl,Manchester City,FC København,5,0,False,Man City,
+2022-10-11,uefa.cl,FC København,Manchester City,0,0,False,,Man City
+2022-10-11,uefa.cl,Borussia Dortmund,Sevilla FC,1,1,False,Dortmund,Sevilla
+2022-10-25,uefa.cl,Sevilla FC,FC København,3,0,False,Sevilla,
+2022-10-25,uefa.cl,Borussia Dortmund,Manchester City,0,0,False,Dortmund,Man City
+2022-11-02,uefa.cl,FC København,Borussia Dortmund,1,1,False,,Dortmund
+2022-11-02,uefa.cl,Manchester City,Sevilla FC,3,1,False,Man City,Sevilla
+2022-09-06,uefa.cl,Paris Saint-Germain,Juventus,2,1,False,Paris SG,Juventus
+2022-09-06,uefa.cl,SL Benfica,Maccabi Haifa,2,0,False,Benfica,
+2022-09-14,uefa.cl,Juventus,SL Benfica,1,2,False,Juventus,Benfica
+2022-09-14,uefa.cl,Maccabi Haifa,Paris Saint-Germain,1,3,False,,Paris SG
+2022-10-05,uefa.cl,Juventus,Maccabi Haifa,3,1,False,Juventus,
+2022-10-05,uefa.cl,SL Benfica,Paris Saint-Germain,1,1,False,Benfica,Paris SG
+2022-10-11,uefa.cl,Maccabi Haifa,Juventus,2,0,False,,Juventus
+2022-10-11,uefa.cl,Paris Saint-Germain,SL Benfica,1,1,False,Paris SG,Benfica
+2022-10-25,uefa.cl,SL Benfica,Juventus,4,3,False,Benfica,Juventus
+2022-10-25,uefa.cl,Paris Saint-Germain,Maccabi Haifa,7,2,False,Paris SG,
+2022-11-02,uefa.cl,Juventus,Paris Saint-Germain,1,2,False,Juventus,Paris SG
+2022-11-02,uefa.cl,Maccabi Haifa,SL Benfica,1,6,False,,Benfica
+2023-02-14,uefa.cl,AC Milan,Tottenham Hotspur,1,0,True,Milan,Tottenham
+2023-02-14,uefa.cl,Paris Saint-Germain,Bayern München,0,1,True,Paris SG,Bayern Munich
+2023-02-15,uefa.cl,Club Brugge KV,SL Benfica,0,2,True,Club Brugge,Benfica
+2023-02-15,uefa.cl,Borussia Dortmund,Chelsea FC,1,0,True,Dortmund,Chelsea
+2023-02-21,uefa.cl,Liverpool FC,Real Madrid,2,5,True,Liverpool,Real Madrid
+2023-02-21,uefa.cl,Eintracht Frankfurt,SSC Napoli,0,2,True,Ein Frankfurt,Napoli
+2023-02-22,uefa.cl,RB Leipzig,Manchester City,1,1,True,RB Leipzig,Man City
+2023-02-22,uefa.cl,Inter,FC Porto,1,0,True,Inter,Porto
+2023-03-07,uefa.cl,SL Benfica,Club Brugge KV,5,1,True,Benfica,Club Brugge
+2023-03-07,uefa.cl,Chelsea FC,Borussia Dortmund,2,0,True,Chelsea,Dortmund
+2023-03-08,uefa.cl,Bayern München,Paris Saint-Germain,2,0,True,Bayern Munich,Paris SG
+2023-03-08,uefa.cl,Tottenham Hotspur,AC Milan,0,0,True,Tottenham,Milan
+2023-03-14,uefa.cl,Manchester City,RB Leipzig,7,0,True,Man City,RB Leipzig
+2023-03-14,uefa.cl,FC Porto,Inter,0,0,True,Porto,Inter
+2023-03-15,uefa.cl,Real Madrid,Liverpool FC,1,0,True,Real Madrid,Liverpool
+2023-03-15,uefa.cl,SSC Napoli,Eintracht Frankfurt,3,0,True,Napoli,Ein Frankfurt
+2023-04-11,uefa.cl,SL Benfica,Inter,0,2,True,Benfica,Inter
+2023-04-11,uefa.cl,Manchester City,Bayern München,3,0,True,Man City,Bayern Munich
+2023-04-12,uefa.cl,Real Madrid,Chelsea FC,2,0,True,Real Madrid,Chelsea
+2023-04-12,uefa.cl,AC Milan,SSC Napoli,1,0,True,Milan,Napoli
+2023-04-18,uefa.cl,Chelsea FC,Real Madrid,0,2,True,Chelsea,Real Madrid
+2023-04-18,uefa.cl,SSC Napoli,AC Milan,1,1,True,Napoli,Milan
+2023-04-19,uefa.cl,Inter,SL Benfica,3,3,True,Inter,Benfica
+2023-04-19,uefa.cl,Bayern München,Manchester City,1,1,True,Bayern Munich,Man City
+2023-05-09,uefa.cl,Real Madrid,Manchester City,1,1,True,Real Madrid,Man City
+2023-05-10,uefa.cl,AC Milan,Inter,0,2,True,Milan,Inter
+2023-05-16,uefa.cl,Inter,AC Milan,1,0,True,Inter,Milan
+2023-05-17,uefa.cl,Manchester City,Real Madrid,4,0,True,Man City,Real Madrid
+2023-06-10,uefa.cl,Manchester City,Inter,1,0,True,Man City,Inter
+2022-09-08,uefa.conf,Heart of Midlothian,İstanbul Başakşehir,0,4,False,Hearts,Buyuksehyr
+2022-09-08,uefa.conf,ACF Fiorentina,FK RFS,1,1,False,Fiorentina,
+2022-09-15,uefa.conf,İstanbul Başakşehir,ACF Fiorentina,3,0,False,Buyuksehyr,Fiorentina
+2022-09-15,uefa.conf,FK RFS,Heart of Midlothian,0,2,False,,Hearts
+2022-10-06,uefa.conf,Heart of Midlothian,ACF Fiorentina,0,3,False,Hearts,Fiorentina
+2022-10-06,uefa.conf,FK RFS,İstanbul Başakşehir,0,0,False,,Buyuksehyr
+2022-10-13,uefa.conf,ACF Fiorentina,Heart of Midlothian,5,1,False,Fiorentina,Hearts
+2022-10-13,uefa.conf,İstanbul Başakşehir,FK RFS,3,0,False,Buyuksehyr,
+2022-10-27,uefa.conf,ACF Fiorentina,İstanbul Başakşehir,2,1,False,Fiorentina,Buyuksehyr
+2022-10-27,uefa.conf,Heart of Midlothian,FK RFS,2,1,False,Hearts,
+2022-11-03,uefa.conf,İstanbul Başakşehir,Heart of Midlothian,3,1,False,Buyuksehyr,Hearts
+2022-11-03,uefa.conf,FK RFS,ACF Fiorentina,0,3,False,,Fiorentina
+2022-09-08,uefa.conf,RSC Anderlecht,Silkeborg IF,1,0,False,Anderlecht,
+2022-09-08,uefa.conf,West Ham United,FCSB,3,1,False,West Ham,
+2022-09-15,uefa.conf,FCSB,RSC Anderlecht,0,0,False,,Anderlecht
+2022-09-15,uefa.conf,Silkeborg IF,West Ham United,2,3,False,,West Ham
+2022-10-06,uefa.conf,RSC Anderlecht,West Ham United,0,1,False,Anderlecht,West Ham
+2022-10-13,uefa.conf,West Ham United,RSC Anderlecht,2,1,False,West Ham,Anderlecht
+2022-10-27,uefa.conf,RSC Anderlecht,FCSB,2,2,False,Anderlecht,
+2022-10-27,uefa.conf,West Ham United,Silkeborg IF,1,0,False,West Ham,
+2022-11-03,uefa.conf,FCSB,West Ham United,0,3,False,,West Ham
+2022-11-03,uefa.conf,Silkeborg IF,RSC Anderlecht,0,2,False,,Anderlecht
+2022-09-08,uefa.conf,Villarreal CF,Lech Poznań,4,3,False,Villarreal,
+2022-09-15,uefa.conf,Hapoel Be'er Sheva,Villarreal CF,1,2,False,,Villarreal
+2022-10-06,uefa.conf,Villarreal CF,Austria Wien,5,0,False,Villarreal,
+2022-10-13,uefa.conf,Austria Wien,Villarreal CF,0,1,False,,Villarreal
+2022-10-27,uefa.conf,Villarreal CF,Hapoel Be'er Sheva,2,2,False,Villarreal,
+2022-11-03,uefa.conf,Lech Poznań,Villarreal CF,3,0,False,,Villarreal
+2022-09-08,uefa.conf,OGC Nice,1. FC Köln,1,1,False,Nice,FC Koln
+2022-09-15,uefa.conf,Partizan,OGC Nice,1,1,False,,Nice
+2022-09-15,uefa.conf,1. FC Köln,1. FC Slovácko,4,2,False,FC Koln,
+2022-10-06,uefa.conf,1. FC Slovácko,OGC Nice,0,1,False,,Nice
+2022-10-06,uefa.conf,1. FC Köln,Partizan,0,1,False,FC Koln,
+2022-10-13,uefa.conf,Partizan,1. FC Köln,2,0,False,,FC Koln
+2022-10-13,uefa.conf,OGC Nice,1. FC Slovácko,1,2,False,Nice,
+2022-10-27,uefa.conf,OGC Nice,Partizan,2,1,False,Nice,
+2022-10-28,uefa.conf,1. FC Slovácko,1. FC Köln,0,1,False,,FC Koln
+2022-11-03,uefa.conf,1. FC Köln,OGC Nice,2,2,False,FC Koln,Nice
+2022-09-08,uefa.conf,SK Dnipro-1,AZ Alkmaar,0,1,False,,AZ Alkmaar
+2022-09-15,uefa.conf,AZ Alkmaar,FC Vaduz,4,1,False,AZ Alkmaar,
+2022-10-06,uefa.conf,AZ Alkmaar,Apollon Limassol,3,2,False,AZ Alkmaar,
+2022-10-13,uefa.conf,Apollon Limassol,AZ Alkmaar,1,0,False,,AZ Alkmaar
+2022-10-27,uefa.conf,FC Vaduz,AZ Alkmaar,1,2,False,,AZ Alkmaar
+2022-11-03,uefa.conf,AZ Alkmaar,SK Dnipro-1,2,1,False,AZ Alkmaar,
+2022-09-08,uefa.conf,Molde FK,KAA Gent,0,0,False,,Gent
+2022-09-15,uefa.conf,KAA Gent,Shamrock Rovers,3,0,False,Gent,
+2022-10-06,uefa.conf,KAA Gent,Djurgårdens IF,0,1,False,Gent,
+2022-10-13,uefa.conf,Djurgårdens IF,KAA Gent,4,2,False,,Gent
+2022-10-27,uefa.conf,Shamrock Rovers,KAA Gent,1,1,False,,Gent
+2022-11-03,uefa.conf,KAA Gent,Molde FK,4,0,False,Gent,
+2022-09-08,uefa.conf,Sivasspor,Slavia Praha,1,1,False,Sivasspor,
+2022-09-15,uefa.conf,CFR Cluj,Sivasspor,0,1,False,,Sivasspor
+2022-10-06,uefa.conf,Sivasspor,KF Ballkani,3,4,False,Sivasspor,
+2022-10-13,uefa.conf,KF Ballkani,Sivasspor,1,2,False,,Sivasspor
+2022-10-27,uefa.conf,Sivasspor,CFR Cluj,3,0,False,Sivasspor,
+2022-11-03,uefa.conf,Slavia Praha,Sivasspor,1,1,False,,Sivasspor
+2023-02-16,uefa.conf,Qarabağ FK,KAA Gent,1,0,False,,Gent
+2023-02-16,uefa.conf,Trabzonspor,FC Basel 1893,1,0,False,Trabzonspor,
+2023-02-16,uefa.conf,Sporting Braga,ACF Fiorentina,0,4,False,Sp Braga,Fiorentina
+2023-02-16,uefa.conf,Lazio Roma,CFR Cluj,1,0,False,Lazio,
+2023-02-16,uefa.conf,PFC Ludogorets Razgrad,RSC Anderlecht,1,0,False,,Anderlecht
+2023-02-23,uefa.conf,CFR Cluj,Lazio Roma,0,0,False,,Lazio
+2023-02-23,uefa.conf,RSC Anderlecht,PFC Ludogorets Razgrad,2,1,False,Anderlecht,
+2023-02-23,uefa.conf,KAA Gent,Qarabağ FK,1,0,False,Gent,
+2023-02-23,uefa.conf,FC Basel 1893,Trabzonspor,2,0,False,,Trabzonspor
+2023-02-23,uefa.conf,ACF Fiorentina,Sporting Braga,3,2,False,Fiorentina,Sp Braga
+2023-03-07,uefa.conf,Lazio Roma,AZ Alkmaar,1,2,True,Lazio,AZ Alkmaar
+2023-03-09,uefa.conf,AEK Larnaca,West Ham United,0,2,True,,West Ham
+2023-03-09,uefa.conf,FC Sheriff,OGC Nice,0,1,True,,Nice
+2023-03-09,uefa.conf,RSC Anderlecht,Villarreal CF,1,1,True,Anderlecht,Villarreal
+2023-03-09,uefa.conf,ACF Fiorentina,Sivasspor,1,0,True,Fiorentina,Sivasspor
+2023-03-09,uefa.conf,KAA Gent,İstanbul Başakşehir,1,1,True,Gent,Buyuksehyr
+2023-03-15,uefa.conf,İstanbul Başakşehir,KAA Gent,1,4,True,Buyuksehyr,Gent
+2023-03-16,uefa.conf,Sivasspor,ACF Fiorentina,1,4,True,Sivasspor,Fiorentina
+2023-03-16,uefa.conf,West Ham United,AEK Larnaca,4,0,True,West Ham,
+2023-03-16,uefa.conf,AZ Alkmaar,Lazio Roma,2,1,True,AZ Alkmaar,Lazio
+2023-03-16,uefa.conf,OGC Nice,FC Sheriff,3,1,True,Nice,
+2023-03-16,uefa.conf,Villarreal CF,RSC Anderlecht,0,1,True,Villarreal,Anderlecht
+2023-04-13,uefa.conf,KAA Gent,West Ham United,1,1,True,Gent,West Ham
+2023-04-13,uefa.conf,Lech Poznań,ACF Fiorentina,1,4,True,,Fiorentina
+2023-04-13,uefa.conf,RSC Anderlecht,AZ Alkmaar,2,0,True,Anderlecht,AZ Alkmaar
+2023-04-13,uefa.conf,FC Basel 1893,OGC Nice,2,2,True,,Nice
+2023-04-20,uefa.conf,ACF Fiorentina,Lech Poznań,2,3,True,Fiorentina,
+2023-04-20,uefa.conf,AZ Alkmaar,RSC Anderlecht,2,0,True,AZ Alkmaar,Anderlecht
+2023-04-20,uefa.conf,West Ham United,KAA Gent,4,1,True,West Ham,Gent
+2023-04-20,uefa.conf,OGC Nice,FC Basel 1893,1,1,True,Nice,
+2023-05-11,uefa.conf,ACF Fiorentina,FC Basel 1893,1,2,True,Fiorentina,
+2023-05-11,uefa.conf,West Ham United,AZ Alkmaar,2,1,True,West Ham,AZ Alkmaar
+2023-05-18,uefa.conf,FC Basel 1893,ACF Fiorentina,1,2,True,,Fiorentina
+2023-05-18,uefa.conf,AZ Alkmaar,West Ham United,0,1,True,AZ Alkmaar,West Ham
+2023-06-07,uefa.conf,ACF Fiorentina,West Ham United,1,2,True,Fiorentina,West Ham
+2023-09-21,uefa.el,Olympiakos Piraeus,SC Freiburg,2,3,False,Olympiakos,Freiburg
+2023-09-21,uefa.el,West Ham United,TSC Bačka Topola,3,1,False,West Ham,
+2023-10-05,uefa.el,SC Freiburg,West Ham United,1,2,False,Freiburg,West Ham
+2023-10-05,uefa.el,TSC Bačka Topola,Olympiakos Piraeus,2,2,False,,Olympiakos
+2023-10-26,uefa.el,Olympiakos Piraeus,West Ham United,2,1,False,Olympiakos,West Ham
+2023-10-26,uefa.el,TSC Bačka Topola,SC Freiburg,1,3,False,,Freiburg
+2023-11-09,uefa.el,SC Freiburg,TSC Bačka Topola,5,0,False,Freiburg,
+2023-11-09,uefa.el,West Ham United,Olympiakos Piraeus,1,0,False,West Ham,Olympiakos
+2023-11-30,uefa.el,SC Freiburg,Olympiakos Piraeus,5,0,False,Freiburg,Olympiakos
+2023-11-30,uefa.el,TSC Bačka Topola,West Ham United,0,1,False,,West Ham
+2023-12-14,uefa.el,Olympiakos Piraeus,TSC Bačka Topola,5,2,False,Olympiakos,
+2023-12-14,uefa.el,West Ham United,SC Freiburg,2,0,False,West Ham,Freiburg
+2023-09-21,uefa.el,AFC Ajax,Olympique Marseille,3,3,False,Ajax,Marseille
+2023-09-21,uefa.el,Brighton & Hove Albion,AEK Athen,2,3,False,Brighton,AEK
+2023-10-05,uefa.el,AEK Athen,AFC Ajax,1,1,False,AEK,Ajax
+2023-10-05,uefa.el,Olympique Marseille,Brighton & Hove Albion,2,2,False,Marseille,Brighton
+2023-10-26,uefa.el,Olympique Marseille,AEK Athen,3,1,False,Marseille,AEK
+2023-10-26,uefa.el,Brighton & Hove Albion,AFC Ajax,2,0,False,Brighton,Ajax
+2023-11-09,uefa.el,AFC Ajax,Brighton & Hove Albion,0,2,False,Ajax,Brighton
+2023-11-09,uefa.el,AEK Athen,Olympique Marseille,0,2,False,AEK,Marseille
+2023-11-30,uefa.el,AEK Athen,Brighton & Hove Albion,0,1,False,AEK,Brighton
+2023-11-30,uefa.el,Olympique Marseille,AFC Ajax,4,3,False,Marseille,Ajax
+2023-12-14,uefa.el,AFC Ajax,AEK Athen,3,1,False,Ajax,AEK
+2023-12-14,uefa.el,Brighton & Hove Albion,Olympique Marseille,1,0,False,Brighton,Marseille
+2023-09-21,uefa.el,Rangers FC,Real Betis,1,0,False,Rangers,Betis
+2023-10-05,uefa.el,Aris Limassol,Rangers FC,2,1,False,,Rangers
+2023-10-05,uefa.el,Real Betis,AC Sparta Praha,2,1,False,Betis,
+2023-10-26,uefa.el,AC Sparta Praha,Rangers FC,0,0,False,,Rangers
+2023-10-26,uefa.el,Aris Limassol,Real Betis,0,1,False,,Betis
+2023-11-09,uefa.el,Rangers FC,AC Sparta Praha,2,1,False,Rangers,
+2023-11-09,uefa.el,Real Betis,Aris Limassol,4,1,False,Betis,
+2023-11-30,uefa.el,AC Sparta Praha,Real Betis,1,0,False,,Betis
+2023-11-30,uefa.el,Rangers FC,Aris Limassol,1,1,False,Rangers,
+2023-12-14,uefa.el,Real Betis,Rangers FC,2,3,False,Betis,Rangers
+2023-09-21,uefa.el,Atalanta,Raków Częstochowa,2,0,False,Atalanta,
+2023-09-21,uefa.el,Sturm Graz,Sporting CP,1,2,False,,Sp Lisbon
+2023-10-05,uefa.el,Sporting CP,Atalanta,1,2,False,Sp Lisbon,Atalanta
+2023-10-26,uefa.el,Raków Częstochowa,Sporting CP,1,1,False,,Sp Lisbon
+2023-10-26,uefa.el,Sturm Graz,Atalanta,2,2,False,,Atalanta
+2023-11-09,uefa.el,Atalanta,Sturm Graz,1,0,False,Atalanta,
+2023-11-09,uefa.el,Sporting CP,Raków Częstochowa,2,1,False,Sp Lisbon,
+2023-11-30,uefa.el,Atalanta,Sporting CP,1,1,False,Atalanta,Sp Lisbon
+2023-12-14,uefa.el,Raków Częstochowa,Atalanta,0,4,False,,Atalanta
+2023-12-14,uefa.el,Sporting CP,Sturm Graz,3,0,False,Sp Lisbon,
+2023-09-21,uefa.el,Union Saint-Gilloise,Toulouse FC,1,1,False,St. Gilloise,Toulouse
+2023-09-21,uefa.el,LASK,Liverpool FC,1,3,False,,Liverpool
+2023-10-05,uefa.el,Liverpool FC,Union Saint-Gilloise,2,0,False,Liverpool,St. Gilloise
+2023-10-05,uefa.el,Toulouse FC,LASK,1,0,False,Toulouse,
+2023-10-26,uefa.el,Liverpool FC,Toulouse FC,5,1,False,Liverpool,Toulouse
+2023-10-26,uefa.el,Union Saint-Gilloise,LASK,2,1,False,St. Gilloise,
+2023-11-09,uefa.el,Toulouse FC,Liverpool FC,3,2,False,Toulouse,Liverpool
+2023-11-09,uefa.el,LASK,Union Saint-Gilloise,3,0,False,,St. Gilloise
+2023-11-30,uefa.el,Liverpool FC,LASK,4,0,False,Liverpool,
+2023-11-30,uefa.el,Toulouse FC,Union Saint-Gilloise,0,0,False,Toulouse,St. Gilloise
+2023-12-14,uefa.el,Union Saint-Gilloise,Liverpool FC,2,1,False,St. Gilloise,Liverpool
+2023-12-14,uefa.el,LASK,Toulouse FC,1,2,False,,Toulouse
+2023-09-21,uefa.el,Stade Rennais,Maccabi Haifa,3,0,False,Rennes,
+2023-09-21,uefa.el,Panathinaikos,Villarreal CF,2,0,False,Panathinaikos,Villarreal
+2023-10-05,uefa.el,Villarreal CF,Stade Rennais,1,0,False,Villarreal,Rennes
+2023-10-05,uefa.el,Maccabi Haifa,Panathinaikos,0,0,False,,Panathinaikos
+2023-10-26,uefa.el,Panathinaikos,Stade Rennais,1,2,False,Panathinaikos,Rennes
+2023-11-09,uefa.el,Stade Rennais,Panathinaikos,3,1,False,Rennes,Panathinaikos
+2023-11-09,uefa.el,Maccabi Haifa,Villarreal CF,1,2,False,,Villarreal
+2023-11-30,uefa.el,Maccabi Haifa,Stade Rennais,0,3,False,,Rennes
+2023-11-30,uefa.el,Villarreal CF,Panathinaikos,3,2,False,Villarreal,Panathinaikos
+2023-12-06,uefa.el,Villarreal CF,Maccabi Haifa,0,0,False,Villarreal,
+2023-12-14,uefa.el,Stade Rennais,Villarreal CF,2,3,False,Rennes,Villarreal
+2023-12-14,uefa.el,Panathinaikos,Maccabi Haifa,1,2,False,Panathinaikos,
+2023-09-21,uefa.el,FC Sheriff,AS Roma,1,2,False,,Roma
+2023-10-05,uefa.el,AS Roma,Servette FC,4,0,False,Roma,
+2023-10-26,uefa.el,AS Roma,Slavia Praha,2,0,False,Roma,
+2023-11-09,uefa.el,Slavia Praha,AS Roma,2,0,False,,Roma
+2023-11-30,uefa.el,Servette FC,AS Roma,1,1,False,,Roma
+2023-12-14,uefa.el,AS Roma,FC Sheriff,3,0,False,Roma,
+2023-09-21,uefa.el,Bayer Leverkusen,BK Häcken,4,0,False,Leverkusen,
+2023-10-05,uefa.el,Molde FK,Bayer Leverkusen,1,2,False,,Leverkusen
+2023-10-26,uefa.el,Bayer Leverkusen,Qarabağ FK,5,1,False,Leverkusen,
+2023-11-09,uefa.el,Qarabağ FK,Bayer Leverkusen,0,1,False,,Leverkusen
+2023-11-30,uefa.el,BK Häcken,Bayer Leverkusen,0,2,False,,Leverkusen
+2023-12-14,uefa.el,Bayer Leverkusen,Molde FK,5,1,False,Leverkusen,
+2024-02-15,uefa.el,Feyenoord,AS Roma,1,1,False,Feyenoord,Roma
+2024-02-15,uefa.el,BSC Young Boys,Sporting CP,1,3,False,,Sp Lisbon
+2024-02-15,uefa.el,Galatasaray,AC Sparta Praha,3,2,False,Galatasaray,
+2024-02-15,uefa.el,Shakhtar Donetsk,Olympique Marseille,2,2,False,,Marseille
+2024-02-15,uefa.el,AC Milan,Stade Rennais,3,0,False,Milan,Rennes
+2024-02-15,uefa.el,RC Lens,SC Freiburg,0,0,False,Lens,Freiburg
+2024-02-15,uefa.el,SL Benfica,Toulouse FC,2,1,False,Benfica,Toulouse
+2024-02-15,uefa.el,Sporting Braga,Qarabağ FK,2,4,False,Sp Braga,
+2024-02-22,uefa.el,Stade Rennais,AC Milan,3,2,False,Rennes,Milan
+2024-02-22,uefa.el,SC Freiburg,RC Lens,2,2,False,Freiburg,Lens
+2024-02-22,uefa.el,Toulouse FC,SL Benfica,0,0,False,Toulouse,Benfica
+2024-02-22,uefa.el,Qarabağ FK,Sporting Braga,0,2,False,,Sp Braga
+2024-02-22,uefa.el,AS Roma,Feyenoord,1,1,False,Roma,Feyenoord
+2024-02-22,uefa.el,Sporting CP,BSC Young Boys,1,1,False,Sp Lisbon,
+2024-02-22,uefa.el,AC Sparta Praha,Galatasaray,4,1,False,,Galatasaray
+2024-02-22,uefa.el,Olympique Marseille,Shakhtar Donetsk,3,1,False,Marseille,
+2024-03-06,uefa.el,Sporting CP,Atalanta,1,1,True,Sp Lisbon,Atalanta
+2024-03-07,uefa.el,AC Sparta Praha,Liverpool FC,1,5,True,,Liverpool
+2024-03-07,uefa.el,AS Roma,Brighton & Hove Albion,4,0,True,Roma,Brighton
+2024-03-07,uefa.el,Qarabağ FK,Bayer Leverkusen,2,2,True,,Leverkusen
+2024-03-07,uefa.el,Olympique Marseille,Villarreal CF,4,0,True,Marseille,Villarreal
+2024-03-07,uefa.el,SL Benfica,Rangers FC,2,2,True,Benfica,Rangers
+2024-03-07,uefa.el,SC Freiburg,West Ham United,1,0,True,Freiburg,West Ham
+2024-03-07,uefa.el,AC Milan,Slavia Praha,4,2,True,Milan,
+2024-03-14,uefa.el,Villarreal CF,Olympique Marseille,3,1,True,Villarreal,Marseille
+2024-03-14,uefa.el,Rangers FC,SL Benfica,0,1,True,Rangers,Benfica
+2024-03-14,uefa.el,West Ham United,SC Freiburg,5,0,True,West Ham,Freiburg
+2024-03-14,uefa.el,Slavia Praha,AC Milan,1,3,True,,Milan
+2024-03-14,uefa.el,Liverpool FC,AC Sparta Praha,6,1,True,Liverpool,
+2024-03-14,uefa.el,Brighton & Hove Albion,AS Roma,1,0,True,Brighton,Roma
+2024-03-14,uefa.el,Atalanta,Sporting CP,2,1,True,Atalanta,Sp Lisbon
+2024-03-14,uefa.el,Bayer Leverkusen,Qarabağ FK,3,2,True,Leverkusen,
+2024-04-11,uefa.el,AC Milan,AS Roma,0,1,True,Milan,Roma
+2024-04-11,uefa.el,Liverpool FC,Atalanta,0,3,True,Liverpool,Atalanta
+2024-04-11,uefa.el,Bayer Leverkusen,West Ham United,2,0,True,Leverkusen,West Ham
+2024-04-11,uefa.el,SL Benfica,Olympique Marseille,2,1,True,Benfica,Marseille
+2024-04-18,uefa.el,AS Roma,AC Milan,2,1,True,Roma,Milan
+2024-04-18,uefa.el,Atalanta,Liverpool FC,0,1,True,Atalanta,Liverpool
+2024-04-18,uefa.el,West Ham United,Bayer Leverkusen,1,1,True,West Ham,Leverkusen
+2024-04-18,uefa.el,Olympique Marseille,SL Benfica,1,0,True,Marseille,Benfica
+2024-05-02,uefa.el,Olympique Marseille,Atalanta,1,1,True,Marseille,Atalanta
+2024-05-02,uefa.el,AS Roma,Bayer Leverkusen,0,2,True,Roma,Leverkusen
+2024-05-09,uefa.el,Atalanta,Olympique Marseille,3,0,True,Atalanta,Marseille
+2024-05-09,uefa.el,Bayer Leverkusen,AS Roma,2,2,True,Leverkusen,Roma
+2024-05-22,uefa.el,Atalanta,Bayer Leverkusen,3,0,True,Atalanta,Leverkusen
+2023-09-19,uefa.cl,AC Milan,Newcastle United FC,0,0,False,Milan,Newcastle
+2023-09-19,uefa.cl,BSC Young Boys,RB Leipzig,1,3,False,,RB Leipzig
+2023-09-19,uefa.cl,SS Lazio,Club Atlético de Madrid,1,1,False,Lazio,Ath Madrid
+2023-09-19,uefa.cl,Feyenoord Rotterdam,Celtic FC,2,0,False,Feyenoord,Celtic
+2023-09-19,uefa.cl,Paris Saint-Germain FC,Borussia Dortmund,2,0,False,Paris SG,Dortmund
+2023-09-19,uefa.cl,Manchester City FC,FK Crvena Zvezda,3,1,False,Man City,
+2023-09-19,uefa.cl,FC Barcelona,Royal Antwerp FC,5,0,False,Barcelona,Antwerp
+2023-09-19,uefa.cl,FK Shakhtar Donetsk,FC Porto,1,3,False,,Porto
+2023-09-20,uefa.cl,Real Madrid CF,1. FC Union Berlin,1,0,False,Real Madrid,Union Berlin
+2023-09-20,uefa.cl,Galatasaray SK,FC København,2,2,False,Galatasaray,
+2023-09-20,uefa.cl,Sevilla FC,Racing Club de Lens,1,1,False,Sevilla,Lens
+2023-09-20,uefa.cl,Sporting Clube de Braga,SSC Napoli,1,2,False,Sp Braga,Napoli
+2023-09-20,uefa.cl,Real Sociedad de Fútbol,FC Internazionale Milano,1,1,False,Sociedad,Inter
+2023-09-20,uefa.cl,Sport Lisboa e Benfica,FC Red Bull Salzburg,0,2,False,Benfica,
+2023-09-20,uefa.cl,FC Bayern München,Manchester United FC,4,3,False,Bayern Munich,Man United
+2023-09-20,uefa.cl,Arsenal FC,PSV,4,0,False,Arsenal,PSV Eindhoven
+2023-10-03,uefa.cl,1. FC Union Berlin,Sporting Clube de Braga,2,3,False,Union Berlin,Sp Braga
+2023-10-03,uefa.cl,FC Red Bull Salzburg,Real Sociedad de Fútbol,0,2,False,,Sociedad
+2023-10-03,uefa.cl,SSC Napoli,Real Madrid CF,2,3,False,Napoli,Real Madrid
+2023-10-03,uefa.cl,FC Internazionale Milano,Sport Lisboa e Benfica,1,0,False,Inter,Benfica
+2023-10-03,uefa.cl,FC København,FC Bayern München,1,2,False,,Bayern Munich
+2023-10-03,uefa.cl,Manchester United FC,Galatasaray SK,2,3,False,Man United,Galatasaray
+2023-10-03,uefa.cl,Racing Club de Lens,Arsenal FC,2,1,False,Lens,Arsenal
+2023-10-03,uefa.cl,PSV,Sevilla FC,2,2,False,PSV Eindhoven,Sevilla
+2023-10-04,uefa.cl,Club Atlético de Madrid,Feyenoord Rotterdam,3,2,False,Ath Madrid,Feyenoord
+2023-10-04,uefa.cl,Royal Antwerp FC,FK Shakhtar Donetsk,2,3,False,Antwerp,
+2023-10-04,uefa.cl,Celtic FC,SS Lazio,1,2,False,Celtic,Lazio
+2023-10-04,uefa.cl,Borussia Dortmund,AC Milan,0,0,False,Dortmund,Milan
+2023-10-04,uefa.cl,Newcastle United FC,Paris Saint-Germain FC,4,1,False,Newcastle,Paris SG
+2023-10-04,uefa.cl,RB Leipzig,Manchester City FC,1,3,False,RB Leipzig,Man City
+2023-10-04,uefa.cl,FC Porto,FC Barcelona,0,1,False,Porto,Barcelona
+2023-10-24,uefa.cl,FC Internazionale Milano,FC Red Bull Salzburg,2,1,False,Inter,
+2023-10-24,uefa.cl,Galatasaray SK,FC Bayern München,1,3,False,Galatasaray,Bayern Munich
+2023-10-24,uefa.cl,1. FC Union Berlin,SSC Napoli,0,1,False,Union Berlin,Napoli
+2023-10-24,uefa.cl,Sporting Clube de Braga,Real Madrid CF,1,2,False,Sp Braga,Real Madrid
+2023-10-24,uefa.cl,Sport Lisboa e Benfica,Real Sociedad de Fútbol,0,1,False,Benfica,Sociedad
+2023-10-24,uefa.cl,Manchester United FC,FC København,1,0,False,Man United,
+2023-10-24,uefa.cl,Sevilla FC,Arsenal FC,1,2,False,Sevilla,Arsenal
+2023-10-24,uefa.cl,Racing Club de Lens,PSV,1,1,False,Lens,PSV Eindhoven
+2023-10-25,uefa.cl,Feyenoord Rotterdam,SS Lazio,3,1,False,Feyenoord,Lazio
+2023-10-25,uefa.cl,FC Barcelona,FK Shakhtar Donetsk,2,1,False,Barcelona,
+2023-10-25,uefa.cl,Celtic FC,Club Atlético de Madrid,2,2,False,Celtic,Ath Madrid
+2023-10-25,uefa.cl,Paris Saint-Germain FC,AC Milan,3,0,False,Paris SG,Milan
+2023-10-25,uefa.cl,Newcastle United FC,Borussia Dortmund,0,1,False,Newcastle,Dortmund
+2023-10-25,uefa.cl,BSC Young Boys,Manchester City FC,1,3,False,,Man City
+2023-10-25,uefa.cl,RB Leipzig,FK Crvena Zvezda,3,1,False,RB Leipzig,
+2023-10-25,uefa.cl,Royal Antwerp FC,FC Porto,1,4,False,Antwerp,Porto
+2023-11-07,uefa.cl,Borussia Dortmund,Newcastle United FC,2,0,False,Dortmund,Newcastle
+2023-11-07,uefa.cl,FK Shakhtar Donetsk,FC Barcelona,1,0,False,,Barcelona
+2023-11-07,uefa.cl,Club Atlético de Madrid,Celtic FC,6,0,False,Ath Madrid,Celtic
+2023-11-07,uefa.cl,SS Lazio,Feyenoord Rotterdam,1,0,False,Lazio,Feyenoord
+2023-11-07,uefa.cl,AC Milan,Paris Saint-Germain FC,2,1,False,Milan,Paris SG
+2023-11-07,uefa.cl,Manchester City FC,BSC Young Boys,3,0,False,Man City,
+2023-11-07,uefa.cl,FK Crvena Zvezda,RB Leipzig,1,2,False,,RB Leipzig
+2023-11-07,uefa.cl,FC Porto,Royal Antwerp FC,2,0,False,Porto,Antwerp
+2023-11-08,uefa.cl,SSC Napoli,1. FC Union Berlin,1,1,False,Napoli,Union Berlin
+2023-11-08,uefa.cl,Real Sociedad de Fútbol,Sport Lisboa e Benfica,3,1,False,Sociedad,Benfica
+2023-11-08,uefa.cl,Real Madrid CF,Sporting Clube de Braga,3,0,False,Real Madrid,Sp Braga
+2023-11-08,uefa.cl,FC Red Bull Salzburg,FC Internazionale Milano,0,1,False,,Inter
+2023-11-08,uefa.cl,FC Bayern München,Galatasaray SK,2,1,False,Bayern Munich,Galatasaray
+2023-11-08,uefa.cl,FC København,Manchester United FC,4,3,False,,Man United
+2023-11-08,uefa.cl,Arsenal FC,Sevilla FC,2,0,False,Arsenal,Sevilla
+2023-11-08,uefa.cl,PSV,Racing Club de Lens,1,0,False,PSV Eindhoven,Lens
+2023-11-28,uefa.cl,SS Lazio,Celtic FC,2,0,False,Lazio,Celtic
+2023-11-28,uefa.cl,FK Shakhtar Donetsk,Royal Antwerp FC,1,0,False,,Antwerp
+2023-11-28,uefa.cl,Feyenoord Rotterdam,Club Atlético de Madrid,1,3,False,Feyenoord,Ath Madrid
+2023-11-28,uefa.cl,AC Milan,Borussia Dortmund,1,3,False,Milan,Dortmund
+2023-11-28,uefa.cl,Paris Saint-Germain FC,Newcastle United FC,1,1,False,Paris SG,Newcastle
+2023-11-28,uefa.cl,Manchester City FC,RB Leipzig,3,2,False,Man City,RB Leipzig
+2023-11-28,uefa.cl,FC Barcelona,FC Porto,2,1,False,Barcelona,Porto
+2023-11-29,uefa.cl,Galatasaray SK,Manchester United FC,3,3,False,Galatasaray,Man United
+2023-11-29,uefa.cl,Sevilla FC,PSV,2,3,False,Sevilla,PSV Eindhoven
+2023-11-29,uefa.cl,Sporting Clube de Braga,1. FC Union Berlin,1,1,False,Sp Braga,Union Berlin
+2023-11-29,uefa.cl,Real Madrid CF,SSC Napoli,4,2,False,Real Madrid,Napoli
+2023-11-29,uefa.cl,Sport Lisboa e Benfica,FC Internazionale Milano,3,3,False,Benfica,Inter
+2023-11-29,uefa.cl,Real Sociedad de Fútbol,FC Red Bull Salzburg,0,0,False,Sociedad,
+2023-11-29,uefa.cl,FC Bayern München,FC København,0,0,False,Bayern Munich,
+2023-11-29,uefa.cl,Arsenal FC,Racing Club de Lens,6,0,False,Arsenal,Lens
+2023-12-12,uefa.cl,PSV,Arsenal FC,1,1,False,PSV Eindhoven,Arsenal
+2023-12-12,uefa.cl,Racing Club de Lens,Sevilla FC,2,1,False,Lens,Sevilla
+2023-12-12,uefa.cl,1. FC Union Berlin,Real Madrid CF,2,3,False,Union Berlin,Real Madrid
+2023-12-12,uefa.cl,SSC Napoli,Sporting Clube de Braga,2,0,False,Napoli,Sp Braga
+2023-12-12,uefa.cl,FC Internazionale Milano,Real Sociedad de Fútbol,0,0,False,Inter,Sociedad
+2023-12-12,uefa.cl,FC Red Bull Salzburg,Sport Lisboa e Benfica,1,3,False,,Benfica
+2023-12-12,uefa.cl,Manchester United FC,FC Bayern München,0,1,False,Man United,Bayern Munich
+2023-12-12,uefa.cl,FC København,Galatasaray SK,1,0,False,,Galatasaray
+2023-12-13,uefa.cl,RB Leipzig,BSC Young Boys,2,1,False,RB Leipzig,
+2023-12-13,uefa.cl,FK Crvena Zvezda,Manchester City FC,2,3,False,,Man City
+2023-12-13,uefa.cl,Club Atlético de Madrid,SS Lazio,2,0,False,Ath Madrid,Lazio
+2023-12-13,uefa.cl,Celtic FC,Feyenoord Rotterdam,2,1,False,Celtic,Feyenoord
+2023-12-13,uefa.cl,Newcastle United FC,AC Milan,1,2,False,Newcastle,Milan
+2023-12-13,uefa.cl,Borussia Dortmund,Paris Saint-Germain FC,1,1,False,Dortmund,Paris SG
+2023-12-13,uefa.cl,Royal Antwerp FC,FC Barcelona,3,2,False,Antwerp,Barcelona
+2023-12-13,uefa.cl,FC Porto,FK Shakhtar Donetsk,5,3,False,Porto,
+2024-02-13,uefa.cl,FC København,Manchester City FC,1,3,True,,Man City
+2024-02-13,uefa.cl,RB Leipzig,Real Madrid CF,0,1,True,RB Leipzig,Real Madrid
+2024-02-14,uefa.cl,Paris Saint-Germain FC,Real Sociedad de Fútbol,2,0,True,Paris SG,Sociedad
+2024-02-14,uefa.cl,SS Lazio,FC Bayern München,1,0,True,Lazio,Bayern Munich
+2024-02-20,uefa.cl,FC Internazionale Milano,Club Atlético de Madrid,1,0,True,Inter,Ath Madrid
+2024-02-20,uefa.cl,PSV,Borussia Dortmund,1,1,True,PSV Eindhoven,Dortmund
+2024-02-21,uefa.cl,FC Porto,Arsenal FC,1,0,True,Porto,Arsenal
+2024-02-21,uefa.cl,SSC Napoli,FC Barcelona,1,1,True,Napoli,Barcelona
+2024-03-05,uefa.cl,Real Sociedad de Fútbol,Paris Saint-Germain FC,1,2,True,Sociedad,Paris SG
+2024-03-05,uefa.cl,FC Bayern München,SS Lazio,3,0,True,Bayern Munich,Lazio
+2024-03-06,uefa.cl,Manchester City FC,FC København,3,1,True,Man City,
+2024-03-06,uefa.cl,Real Madrid CF,RB Leipzig,1,1,True,Real Madrid,RB Leipzig
+2024-03-12,uefa.cl,Arsenal FC,FC Porto,1,0,True,Arsenal,Porto
+2024-03-12,uefa.cl,FC Barcelona,SSC Napoli,3,1,True,Barcelona,Napoli
+2024-03-13,uefa.cl,Club Atlético de Madrid,FC Internazionale Milano,2,1,True,Ath Madrid,Inter
+2024-03-13,uefa.cl,Borussia Dortmund,PSV,2,0,True,Dortmund,PSV Eindhoven
+2024-04-09,uefa.cl,Arsenal FC,FC Bayern München,2,2,True,Arsenal,Bayern Munich
+2024-04-09,uefa.cl,Real Madrid CF,Manchester City FC,3,3,True,Real Madrid,Man City
+2024-04-10,uefa.cl,Club Atlético de Madrid,Borussia Dortmund,2,1,True,Ath Madrid,Dortmund
+2024-04-10,uefa.cl,Paris Saint-Germain FC,FC Barcelona,2,3,True,Paris SG,Barcelona
+2024-04-16,uefa.cl,Borussia Dortmund,Club Atlético de Madrid,4,2,True,Dortmund,Ath Madrid
+2024-04-16,uefa.cl,FC Barcelona,Paris Saint-Germain FC,1,4,True,Barcelona,Paris SG
+2024-04-17,uefa.cl,FC Bayern München,Arsenal FC,1,0,True,Bayern Munich,Arsenal
+2024-04-17,uefa.cl,Manchester City FC,Real Madrid CF,1,1,True,Man City,Real Madrid
+2024-04-30,uefa.cl,FC Bayern München,Real Madrid CF,2,2,True,Bayern Munich,Real Madrid
+2024-05-01,uefa.cl,Borussia Dortmund,Paris Saint-Germain FC,1,0,True,Dortmund,Paris SG
+2024-05-07,uefa.cl,Paris Saint-Germain FC,Borussia Dortmund,0,1,True,Paris SG,Dortmund
+2024-05-08,uefa.cl,Real Madrid CF,FC Bayern München,2,1,True,Real Madrid,Bayern Munich
+2024-06-01,uefa.cl,Borussia Dortmund,Real Madrid CF,0,2,True,Dortmund,Real Madrid
+2023-09-20,uefa.conf,Lille OSC,Olimpija Ljubljana,2,0,False,Lille,
+2023-10-05,uefa.conf,KÍ Klaksvík,Lille OSC,0,0,False,,Lille
+2023-10-26,uefa.conf,Lille OSC,Slovan Bratislava,2,1,False,Lille,
+2023-11-09,uefa.conf,Slovan Bratislava,Lille OSC,1,1,False,,Lille
+2023-11-30,uefa.conf,Olimpija Ljubljana,Lille OSC,0,2,False,,Lille
+2023-12-14,uefa.conf,Lille OSC,KÍ Klaksvík,3,0,False,Lille,
+2023-09-21,uefa.conf,Zorya Lugansk,KAA Gent,1,1,False,,Gent
+2023-10-05,uefa.conf,KAA Gent,Maccabi Tel Aviv,2,0,False,Gent,
+2023-10-26,uefa.conf,KAA Gent,Breiðablik,5,0,False,Gent,
+2023-11-09,uefa.conf,Breiðablik,KAA Gent,2,3,False,,Gent
+2023-11-30,uefa.conf,KAA Gent,Zorya Lugansk,4,1,False,Gent,
+2023-12-14,uefa.conf,Maccabi Tel Aviv,KAA Gent,3,1,False,,Gent
+2023-09-21,uefa.conf,Club Brugge KV,Beşiktaş,1,1,False,Club Brugge,Besiktas
+2023-10-05,uefa.conf,Beşiktaş,FC Lugano,2,3,False,Besiktas,
+2023-10-05,uefa.conf,FK Bodø/Glimt,Club Brugge KV,0,1,False,,Club Brugge
+2023-10-26,uefa.conf,FC Lugano,Club Brugge KV,1,3,False,,Club Brugge
+2023-10-26,uefa.conf,FK Bodø/Glimt,Beşiktaş,3,1,False,,Besiktas
+2023-11-09,uefa.conf,Beşiktaş,FK Bodø/Glimt,1,2,False,Besiktas,
+2023-11-09,uefa.conf,Club Brugge KV,FC Lugano,2,0,False,Club Brugge,
+2023-11-30,uefa.conf,Beşiktaş,Club Brugge KV,0,5,False,Besiktas,Club Brugge
+2023-12-14,uefa.conf,Club Brugge KV,FK Bodø/Glimt,3,1,False,Club Brugge,
+2023-12-14,uefa.conf,FC Lugano,Beşiktaş,0,2,False,,Besiktas
+2023-09-21,uefa.conf,Legia Warszawa,Aston Villa,3,2,False,,Aston Villa
+2023-09-21,uefa.conf,Zrinjski Mostar,AZ Alkmaar,4,3,False,,AZ Alkmaar
+2023-10-05,uefa.conf,Aston Villa,Zrinjski Mostar,1,0,False,Aston Villa,
+2023-10-05,uefa.conf,AZ Alkmaar,Legia Warszawa,1,0,False,AZ Alkmaar,
+2023-10-26,uefa.conf,AZ Alkmaar,Aston Villa,1,4,False,AZ Alkmaar,Aston Villa
+2023-11-09,uefa.conf,Aston Villa,AZ Alkmaar,2,1,False,Aston Villa,AZ Alkmaar
+2023-11-30,uefa.conf,AZ Alkmaar,Zrinjski Mostar,1,0,False,AZ Alkmaar,
+2023-11-30,uefa.conf,Aston Villa,Legia Warszawa,2,1,False,Aston Villa,
+2023-12-14,uefa.conf,Legia Warszawa,AZ Alkmaar,2,0,False,,AZ Alkmaar
+2023-12-14,uefa.conf,Zrinjski Mostar,Aston Villa,1,1,False,,Aston Villa
+2023-09-21,uefa.conf,KRC Genk,ACF Fiorentina,2,2,False,Genk,Fiorentina
+2023-10-05,uefa.conf,ACF Fiorentina,Ferencvárosi TC,2,2,False,Fiorentina,
+2023-10-05,uefa.conf,FK Čukarički,KRC Genk,0,2,False,,Genk
+2023-10-26,uefa.conf,ACF Fiorentina,FK Čukarički,6,0,False,Fiorentina,
+2023-10-26,uefa.conf,KRC Genk,Ferencvárosi TC,0,0,False,Genk,
+2023-11-09,uefa.conf,Ferencvárosi TC,KRC Genk,1,1,False,,Genk
+2023-11-09,uefa.conf,FK Čukarički,ACF Fiorentina,0,1,False,,Fiorentina
+2023-11-30,uefa.conf,ACF Fiorentina,KRC Genk,2,1,False,Fiorentina,Genk
+2023-12-14,uefa.conf,Ferencvárosi TC,ACF Fiorentina,1,1,False,,Fiorentina
+2023-12-14,uefa.conf,KRC Genk,FK Čukarički,2,0,False,Genk,
+2023-09-21,uefa.conf,Eintracht Frankfurt,Aberdeen FC,2,1,False,Ein Frankfurt,Aberdeen
+2023-09-21,uefa.conf,HJK Helsinki,PAOK Saloniki,2,3,False,,PAOK
+2023-10-05,uefa.conf,Aberdeen FC,HJK Helsinki,1,1,False,Aberdeen,
+2023-10-05,uefa.conf,PAOK Saloniki,Eintracht Frankfurt,2,1,False,PAOK,Ein Frankfurt
+2023-10-26,uefa.conf,Aberdeen FC,PAOK Saloniki,2,3,False,Aberdeen,PAOK
+2023-10-26,uefa.conf,Eintracht Frankfurt,HJK Helsinki,6,0,False,Ein Frankfurt,
+2023-11-09,uefa.conf,HJK Helsinki,Eintracht Frankfurt,0,1,False,,Ein Frankfurt
+2023-11-09,uefa.conf,PAOK Saloniki,Aberdeen FC,2,2,False,PAOK,Aberdeen
+2023-11-30,uefa.conf,HJK Helsinki,Aberdeen FC,2,2,False,,Aberdeen
+2023-11-30,uefa.conf,Eintracht Frankfurt,PAOK Saloniki,1,2,False,Ein Frankfurt,PAOK
+2023-12-14,uefa.conf,Aberdeen FC,Eintracht Frankfurt,2,0,False,Aberdeen,Ein Frankfurt
+2023-12-14,uefa.conf,PAOK Saloniki,HJK Helsinki,4,2,False,PAOK,
+2023-09-21,uefa.conf,Fenerbahçe,FC Nordsjælland,3,1,False,Fenerbahce,
+2023-10-05,uefa.conf,Spartak Trnava,Fenerbahçe,1,2,False,,Fenerbahce
+2023-10-26,uefa.conf,Fenerbahçe,PFC Ludogorets Razgrad,3,1,False,Fenerbahce,
+2023-11-09,uefa.conf,PFC Ludogorets Razgrad,Fenerbahçe,2,0,False,,Fenerbahce
+2023-11-30,uefa.conf,FC Nordsjælland,Fenerbahçe,6,1,False,,Fenerbahce
+2023-12-14,uefa.conf,Fenerbahçe,Spartak Trnava,4,0,False,Fenerbahce,
+2024-02-15,uefa.conf,Union Saint-Gilloise,Eintracht Frankfurt,2,2,False,St. Gilloise,Ein Frankfurt
+2024-02-15,uefa.conf,Olympiakos Piraeus,Ferencvárosi TC,1,0,False,Olympiakos,
+2024-02-15,uefa.conf,Real Betis,Dinamo Zagreb,0,1,False,Betis,
+2024-02-15,uefa.conf,AFC Ajax,FK Bodø/Glimt,2,2,False,Ajax,
+2024-02-15,uefa.conf,Maccabi Haifa,KAA Gent,1,0,False,,Gent
+2024-02-21,uefa.conf,KAA Gent,Maccabi Haifa,1,1,False,Gent,
+2024-02-22,uefa.conf,Dinamo Zagreb,Real Betis,1,1,False,,Betis
+2024-02-22,uefa.conf,FK Bodø/Glimt,AFC Ajax,1,1,False,,Ajax
+2024-02-22,uefa.conf,Eintracht Frankfurt,Union Saint-Gilloise,1,2,False,Ein Frankfurt,St. Gilloise
+2024-02-22,uefa.conf,Ferencvárosi TC,Olympiakos Piraeus,0,1,False,,Olympiakos
+2024-03-07,uefa.conf,AFC Ajax,Aston Villa,0,0,True,Ajax,Aston Villa
+2024-03-07,uefa.conf,Molde FK,Club Brugge KV,2,1,True,,Club Brugge
+2024-03-07,uefa.conf,Sturm Graz,Lille OSC,0,3,True,,Lille
+2024-03-07,uefa.conf,Olympiakos Piraeus,Maccabi Tel Aviv,1,4,True,Olympiakos,
+2024-03-07,uefa.conf,Union Saint-Gilloise,Fenerbahçe,0,3,True,St. Gilloise,Fenerbahce
+2024-03-07,uefa.conf,Dinamo Zagreb,PAOK Saloniki,2,0,True,,PAOK
+2024-03-07,uefa.conf,Maccabi Haifa,ACF Fiorentina,3,4,True,,Fiorentina
+2024-03-14,uefa.conf,Fenerbahçe,Union Saint-Gilloise,0,1,True,Fenerbahce,St. Gilloise
+2024-03-14,uefa.conf,PAOK Saloniki,Dinamo Zagreb,5,1,True,PAOK,
+2024-03-14,uefa.conf,ACF Fiorentina,Maccabi Haifa,1,1,True,Fiorentina,
+2024-03-14,uefa.conf,Aston Villa,AFC Ajax,4,0,True,Aston Villa,Ajax
+2024-03-14,uefa.conf,Club Brugge KV,Molde FK,3,0,True,Club Brugge,
+2024-03-14,uefa.conf,Lille OSC,Sturm Graz,1,1,True,Lille,
+2024-03-14,uefa.conf,Maccabi Tel Aviv,Olympiakos Piraeus,1,4,True,,Olympiakos
+2024-04-11,uefa.conf,Olympiakos Piraeus,Fenerbahçe,3,2,True,Olympiakos,Fenerbahce
+2024-04-11,uefa.conf,Viktoria Plzeň,ACF Fiorentina,0,0,True,,Fiorentina
+2024-04-11,uefa.conf,Club Brugge KV,PAOK Saloniki,1,0,True,Club Brugge,PAOK
+2024-04-11,uefa.conf,Aston Villa,Lille OSC,2,1,True,Aston Villa,Lille
+2024-04-18,uefa.conf,Lille OSC,Aston Villa,2,1,True,Lille,Aston Villa
+2024-04-18,uefa.conf,ACF Fiorentina,Viktoria Plzeň,0,0,True,Fiorentina,
+2024-04-18,uefa.conf,PAOK Saloniki,Club Brugge KV,0,2,True,PAOK,Club Brugge
+2024-04-18,uefa.conf,Fenerbahçe,Olympiakos Piraeus,1,0,True,Fenerbahce,Olympiakos
+2024-05-02,uefa.conf,Aston Villa,Olympiakos Piraeus,2,4,True,Aston Villa,Olympiakos
+2024-05-02,uefa.conf,ACF Fiorentina,Club Brugge KV,3,2,True,Fiorentina,Club Brugge
+2024-05-08,uefa.conf,Club Brugge KV,ACF Fiorentina,1,1,True,Club Brugge,Fiorentina
+2024-05-09,uefa.conf,Olympiakos Piraeus,Aston Villa,2,0,True,Olympiakos,Aston Villa
+2024-05-29,uefa.conf,Olympiakos Piraeus,ACF Fiorentina,0,0,True,Olympiakos,Fiorentina
+2024-07-25,uefa.elq,MFK Ružomberok,Trabzonspor,0,2,False,,Trabzonspor
+2024-07-25,uefa.elq,Panathinaikos,Botev Plovdiv,2,1,False,Panathinaikos,
+2024-07-25,uefa.elq,AFC Ajax,Vojvodina,1,0,False,Ajax,
+2024-07-25,uefa.elq,Kilmarnock FC,Cercle Brugge,1,1,False,Kilmarnock,Cercle Brugge
+2024-07-25,uefa.elq,Sporting Braga,Maccabi Petach-Tikva,2,0,False,Sp Braga,
+2024-08-01,uefa.elq,Trabzonspor,MFK Ružomberok,1,0,False,Trabzonspor,
+2024-08-01,uefa.elq,Maccabi Petach-Tikva,Sporting Braga,0,5,False,,Sp Braga
+2024-08-01,uefa.elq,Vojvodina,AFC Ajax,1,3,False,,Ajax
+2024-08-01,uefa.elq,Cercle Brugge,Kilmarnock FC,1,0,False,Cercle Brugge,Kilmarnock
+2024-08-01,uefa.elq,Botev Plovdiv,Panathinaikos,0,4,False,,Panathinaikos
+2024-08-08,uefa.elq,Molde FK,Cercle Brugge,3,0,False,,Cercle Brugge
+2024-08-08,uefa.elq,Trabzonspor,Rapid Wien,0,1,False,Trabzonspor,
+2024-08-08,uefa.elq,Panathinaikos,AFC Ajax,0,1,False,Panathinaikos,Ajax
+2024-08-08,uefa.elq,Sporting Braga,Servette FC,0,0,False,Sp Braga,
+2024-08-15,uefa.elq,Rapid Wien,Trabzonspor,2,0,False,,Trabzonspor
+2024-08-15,uefa.elq,Cercle Brugge,Molde FK,1,0,False,Cercle Brugge,
+2024-08-15,uefa.elq,AFC Ajax,Panathinaikos,0,1,False,Ajax,Panathinaikos
+2024-08-15,uefa.elq,Servette FC,Sporting Braga,1,2,False,,Sp Braga
+2024-08-22,uefa.elq,Viktoria Plzeň,Heart of Midlothian,1,0,False,,Hearts
+2024-08-22,uefa.elq,PAOK Saloniki,Shamrock Rovers,4,0,False,PAOK,
+2024-08-22,uefa.elq,FC Lugano,Beşiktaş,3,3,False,,Besiktas
+2024-08-22,uefa.elq,Dinamo Minsk,RSC Anderlecht,0,1,False,,Anderlecht
+2024-08-22,uefa.elq,Jagiellonia Białystok,AFC Ajax,1,4,False,,Ajax
+2024-08-22,uefa.elq,Sporting Braga,Rapid Wien,2,1,False,Sp Braga,
+2024-08-29,uefa.elq,RSC Anderlecht,Dinamo Minsk,1,0,False,Anderlecht,
+2024-08-29,uefa.elq,AFC Ajax,Jagiellonia Białystok,3,0,False,Ajax,
+2024-08-29,uefa.elq,Beşiktaş,FC Lugano,5,1,False,Besiktas,
+2024-08-29,uefa.elq,Heart of Midlothian,Viktoria Plzeň,0,1,False,Hearts,
+2024-08-29,uefa.elq,Shamrock Rovers,PAOK Saloniki,0,2,False,,PAOK
+2024-08-29,uefa.elq,Rapid Wien,Sporting Braga,2,2,False,,Sp Braga
+2024-09-25,uefa.el,AZ Alkmaar,IF Elfsborg,3,2,False,AZ Alkmaar,
+2024-09-25,uefa.el,FK Bodø/Glimt,FC Porto,3,2,False,,Porto
+2024-09-25,uefa.el,Manchester United,FC Twente,1,1,False,Man United,Twente
+2024-09-25,uefa.el,Galatasaray,PAOK Saloniki,3,1,False,Galatasaray,PAOK
+2024-09-25,uefa.el,Dinamo Kiev,Lazio Roma,0,3,False,,Lazio
+2024-09-25,uefa.el,FC Midtjylland,1899 Hoffenheim,1,1,False,,Hoffenheim
+2024-09-25,uefa.el,RSC Anderlecht,Ferencvárosi TC,2,1,False,Anderlecht,
+2024-09-25,uefa.el,OGC Nice,Real Sociedad,1,1,False,Nice,Sociedad
+2024-09-26,uefa.el,Fenerbahçe,Union Saint-Gilloise,2,1,False,Fenerbahce,St. Gilloise
+2024-09-26,uefa.el,Malmö FF,Rangers FC,0,2,False,,Rangers
+2024-09-26,uefa.el,AS Roma,Athletic Club,1,1,False,Roma,Ath Bilbao
+2024-09-26,uefa.el,Eintracht Frankfurt,Viktoria Plzeň,3,3,False,Ein Frankfurt,
+2024-09-26,uefa.el,AFC Ajax,Beşiktaş,4,0,False,Ajax,Besiktas
+2024-09-26,uefa.el,Sporting Braga,Maccabi Tel Aviv,2,1,False,Sp Braga,
+2024-09-26,uefa.el,Olympique Lyonnais,Olympiakos Piraeus,2,0,False,Lyon,Olympiakos
+2024-09-26,uefa.el,Tottenham Hotspur,Qarabağ FK,3,0,False,Tottenham,
+2024-10-03,uefa.el,Slavia Praha,AFC Ajax,1,1,False,,Ajax
+2024-10-03,uefa.el,Lazio Roma,OGC Nice,4,1,False,Lazio,Nice
+2024-10-03,uefa.el,Ferencvárosi TC,Tottenham Hotspur,1,2,False,,Tottenham
+2024-10-03,uefa.el,Real Sociedad,RSC Anderlecht,1,2,False,Sociedad,Anderlecht
+2024-10-03,uefa.el,Olympiakos Piraeus,Sporting Braga,3,0,False,Olympiakos,Sp Braga
+2024-10-03,uefa.el,1899 Hoffenheim,Dinamo Kiev,2,0,False,Hoffenheim,
+2024-10-03,uefa.el,FK RFS,Galatasaray,2,2,False,,Galatasaray
+2024-10-03,uefa.el,Rangers FC,Olympique Lyonnais,1,4,False,Rangers,Lyon
+2024-10-03,uefa.el,FC Porto,Manchester United,3,3,False,Porto,Man United
+2024-10-03,uefa.el,PAOK Saloniki,FCSB,0,1,False,PAOK,
+2024-10-03,uefa.el,Union Saint-Gilloise,FK Bodø/Glimt,0,0,False,St. Gilloise,
+2024-10-03,uefa.el,Beşiktaş,Eintracht Frankfurt,1,3,False,Besiktas,Ein Frankfurt
+2024-10-03,uefa.el,FC Twente,Fenerbahçe,1,1,False,Twente,Fenerbahce
+2024-10-03,uefa.el,IF Elfsborg,AS Roma,1,0,False,,Roma
+2024-10-03,uefa.el,Athletic Club,AZ Alkmaar,2,0,False,Ath Bilbao,AZ Alkmaar
+2024-10-23,uefa.el,Sporting Braga,FK Bodø/Glimt,1,2,False,Sp Braga,
+2024-10-23,uefa.el,Galatasaray,IF Elfsborg,4,3,False,Galatasaray,
+2024-10-24,uefa.el,AS Roma,Dinamo Kiev,1,0,False,Roma,
+2024-10-24,uefa.el,Eintracht Frankfurt,FK RFS,1,0,False,Ein Frankfurt,
+2024-10-24,uefa.el,Maccabi Tel Aviv,Real Sociedad,1,2,False,,Sociedad
+2024-10-24,uefa.el,Ferencvárosi TC,OGC Nice,1,0,False,,Nice
+2024-10-24,uefa.el,PAOK Saloniki,Viktoria Plzeň,2,2,False,PAOK,
+2024-10-24,uefa.el,FC Midtjylland,Union Saint-Gilloise,1,0,False,,St. Gilloise
+2024-10-24,uefa.el,Qarabağ FK,AFC Ajax,0,3,False,,Ajax
+2024-10-24,uefa.el,Rangers FC,FCSB,4,0,False,Rangers,
+2024-10-24,uefa.el,FC Porto,1899 Hoffenheim,2,0,False,Porto,Hoffenheim
+2024-10-24,uefa.el,Tottenham Hotspur,AZ Alkmaar,1,0,False,Tottenham,AZ Alkmaar
+2024-10-24,uefa.el,Fenerbahçe,Manchester United,1,1,False,Fenerbahce,Man United
+2024-10-24,uefa.el,Olympique Lyonnais,Beşiktaş,0,1,False,Lyon,Besiktas
+2024-10-24,uefa.el,Malmö FF,Olympiakos Piraeus,0,1,False,,Olympiakos
+2024-10-24,uefa.el,FC Twente,Lazio Roma,0,2,False,Twente,Lazio
+2024-10-24,uefa.el,Athletic Club,Slavia Praha,1,0,False,Ath Bilbao,
+2024-10-24,uefa.el,RSC Anderlecht,PFC Ludogorets Razgrad,2,0,False,Anderlecht,
+2024-11-06,uefa.el,Beşiktaş,Malmö FF,2,1,False,Besiktas,
+2024-11-07,uefa.el,Eintracht Frankfurt,Slavia Praha,1,0,False,Ein Frankfurt,
+2024-11-07,uefa.el,Olympiakos Piraeus,Rangers FC,1,1,False,Olympiakos,Rangers
+2024-11-07,uefa.el,Union Saint-Gilloise,AS Roma,1,1,False,St. Gilloise,Roma
+2024-11-07,uefa.el,PFC Ludogorets Razgrad,Athletic Club,1,2,False,,Ath Bilbao
+2024-11-07,uefa.el,Galatasaray,Tottenham Hotspur,3,2,False,Galatasaray,Tottenham
+2024-11-07,uefa.el,IF Elfsborg,Sporting Braga,1,1,False,,Sp Braga
+2024-11-07,uefa.el,OGC Nice,FC Twente,2,2,False,Nice,Twente
+2024-11-07,uefa.el,Manchester United,PAOK Saloniki,2,0,False,Man United,PAOK
+2024-11-07,uefa.el,Lazio Roma,FC Porto,2,1,False,Lazio,Porto
+2024-11-07,uefa.el,AFC Ajax,Maccabi Tel Aviv,5,0,False,Ajax,
+2024-11-07,uefa.el,AZ Alkmaar,Fenerbahçe,3,1,False,AZ Alkmaar,Fenerbahce
+2024-11-07,uefa.el,Viktoria Plzeň,Real Sociedad,2,1,False,,Sociedad
+2024-11-07,uefa.el,1899 Hoffenheim,Olympique Lyonnais,2,2,False,Hoffenheim,Lyon
+2024-11-07,uefa.el,FK RFS,RSC Anderlecht,1,1,False,,Anderlecht
+2024-11-28,uefa.el,Lazio Roma,PFC Ludogorets Razgrad,0,0,False,Lazio,
+2024-11-28,uefa.el,AZ Alkmaar,Galatasaray,1,1,False,AZ Alkmaar,Galatasaray
+2024-11-28,uefa.el,Qarabağ FK,Olympique Lyonnais,1,4,False,,Lyon
+2024-11-28,uefa.el,Beşiktaş,Maccabi Tel Aviv,1,3,False,Besiktas,
+2024-11-28,uefa.el,Athletic Club,IF Elfsborg,3,0,False,Ath Bilbao,
+2024-11-28,uefa.el,RSC Anderlecht,FC Porto,2,2,False,Anderlecht,Porto
+2024-11-28,uefa.el,FK RFS,PAOK Saloniki,0,2,False,,PAOK
+2024-11-28,uefa.el,Slavia Praha,Fenerbahçe,1,2,False,,Fenerbahce
+2024-11-28,uefa.el,Manchester United,FK Bodø/Glimt,3,2,False,Man United,
+2024-11-28,uefa.el,Tottenham Hotspur,AS Roma,2,2,False,Tottenham,Roma
+2024-11-28,uefa.el,Sporting Braga,1899 Hoffenheim,3,0,False,Sp Braga,Hoffenheim
+2024-11-28,uefa.el,Real Sociedad,AFC Ajax,2,0,False,Sociedad,Ajax
+2024-11-28,uefa.el,FC Midtjylland,Eintracht Frankfurt,1,2,False,,Ein Frankfurt
+2024-11-28,uefa.el,FC Twente,Union Saint-Gilloise,0,1,False,Twente,St. Gilloise
+2024-11-28,uefa.el,FCSB,Olympiakos Piraeus,0,0,False,,Olympiakos
+2024-11-28,uefa.el,OGC Nice,Rangers FC,1,4,False,Nice,Rangers
+2024-12-11,uefa.el,Fenerbahçe,Athletic Club,0,2,False,Fenerbahce,Ath Bilbao
+2024-12-12,uefa.el,AS Roma,Sporting Braga,3,0,False,Roma,Sp Braga
+2024-12-12,uefa.el,PAOK Saloniki,Ferencvárosi TC,5,0,False,PAOK,
+2024-12-12,uefa.el,Olympiakos Piraeus,FC Twente,0,0,False,Olympiakos,Twente
+2024-12-12,uefa.el,Union Saint-Gilloise,OGC Nice,2,1,False,St. Gilloise,Nice
+2024-12-12,uefa.el,PFC Ludogorets Razgrad,AZ Alkmaar,2,2,False,,AZ Alkmaar
+2024-12-12,uefa.el,Malmö FF,Galatasaray,2,2,False,,Galatasaray
+2024-12-12,uefa.el,Viktoria Plzeň,Manchester United,1,2,False,,Man United
+2024-12-12,uefa.el,1899 Hoffenheim,FCSB,0,0,False,Hoffenheim,
+2024-12-12,uefa.el,Rangers FC,Tottenham Hotspur,1,1,False,Rangers,Tottenham
+2024-12-12,uefa.el,FC Porto,FC Midtjylland,2,0,False,Porto,
+2024-12-12,uefa.el,Slavia Praha,RSC Anderlecht,1,2,False,,Anderlecht
+2024-12-12,uefa.el,AFC Ajax,Lazio Roma,1,3,False,Ajax,Lazio
+2024-12-12,uefa.el,Real Sociedad,Dinamo Kiev,3,0,False,Sociedad,
+2024-12-12,uefa.el,Olympique Lyonnais,Eintracht Frankfurt,3,2,False,Lyon,Ein Frankfurt
+2024-12-12,uefa.el,FK Bodø/Glimt,Beşiktaş,2,1,False,,Besiktas
+2025-01-21,uefa.el,Galatasaray,Dinamo Kiev,3,3,False,Galatasaray,
+2025-01-22,uefa.el,Beşiktaş,Athletic Club,4,1,False,Besiktas,Ath Bilbao
+2025-01-23,uefa.el,FC Porto,Olympiakos Piraeus,0,1,False,Porto,Olympiakos
+2025-01-23,uefa.el,Fenerbahçe,Olympique Lyonnais,0,0,False,Fenerbahce,Lyon
+2025-01-23,uefa.el,AZ Alkmaar,AS Roma,1,0,False,AZ Alkmaar,Roma
+2025-01-23,uefa.el,Malmö FF,FC Twente,2,3,False,,Twente
+2025-01-23,uefa.el,Viktoria Plzeň,RSC Anderlecht,2,0,False,,Anderlecht
+2025-01-23,uefa.el,1899 Hoffenheim,Tottenham Hotspur,2,3,False,Hoffenheim,Tottenham
+2025-01-23,uefa.el,Eintracht Frankfurt,Ferencvárosi TC,2,0,False,Ein Frankfurt,
+2025-01-23,uefa.el,Manchester United,Rangers FC,2,1,False,Man United,Rangers
+2025-01-23,uefa.el,Lazio Roma,Real Sociedad,3,1,False,Lazio,Sociedad
+2025-01-23,uefa.el,PAOK Saloniki,Slavia Praha,2,0,False,PAOK,
+2025-01-23,uefa.el,Union Saint-Gilloise,Sporting Braga,2,1,False,St. Gilloise,Sp Braga
+2025-01-23,uefa.el,IF Elfsborg,OGC Nice,1,0,False,,Nice
+2025-01-23,uefa.el,FK RFS,AFC Ajax,1,0,False,,Ajax
+2025-01-30,uefa.el,Rangers FC,Union Saint-Gilloise,2,1,False,Rangers,St. Gilloise
+2025-01-30,uefa.el,AS Roma,Eintracht Frankfurt,2,0,False,Roma,Ein Frankfurt
+2025-01-30,uefa.el,Tottenham Hotspur,IF Elfsborg,3,0,False,Tottenham,
+2025-01-30,uefa.el,AFC Ajax,Galatasaray,2,1,False,Ajax,Galatasaray
+2025-01-30,uefa.el,Maccabi Tel Aviv,FC Porto,0,1,False,,Porto
+2025-01-30,uefa.el,Ferencvárosi TC,AZ Alkmaar,4,3,False,,AZ Alkmaar
+2025-01-30,uefa.el,Sporting Braga,Lazio Roma,1,0,False,Sp Braga,Lazio
+2025-01-30,uefa.el,Real Sociedad,PAOK Saloniki,2,0,False,Sociedad,PAOK
+2025-01-30,uefa.el,Olympiakos Piraeus,Qarabağ FK,3,0,False,Olympiakos,
+2025-01-30,uefa.el,Olympique Lyonnais,PFC Ludogorets Razgrad,1,1,False,Lyon,
+2025-01-30,uefa.el,FC Midtjylland,Fenerbahçe,2,2,False,,Fenerbahce
+2025-01-30,uefa.el,FC Twente,Beşiktaş,1,0,False,Twente,Besiktas
+2025-01-30,uefa.el,Athletic Club,Viktoria Plzeň,3,1,False,Ath Bilbao,
+2025-01-30,uefa.el,RSC Anderlecht,1899 Hoffenheim,3,4,False,Anderlecht,Hoffenheim
+2025-01-30,uefa.el,FCSB,Manchester United,0,2,False,,Man United
+2025-01-30,uefa.el,OGC Nice,FK Bodø/Glimt,1,1,False,Nice,
+2025-02-13,uefa.el,Fenerbahçe,RSC Anderlecht,3,0,False,Fenerbahce,Anderlecht
+2025-02-13,uefa.el,Union Saint-Gilloise,AFC Ajax,0,2,False,St. Gilloise,Ajax
+2025-02-13,uefa.el,FC Midtjylland,Real Sociedad,1,2,False,,Sociedad
+2025-02-13,uefa.el,FC Twente,FK Bodø/Glimt,2,1,False,Twente,
+2025-02-13,uefa.el,PAOK Saloniki,FCSB,1,2,False,PAOK,
+2025-02-13,uefa.el,AZ Alkmaar,Galatasaray,4,1,False,AZ Alkmaar,Galatasaray
+2025-02-13,uefa.el,FC Porto,AS Roma,1,1,False,Porto,Roma
+2025-02-20,uefa.el,FK Bodø/Glimt,FC Twente,3,2,False,,Twente
+2025-02-20,uefa.el,FCSB,PAOK Saloniki,2,0,False,,PAOK
+2025-02-20,uefa.el,Galatasaray,AZ Alkmaar,2,2,False,Galatasaray,AZ Alkmaar
+2025-02-20,uefa.el,AS Roma,FC Porto,3,2,False,Roma,Porto
+2025-02-20,uefa.el,RSC Anderlecht,Fenerbahçe,2,2,False,Anderlecht,Fenerbahce
+2025-02-20,uefa.el,AFC Ajax,Union Saint-Gilloise,0,2,False,Ajax,St. Gilloise
+2025-02-20,uefa.el,Real Sociedad,FC Midtjylland,5,2,False,Sociedad,
+2025-03-06,uefa.el,AZ Alkmaar,Tottenham Hotspur,1,0,True,AZ Alkmaar,Tottenham
+2025-03-06,uefa.el,Real Sociedad,Manchester United,1,1,True,Sociedad,Man United
+2025-03-06,uefa.el,FCSB,Olympique Lyonnais,1,3,True,,Lyon
+2025-03-06,uefa.el,Fenerbahçe,Rangers FC,1,3,True,Fenerbahce,Rangers
+2025-03-06,uefa.el,AS Roma,Athletic Club,2,1,True,Roma,Ath Bilbao
+2025-03-06,uefa.el,FK Bodø/Glimt,Olympiakos Piraeus,3,0,True,,Olympiakos
+2025-03-06,uefa.el,AFC Ajax,Eintracht Frankfurt,1,2,True,Ajax,Ein Frankfurt
+2025-03-06,uefa.el,Viktoria Plzeň,Lazio Roma,1,2,True,,Lazio
+2025-03-13,uefa.el,Lazio Roma,Viktoria Plzeň,1,1,True,Lazio,
+2025-03-13,uefa.el,Olympiakos Piraeus,FK Bodø/Glimt,2,1,True,Olympiakos,
+2025-03-13,uefa.el,Eintracht Frankfurt,AFC Ajax,4,1,True,Ein Frankfurt,Ajax
+2025-03-13,uefa.el,Athletic Club,AS Roma,3,1,True,Ath Bilbao,Roma
+2025-03-13,uefa.el,Tottenham Hotspur,AZ Alkmaar,3,1,True,Tottenham,AZ Alkmaar
+2025-03-13,uefa.el,Manchester United,Real Sociedad,4,1,True,Man United,Sociedad
+2025-03-13,uefa.el,Olympique Lyonnais,FCSB,4,0,True,Lyon,
+2025-03-13,uefa.el,Rangers FC,Fenerbahçe,0,2,True,Rangers,Fenerbahce
+2025-04-10,uefa.el,FK Bodø/Glimt,Lazio Roma,2,0,True,,Lazio
+2025-04-10,uefa.el,Tottenham Hotspur,Eintracht Frankfurt,1,1,True,Tottenham,Ein Frankfurt
+2025-04-10,uefa.el,Rangers FC,Athletic Club,0,0,True,Rangers,Ath Bilbao
+2025-04-10,uefa.el,Olympique Lyonnais,Manchester United,2,2,True,Lyon,Man United
+2025-04-17,uefa.el,Eintracht Frankfurt,Tottenham Hotspur,0,1,True,Ein Frankfurt,Tottenham
+2025-04-17,uefa.el,Lazio Roma,FK Bodø/Glimt,2,0,True,Lazio,
+2025-04-17,uefa.el,Athletic Club,Rangers FC,2,0,True,Ath Bilbao,Rangers
+2025-04-17,uefa.el,Manchester United,Olympique Lyonnais,2,2,True,Man United,Lyon
+2025-05-01,uefa.el,Tottenham Hotspur,FK Bodø/Glimt,3,1,True,Tottenham,
+2025-05-01,uefa.el,Athletic Club,Manchester United,0,3,True,Ath Bilbao,Man United
+2025-05-08,uefa.el,FK Bodø/Glimt,Tottenham Hotspur,0,2,True,,Tottenham
+2025-05-08,uefa.el,Manchester United,Athletic Club,4,1,True,Man United,Ath Bilbao
+2025-05-21,uefa.el,Tottenham Hotspur,Manchester United,1,0,True,Tottenham,Man United
+2024-07-23,uefa.clq,FC Lugano,Fenerbahçe,3,4,False,,Fenerbahce
+2024-07-24,uefa.clq,PAOK Saloniki,Borac Banja Luka,3,2,False,PAOK,
+2024-07-30,uefa.clq,Fenerbahçe,FC Lugano,2,1,False,Fenerbahce,
+2024-07-31,uefa.clq,Borac Banja Luka,PAOK Saloniki,0,1,False,,PAOK
+2024-08-06,uefa.clq,Malmö FF,PAOK Saloniki,2,2,False,,PAOK
+2024-08-06,uefa.clq,Dinamo Kiev,Rangers FC,1,1,False,,Rangers
+2024-08-06,uefa.clq,Lille OSC,Fenerbahçe,2,1,False,Lille,Fenerbahce
+2024-08-06,uefa.clq,RB Salzburg,FC Twente,2,1,False,,Twente
+2024-08-07,uefa.clq,Slavia Praha,Union Saint-Gilloise,3,1,False,,St. Gilloise
+2024-08-13,uefa.clq,Fenerbahçe,Lille OSC,1,0,False,Fenerbahce,Lille
+2024-08-13,uefa.clq,FC Twente,RB Salzburg,3,3,False,Twente,
+2024-08-13,uefa.clq,PAOK Saloniki,Malmö FF,3,3,False,PAOK,
+2024-08-13,uefa.clq,Union Saint-Gilloise,Slavia Praha,0,1,False,St. Gilloise,
+2024-08-13,uefa.clq,Rangers FC,Dinamo Kiev,0,2,False,Rangers,
+2024-08-20,uefa.clq,Lille OSC,Slavia Praha,2,0,False,Lille,
+2024-08-21,uefa.clq,BSC Young Boys,Galatasaray,3,2,False,,Galatasaray
+2024-08-27,uefa.clq,Galatasaray,BSC Young Boys,0,1,False,Galatasaray,
+2024-08-28,uefa.clq,Slavia Praha,Lille OSC,2,1,False,,Lille
+2024-09-17,uefa.cl,BSC Young Boys,Aston Villa FC,0,3,False,,Aston Villa
+2024-09-17,uefa.cl,Juventus FC,PSV,3,1,False,Juventus,PSV Eindhoven
+2024-09-17,uefa.cl,Sporting Clube de Portugal,Lille OSC,2,0,False,Sp Lisbon,Lille
+2024-09-17,uefa.cl,FC Bayern München,GNK Dinamo Zagreb,9,2,False,Bayern Munich,
+2024-09-17,uefa.cl,Real Madrid CF,VfB Stuttgart,3,1,False,Real Madrid,Stuttgart
+2024-09-17,uefa.cl,AC Milan,Liverpool FC,1,3,False,Milan,Liverpool
+2024-09-18,uefa.cl,Bologna FC 1909,FK Shakhtar Donetsk,0,0,False,Bologna,
+2024-09-18,uefa.cl,Manchester City FC,FC Internazionale Milano,0,0,False,Man City,Inter
+2024-09-18,uefa.cl,Paris Saint-Germain FC,Girona FC,1,0,False,Paris SG,Girona
+2024-09-18,uefa.cl,Club Brugge KV,Borussia Dortmund,0,3,False,Club Brugge,Dortmund
+2024-09-18,uefa.cl,Celtic FC,ŠK Slovan Bratislava,5,1,False,Celtic,
+2024-09-19,uefa.cl,Feyenoord Rotterdam,Bayer 04 Leverkusen,0,4,False,Feyenoord,Leverkusen
+2024-09-19,uefa.cl,FK Crvena Zvezda,Sport Lisboa e Benfica,1,2,False,,Benfica
+2024-09-19,uefa.cl,AS Monaco FC,FC Barcelona,2,1,False,,Barcelona
+2024-09-19,uefa.cl,Stade Brestois 29,SK Sturm Graz,2,1,False,Brest,
+2024-09-19,uefa.cl,Atalanta BC,Arsenal FC,0,0,False,Atalanta,Arsenal
+2024-09-19,uefa.cl,Club Atlético de Madrid,RB Leipzig,2,1,False,Ath Madrid,RB Leipzig
+2024-10-01,uefa.cl,VfB Stuttgart,AC Sparta Praha,1,1,False,Stuttgart,
+2024-10-01,uefa.cl,FC Red Bull Salzburg,Stade Brestois 29,0,4,False,,Brest
+2024-10-01,uefa.cl,ŠK Slovan Bratislava,Manchester City FC,0,4,False,,Man City
+2024-10-01,uefa.cl,Borussia Dortmund,Celtic FC,7,1,False,Dortmund,Celtic
+2024-10-01,uefa.cl,FC Barcelona,BSC Young Boys,5,0,False,Barcelona,
+2024-10-01,uefa.cl,FC Internazionale Milano,FK Crvena Zvezda,4,0,False,Inter,
+2024-10-01,uefa.cl,Bayer 04 Leverkusen,AC Milan,1,0,False,Leverkusen,Milan
+2024-10-01,uefa.cl,Arsenal FC,Paris Saint-Germain FC,2,0,False,Arsenal,Paris SG
+2024-10-01,uefa.cl,PSV,Sporting Clube de Portugal,1,1,False,PSV Eindhoven,Sp Lisbon
+2024-10-02,uefa.cl,Girona FC,Feyenoord Rotterdam,2,3,False,Girona,Feyenoord
+2024-10-02,uefa.cl,FK Shakhtar Donetsk,Atalanta BC,0,3,False,,Atalanta
+2024-10-02,uefa.cl,Aston Villa FC,FC Bayern München,1,0,False,Aston Villa,Bayern Munich
+2024-10-02,uefa.cl,SK Sturm Graz,Club Brugge KV,0,1,False,,Club Brugge
+2024-10-02,uefa.cl,Liverpool FC,Bologna FC 1909,2,0,False,Liverpool,Bologna
+2024-10-02,uefa.cl,RB Leipzig,Juventus FC,2,3,False,RB Leipzig,Juventus
+2024-10-02,uefa.cl,Sport Lisboa e Benfica,Club Atlético de Madrid,4,0,False,Benfica,Ath Madrid
+2024-10-02,uefa.cl,Lille OSC,Real Madrid CF,1,0,False,Lille,Real Madrid
+2024-10-22,uefa.cl,AC Milan,Club Brugge KV,3,1,False,Milan,Club Brugge
+2024-10-22,uefa.cl,Aston Villa FC,Bologna FC 1909,2,0,False,Aston Villa,Bologna
+2024-10-22,uefa.cl,Girona FC,ŠK Slovan Bratislava,2,0,False,Girona,
+2024-10-22,uefa.cl,SK Sturm Graz,Sporting Clube de Portugal,0,2,False,,Sp Lisbon
+2024-10-22,uefa.cl,Paris Saint-Germain FC,PSV,1,1,False,Paris SG,PSV Eindhoven
+2024-10-22,uefa.cl,Real Madrid CF,Borussia Dortmund,5,2,False,Real Madrid,Dortmund
+2024-10-22,uefa.cl,Arsenal FC,FK Shakhtar Donetsk,1,0,False,Arsenal,
+2024-10-22,uefa.cl,Juventus FC,VfB Stuttgart,0,1,False,Juventus,Stuttgart
+2024-10-23,uefa.cl,Stade Brestois 29,Bayer 04 Leverkusen,1,1,False,Brest,Leverkusen
+2024-10-23,uefa.cl,Atalanta BC,Celtic FC,0,0,False,Atalanta,Celtic
+2024-10-23,uefa.cl,BSC Young Boys,FC Internazionale Milano,0,1,False,,Inter
+2024-10-23,uefa.cl,FC Barcelona,FC Bayern München,4,1,False,Barcelona,Bayern Munich
+2024-10-23,uefa.cl,Manchester City FC,AC Sparta Praha,5,0,False,Man City,
+2024-10-23,uefa.cl,RB Leipzig,Liverpool FC,0,1,False,RB Leipzig,Liverpool
+2024-10-23,uefa.cl,Club Atlético de Madrid,Lille OSC,1,3,False,Ath Madrid,Lille
+2024-10-23,uefa.cl,Sport Lisboa e Benfica,Feyenoord Rotterdam,1,3,False,Benfica,Feyenoord
+2024-11-05,uefa.cl,PSV,Girona FC,4,0,False,PSV Eindhoven,Girona
+2024-11-05,uefa.cl,Sporting Clube de Portugal,Manchester City FC,4,1,False,Sp Lisbon,Man City
+2024-11-05,uefa.cl,Bologna FC 1909,AS Monaco FC,0,1,False,Bologna,
+2024-11-05,uefa.cl,Borussia Dortmund,SK Sturm Graz,1,0,False,Dortmund,
+2024-11-05,uefa.cl,Liverpool FC,Bayer 04 Leverkusen,4,0,False,Liverpool,Leverkusen
+2024-11-05,uefa.cl,Real Madrid CF,AC Milan,1,3,False,Real Madrid,Milan
+2024-11-05,uefa.cl,Celtic FC,RB Leipzig,3,1,False,Celtic,RB Leipzig
+2024-11-05,uefa.cl,Lille OSC,Juventus FC,1,1,False,Lille,Juventus
+2024-11-06,uefa.cl,Club Brugge KV,Aston Villa FC,1,0,False,Club Brugge,Aston Villa
+2024-11-06,uefa.cl,AC Sparta Praha,Stade Brestois 29,1,2,False,,Brest
+2024-11-06,uefa.cl,VfB Stuttgart,Atalanta BC,0,2,False,Stuttgart,Atalanta
+2024-11-06,uefa.cl,FC Internazionale Milano,Arsenal FC,1,0,False,Inter,Arsenal
+2024-11-06,uefa.cl,Paris Saint-Germain FC,Club Atlético de Madrid,1,2,False,Paris SG,Ath Madrid
+2024-11-06,uefa.cl,Feyenoord Rotterdam,FC Red Bull Salzburg,1,3,False,Feyenoord,
+2024-11-06,uefa.cl,FK Crvena Zvezda,FC Barcelona,2,5,False,,Barcelona
+2024-11-06,uefa.cl,FC Bayern München,Sport Lisboa e Benfica,1,0,False,Bayern Munich,Benfica
+2024-11-26,uefa.cl,ŠK Slovan Bratislava,AC Milan,2,3,False,,Milan
+2024-11-26,uefa.cl,AC Sparta Praha,Club Atlético de Madrid,0,6,False,,Ath Madrid
+2024-11-26,uefa.cl,Sporting Clube de Portugal,Arsenal FC,1,5,False,Sp Lisbon,Arsenal
+2024-11-26,uefa.cl,BSC Young Boys,Atalanta BC,1,6,False,,Atalanta
+2024-11-26,uefa.cl,FC Bayern München,Paris Saint-Germain FC,1,0,False,Bayern Munich,Paris SG
+2024-11-26,uefa.cl,FC Barcelona,Stade Brestois 29,3,0,False,Barcelona,Brest
+2024-11-26,uefa.cl,FC Internazionale Milano,RB Leipzig,1,0,False,Inter,RB Leipzig
+2024-11-26,uefa.cl,Manchester City FC,Feyenoord Rotterdam,3,3,False,Man City,Feyenoord
+2024-11-26,uefa.cl,Bayer 04 Leverkusen,FC Red Bull Salzburg,5,0,False,Leverkusen,
+2024-11-27,uefa.cl,SK Sturm Graz,Girona FC,1,0,False,,Girona
+2024-11-27,uefa.cl,FK Crvena Zvezda,VfB Stuttgart,5,1,False,,Stuttgart
+2024-11-27,uefa.cl,AS Monaco FC,Sport Lisboa e Benfica,2,3,False,,Benfica
+2024-11-27,uefa.cl,Aston Villa FC,Juventus FC,0,0,False,Aston Villa,Juventus
+2024-11-27,uefa.cl,Bologna FC 1909,Lille OSC,1,2,False,Bologna,Lille
+2024-11-27,uefa.cl,Liverpool FC,Real Madrid CF,2,0,False,Liverpool,Real Madrid
+2024-11-27,uefa.cl,Celtic FC,Club Brugge KV,1,1,False,Celtic,Club Brugge
+2024-11-27,uefa.cl,GNK Dinamo Zagreb,Borussia Dortmund,0,3,False,,Dortmund
+2024-11-27,uefa.cl,PSV,FK Shakhtar Donetsk,3,2,False,PSV Eindhoven,
+2024-12-10,uefa.cl,Girona FC,Liverpool FC,0,1,False,Girona,Liverpool
+2024-12-10,uefa.cl,GNK Dinamo Zagreb,Celtic FC,0,0,False,,Celtic
+2024-12-10,uefa.cl,Stade Brestois 29,PSV,1,0,False,Brest,PSV Eindhoven
+2024-12-10,uefa.cl,RB Leipzig,Aston Villa FC,2,3,False,RB Leipzig,Aston Villa
+2024-12-10,uefa.cl,Atalanta BC,Real Madrid CF,2,3,False,Atalanta,Real Madrid
+2024-12-10,uefa.cl,Bayer 04 Leverkusen,FC Internazionale Milano,1,0,False,Leverkusen,Inter
+2024-12-10,uefa.cl,Club Brugge KV,Sporting Clube de Portugal,2,1,False,Club Brugge,Sp Lisbon
+2024-12-10,uefa.cl,FK Shakhtar Donetsk,FC Bayern München,1,5,False,,Bayern Munich
+2024-12-10,uefa.cl,FC Red Bull Salzburg,Paris Saint-Germain FC,0,3,False,,Paris SG
+2024-12-11,uefa.cl,Club Atlético de Madrid,ŠK Slovan Bratislava,3,1,False,Ath Madrid,
+2024-12-11,uefa.cl,Lille OSC,SK Sturm Graz,3,2,False,Lille,
+2024-12-11,uefa.cl,VfB Stuttgart,BSC Young Boys,5,1,False,Stuttgart,
+2024-12-11,uefa.cl,Borussia Dortmund,FC Barcelona,2,3,False,Dortmund,Barcelona
+2024-12-11,uefa.cl,AC Milan,FK Crvena Zvezda,2,1,False,Milan,
+2024-12-11,uefa.cl,Sport Lisboa e Benfica,Bologna FC 1909,0,0,False,Benfica,Bologna
+2024-12-11,uefa.cl,Arsenal FC,AS Monaco FC,3,0,False,Arsenal,
+2024-12-11,uefa.cl,Juventus FC,Manchester City FC,2,0,False,Juventus,Man City
+2024-12-11,uefa.cl,Feyenoord Rotterdam,AC Sparta Praha,4,2,False,Feyenoord,
+2025-01-21,uefa.cl,AS Monaco FC,Aston Villa FC,1,0,False,,Aston Villa
+2025-01-21,uefa.cl,Atalanta BC,SK Sturm Graz,5,0,False,Atalanta,
+2025-01-21,uefa.cl,Bologna FC 1909,Borussia Dortmund,2,1,False,Bologna,Dortmund
+2025-01-21,uefa.cl,ŠK Slovan Bratislava,VfB Stuttgart,1,3,False,,Stuttgart
+2025-01-21,uefa.cl,Liverpool FC,Lille OSC,2,1,False,Liverpool,Lille
+2025-01-21,uefa.cl,Club Atlético de Madrid,Bayer 04 Leverkusen,2,1,False,Ath Madrid,Leverkusen
+2025-01-21,uefa.cl,Sport Lisboa e Benfica,FC Barcelona,4,5,False,Benfica,Barcelona
+2025-01-21,uefa.cl,Club Brugge KV,Juventus FC,0,0,False,Club Brugge,Juventus
+2025-01-21,uefa.cl,FK Crvena Zvezda,PSV,2,3,False,,PSV Eindhoven
+2025-01-22,uefa.cl,RB Leipzig,Sporting Clube de Portugal,2,1,False,RB Leipzig,Sp Lisbon
+2025-01-22,uefa.cl,FK Shakhtar Donetsk,Stade Brestois 29,2,0,False,,Brest
+2025-01-22,uefa.cl,AC Sparta Praha,FC Internazionale Milano,0,1,False,,Inter
+2025-01-22,uefa.cl,Paris Saint-Germain FC,Manchester City FC,4,2,False,Paris SG,Man City
+2025-01-22,uefa.cl,Real Madrid CF,FC Red Bull Salzburg,5,1,False,Real Madrid,
+2025-01-22,uefa.cl,AC Milan,Girona FC,1,0,False,Milan,Girona
+2025-01-22,uefa.cl,Arsenal FC,GNK Dinamo Zagreb,3,0,False,Arsenal,
+2025-01-22,uefa.cl,Celtic FC,BSC Young Boys,1,0,False,Celtic,
+2025-01-22,uefa.cl,Feyenoord Rotterdam,FC Bayern München,3,0,False,Feyenoord,Bayern Munich
+2025-01-29,uefa.cl,Sporting Clube de Portugal,Bologna FC 1909,1,1,False,Sp Lisbon,Bologna
+2025-01-29,uefa.cl,Aston Villa FC,Celtic FC,4,2,False,Aston Villa,Celtic
+2025-01-29,uefa.cl,Girona FC,Arsenal FC,1,2,False,Girona,Arsenal
+2025-01-29,uefa.cl,Stade Brestois 29,Real Madrid CF,0,3,False,Brest,Real Madrid
+2025-01-29,uefa.cl,SK Sturm Graz,RB Leipzig,1,0,False,,RB Leipzig
+2025-01-29,uefa.cl,VfB Stuttgart,Paris Saint-Germain FC,1,4,False,Stuttgart,Paris SG
+2025-01-29,uefa.cl,FC Bayern München,ŠK Slovan Bratislava,3,1,False,Bayern Munich,
+2025-01-29,uefa.cl,Borussia Dortmund,FK Shakhtar Donetsk,3,1,False,Dortmund,
+2025-01-29,uefa.cl,FC Barcelona,Atalanta BC,2,2,False,Barcelona,Atalanta
+2025-01-29,uefa.cl,FC Internazionale Milano,AS Monaco FC,3,0,False,Inter,
+2025-01-29,uefa.cl,Manchester City FC,Club Brugge KV,3,1,False,Man City,Club Brugge
+2025-01-29,uefa.cl,Bayer 04 Leverkusen,AC Sparta Praha,2,0,False,Leverkusen,
+2025-01-29,uefa.cl,Juventus FC,Sport Lisboa e Benfica,0,2,False,Juventus,Benfica
+2025-01-29,uefa.cl,GNK Dinamo Zagreb,AC Milan,2,1,False,,Milan
+2025-01-29,uefa.cl,Lille OSC,Feyenoord Rotterdam,6,1,False,Lille,Feyenoord
+2025-01-29,uefa.cl,PSV,Liverpool FC,3,2,False,PSV Eindhoven,Liverpool
+2025-01-29,uefa.cl,FC Red Bull Salzburg,Club Atlético de Madrid,1,4,False,,Ath Madrid
+2025-02-11,uefa.cl,Stade Brestois 29,Paris Saint-Germain FC,0,3,False,Brest,Paris SG
+2025-02-11,uefa.cl,Manchester City FC,Real Madrid CF,2,3,False,Man City,Real Madrid
+2025-02-11,uefa.cl,Juventus FC,PSV,2,1,False,Juventus,PSV Eindhoven
+2025-02-11,uefa.cl,Sporting Clube de Portugal,Borussia Dortmund,0,3,False,Sp Lisbon,Dortmund
+2025-02-12,uefa.cl,Club Brugge KV,Atalanta BC,2,1,False,Club Brugge,Atalanta
+2025-02-12,uefa.cl,AS Monaco FC,Sport Lisboa e Benfica,0,1,False,,Benfica
+2025-02-12,uefa.cl,Celtic FC,FC Bayern München,1,2,False,Celtic,Bayern Munich
+2025-02-12,uefa.cl,Feyenoord Rotterdam,AC Milan,1,0,False,Feyenoord,Milan
+2025-02-18,uefa.cl,AC Milan,Feyenoord Rotterdam,1,1,False,Milan,Feyenoord
+2025-02-18,uefa.cl,Sport Lisboa e Benfica,AS Monaco FC,3,3,False,Benfica,
+2025-02-18,uefa.cl,FC Bayern München,Celtic FC,1,1,False,Bayern Munich,Celtic
+2025-02-18,uefa.cl,Atalanta BC,Club Brugge KV,1,3,False,Atalanta,Club Brugge
+2025-02-19,uefa.cl,Borussia Dortmund,Sporting Clube de Portugal,0,0,False,Dortmund,Sp Lisbon
+2025-02-19,uefa.cl,Paris Saint-Germain FC,Stade Brestois 29,7,0,False,Paris SG,Brest
+2025-02-19,uefa.cl,Real Madrid CF,Manchester City FC,3,1,False,Real Madrid,Man City
+2025-02-19,uefa.cl,PSV,Juventus FC,3,1,False,PSV Eindhoven,Juventus
+2025-03-04,uefa.cl,Club Brugge KV,Aston Villa FC,1,3,True,Club Brugge,Aston Villa
+2025-03-04,uefa.cl,Real Madrid CF,Club Atlético de Madrid,2,1,True,Real Madrid,Ath Madrid
+2025-03-04,uefa.cl,PSV,Arsenal FC,1,7,True,PSV Eindhoven,Arsenal
+2025-03-04,uefa.cl,Borussia Dortmund,Lille OSC,1,1,True,Dortmund,Lille
+2025-03-05,uefa.cl,Feyenoord Rotterdam,FC Internazionale Milano,0,2,True,Feyenoord,Inter
+2025-03-05,uefa.cl,Paris Saint-Germain FC,Liverpool FC,0,1,True,Paris SG,Liverpool
+2025-03-05,uefa.cl,FC Bayern München,Bayer 04 Leverkusen,3,0,True,Bayern Munich,Leverkusen
+2025-03-05,uefa.cl,Sport Lisboa e Benfica,FC Barcelona,0,1,True,Benfica,Barcelona
+2025-03-11,uefa.cl,FC Barcelona,Sport Lisboa e Benfica,3,1,True,Barcelona,Benfica
+2025-03-11,uefa.cl,Liverpool FC,Paris Saint-Germain FC,0,1,True,Liverpool,Paris SG
+2025-03-11,uefa.cl,FC Internazionale Milano,Feyenoord Rotterdam,2,1,True,Inter,Feyenoord
+2025-03-11,uefa.cl,Bayer 04 Leverkusen,FC Bayern München,0,2,True,Leverkusen,Bayern Munich
+2025-03-12,uefa.cl,Lille OSC,Borussia Dortmund,1,2,True,Lille,Dortmund
+2025-03-12,uefa.cl,Aston Villa FC,Club Brugge KV,3,0,True,Aston Villa,Club Brugge
+2025-03-12,uefa.cl,Club Atlético de Madrid,Real Madrid CF,1,0,True,Ath Madrid,Real Madrid
+2025-03-12,uefa.cl,Arsenal FC,PSV,2,2,True,Arsenal,PSV Eindhoven
+2025-04-08,uefa.cl,Arsenal FC,Real Madrid CF,3,0,True,Arsenal,Real Madrid
+2025-04-08,uefa.cl,FC Bayern München,FC Internazionale Milano,1,2,True,Bayern Munich,Inter
+2025-04-09,uefa.cl,Paris Saint-Germain FC,Aston Villa FC,3,1,True,Paris SG,Aston Villa
+2025-04-09,uefa.cl,FC Barcelona,Borussia Dortmund,4,0,True,Barcelona,Dortmund
+2025-04-15,uefa.cl,Aston Villa FC,Paris Saint-Germain FC,3,2,True,Aston Villa,Paris SG
+2025-04-15,uefa.cl,Borussia Dortmund,FC Barcelona,3,1,True,Dortmund,Barcelona
+2025-04-16,uefa.cl,Real Madrid CF,Arsenal FC,1,2,True,Real Madrid,Arsenal
+2025-04-16,uefa.cl,FC Internazionale Milano,FC Bayern München,2,2,True,Inter,Bayern Munich
+2025-04-29,uefa.cl,Arsenal FC,Paris Saint-Germain FC,0,1,True,Arsenal,Paris SG
+2025-04-30,uefa.cl,FC Barcelona,FC Internazionale Milano,3,3,True,Barcelona,Inter
+2025-05-06,uefa.cl,FC Internazionale Milano,FC Barcelona,4,3,True,Inter,Barcelona
+2025-05-07,uefa.cl,Paris Saint-Germain FC,Arsenal FC,2,1,True,Paris SG,Arsenal
+2025-05-31,uefa.cl,Paris Saint-Germain FC,FC Internazionale Milano,5,0,True,Paris SG,Inter
+2024-10-02,uefa.conf,İstanbul Başakşehir,Rapid Wien,1,2,False,Buyuksehyr,
+2024-10-02,uefa.conf,Vitória Guimarães,NK Celje,3,1,False,Guimaraes,
+2024-10-03,uefa.conf,Legia Warszawa,Real Betis,1,0,False,,Betis
+2024-10-03,uefa.conf,1. FC Heidenheim 1846,Olimpija Ljubljana,2,1,False,Heidenheim,
+2024-10-03,uefa.conf,Cercle Brugge,FC St. Gallen,6,2,False,Cercle Brugge,
+2024-10-03,uefa.conf,Dinamo Minsk,Heart of Midlothian,1,2,False,,Hearts
+2024-10-03,uefa.conf,Chelsea FC,KAA Gent,4,2,False,Chelsea,Gent
+2024-10-03,uefa.conf,ACF Fiorentina,The New Saints,2,0,False,Fiorentina,
+2024-10-03,uefa.conf,Borac Banja Luka,Panathinaikos,1,1,False,,Panathinaikos
+2024-10-24,uefa.conf,Víkingur Reykjavík,Cercle Brugge,3,1,False,,Cercle Brugge
+2024-10-24,uefa.conf,KAA Gent,Molde FK,2,1,False,Gent,
+2024-10-24,uefa.conf,Djurgårdens IF,Vitória Guimarães,1,2,False,,Guimaraes
+2024-10-24,uefa.conf,Heart of Midlothian,Omonia Nikosia,2,0,False,Hearts,
+2024-10-24,uefa.conf,FC St. Gallen,ACF Fiorentina,2,4,False,,Fiorentina
+2024-10-24,uefa.conf,Panathinaikos,Chelsea FC,1,4,False,Panathinaikos,Chelsea
+2024-10-24,uefa.conf,NK Celje,İstanbul Başakşehir,5,1,False,,Buyuksehyr
+2024-10-24,uefa.conf,Real Betis,FC København,1,1,False,Betis,
+2024-10-24,uefa.conf,Paphos FC,1. FC Heidenheim 1846,0,1,False,,Heidenheim
+2024-11-07,uefa.conf,KAA Gent,Omonia Nikosia,1,0,False,Gent,
+2024-11-07,uefa.conf,Chelsea FC,FC Noah,8,0,False,Chelsea,
+2024-11-07,uefa.conf,FC København,İstanbul Başakşehir,2,2,False,,Buyuksehyr
+2024-11-07,uefa.conf,Real Betis,NK Celje,2,1,False,Betis,
+2024-11-07,uefa.conf,LASK,Cercle Brugge,0,0,False,,Cercle Brugge
+2024-11-07,uefa.conf,Djurgårdens IF,Panathinaikos,2,1,False,,Panathinaikos
+2024-11-07,uefa.conf,APOEL Nikosia,ACF Fiorentina,2,1,False,,Fiorentina
+2024-11-07,uefa.conf,Vitória Guimarães,FK Mladá Boleslav,2,1,False,Guimaraes,
+2024-11-07,uefa.conf,Heart of Midlothian,1. FC Heidenheim 1846,0,2,False,Hearts,Heidenheim
+2024-11-27,uefa.conf,İstanbul Başakşehir,CS Petrocub,1,1,False,Buyuksehyr,
+2024-11-28,uefa.conf,FK Astana,Vitória Guimarães,1,1,False,,Guimaraes
+2024-11-28,uefa.conf,1. FC Heidenheim 1846,Chelsea FC,0,2,False,Heidenheim,Chelsea
+2024-11-28,uefa.conf,Cercle Brugge,Heart of Midlothian,2,0,False,Cercle Brugge,Hearts
+2024-11-28,uefa.conf,Panathinaikos,HJK Helsinki,1,0,False,Panathinaikos,
+2024-11-28,uefa.conf,ACF Fiorentina,Paphos FC,3,2,False,Fiorentina,
+2024-11-28,uefa.conf,FK Mladá Boleslav,Real Betis,2,1,False,,Betis
+2024-11-28,uefa.conf,FC Lugano,KAA Gent,2,0,False,,Gent
+2024-12-12,uefa.conf,FK Astana,Chelsea FC,1,3,False,,Chelsea
+2024-12-12,uefa.conf,FC København,Heart of Midlothian,2,0,False,,Hearts
+2024-12-12,uefa.conf,ACF Fiorentina,LASK,7,0,False,Fiorentina,
+2024-12-12,uefa.conf,İstanbul Başakşehir,1. FC Heidenheim 1846,3,1,False,Buyuksehyr,Heidenheim
+2024-12-12,uefa.conf,Olimpija Ljubljana,Cercle Brugge,1,4,False,,Cercle Brugge
+2024-12-12,uefa.conf,CS Petrocub,Real Betis,0,1,False,,Betis
+2024-12-12,uefa.conf,KAA Gent,TSC Bačka Topola,3,0,False,Gent,
+2024-12-12,uefa.conf,The New Saints,Panathinaikos,0,2,False,,Panathinaikos
+2024-12-12,uefa.conf,FC St. Gallen,Vitória Guimarães,1,4,False,,Guimaraes
+2024-12-19,uefa.conf,Chelsea FC,Shamrock Rovers,5,1,False,Chelsea,
+2024-12-19,uefa.conf,Real Betis,HJK Helsinki,1,0,False,Betis,
+2024-12-19,uefa.conf,1. FC Heidenheim 1846,FC St. Gallen,1,1,False,Heidenheim,
+2024-12-19,uefa.conf,Vitória Guimarães,ACF Fiorentina,1,1,False,Guimaraes,Fiorentina
+2024-12-19,uefa.conf,Cercle Brugge,İstanbul Başakşehir,1,1,False,Cercle Brugge,Buyuksehyr
+2024-12-19,uefa.conf,Heart of Midlothian,CS Petrocub,2,2,False,Hearts,
+2024-12-19,uefa.conf,Panathinaikos,Dinamo Minsk,4,0,False,Panathinaikos,
+2024-12-19,uefa.conf,Larne FC,KAA Gent,1,0,False,,Gent
+2025-02-13,uefa.conf,Víkingur Reykjavík,Panathinaikos,2,1,False,,Panathinaikos
+2025-02-13,uefa.conf,KAA Gent,Real Betis,0,3,False,Gent,Betis
+2025-02-13,uefa.conf,FC København,1. FC Heidenheim 1846,1,2,False,,Heidenheim
+2025-02-20,uefa.conf,Real Betis,KAA Gent,0,1,False,Betis,Gent
+2025-02-20,uefa.conf,1. FC Heidenheim 1846,FC København,1,2,False,Heidenheim,
+2025-02-20,uefa.conf,Panathinaikos,Víkingur Reykjavík,2,0,False,Panathinaikos,
+2025-03-06,uefa.conf,Real Betis,Vitória Guimarães,2,2,True,Betis,Guimaraes
+2025-03-06,uefa.conf,FC København,Chelsea FC,1,2,True,,Chelsea
+2025-03-06,uefa.conf,Panathinaikos,ACF Fiorentina,3,2,True,Panathinaikos,Fiorentina
+2025-03-06,uefa.conf,Jagiellonia Białystok,Cercle Brugge,3,0,True,,Cercle Brugge
+2025-03-13,uefa.conf,Cercle Brugge,Jagiellonia Białystok,2,0,True,Cercle Brugge,
+2025-03-13,uefa.conf,Vitória Guimarães,Real Betis,0,4,True,Guimaraes,Betis
+2025-03-13,uefa.conf,Chelsea FC,FC København,1,0,True,Chelsea,
+2025-03-13,uefa.conf,ACF Fiorentina,Panathinaikos,3,1,True,Fiorentina,Panathinaikos
+2025-04-10,uefa.conf,Legia Warszawa,Chelsea FC,0,3,True,,Chelsea
+2025-04-10,uefa.conf,Real Betis,Jagiellonia Białystok,2,0,True,Betis,
+2025-04-10,uefa.conf,NK Celje,ACF Fiorentina,1,2,True,,Fiorentina
+2025-04-17,uefa.conf,Jagiellonia Białystok,Real Betis,1,1,True,,Betis
+2025-04-17,uefa.conf,ACF Fiorentina,NK Celje,2,2,True,Fiorentina,
+2025-04-17,uefa.conf,Chelsea FC,Legia Warszawa,1,2,True,Chelsea,
+2025-05-01,uefa.conf,Real Betis,ACF Fiorentina,2,1,True,Betis,Fiorentina
+2025-05-01,uefa.conf,Djurgårdens IF,Chelsea FC,1,4,True,,Chelsea
+2025-05-08,uefa.conf,ACF Fiorentina,Real Betis,2,1,True,Fiorentina,Betis
+2025-05-08,uefa.conf,Chelsea FC,Djurgårdens IF,1,0,True,Chelsea,
+2025-05-28,uefa.conf,Real Betis,Chelsea FC,1,4,True,Betis,Chelsea
+2024-07-24,uefa.confq,AEK Athen,Inter Club d'Escaldes,4,3,False,AEK,
+2024-07-25,uefa.confq,Go Ahead Eagles,SK Brann,0,0,False,Go Ahead Eagles,
+2024-07-25,uefa.confq,Floriana FC,Vitória Guimarães,0,1,False,,Guimaraes
+2024-07-25,uefa.confq,İstanbul Başakşehir,SP La Fiorita,6,1,False,Buyuksehyr,
+2024-07-25,uefa.confq,KAA Gent,Víkingur,4,1,False,Gent,
+2024-07-25,uefa.confq,Valur Reykjavík,St. Mirren FC,0,0,False,,St Mirren
+2024-08-01,uefa.confq,Inter Club d'Escaldes,AEK Athen,0,4,False,,AEK
+2024-08-01,uefa.confq,SK Brann,Go Ahead Eagles,2,1,False,,Go Ahead Eagles
+2024-08-01,uefa.confq,Víkingur,KAA Gent,0,3,False,,Gent
+2024-08-01,uefa.confq,St. Mirren FC,Valur Reykjavík,4,1,False,St Mirren,
+2024-08-01,uefa.confq,SP La Fiorita,İstanbul Başakşehir,0,4,False,,Buyuksehyr
+2024-08-01,uefa.confq,Vitória Guimarães,Floriana FC,4,0,False,Guimaraes,
+2024-08-06,uefa.confq,FC Noah,AEK Athen,3,1,False,,AEK
+2024-08-08,uefa.confq,FC Iberia 1999,İstanbul Başakşehir,0,1,False,,Buyuksehyr
+2024-08-08,uefa.confq,Silkeborg IF,KAA Gent,2,2,False,,Gent
+2024-08-08,uefa.confq,FC Zürich,Vitória Guimarães,0,3,False,,Guimaraes
+2024-08-08,uefa.confq,Kilmarnock FC,Tromsø IL,2,2,False,Kilmarnock,
+2024-08-08,uefa.confq,St. Mirren FC,SK Brann,1,1,False,St Mirren,
+2024-08-15,uefa.confq,Tromsø IL,Kilmarnock FC,0,1,False,,Kilmarnock
+2024-08-15,uefa.confq,SK Brann,St. Mirren FC,3,1,False,,St Mirren
+2024-08-15,uefa.confq,AEK Athen,FC Noah,1,0,False,AEK,
+2024-08-15,uefa.confq,İstanbul Başakşehir,FC Iberia 1999,2,0,False,Buyuksehyr,
+2024-08-15,uefa.confq,KAA Gent,Silkeborg IF,2,2,False,Gent,
+2024-08-15,uefa.confq,Vitória Guimarães,FC Zürich,2,0,False,Guimaraes,
+2024-08-21,uefa.confq,Vitória Guimarães,Zrinjski Mostar,3,0,False,Guimaraes,
+2024-08-22,uefa.confq,BK Häcken,1. FC Heidenheim 1846,1,2,False,,Heidenheim
+2024-08-22,uefa.confq,FC København,Kilmarnock FC,2,0,False,,Kilmarnock
+2024-08-22,uefa.confq,ACF Fiorentina,Puskás FC,3,3,False,Fiorentina,
+2024-08-22,uefa.confq,Kryvbas Kryvyi Rih,Real Betis,0,2,False,,Betis
+2024-08-22,uefa.confq,Partizan,KAA Gent,0,1,False,,Gent
+2024-08-22,uefa.confq,Wisła Kraków,Cercle Brugge,1,6,False,,Cercle Brugge
+2024-08-22,uefa.confq,St Patrick's Athletic,İstanbul Başakşehir,0,0,False,,Buyuksehyr
+2024-08-22,uefa.confq,FC St. Gallen,Trabzonspor,0,0,False,,Trabzonspor
+2024-08-22,uefa.confq,RC Lens,Panathinaikos,2,1,False,Lens,Panathinaikos
+2024-08-22,uefa.confq,Chelsea FC,Servette FC,2,0,False,Chelsea,
+2024-08-28,uefa.confq,İstanbul Başakşehir,St Patrick's Athletic,2,0,False,Buyuksehyr,
+2024-08-28,uefa.confq,KAA Gent,Partizan,1,0,False,Gent,
+2024-08-29,uefa.confq,Trabzonspor,FC St. Gallen,1,1,False,Trabzonspor,
+2024-08-29,uefa.confq,Zrinjski Mostar,Vitória Guimarães,0,4,False,,Guimaraes
+2024-08-29,uefa.confq,Cercle Brugge,Wisła Kraków,1,4,False,Cercle Brugge,
+2024-08-29,uefa.confq,Panathinaikos,RC Lens,2,0,False,Panathinaikos,Lens
+2024-08-29,uefa.confq,Kilmarnock FC,FC København,1,1,False,Kilmarnock,
+2024-08-29,uefa.confq,1. FC Heidenheim 1846,BK Häcken,3,2,False,Heidenheim,
+2024-08-29,uefa.confq,Servette FC,Chelsea FC,2,1,False,,Chelsea
+2024-08-29,uefa.confq,Puskás FC,ACF Fiorentina,1,1,False,,Fiorentina
+2024-08-29,uefa.confq,Real Betis,Kryvbas Kryvyi Rih,3,0,False,Betis,
+2025-07-24,uefa.elq,FC Sheriff,FC Utrecht,1,3,False,,Utrecht
+2025-07-24,uefa.elq,Levski Sofia,Sporting Braga,0,0,False,,Sp Braga
+2025-07-24,uefa.elq,FC Midtjylland,Hibernian FC,1,1,False,,Hibernian
+2025-07-24,uefa.elq,RSC Anderlecht,BK Häcken,1,0,False,Anderlecht,
+2025-07-24,uefa.elq,Beşiktaş,Shakhtar Donetsk,2,4,False,Besiktas,
+2025-07-31,uefa.elq,BK Häcken,RSC Anderlecht,2,1,False,,Anderlecht
+2025-07-31,uefa.elq,FC Utrecht,FC Sheriff,4,1,False,Utrecht,
+2025-07-31,uefa.elq,Shakhtar Donetsk,Beşiktaş,2,0,False,,Besiktas
+2025-07-31,uefa.elq,Sporting Braga,Levski Sofia,0,0,False,Sp Braga,
+2025-07-31,uefa.elq,Hibernian FC,FC Midtjylland,0,0,False,Hibernian,
+2025-08-07,uefa.elq,CFR Cluj,Sporting Braga,1,2,False,,Sp Braga
+2025-08-07,uefa.elq,PAOK Saloniki,Wolfsberger AC,0,0,False,PAOK,
+2025-08-07,uefa.elq,Panathinaikos,Shakhtar Donetsk,0,0,False,Panathinaikos,
+2025-08-07,uefa.elq,Servette FC,FC Utrecht,1,3,False,,Utrecht
+2025-08-14,uefa.elq,Wolfsberger AC,PAOK Saloniki,0,0,False,,PAOK
+2025-08-14,uefa.elq,FC Utrecht,Servette FC,2,1,False,Utrecht,
+2025-08-14,uefa.elq,Shakhtar Donetsk,Panathinaikos,0,0,False,,Panathinaikos
+2025-08-14,uefa.elq,Sporting Braga,CFR Cluj,2,0,False,Sp Braga,
+2025-08-21,uefa.elq,Panathinaikos,Samsunspor,2,1,False,Panathinaikos,Samsunspor
+2025-08-21,uefa.elq,Zrinjski Mostar,FC Utrecht,0,2,False,,Utrecht
+2025-08-21,uefa.elq,Lech Poznań,KRC Genk,1,5,False,,Genk
+2025-08-21,uefa.elq,Aberdeen FC,FCSB,2,2,False,Aberdeen,
+2025-08-21,uefa.elq,HNK Rijeka,PAOK Saloniki,1,0,False,,PAOK
+2025-08-21,uefa.elq,Lincoln Red Imps,Sporting Braga,0,4,False,,Sp Braga
+2025-08-28,uefa.elq,Samsunspor,Panathinaikos,0,0,False,Samsunspor,Panathinaikos
+2025-08-28,uefa.elq,PAOK Saloniki,HNK Rijeka,5,0,False,PAOK,
+2025-08-28,uefa.elq,KRC Genk,Lech Poznań,1,2,False,Genk,
+2025-08-28,uefa.elq,FC Utrecht,Zrinjski Mostar,0,0,False,Utrecht,
+2025-08-28,uefa.elq,FCSB,Aberdeen FC,3,0,False,,Aberdeen
+2025-08-28,uefa.elq,Sporting Braga,Lincoln Red Imps,5,1,False,Sp Braga,
+2025-07-22,uefa.clq,Rangers FC,Panathinaikos,2,0,False,Rangers,Panathinaikos
+2025-07-30,uefa.clq,Panathinaikos,Rangers FC,1,1,False,Panathinaikos,Rangers
+2025-08-05,uefa.clq,Rangers FC,Viktoria Plzeň,3,0,False,Rangers,
+2025-08-06,uefa.clq,RB Salzburg,Club Brugge KV,0,1,False,,Club Brugge
+2025-08-06,uefa.clq,OGC Nice,SL Benfica,0,2,False,Nice,Benfica
+2025-08-06,uefa.clq,Feyenoord,Fenerbahçe,2,1,False,Feyenoord,Fenerbahce
+2025-08-12,uefa.clq,Viktoria Plzeň,Rangers FC,2,1,False,,Rangers
+2025-08-12,uefa.clq,Fenerbahçe,Feyenoord,5,2,False,Fenerbahce,Feyenoord
+2025-08-12,uefa.clq,Club Brugge KV,RB Salzburg,3,2,False,Club Brugge,
+2025-08-12,uefa.clq,SL Benfica,OGC Nice,2,0,False,Benfica,Nice
+2025-08-19,uefa.clq,Rangers FC,Club Brugge KV,1,3,False,Rangers,Club Brugge
+2025-08-20,uefa.clq,Celtic FC,FK Kairat,0,0,False,Celtic,
+2025-08-20,uefa.clq,Fenerbahçe,SL Benfica,0,0,False,Fenerbahce,Benfica
+2025-08-26,uefa.clq,FK Kairat,Celtic FC,0,0,False,,Celtic
+2025-08-27,uefa.clq,SL Benfica,Fenerbahçe,1,0,False,Benfica,Fenerbahce
+2025-08-27,uefa.clq,Club Brugge KV,Rangers FC,6,0,False,Club Brugge,Rangers
+2025-09-16,uefa.cl,Athletic Club,Arsenal FC,0,2,False,Ath Bilbao,Arsenal
+2025-09-16,uefa.cl,PSV,Royale Union Saint-Gilloise,1,3,False,PSV Eindhoven,St. Gilloise
+2025-09-16,uefa.cl,Juventus FC,Borussia Dortmund,4,4,False,Juventus,Dortmund
+2025-09-16,uefa.cl,Sport Lisboa e Benfica,Qarabağ Ağdam FK,2,3,False,Benfica,
+2025-09-16,uefa.cl,Tottenham Hotspur FC,Villarreal CF,1,0,False,Tottenham,Villarreal
+2025-09-16,uefa.cl,Real Madrid CF,Olympique de Marseille,2,1,False,Real Madrid,Marseille
+2025-09-17,uefa.cl,PAE Olympiakos SFP,Paphos FC,0,0,False,Olympiakos,
+2025-09-17,uefa.cl,AFC Ajax,FC Internazionale Milano,0,2,False,Ajax,Inter
+2025-09-17,uefa.cl,Liverpool FC,Club Atlético de Madrid,3,2,False,Liverpool,Ath Madrid
+2025-09-17,uefa.cl,Paris Saint-Germain FC,Atalanta BC,4,0,False,Paris SG,Atalanta
+2025-09-17,uefa.cl,FC Bayern München,Chelsea FC,3,1,False,Bayern Munich,Chelsea
+2025-09-18,uefa.cl,FC København,Bayer 04 Leverkusen,2,2,False,,Leverkusen
+2025-09-18,uefa.cl,Club Brugge KV,AS Monaco FC,4,1,False,Club Brugge,
+2025-09-18,uefa.cl,Newcastle United FC,FC Barcelona,1,2,False,Newcastle,Barcelona
+2025-09-18,uefa.cl,Manchester City FC,SSC Napoli,2,0,False,Man City,Napoli
+2025-09-18,uefa.cl,Eintracht Frankfurt,Galatasaray SK,5,1,False,Ein Frankfurt,Galatasaray
+2025-09-18,uefa.cl,Sporting Clube de Portugal,FK Kairat,4,1,False,Sp Lisbon,
+2025-09-30,uefa.cl,Atalanta BC,Club Brugge KV,2,1,False,Atalanta,Club Brugge
+2025-09-30,uefa.cl,FK Kairat,Real Madrid CF,0,5,False,,Real Madrid
+2025-09-30,uefa.cl,Galatasaray SK,Liverpool FC,1,0,False,Galatasaray,Liverpool
+2025-09-30,uefa.cl,Club Atlético de Madrid,Eintracht Frankfurt,5,1,False,Ath Madrid,Ein Frankfurt
+2025-09-30,uefa.cl,Olympique de Marseille,AFC Ajax,4,0,False,Marseille,Ajax
+2025-09-30,uefa.cl,FK Bodø/Glimt,Tottenham Hotspur FC,2,2,False,,Tottenham
+2025-09-30,uefa.cl,Paphos FC,FC Bayern München,1,5,False,,Bayern Munich
+2025-09-30,uefa.cl,Chelsea FC,Sport Lisboa e Benfica,1,0,False,Chelsea,Benfica
+2025-09-30,uefa.cl,FC Internazionale Milano,SK Slavia Praha,3,0,False,Inter,
+2025-10-01,uefa.cl,Royale Union Saint-Gilloise,Newcastle United FC,0,4,False,St. Gilloise,Newcastle
+2025-10-01,uefa.cl,Borussia Dortmund,Athletic Club,4,1,False,Dortmund,Ath Bilbao
+2025-10-01,uefa.cl,FC Barcelona,Paris Saint-Germain FC,1,2,False,Barcelona,Paris SG
+2025-10-01,uefa.cl,AS Monaco FC,Manchester City FC,2,2,False,,Man City
+2025-10-01,uefa.cl,Bayer 04 Leverkusen,PSV,1,1,False,Leverkusen,PSV Eindhoven
+2025-10-01,uefa.cl,Arsenal FC,PAE Olympiakos SFP,2,0,False,Arsenal,Olympiakos
+2025-10-01,uefa.cl,Villarreal CF,Juventus FC,2,2,False,Villarreal,Juventus
+2025-10-01,uefa.cl,SSC Napoli,Sporting Clube de Portugal,2,1,False,Napoli,Sp Lisbon
+2025-10-21,uefa.cl,FC Barcelona,PAE Olympiakos SFP,6,1,False,Barcelona,Olympiakos
+2025-10-21,uefa.cl,Royale Union Saint-Gilloise,FC Internazionale Milano,0,4,False,St. Gilloise,Inter
+2025-10-21,uefa.cl,FC København,Borussia Dortmund,2,4,False,,Dortmund
+2025-10-21,uefa.cl,Bayer 04 Leverkusen,Paris Saint-Germain FC,2,7,False,Leverkusen,Paris SG
+2025-10-21,uefa.cl,Villarreal CF,Manchester City FC,0,2,False,Villarreal,Man City
+2025-10-21,uefa.cl,Arsenal FC,Club Atlético de Madrid,4,0,False,Arsenal,Ath Madrid
+2025-10-21,uefa.cl,Newcastle United FC,Sport Lisboa e Benfica,3,0,False,Newcastle,Benfica
+2025-10-21,uefa.cl,PSV,SSC Napoli,6,2,False,PSV Eindhoven,Napoli
+2025-10-22,uefa.cl,Galatasaray SK,FK Bodø/Glimt,3,1,False,Galatasaray,
+2025-10-22,uefa.cl,Athletic Club,Qarabağ Ağdam FK,3,1,False,Ath Bilbao,
+2025-10-22,uefa.cl,Eintracht Frankfurt,Liverpool FC,1,5,False,Ein Frankfurt,Liverpool
+2025-10-22,uefa.cl,Atalanta BC,SK Slavia Praha,0,0,False,Atalanta,
+2025-10-22,uefa.cl,Sporting Clube de Portugal,Olympique de Marseille,2,1,False,Sp Lisbon,Marseille
+2025-10-22,uefa.cl,AS Monaco FC,Tottenham Hotspur FC,0,0,False,,Tottenham
+2025-10-22,uefa.cl,FC Bayern München,Club Brugge KV,4,0,False,Bayern Munich,Club Brugge
+2025-10-22,uefa.cl,Chelsea FC,AFC Ajax,5,1,False,Chelsea,Ajax
+2025-10-22,uefa.cl,Real Madrid CF,Juventus FC,1,0,False,Real Madrid,Juventus
+2025-11-04,uefa.cl,SK Slavia Praha,Arsenal FC,0,3,False,,Arsenal
+2025-11-04,uefa.cl,SSC Napoli,Eintracht Frankfurt,0,0,False,Napoli,Ein Frankfurt
+2025-11-04,uefa.cl,Juventus FC,Sporting Clube de Portugal,1,1,False,Juventus,Sp Lisbon
+2025-11-04,uefa.cl,Club Atlético de Madrid,Royale Union Saint-Gilloise,3,1,False,Ath Madrid,St. Gilloise
+2025-11-04,uefa.cl,Tottenham Hotspur FC,FC København,4,0,False,Tottenham,
+2025-11-04,uefa.cl,PAE Olympiakos SFP,PSV,1,1,False,Olympiakos,PSV Eindhoven
+2025-11-04,uefa.cl,Paris Saint-Germain FC,FC Bayern München,1,2,False,Paris SG,Bayern Munich
+2025-11-04,uefa.cl,Liverpool FC,Real Madrid CF,1,0,False,Liverpool,Real Madrid
+2025-11-05,uefa.cl,Paphos FC,Villarreal CF,1,0,False,,Villarreal
+2025-11-05,uefa.cl,Qarabağ Ağdam FK,Chelsea FC,2,2,False,,Chelsea
+2025-11-05,uefa.cl,FC Internazionale Milano,FK Kairat,2,1,False,Inter,
+2025-11-05,uefa.cl,Manchester City FC,Borussia Dortmund,4,1,False,Man City,Dortmund
+2025-11-05,uefa.cl,Club Brugge KV,FC Barcelona,3,3,False,Club Brugge,Barcelona
+2025-11-05,uefa.cl,Sport Lisboa e Benfica,Bayer 04 Leverkusen,0,1,False,Benfica,Leverkusen
+2025-11-05,uefa.cl,Olympique de Marseille,Atalanta BC,0,1,False,Marseille,Atalanta
+2025-11-05,uefa.cl,AFC Ajax,Galatasaray SK,0,3,False,Ajax,Galatasaray
+2025-11-05,uefa.cl,Newcastle United FC,Athletic Club,2,0,False,Newcastle,Ath Bilbao
+2025-11-25,uefa.cl,AFC Ajax,Sport Lisboa e Benfica,0,2,False,Ajax,Benfica
+2025-11-25,uefa.cl,Galatasaray SK,Royale Union Saint-Gilloise,0,1,False,Galatasaray,St. Gilloise
+2025-11-25,uefa.cl,Borussia Dortmund,Villarreal CF,4,0,False,Dortmund,Villarreal
+2025-11-25,uefa.cl,Manchester City FC,Bayer 04 Leverkusen,0,2,False,Man City,Leverkusen
+2025-11-25,uefa.cl,FK Bodø/Glimt,Juventus FC,2,3,False,,Juventus
+2025-11-25,uefa.cl,Olympique de Marseille,Newcastle United FC,2,1,False,Marseille,Newcastle
+2025-11-25,uefa.cl,SK Slavia Praha,Athletic Club,0,0,False,,Ath Bilbao
+2025-11-25,uefa.cl,SSC Napoli,Qarabağ Ağdam FK,2,0,False,Napoli,
+2025-11-25,uefa.cl,Chelsea FC,FC Barcelona,3,0,False,Chelsea,Barcelona
+2025-11-26,uefa.cl,Liverpool FC,PSV,1,4,False,Liverpool,PSV Eindhoven
+2025-11-26,uefa.cl,Paris Saint-Germain FC,Tottenham Hotspur FC,5,3,False,Paris SG,Tottenham
+2025-11-26,uefa.cl,Eintracht Frankfurt,Atalanta BC,0,3,False,Ein Frankfurt,Atalanta
+2025-11-26,uefa.cl,Sporting Clube de Portugal,Club Brugge KV,3,0,False,Sp Lisbon,Club Brugge
+2025-11-26,uefa.cl,Arsenal FC,FC Bayern München,3,1,False,Arsenal,Bayern Munich
+2025-11-26,uefa.cl,PAE Olympiakos SFP,Real Madrid CF,3,4,False,Olympiakos,Real Madrid
+2025-11-26,uefa.cl,Club Atlético de Madrid,FC Internazionale Milano,2,1,False,Ath Madrid,Inter
+2025-12-09,uefa.cl,FK Kairat,PAE Olympiakos SFP,0,1,False,,Olympiakos
+2025-12-09,uefa.cl,FC Bayern München,Sporting Clube de Portugal,3,1,False,Bayern Munich,Sp Lisbon
+2025-12-09,uefa.cl,FC Barcelona,Eintracht Frankfurt,2,1,False,Barcelona,Ein Frankfurt
+2025-12-09,uefa.cl,PSV,Club Atlético de Madrid,2,3,False,PSV Eindhoven,Ath Madrid
+2025-12-09,uefa.cl,Royale Union Saint-Gilloise,Olympique de Marseille,2,3,False,St. Gilloise,Marseille
+2025-12-09,uefa.cl,Tottenham Hotspur FC,SK Slavia Praha,3,0,False,Tottenham,
+2025-12-09,uefa.cl,AS Monaco FC,Galatasaray SK,1,0,False,,Galatasaray
+2025-12-09,uefa.cl,Atalanta BC,Chelsea FC,2,1,False,Atalanta,Chelsea
+2025-12-09,uefa.cl,FC Internazionale Milano,Liverpool FC,0,1,False,Inter,Liverpool
+2025-12-10,uefa.cl,Villarreal CF,FC København,2,3,False,Villarreal,
+2025-12-10,uefa.cl,Qarabağ Ağdam FK,AFC Ajax,2,4,False,,Ajax
+2025-12-10,uefa.cl,Borussia Dortmund,FK Bodø/Glimt,2,2,False,Dortmund,
+2025-12-10,uefa.cl,Athletic Club,Paris Saint-Germain FC,0,0,False,Ath Bilbao,Paris SG
+2025-12-10,uefa.cl,Bayer 04 Leverkusen,Newcastle United FC,2,2,False,Leverkusen,Newcastle
+2025-12-10,uefa.cl,Club Brugge KV,Arsenal FC,0,3,False,Club Brugge,Arsenal
+2025-12-10,uefa.cl,Sport Lisboa e Benfica,SSC Napoli,2,0,False,Benfica,Napoli
+2025-12-10,uefa.cl,Juventus FC,Paphos FC,2,0,False,Juventus,
+2025-12-10,uefa.cl,Real Madrid CF,Manchester City FC,1,2,False,Real Madrid,Man City
+2026-01-20,uefa.cl,FK Kairat,Club Brugge KV,1,4,False,,Club Brugge
+2026-01-20,uefa.cl,FK Bodø/Glimt,Manchester City FC,3,1,False,,Man City
+2026-01-20,uefa.cl,Tottenham Hotspur FC,Borussia Dortmund,2,0,False,Tottenham,Dortmund
+2026-01-20,uefa.cl,Sporting Clube de Portugal,Paris Saint-Germain FC,2,1,False,Sp Lisbon,Paris SG
+2026-01-20,uefa.cl,PAE Olympiakos SFP,Bayer 04 Leverkusen,2,0,False,Olympiakos,Leverkusen
+2026-01-20,uefa.cl,Villarreal CF,AFC Ajax,1,2,False,Villarreal,Ajax
+2026-01-20,uefa.cl,FC København,SSC Napoli,1,1,False,,Napoli
+2026-01-20,uefa.cl,Real Madrid CF,AS Monaco FC,6,1,False,Real Madrid,
+2026-01-20,uefa.cl,FC Internazionale Milano,Arsenal FC,1,3,False,Inter,Arsenal
+2026-01-21,uefa.cl,Qarabağ Ağdam FK,Eintracht Frankfurt,3,2,False,,Ein Frankfurt
+2026-01-21,uefa.cl,Galatasaray SK,Club Atlético de Madrid,1,1,False,Galatasaray,Ath Madrid
+2026-01-21,uefa.cl,Olympique de Marseille,Liverpool FC,0,3,False,Marseille,Liverpool
+2026-01-21,uefa.cl,SK Slavia Praha,FC Barcelona,2,4,False,,Barcelona
+2026-01-21,uefa.cl,Atalanta BC,Athletic Club,2,3,False,Atalanta,Ath Bilbao
+2026-01-21,uefa.cl,Juventus FC,Sport Lisboa e Benfica,2,0,False,Juventus,Benfica
+2026-01-21,uefa.cl,Newcastle United FC,PSV,3,0,False,Newcastle,PSV Eindhoven
+2026-01-21,uefa.cl,FC Bayern München,Royale Union Saint-Gilloise,2,0,False,Bayern Munich,St. Gilloise
+2026-01-21,uefa.cl,Chelsea FC,Paphos FC,1,0,False,Chelsea,
+2026-01-28,uefa.cl,Liverpool FC,Qarabağ Ağdam FK,6,0,False,Liverpool,
+2026-01-28,uefa.cl,FC Barcelona,FC København,4,1,False,Barcelona,
+2026-01-28,uefa.cl,Manchester City FC,Galatasaray SK,2,0,False,Man City,Galatasaray
+2026-01-28,uefa.cl,Bayer 04 Leverkusen,Villarreal CF,3,0,False,Leverkusen,Villarreal
+2026-01-28,uefa.cl,Arsenal FC,FK Kairat,3,2,False,Arsenal,
+2026-01-28,uefa.cl,Royale Union Saint-Gilloise,Atalanta BC,1,0,False,St. Gilloise,Atalanta
+2026-01-28,uefa.cl,Club Brugge KV,Olympique de Marseille,3,0,False,Club Brugge,Marseille
+2026-01-28,uefa.cl,Eintracht Frankfurt,Tottenham Hotspur FC,0,2,False,Ein Frankfurt,Tottenham
+2026-01-28,uefa.cl,AS Monaco FC,Juventus FC,0,0,False,,Juventus
+2026-01-28,uefa.cl,Club Atlético de Madrid,FK Bodø/Glimt,1,2,False,Ath Madrid,
+2026-01-28,uefa.cl,Athletic Club,Sporting Clube de Portugal,2,3,False,Ath Bilbao,Sp Lisbon
+2026-01-28,uefa.cl,AFC Ajax,PAE Olympiakos SFP,1,2,False,Ajax,Olympiakos
+2026-01-28,uefa.cl,Paris Saint-Germain FC,Newcastle United FC,1,1,False,Paris SG,Newcastle
+2026-01-28,uefa.cl,PSV,FC Bayern München,1,2,False,PSV Eindhoven,Bayern Munich
+2026-01-28,uefa.cl,SSC Napoli,Chelsea FC,2,3,False,Napoli,Chelsea
+2026-01-28,uefa.cl,Sport Lisboa e Benfica,Real Madrid CF,4,2,False,Benfica,Real Madrid
+2026-01-28,uefa.cl,Borussia Dortmund,FC Internazionale Milano,0,2,False,Dortmund,Inter
+2026-02-17,uefa.cl,Galatasaray SK,Juventus FC,5,2,False,Galatasaray,Juventus
+2026-02-17,uefa.cl,Sport Lisboa e Benfica,Real Madrid CF,0,1,False,Benfica,Real Madrid
+2026-02-17,uefa.cl,AS Monaco FC,Paris Saint-Germain FC,2,3,False,,Paris SG
+2026-02-17,uefa.cl,Borussia Dortmund,Atalanta BC,2,0,False,Dortmund,Atalanta
+2026-02-18,uefa.cl,Qarabağ Ağdam FK,Newcastle United FC,1,6,False,,Newcastle
+2026-02-18,uefa.cl,Club Brugge KV,Club Atlético de Madrid,3,3,False,Club Brugge,Ath Madrid
+2026-02-18,uefa.cl,PAE Olympiakos SFP,Bayer 04 Leverkusen,0,2,False,Olympiakos,Leverkusen
+2026-02-18,uefa.cl,FK Bodø/Glimt,FC Internazionale Milano,3,1,False,,Inter
+2026-02-24,uefa.cl,Club Atlético de Madrid,Club Brugge KV,4,1,False,Ath Madrid,Club Brugge
+2026-02-24,uefa.cl,Newcastle United FC,Qarabağ Ağdam FK,3,2,False,Newcastle,
+2026-02-24,uefa.cl,Bayer 04 Leverkusen,PAE Olympiakos SFP,0,0,False,Leverkusen,Olympiakos
+2026-02-24,uefa.cl,FC Internazionale Milano,FK Bodø/Glimt,1,2,False,Inter,
+2026-02-25,uefa.cl,Atalanta BC,Borussia Dortmund,4,1,False,Atalanta,Dortmund
+2026-02-25,uefa.cl,Real Madrid CF,Sport Lisboa e Benfica,2,1,False,Real Madrid,Benfica
+2026-02-25,uefa.cl,Paris Saint-Germain FC,AS Monaco FC,2,2,False,Paris SG,
+2026-02-25,uefa.cl,Juventus FC,Galatasaray SK,3,0,False,Juventus,Galatasaray
+2026-03-10,uefa.cl,Galatasaray SK,Liverpool FC,1,0,True,Galatasaray,Liverpool
+2026-03-10,uefa.cl,Atalanta BC,FC Bayern München,1,6,True,Atalanta,Bayern Munich
+2026-03-10,uefa.cl,Newcastle United FC,FC Barcelona,1,1,True,Newcastle,Barcelona
+2026-03-10,uefa.cl,Club Atlético de Madrid,Tottenham Hotspur FC,5,2,True,Ath Madrid,Tottenham
+2026-03-11,uefa.cl,Bayer 04 Leverkusen,Arsenal FC,1,1,True,Leverkusen,Arsenal
+2026-03-11,uefa.cl,Paris Saint-Germain FC,Chelsea FC,5,2,True,Paris SG,Chelsea
+2026-03-11,uefa.cl,Real Madrid CF,Manchester City FC,3,0,True,Real Madrid,Man City
+2026-03-11,uefa.cl,FK Bodø/Glimt,Sporting Clube de Portugal,3,0,True,,Sp Lisbon
+2026-03-17,uefa.cl,Sporting Clube de Portugal,FK Bodø/Glimt,3,0,True,Sp Lisbon,
+2026-03-17,uefa.cl,Chelsea FC,Paris Saint-Germain FC,0,3,True,Chelsea,Paris SG
+2026-03-17,uefa.cl,Manchester City FC,Real Madrid CF,1,2,True,Man City,Real Madrid
+2026-03-17,uefa.cl,Arsenal FC,Bayer 04 Leverkusen,2,0,True,Arsenal,Leverkusen
+2026-03-18,uefa.cl,FC Barcelona,Newcastle United FC,7,2,True,Barcelona,Newcastle
+2026-03-18,uefa.cl,Liverpool FC,Galatasaray SK,4,0,True,Liverpool,Galatasaray
+2026-03-18,uefa.cl,FC Bayern München,Atalanta BC,4,1,True,Bayern Munich,Atalanta
+2026-03-18,uefa.cl,Tottenham Hotspur FC,Club Atlético de Madrid,3,2,True,Tottenham,Ath Madrid
+2026-04-07,uefa.cl,Real Madrid CF,FC Bayern München,1,2,True,Real Madrid,Bayern Munich
+2026-04-07,uefa.cl,Sporting Clube de Portugal,Arsenal FC,0,1,True,Sp Lisbon,Arsenal
+2026-04-08,uefa.cl,Paris Saint-Germain FC,Liverpool FC,2,0,True,Paris SG,Liverpool
+2026-04-08,uefa.cl,FC Barcelona,Club Atlético de Madrid,0,2,True,Barcelona,Ath Madrid
+2026-04-14,uefa.cl,Liverpool FC,Paris Saint-Germain FC,0,2,True,Liverpool,Paris SG
+2026-04-14,uefa.cl,Club Atlético de Madrid,FC Barcelona,1,2,True,Ath Madrid,Barcelona
+2026-04-15,uefa.cl,FC Bayern München,Real Madrid CF,4,3,True,Bayern Munich,Real Madrid
+2026-04-15,uefa.cl,Arsenal FC,Sporting Clube de Portugal,0,0,True,Arsenal,Sp Lisbon
+2026-04-28,uefa.cl,Paris Saint-Germain FC,FC Bayern München,5,4,True,Paris SG,Bayern Munich
+2026-04-29,uefa.cl,Club Atlético de Madrid,Arsenal FC,1,1,True,Ath Madrid,Arsenal
+2026-05-05,uefa.cl,Arsenal FC,Club Atlético de Madrid,1,0,True,Arsenal,Ath Madrid
+2026-05-06,uefa.cl,FC Bayern München,Paris Saint-Germain FC,1,1,True,Bayern Munich,Paris SG
+2026-05-30,uefa.cl,Paris Saint-Germain FC,Arsenal FC,1,1,True,Paris SG,Arsenal
+2025-07-24,uefa.confq,Ilves Tampere,AZ Alkmaar,4,3,False,,AZ Alkmaar
+2025-07-24,uefa.confq,Araz-Naxçıvan PFK,Aris Saloniki,2,1,False,,Aris
+2025-07-24,uefa.confq,Hammarby IF,Sporting Charleroi,0,0,False,,Charleroi
+2025-07-24,uefa.confq,Cherno More Varna,İstanbul Başakşehir,0,1,False,,Buyuksehyr
+2025-07-24,uefa.confq,AEK Athen,Hapoel Be'er Sheva,1,0,False,AEK,
+2025-07-24,uefa.confq,NK Varaždin,CD Santa Clara,2,1,False,,Santa Clara
+2025-07-24,uefa.confq,Dundee United,UNA Strassen,1,0,False,Dundee United,
+2025-07-31,uefa.confq,AZ Alkmaar,Ilves Tampere,5,0,False,AZ Alkmaar,
+2025-07-31,uefa.confq,UNA Strassen,Dundee United,0,1,False,,Dundee United
+2025-07-31,uefa.confq,İstanbul Başakşehir,Cherno More Varna,4,0,False,Buyuksehyr,
+2025-07-31,uefa.confq,Hapoel Be'er Sheva,AEK Athen,0,0,False,,AEK
+2025-07-31,uefa.confq,CD Santa Clara,NK Varaždin,2,0,False,Santa Clara,
+2025-07-31,uefa.confq,Sporting Charleroi,Hammarby IF,1,1,False,Charleroi,
+2025-07-31,uefa.confq,Aris Saloniki,Araz-Naxçıvan PFK,2,2,False,Aris,
+2025-08-07,uefa.confq,Aris Limassol,AEK Athen,2,2,False,,AEK
+2025-08-07,uefa.confq,Viking FK,İstanbul Başakşehir,1,3,False,,Buyuksehyr
+2025-08-07,uefa.confq,AZ Alkmaar,FC Vaduz,3,0,False,AZ Alkmaar,
+2025-08-07,uefa.confq,RSC Anderlecht,FC Sheriff,3,0,False,Anderlecht,
+2025-08-07,uefa.confq,St Patrick's Athletic,Beşiktaş,1,4,False,,Besiktas
+2025-08-07,uefa.confq,Rapid Wien,Dundee United,2,2,False,,Dundee United
+2025-08-07,uefa.confq,Larne FC,CD Santa Clara,0,3,False,,Santa Clara
+2025-08-07,uefa.confq,Partizan,Hibernian FC,0,2,False,,Hibernian
+2025-08-13,uefa.confq,İstanbul Başakşehir,Viking FK,1,1,False,Buyuksehyr,
+2025-08-14,uefa.confq,FC Sheriff,RSC Anderlecht,1,1,False,,Anderlecht
+2025-08-14,uefa.confq,FC Vaduz,AZ Alkmaar,0,1,False,,AZ Alkmaar
+2025-08-14,uefa.confq,AEK Athen,Aris Limassol,1,1,False,AEK,
+2025-08-14,uefa.confq,Beşiktaş,St Patrick's Athletic,3,2,False,Besiktas,
+2025-08-14,uefa.confq,Dundee United,Rapid Wien,2,2,False,Dundee United,
+2025-08-14,uefa.confq,CD Santa Clara,Larne FC,0,0,False,Santa Clara,
+2025-08-14,uefa.confq,Hibernian FC,Partizan,1,3,False,Hibernian,
+2025-08-21,uefa.confq,Rosenborg BK,1. FSV Mainz 05,2,1,False,,Mainz
+2025-08-21,uefa.confq,İstanbul Başakşehir,CS Universitatea Craiova,1,2,False,Buyuksehyr,
+2025-08-21,uefa.confq,RC Strasbourg,Brøndby IF,0,0,False,Strasbourg,
+2025-08-21,uefa.confq,RSC Anderlecht,AEK Athen,1,1,False,Anderlecht,AEK
+2025-08-21,uefa.confq,Levski Sofia,AZ Alkmaar,0,2,False,,AZ Alkmaar
+2025-08-21,uefa.confq,Polissya Zhytomyr,ACF Fiorentina,0,3,False,,Fiorentina
+2025-08-21,uefa.confq,Neman Grodno,Rayo Vallecano,0,1,False,,Vallecano
+2025-08-21,uefa.confq,FC Lausanne-Sport,Beşiktaş,1,1,False,,Besiktas
+2025-08-21,uefa.confq,Crystal Palace,Fredrikstad FK,1,0,False,Crystal Palace,
+2025-08-21,uefa.confq,Hibernian FC,Legia Warszawa,1,2,False,Hibernian,
+2025-08-21,uefa.confq,CD Santa Clara,Shamrock Rovers,1,2,False,Santa Clara,
+2025-08-28,uefa.confq,Fredrikstad FK,Crystal Palace,0,0,False,,Crystal Palace
+2025-08-28,uefa.confq,Beşiktaş,FC Lausanne-Sport,0,1,False,Besiktas,
+2025-08-28,uefa.confq,CS Universitatea Craiova,İstanbul Başakşehir,3,1,False,,Buyuksehyr
+2025-08-28,uefa.confq,AZ Alkmaar,Levski Sofia,4,1,False,AZ Alkmaar,
+2025-08-28,uefa.confq,Brøndby IF,RC Strasbourg,2,3,False,,Strasbourg
+2025-08-28,uefa.confq,AEK Athen,RSC Anderlecht,2,0,False,AEK,Anderlecht
+2025-08-28,uefa.confq,ACF Fiorentina,Polissya Zhytomyr,3,2,False,Fiorentina,
+2025-08-28,uefa.confq,Rayo Vallecano,Neman Grodno,4,0,False,Vallecano,
+2025-08-28,uefa.confq,Legia Warszawa,Hibernian FC,2,3,False,,Hibernian
+2025-08-28,uefa.confq,Shamrock Rovers,CD Santa Clara,0,0,False,,Santa Clara
+2025-08-28,uefa.confq,1. FSV Mainz 05,Rosenborg BK,4,1,False,Mainz,
