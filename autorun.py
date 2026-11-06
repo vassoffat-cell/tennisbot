@@ -210,7 +210,7 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
                    level=level, p1_raw=round(p_raw, 4), calib_k=k_ml, confidence=confidence(p1, min(n1, n2), auto))
         for k in J.EXACT_COLS:
             row[k] = round(f[k], 4) if k in f else ''
-        lns = LN.build(D, p1, kc)
+        lns = LN.build(D, p1, kc, LN.sigma_for(min(n1, n2)))
         for x in lns:
             x.update(espn_id=m.id, tour=row['tour'], event=m.event, level=level, round=m.round, surface=surface,
                      start_utc=row['start_utc'], start_local=row['start_local'], player1=row['player1'], player2=row['player2'],
@@ -252,62 +252,52 @@ def _last(name: str) -> str:
     return str(name).split()[-1] if str(name).strip() else str(name)
 
 
-LINE_TITLE = {1: 'П1 {p1}', 2: 'П2 {p2}', 3: 'Фора по геймам 1 ({line})', 4: 'Фора по геймам 2 ({line})',
-              5: 'Инд. тотал 1 · {label}', 6: 'Инд. тотал 2 · {label}', 7: 'Тотал · {label}'}
+LINE_TITLE = {1: 'П1 {p1}', 2: 'П2 {p2}', 3: 'Ф1 ({line})', 4: 'Ф2 ({line})', 5: 'ИТ1 {label}', 6: 'ИТ2 {label}',
+              7: 'Т{label}'}
 
 
 def shown(x: dict) -> bool:
     return not _blank(x.get('z_lo'))
 
 
-def match_card(row: dict, lns: list[dict]) -> str | None:
-    """Карточка матча: только линии, диапазон которых попадает в зону кф ODDS_ZONE. Нет таких — матч не показывается."""
+def match_block(row: dict, lns: list[dict], today: str) -> str | None:
+    """Матч в списке: время · раунд · игроки, затем линии с диапазоном кф (только попадающие в зону ODDS_ZONE)."""
     e = notify.esc
     vis = [x for x in sorted(lns, key=lambda x: x['slot']) if shown(x)]
     if not vis:
         return None
-    p1 = float(row['p1'])
-    fav = row['player1'] if p1 >= 0.5 else row['player2']
-    conf = int(row.get('confidence') or 3)
-    lvl = LEVEL_RU.get(str(row.get('level')), str(row.get('level') or ''))
-    out = [f"🎾 <b>{e(row['tour'])} {lvl}</b> · {e(row['event'])}",
-           f"🕒 {e(row['start_local'])} · {e(_round_ru(str(row['round'])))} · {SURF_RU.get(row['surface'], row['surface'])}",
-           f"<b>{e(row['player1'])}</b> — <b>{e(row['player2'])}</b>", '']
+    when = row['start_local'][6:] if row['start_local'][:5] == today else row['start_local']   # «14:30» или «07.11 00:30»
+    out = [f"🕒 <b>{e(when)}</b> · {e(_round_ru(str(row['round'])))} · <b>{e(row['player1'])}</b> — <b>{e(row['player2'])}</b>"]
     for x in vis:
         line = f"{float(x['line']):+g}" if not _blank(x.get('line')) else ''
-        title = LINE_TITLE[x['slot']].format(p1=_last(row['player1']), p2=_last(row['player2']), line=line, label=x['label'])
-        out.append(f"{e(title)}: если кф <b>{float(x['z_lo']):.2f} – {float(x['z_hi']):.2f}</b>")
-    out.append(f"🎯 Уверенность {'●' * conf}{'○' * (5 - conf)} {CONF_WORD[conf]} · модель: {e(_last(fav))} {max(p1, 1 - p1) * 100:.0f}%")
+        label = str(x['label']).replace(' ', '') if x['slot'] == 7 else x['label']           # «ТМ27.5»
+        title = LINE_TITLE[x['slot']].format(p1=_last(row['player1']), p2=_last(row['player2']), line=line, label=label)
+        out.append(f"{e(title)}: <b>{float(x['z_lo']):.2f}–{float(x['z_hi']):.2f}</b>")
     return '\n'.join(out)
 
 
 def list_blocks(items: list[tuple]) -> list[str]:
-    """Список на 24 ч: матчи одного турнира подряд, турниры — по времени первого матча."""
-    if not items:
+    """Список на 24 ч: заголовок турнира один раз, под ним матчи по времени; турниры — по времени первого матча."""
+    today = _local().strftime('%d.%m')
+    groups: dict[tuple, list] = {}
+    for m, row, lns in sorted(items, key=lambda t: t[1]['start_utc']):
+        b = match_block(row, lns, today)
+        if b:
+            groups.setdefault((row['tour'], row['event'], row.get('level'), row['surface']), []).append(b)
+    if not groups:
         return []
-    first = {}
-    for m, row, _ in items:
-        k = (row['tour'], row['event'])
-        first[k] = min(first.get(k, row['start_utc']), row['start_utc'])
-    items = sorted(items, key=lambda t: (first[(t[1]['tour'], t[1]['event'])], t[1]['tour'], t[1]['event'], t[1]['start_utc']))
-    cards = [c for c in (match_card(row, lns) for _, row, lns in items) if c]
-    if not cards:
-        return []
-    z = C.ODDS_ZONE
-    head = (f"📋 <b>Прогноз на 24 ч</b> · обновлено {_local().strftime('%d.%m %H:%M')} · {len(cards)} матч.\n"
-            f"Линии подобраны под кф {z[0]:.2f}–{z[1]:.2f}. Ставить, только если кф 1xBet <b>внутри диапазона</b>: ниже — нет "
-            f"выгоды, выше — расхождение с рынком слишком велико. Список обновляется каждые 2 часа, прошлый удаляется.")
-    return [head] + cards
-
-
-def extra_messages(store: J.Store) -> list[tuple[int, int]]:
-    """Списки, запрошенные кнопкой в боте (лист tg_messages): удаляются вместе с плановым списком."""
-    df = store.read('tg_messages')
-    out = [(int(J.num(c)), int(J.num(m))) for c, m in zip(df.chat_id, df.message_id)
-           if not np.isnan(J.num(c)) and not np.isnan(J.num(m))]
-    if len(df):
-        store.write_all('tg_messages', pd.DataFrame(columns=J.SHEETS['tg_messages']))
-    return out
+    n = sum(len(v) for v in groups.values())
+    blocks = [f"📋 <b>Прогноз на 24 ч</b> · {_local().strftime('%d.%m %H:%M')} · {n} матч."]
+    for (tour, event, level, surface), ms in groups.items():
+        head = (f"🏆 <b>{notify.esc(tour)} {LEVEL_RU.get(str(level), str(level or ''))} · {notify.esc(event)}</b> · "
+                f"{SURF_RU.get(surface, surface)}")
+        chunk = head
+        for mb in ms:                                         # длинный турнир делится, заголовок повторяется
+            if len(chunk) + len(mb) + 2 > 3700:
+                blocks.append(chunk); chunk = head + ' (продолжение)'
+            chunk += '\n\n' + mb
+        blocks.append(chunk)
+    return blocks
 
 
 def publish_list(rt: dict, items: list[tuple], dry: bool = False, extra: list | None = None) -> str:
@@ -325,6 +315,16 @@ def publish_list(rt: dict, items: list[tuple], dry: bool = False, extra: list | 
     rt['list_messages'] = [list(x) for x in sent]
     rt['list_match_ids'] = ids
     return f'список: удалено {removed}, отправлено {len(sent)} сообщ., матчей {len(ids)}'
+
+
+def extra_messages(store: J.Store) -> list[tuple[int, int]]:
+    """Списки, запрошенные кнопкой в боте (лист tg_messages): удаляются вместе с плановым списком."""
+    df = store.read('tg_messages')
+    out = [(int(J.num(c)), int(J.num(m))) for c, m in zip(df.chat_id, df.message_id)
+           if not np.isnan(J.num(c)) and not np.isnan(J.num(m))]
+    if len(df):
+        store.write_all('tg_messages', pd.DataFrame(columns=J.SHEETS['tg_messages']))
+    return out
 
 
 # ======================================================================== расчёт
@@ -354,7 +354,7 @@ def settle_auto(store: J.Store, by_id: dict[str, espn.EspnMatch]) -> pd.DataFram
 
 def attach_odds(store: J.Store) -> int:
     """Закрывающие коэффициенты tennis-data к рассчитанным прогнозам и проверочная ставка на победителя (1 ед.):
-    сторона, где кф Bet365 внутри диапазона [1,05/P; 1,20/P] (без Bet365 — по среднему рынку); результат по Bet365, среднему и максимуму."""
+    сторона, где кф Bet365 внутри диапазона из списка (без Bet365 — по среднему рынку); результат по Bet365, среднему и максимуму."""
     import dataset
     df = store.read('auto_forecasts')
     todo = df[(df.status.astype(str).isin(['FIN', 'RET'])) & (df.avg_1.astype(str).str.strip() == '')]
@@ -385,11 +385,11 @@ def attach_odds(store: J.Store) -> int:
             ref = odds['b365'] if not np.isnan(odds['b365'][0]) else odds['avg']
             side = ''
             if not np.isnan(ref[0]):
-                ev1, ev2 = p1 * ref[0] - 1, (1 - p1) * ref[1] - 1
-                inside = lambda ev: C.EV_THRESHOLD <= ev <= C.EV_MAX          # кф внутри диапазона из списка
-                if inside(ev1) and p1 >= C.MIN_PROB:
+                sg = LN.sigma_for(int(min(J.num(r.n1, 0), J.num(r.n2, 0))))
+                inside = lambda p, k: (lambda lo, hi: lo <= k <= hi)(*LN.k_range(p, sg))   # тот же диапазон, что в списке
+                if p1 >= C.MIN_PROB and inside(p1, ref[0]):
                     side = 1
-                elif inside(ev2) and 1 - p1 >= C.MIN_PROB:
+                elif 1 - p1 >= C.MIN_PROB and inside(1 - p1, ref[1]):
                     side = 2
             df.at[i, 'bet_side'] = side
             win = int(J.num(r.winner)) if str(r.winner).strip() else None
@@ -579,11 +579,33 @@ def take_inbox() -> tuple[bool, list[str]]:
     return got, log
 
 
+def reminder_due(rt: dict) -> bool:
+    """Напоминание о файлах tennis-data: с понедельника в 12:00 по Ташкенту, каждый день, пока на этой неделе
+    файлы не пришли; не чаще раза в день."""
+    loc = _local()
+    if not (12 <= loc.hour < 14):
+        return False
+    monday = (loc.date() - dt.timedelta(days=loc.weekday())).isoformat()
+    return (rt.get('last_files') or '2000-01-01') < monday and rt.get('last_reminder') != loc.date().isoformat()
+
+
+def reminder_text() -> str:
+    y = _local().year
+    return ('⏰ <b>Пора прислать файлы tennis-data</b>\n'
+            f'Скачайте последние версии и отправьте сюда оба файла:\n'
+            f'• WTA: {C.TENNIS_DATA_URL["wta"].format(y=y)}\n'
+            f'• ATP: {C.TENNIS_DATA_URL["atp"].format(y=y)}\n'
+            'Они обновляют проверку прогнозов по закрывающим коэффициентам рынка. Напоминание повторится завтра, '
+            'если файлов не будет.')
+
+
 def run(dry: bool = False) -> str:
     store, rt = J.Store(), runtime.load()
     log = []
     got, ilog = (False, []) if dry else take_inbox()
     log += ilog
+    if got:
+        rt['last_files'] = _local().date().isoformat()
     retrain_log = []
     due = retrain_due(rt)
     if got or due:
@@ -623,6 +645,10 @@ def run(dry: bool = False) -> str:
         notify.send_blocks(daily_learning(auto, ldf, retrain_log))
         rt['last_daily'] = today
         log.append('итоги самообучения отправлены')
+    if reminder_due(rt):
+        notify.send_blocks([reminder_text()])
+        rt['last_reminder'] = _local().date().isoformat()
+        log.append('напоминание о файлах отправлено')
     summ, _ = summary(store)
     store.write_all('summary', summ)
     runtime.save(rt)

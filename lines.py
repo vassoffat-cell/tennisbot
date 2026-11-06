@@ -6,10 +6,11 @@
 попадает в зону ODDS_ZONE (1,35–1,65), в которой предлагаются ставки. Показывается часть диапазона внутри зоны (z_lo–z_hi);
 линии без пересечения с зоной не показываются, но пишутся в журнал и участвуют в самообучении.
 
-Диапазон кф: [ (1+EV_LO)/P ; (1+EV_HI)/P ].
+Диапазон кф: [ 1,05 / P ; 1 / σ(logit P − z·σ_n) ].
   • нижняя граница — ставка даёт EV ≥ 5 % по модели;
-  • верхняя граница — EV ≤ 20 %: при большем расхождении с рынком ошибается, как правило, модель
-    (бэктест 2023–2026: EV 5–20 % → ROI −9,1 ± 2,9 %, EV > 50 % → ROI −19,8 ± 9,0 %).
+  • верхняя граница — расхождение с рынком не больше обычной ошибки модели: σ_n — измеренное стандартное отклонение
+    logit(P_модели) − logit(P_Pinnacle) вне выборки 2023–2024 по объёму данных игроков (0,76 при < 15 матчах …
+    0,44 при ≥ 120), z = 1. Поэтому ширина диапазона у каждого матча своя.
 Самокалибровка по рынкам: P' = σ(k_m · logit P), k_m оценивается по рассчитанным линиям этого рынка.
 """
 from __future__ import annotations
@@ -33,8 +34,18 @@ def scale(p: float, k: float) -> float:
     return float(1 / (1 + np.exp(-k * logit(p))))
 
 
-def k_range(p: float) -> tuple[float, float]:
-    return round((1 + C.EV_THRESHOLD) / p, 2), round((1 + C.EV_MAX) / p, 2)
+def sigma_for(n_min: int) -> float:
+    return next(s for lim, s in C.SIGMA_BY_N if n_min < lim)
+
+
+def k_range(p: float, sigma: float) -> tuple[float, float]:
+    p_low = scale_shift(p, -C.SIGMA_Z * sigma)
+    return round((1 + C.EV_THRESHOLD) / p, 2), round(1 / p_low, 2)
+
+
+def scale_shift(p: float, d: float) -> float:
+    """σ(logit P + d)."""
+    return float(1 / (1 + np.exp(-(logit(p) + d))))
 
 
 def zone(lo: float, hi: float) -> tuple[float | str, float | str]:
@@ -57,15 +68,15 @@ def _pick_ou(pr, make, grid) -> tuple[float, str, float]:
     return best[1], best[2], best[3]
 
 
-def build(D: dict, p1: float, kc: dict[str, float]) -> list[dict]:
+def build(D: dict, p1: float, kc: dict[str, float], sigma: float) -> list[dict]:
     """7 линий матча. D — распределение исходов (с позиции игрока 1), p1 — P(П1) после самокалибровки,
-    kc — коэффициенты самокалибровки по рынкам."""
+    kc — коэффициенты самокалибровки по рынкам, sigma — неопределённость модели для этого матча."""
     pr = lambda s: MK.price(D, s)[0]
     out = []
 
     def add(slot, market, pick, line, label, p_raw, k):
         p = scale(p_raw, k)
-        lo, hi = k_range(p)
+        lo, hi = k_range(p, sigma)
         zl, zh = zone(lo, hi)
         out.append(dict(slot=slot, market=market, pick=pick, line=line, label=label,
                         p_raw=round(p_raw, 4), p=round(p, 4), k_lo=lo, k_hi=hi, z_lo=zl, z_hi=zh))
@@ -79,7 +90,7 @@ def build(D: dict, p1: float, kc: dict[str, float]) -> list[dict]:
     k = kc.get('HCP', 1.0)
     p1h = scale(ph, k)
     for slot, pick, line, pp in ((3, '1', h, p1h), (4, '2', -h, 1 - p1h)):
-        lo, hi = k_range(pp)
+        lo, hi = k_range(pp, sigma)
         zl, zh = zone(lo, hi)
         out.append(dict(slot=slot, market='HCP', pick=pick, line=line, label=f'Ф{pick}({line:+g})',
                         p_raw=round(ph if pick == '1' else 1 - ph, 4), p=round(pp, 4), k_lo=lo, k_hi=hi, z_lo=zl, z_hi=zh))

@@ -7,7 +7,8 @@ import json
 import config as C
 
 PATH = C.DATA / 'runtime.json'
-DEFAULT = {'list_messages': [], 'list_match_ids': [], 'last_daily': '', 'last_retrain': ''}
+DEFAULT = {'list_messages': [], 'list_match_ids': [], 'last_daily': '', 'last_retrain': '',
+           'last_files': '2026-11-05', 'last_reminder': ''}   # файлы tennis-data последний раз пришли 05.11.2026
 
 
 def load() -> dict:
