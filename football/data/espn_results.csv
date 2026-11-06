@@ -535,8 +535,8 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401875563,ned.1,league,NED,N1,2026-10-31 17:45,Heerenveen,NEC Nijmegen,Heerenveen,Nijmegen,1,0,FT,regular-season,0
 401875564,ned.1,league,NED,N1,2026-10-31 17:45,PSV Eindhoven,Willem II,PSV Eindhoven,Willem II,7,0,FT,regular-season,0
 401875561,ned.1,league,NED,N1,2026-10-31 20:00,SC Cambuur,Go Ahead Eagles,Cambuur,Go Ahead Eagles,4,0,FT,regular-season,0
-401875562,ned.1,league,NED,N1,2026-10-31 20:00,Ajax Amsterdam,AZ Alkmaar,,AZ Alkmaar,1,0,FT,regular-season,0
-401879819,rus.1,league,RUS,RUS,2026-11-01 10:00,Gazovik Orenburg,CSKA Moscow,,CSKA Moscow,0,0,FT,2026-27-russian-premier-league,0
+401875562,ned.1,league,NED,N1,2026-10-31 20:00,Ajax Amsterdam,AZ Alkmaar,Ajax,AZ Alkmaar,1,0,FT,regular-season,0
+401879819,rus.1,league,RUS,RUS,2026-11-01 10:00,Gazovik Orenburg,CSKA Moscow,Orenburg,CSKA Moscow,0,0,FT,2026-27-russian-premier-league,0
 401888374,tur.1,league,TUR,T1,2026-11-01 10:30,Amed SFK,Eyupspor,Amedspor,Eyupspor,5,1,FT,2026-27-turkish-super-lig,0
 401875560,ned.1,league,NED,N1,2026-11-01 11:15,PEC Zwolle,ADO Den Haag,Zwolle,Den Haag,1,0,FT,regular-season,0
 401875002,ita.1,league,ITA,I1,2026-11-01 11:30,Como,Venezia,Como,Venezia,1,0,FT,2026-27-italian-serie-a,0
@@ -550,10 +550,10 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401874782,ita.1,league,ITA,I1,2026-11-01 14:00,Frosinone,Torino,Frosinone,Torino,2,0,FT,2026-27-italian-serie-a,0
 401874983,ita.1,league,ITA,I1,2026-11-01 14:00,Lazio,Cagliari,Lazio,Cagliari,2,1,FT,2026-27-italian-serie-a,0
 401876414,fra.1,league,FRA,F1,2026-11-01 14:00,Strasbourg,AJ Auxerre,Strasbourg,Auxerre,5,1,FT,2026-27-ligue-1,0
-401879820,rus.1,league,RUS,RUS,2026-11-01 14:30,FC Baltika Kaliningrad,Akron Tolyatti,,Akron Togliatti,2,1,FT,2026-27-russian-premier-league,0
+401879820,rus.1,league,RUS,RUS,2026-11-01 14:30,FC Baltika Kaliningrad,Akron Tolyatti,Baltika,Akron Togliatti,2,1,FT,2026-27-russian-premier-league,0
 401884750,ger.1,league,GER,D1,2026-11-01 14:30,1. FC Union Berlin,FC Cologne,Union Berlin,FC Koln,1,1,FT,2026-27-german-bundesliga,0
 401882819,esp.1,league,ESP,SP1,2026-11-01 15:15,Racing Santander,Real Madrid,Santander,Real Madrid,0,3,FT,2026-27-laliga,0
-401885410,por.1,league,POR,P1,2026-11-01 15:30,Arouca,C.D. Nacional,Arouca,,1,0,FT,2026-27-portuguese-primeira-liga,0
+401885410,por.1,league,POR,P1,2026-11-01 15:30,Arouca,C.D. Nacional,Arouca,Nacional,1,0,FT,2026-27-portuguese-primeira-liga,0
 401875557,ned.1,league,NED,N1,2026-11-01 15:45,FC Groningen,Sparta Rotterdam,Groningen,Sparta Rotterdam,2,3,FT,regular-season,0
 401888262,tur.1,league,TUR,T1,2026-11-01 16:00,Kasimpasa,Besiktas,Kasimpasa,Besiktas,2,2,FT,2026-27-turkish-super-lig,0
 401876415,fra.1,league,FRA,F1,2026-11-01 16:15,Paris FC,AS Monaco,Paris FC,Monaco,3,1,FT,2026-27-ligue-1,0
@@ -573,7 +573,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401874963,ita.1,league,ITA,I1,2026-11-02 17:30,Sassuolo,Fiorentina,Sassuolo,Fiorentina,2,4,FT,2026-27-italian-serie-a,0
 401874971,ita.1,league,ITA,I1,2026-11-02 19:45,Atalanta,Parma,Atalanta,Parma,0,3,FT,2026-27-italian-serie-a,0
 401876419,fra.1,league,FRA,F1,2026-11-02 19:45,Lorient,Brest,Lorient,Brest,0,2,FT,2026-27-ligue-1,0
-401882824,esp.1,league,ESP,SP1,2026-11-02 20:00,Deportivo,Osasuna,,Osasuna,2,1,FT,2026-27-laliga,0
+401882824,esp.1,league,ESP,SP1,2026-11-02 20:00,Deportivo,Osasuna,La Coruna,Osasuna,2,1,FT,2026-27-laliga,0
 401885403,por.1,league,POR,P1,2026-11-02 20:15,Benfica,Alverca,Benfica,Alverca,1,0,FT,2026-27-portuguese-primeira-liga,0
 401885407,por.1,league,POR,P1,2026-11-02 20:15,Gil Vicente,Vitória de Guimaraes,Gil Vicente,Guimaraes,0,0,FT,2026-27-portuguese-primeira-liga,0
 401915310,uefa.champions,uefa,,,2026-11-03 17:45,Shakhtar Donetsk,Sporting CP,,Sp Lisbon,0,1,FT,league-phase,0
@@ -611,7 +611,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915826,uefa.europa.conf,uefa,,,2026-11-05 17:45,KuPS Kuopio,KAA Gent,,Gent,0,0,FT,league-phase,0
 401915827,uefa.europa.conf,uefa,,,2026-11-05 17:45,Red Star Belgrade,Inter D'Escaldes,,,2,1,FT,league-phase,0
 401915828,uefa.europa.conf,uefa,,,2026-11-05 17:45,FC Thun,Heart of Midlothian,,Hearts,3,1,FT,league-phase,0
-401915829,uefa.europa.conf,uefa,,,2026-11-05 17:45,FC Midtjylland,Ajax Amsterdam,,,1,6,FT,league-phase,0
+401915829,uefa.europa.conf,uefa,,,2026-11-05 17:45,FC Midtjylland,Ajax Amsterdam,,Ajax,1,6,FT,league-phase,0
 401915830,uefa.europa.conf,uefa,,,2026-11-05 17:45,Atalanta,Kairat Almaty,Atalanta,,1,1,FT,league-phase,0
 401915831,uefa.europa.conf,uefa,,,2026-11-05 17:45,AGF,Braga,,Sp Braga,0,0,FT,league-phase,0
 401915522,uefa.europa,uefa,,,2026-11-05 20:00,Celtic,Besiktas,Celtic,Besiktas,3,2,FT,league-phase,0
