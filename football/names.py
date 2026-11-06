@@ -78,12 +78,14 @@ ALIASES = {
     'racing club de lens': 'Lens', 'rc lens': 'Lens', 'racing genk': 'Genk', 'ajax amsterdam': 'Ajax', 'gazovik orenburg': 'Orenburg',
     'fc baltika kaliningrad': 'Baltika', 'c d nacional': 'Nacional', 'cd nacional': 'Nacional', 'deportivo': 'La Coruna',
 }
+SUFFIX = r'\s+(united|utd|city|town|county|athletic|rovers|wanderers|albion)$'
 DROP = r'\b(fc|cf|afc|sc|ac|as|ss|ssc|sv|vfl|vfb|tsg|rcd|cd|ud|sd|ca|club|calcio|sk|fk|kv|krc|kaa|bk)\b'
 
 
 def norm(s: str) -> str:
     s = unicodedata.normalize('NFKD', str(s)).encode('ascii', 'ignore').decode().lower()
     s = re.sub(r"[.\-'’]", ' ', s)
+    s = re.sub(r'\bdinamo\b', 'dynamo', s)                       # Dinamo / Dynamo — одно и то же
     return re.sub(r'\s+', ' ', s).strip()
 
 
@@ -109,4 +111,7 @@ def match(espn_name: str, candidates: set[str]) -> str | None:
                     reverse=True)
     if scored and scored[0][0] >= 0.86 and (len(scored) == 1 or scored[0][0] - scored[1][0] >= 0.08):
         return scored[0][1]
+    short = re.sub(SUFFIX, '', core).strip()                      # «Cambridge United» → «Cambridge», если такая одна
+    if short != core and short in by_core and len(by_core[short]) == 1:
+        return by_core[short][0]
     return None
