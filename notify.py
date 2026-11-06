@@ -39,21 +39,41 @@ def _pack(blocks: list[str], limit: int = 3800) -> list[str]:
     return out
 
 
-def send_blocks(blocks: list[str], chat_ids: set[int] | None = None) -> int:
-    """Отправить HTML-блоки (каждый блок — законченный кусок с тегами), упаковав их в минимум сообщений."""
+def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: bool = False) -> list[tuple[int, int]]:
+    """Отправить HTML-блоки (каждый блок — законченный кусок с тегами), упаковав их в минимум сообщений.
+    silent — без звука уведомления. Возвращает [(chat_id, message_id)] отправленных сообщений."""
     msgs = _pack([b for b in blocks if b])
     if not C.BOT_TOKEN or not (chat_ids or C.ALLOWED_USERS):
         print('\n\n'.join(msgs))
-        return 0
-    sent = 0
+        return []
+    sent = []
     for chat in (chat_ids or C.ALLOWED_USERS):
         for m in msgs:
             try:
-                _call('sendMessage', {'chat_id': chat, 'text': m, 'parse_mode': 'HTML', 'disable_web_page_preview': True})
-                sent += 1
+                r = _call('sendMessage', {'chat_id': chat, 'text': m, 'parse_mode': 'HTML',
+                                          'disable_web_page_preview': True, 'disable_notification': silent})
+                sent.append((chat, r['result']['message_id']))
             except Exception as e:
                 print(f'Telegram: не отправлено ({e})')
     return sent
+
+
+def delete(messages: list) -> int:
+    """Удалить сообщения бота [(chat_id, message_id)] пачками по 100. Старше 48 ч Telegram удалить не даёт — пропуск."""
+    if not C.BOT_TOKEN:
+        return 0
+    by_chat: dict[int, list[int]] = {}
+    for chat, mid in messages:
+        by_chat.setdefault(int(chat), []).append(int(mid))
+    n = 0
+    for chat, ids in by_chat.items():
+        for i in range(0, len(ids), 100):
+            try:
+                _call('deleteMessages', {'chat_id': chat, 'message_ids': ids[i:i + 100]})
+                n += len(ids[i:i + 100])
+            except Exception as e:
+                print(f'Telegram: не удалено ({e})')
+    return n
 
 
 def send(text: str, pre: bool = False) -> int:

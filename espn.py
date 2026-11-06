@@ -117,3 +117,26 @@ def fetch(tour: str, days: list[dt.date]) -> list[EspnMatch]:
     if errors and not seen:
         raise RuntimeError(f'ESPN {tour}: нет данных ({"; ".join(errors)})')
     return sorted(seen.values(), key=lambda m: (m.start, m.id))
+
+
+RANK_URL = 'https://site.api.espn.com/apis/site/v2/sports/tennis/{tour}/rankings'
+
+
+def rankings(tour: str) -> list[tuple[str, int, float]]:
+    """Текущий рейтинг ATP/WTA: [(имя, место, очки)]. Пустой список, если источник недоступен."""
+    try:
+        js = _get(RANK_URL.format(tour=tour))
+    except Exception:
+        return []
+    out = []
+    for block in js.get('rankings', []) or []:
+        for r in block.get('ranks', []) or []:
+            a = r.get('athlete') or {}
+            name = a.get('displayName') or f"{a.get('firstName', '')} {a.get('lastName', '')}".strip()
+            try:
+                out.append((name, int(r.get('current')), float(r.get('points') or 0)))
+            except (TypeError, ValueError):
+                pass
+        if out:
+            break
+    return out

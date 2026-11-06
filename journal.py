@@ -1,10 +1,10 @@
 """Хранилище: Google Таблица (основной режим) или CSV в папке logs (запасной, только на компьютере).
 
 Листы:
-  forecasts       — все линии ручных прогнозов по скриншотам 1xBet;
-  paper_bets      — сигналы ручных прогнозов (ставка 1 ед.) и их расчёт;
+  auto_lines      — все 7 линий каждого матча с диапазоном кф и их расчёт (основа самообучения по рынкам);
+  (forecasts, paper_bets — модуль скриншотов, отключён)
   auto_forecasts  — авто-прогнозы на все матчи основного тура из расписания ESPN, сделанные ДО начала матча,
-                    их результат и бумажная ставка на победителя по закрывающим коэффициентам tennis-data;
+                    их результат и проверочная ставка на победителя по закрывающим коэффициентам tennis-data;
   summary         — сводка качества модели (пересчитывается каждый день).
 Числа пишутся как числа (RAW), поэтому десятичный разделитель таблицы (запятая/точка) не важен.
 Расчёт меняет только ячейки результата в нужных строках — строки, добавленные ботом в это же время, не теряются.
@@ -38,7 +38,16 @@ AUTO_COLS = (['created', 'espn_id', 'tour', 'event', 'location', 'surface', 'rou
               'level', 'p1_raw', 'calib_k', 'confidence'])   # новые столбцы — только в конец, чтобы не сдвигать старые строки
 AUTO_RESULT_COLS = ['status', 'winner', 'score', 'settled', 'logloss']
 AUTO_ODDS_COLS = ['b365_1', 'b365_2', 'avg_1', 'avg_2', 'max_1', 'max_2', 'bfe_1', 'bfe_2', 'bet_side', 'pnl_b365', 'pnl_avg', 'pnl_max']
-SHEETS = {'forecasts': FORECAST_COLS, 'paper_bets': BET_COLS, 'auto_forecasts': AUTO_COLS, 'summary': ['показатель', 'значение']}
+LINE_COLS = ['created', 'espn_id', 'slot', 'tour', 'event', 'level', 'round', 'surface',
+             'start_utc', 'start_local', 'player1', 'player2', 'market', 'pick', 'line', 'label', 'p_raw', 'p', 'k_lo', 'k_hi',
+             'z_lo', 'z_hi', 'status', 'result', 'settled', 'pnl_lo']
+LINE_FCST_COLS = ['start_utc', 'start_local', 'player1', 'player2', 'market', 'pick', 'line', 'label', 'p_raw', 'p', 'k_lo', 'k_hi',
+                  'z_lo', 'z_hi']
+LINE_RESULT_COLS = ['status', 'result', 'settled', 'pnl_lo']
+AUTO_FCST_COLS = AUTO_COLS[AUTO_COLS.index('start_utc'):AUTO_COLS.index('p_0_3') + 1]
+AUTO_TAIL_COLS = ['level', 'p1_raw', 'calib_k', 'confidence']
+SHEETS = {'forecasts': FORECAST_COLS, 'paper_bets': BET_COLS, 'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS,
+          'summary': ['показатель', 'значение'], 'tg_messages': ['chat_id', 'message_id']}
 
 
 def now_utc() -> str:
