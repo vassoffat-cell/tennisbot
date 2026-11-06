@@ -103,3 +103,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186499,2026-11-05,Paris,Rolex Paris Masters,Round 3,3,0,209414,207518,Luca Van Assche,Lorenzo Musetti,7-5 3-6 6-4,STATUS_FINAL
 186494,2026-11-05,Paris,Rolex Paris Masters,Round 3,3,0,132686,209860,Nuno Borges,Ignacio Buse,6-0 6-2,STATUS_FINAL
 186503,2026-11-05,Paris,Rolex Paris Masters,Round 3,3,0,126203,209950,Taylor Fritz,Arthur Fils,6-3 6-4,STATUS_FINAL
+186495,2026-11-05,Paris,Rolex Paris Masters,Round 3,3,0,134770,105526,Casper Ruud,Jan Lennard Struff,6-3 6-3,STATUS_FINAL
