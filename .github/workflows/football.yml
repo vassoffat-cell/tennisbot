@@ -1,0 +1,44 @@
+name: football
+on:
+  schedule:
+    - cron: '30 1-23/2 * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: football
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: football
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-cloud.txt
+      - run: pip install -q -r requirements-cloud.txt
+      - name: Google key
+        run: printf '%s' "$GOOGLE_CREDENTIALS_JSON" > service_account.json
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+      - name: Inbox, forecast, settle
+        working-directory: football
+        run: python run.py
+        env:
+          FOOT_BOT_TOKEN: ${{ secrets.FOOT_BOT_TOKEN }}
+          FOOT_SHEET_ID: ${{ secrets.FOOT_SHEET_ID }}
+          ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
+      - name: Save data
+        if: always()
+        run: |
+          git config user.name "football-bot"
+          git config user.email "football-bot@users.noreply.github.com"
+          git add football/data
+          git diff --cached --quiet && exit 0
+          git commit -m "Football data $(date -u +%F)"
+          ok=0; for i in 1 2 3; do git pull --rebase --autostash origin main && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]
