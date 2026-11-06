@@ -2,11 +2,7 @@
  "list_messages": [
   [
    570704006,
-   24
-  ],
-  [
-   570704006,
-   25
+   38
   ]
  ],
  "list_match_ids": [
@@ -22,5 +18,7 @@
   "186635"
  ],
  "last_daily": "",
- "last_retrain": ""
+ "last_retrain": "",
+ "last_files": "2026-11-05",
+ "last_reminder": ""
 }

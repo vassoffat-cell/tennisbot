@@ -98,3 +98,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186585,2026-11-05,Chennai,Chennai Open,Round 2,2,0,214593,215899,Lucrezia Stefanini,Simona Waltert,6-2 6-3,STATUS_FINAL
 186588,2026-11-05,Chennai,Chennai Open,Round 2,2,0,220435,261038,Anastasia Zakharova,Vaishnavi Adkar,6-3 6-0,STATUS_FINAL
 186641,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,201514,223168,Sorana Cirstea,Mary Stoiana,7-5 6-1,STATUS_FINAL
+186636,2026-11-06,Hong Kong,Prudential Hong Kong Tennis Open,Quarterfinal,5,0,214906,220309,Claire Liu,Zeynep Sonmez,6-1 6-4,STATUS_FINAL
