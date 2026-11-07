@@ -698,3 +698,13 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401885398,por.1,league,POR,P1,2026-11-07 15:30,C.D. Nacional,Académico de Viseu,Nacional,Academico Viseu,0,0,VOID,2026-27-portuguese-primeira-liga,0
 401888252,tur.1,league,TUR,T1,2026-11-07 16:00,Goztepe,Istanbul Basaksehir,Goztep,Buyuksehyr,1,2,FT,2026-27-turkish-super-lig,0
 401888371,tur.1,league,TUR,T1,2026-11-07 16:00,Galatasaray,Amed SFK,Galatasaray,Amedspor,4,3,FT,2026-27-turkish-super-lig,0
+401879811,rus.1,league,RUS,RUS,2026-11-07 16:30,Krasnodar,CSKA Moscow,Krasnodar,CSKA Moscow,4,2,FT,2026-27-russian-premier-league,0
+401874974,ita.1,league,ITA,I1,2026-11-07 17:00,Parma,Bologna,Parma,Bologna,1,2,FT,2026-27-italian-serie-a,0
+401878949,bel.1,league,BEL,B1,2026-11-07 17:15,OH Leuven,KV Mechelen,Oud-Heverlee Leuven,Mechelen,2,0,FT,regular-season,0
+401878757,eng.1,league,ENG,E0,2026-11-07 17:30,Nottingham Forest,Manchester City,Nott'm Forest,Man City,3,1,FT,2026-27-english-premier-league,0
+401882811,esp.1,league,ESP,SP1,2026-11-07 17:30,Osasuna,Athletic Club,Osasuna,Ath Bilbao,1,1,FT,2026-27-laliga,0
+401884743,ger.1,league,GER,D1,2026-11-07 17:30,VfB Stuttgart,Werder Bremen,Stuttgart,Werder Bremen,1,0,FT,2026-27-german-bundesliga,0
+401875552,ned.1,league,NED,N1,2026-11-07 17:45,ADO Den Haag,Sparta Rotterdam,Den Haag,Sparta Rotterdam,3,1,FT,regular-season,0
+401878344,sco.1,league,SCO,SC0,2026-11-07 17:45,Aberdeen,Hibernian,Aberdeen,Hibernian,0,4,FT,first-phase,0
+401876411,fra.1,league,FRA,F1,2026-11-07 18:00,AJ Auxerre,Paris FC,Auxerre,Paris FC,0,1,FT,2026-27-ligue-1,0
+401885402,por.1,league,POR,P1,2026-11-07 18:00,Alverca,Casa Pia,Alverca,Casa Pia,1,1,FT,2026-27-portuguese-primeira-liga,0
