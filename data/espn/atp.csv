@@ -109,3 +109,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186492,2026-11-06,Paris,Rolex Paris Masters,Quarterfinal,5,0,207989,126203,Carlos Alcaraz,Taylor Fritz,6-7 7-5 6-3,STATUS_FINAL
 186493,2026-11-06,Paris,Rolex Paris Masters,Quarterfinal,5,0,134770,132686,Casper Ruud,Nuno Borges,7-6 6-4,STATUS_FINAL
 186504,2026-11-07,Paris,Rolex Paris Masters,Semifinal,6,0,210097,209414,Ben Shelton,Luca Van Assche,5-7 6-3 6-4,STATUS_FINAL
+186505,2026-11-07,Paris,Rolex Paris Masters,Semifinal,6,0,207989,134770,Carlos Alcaraz,Casper Ruud,6-4 6-4,STATUS_FINAL
