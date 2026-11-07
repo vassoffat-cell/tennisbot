@@ -652,4 +652,49 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401888250,tur.1,league,TUR,T1,2026-11-07 13:00,Samsunspor,Konyaspor,Samsunspor,Konyaspor,1,0,FT,2026-27-turkish-super-lig,0
 401879810,rus.1,league,RUS,RUS,2026-11-07 13:30,Akhmat Grozny,Rodina Moscow,Akhmat Grozny,Rodina Moscow,1,0,FT,2026-27-russian-premier-league,0
 401874791,ita.1,league,ITA,I1,2026-11-07 14:00,Cagliari,Frosinone,Cagliari,Frosinone,1,0,FT,2026-27-italian-serie-a,0
+401874811,ita.1,league,ITA,I1,2026-11-07 14:00,Torino,Lecce,Torino,Lecce,1,1,FT,2026-27-italian-serie-a,0
+401884737,ger.1,league,GER,D1,2026-11-07 14:30,SC Paderborn 07,Eintracht Frankfurt,Paderborn,Ein Frankfurt,2,2,FT,2026-27-german-bundesliga,0
+401884740,ger.1,league,GER,D1,2026-11-07 14:30,Mainz,Bayern Munich,Mainz,Bayern Munich,1,2,FT,2026-27-german-bundesliga,0
+401884744,ger.1,league,GER,D1,2026-11-07 14:30,RB Leipzig,FC Augsburg,RB Leipzig,Augsburg,5,2,FT,2026-27-german-bundesliga,0
+401884745,ger.1,league,GER,D1,2026-11-07 14:30,Borussia Dortmund,SV Elversberg,Dortmund,Elversberg,2,1,FT,2026-27-german-bundesliga,0
+401878341,sco.1,league,SCO,SC0,2026-11-07 15:00,St Johnstone,Dundee,St Johnstone,Dundee,2,1,FT,first-phase,0
+401878342,sco.1,league,SCO,SC0,2026-11-07 15:00,Dundee United,Motherwell,Dundee United,Motherwell,1,1,FT,first-phase,0
+401878760,eng.1,league,ENG,E0,2026-11-07 15:00,Arsenal,Hull City,Arsenal,Hull,1,0,FT,2026-27-english-premier-league,0
+401878947,bel.1,league,BEL,B1,2026-11-07 15:00,KVC Westerlo,Royal Charleroi SC,,,1,5,FT,regular-season,0
+401879241,eng.1,league,ENG,E0,2026-11-07 15:00,Fulham,Newcastle United,Fulham,Newcastle,1,1,FT,2026-27-english-premier-league,0
+401931081,eng.fa,cup,ENG,E0,2026-11-07 15:00,Chesterfield,Yeovil Town,Chesterfield,Yeovil,4,3,FT,first-round,0
+401931082,eng.fa,cup,ENG,E0,2026-11-07 15:00,Burton Albion,AFC Rushden & Diamonds,Burton,,4,0,FT,first-round,0
+401931083,eng.fa,cup,ENG,E0,2026-11-07 15:00,Boreham Wood,Wigan Athletic,Boreham Wood,Wigan,0,3,FT,first-round,0
+401931084,eng.fa,cup,ENG,E0,2026-11-07 15:00,York City,Northampton Town,York,Northampton,4,0,FT,first-round,0
+401931086,eng.fa,cup,ENG,E0,2026-11-07 15:00,Port Vale,Scunthorpe United,Port Vale,Scunthorpe,4,2,FT,first-round,0
+401931087,eng.fa,cup,ENG,E0,2026-11-07 15:00,Salisbury FC,Sholing,,,6,0,FT,first-round,0
+401931088,eng.fa,cup,ENG,E0,2026-11-07 15:00,Cheltenham Town,FC Halifax Town,Cheltenham,Halifax,2,0,FT,first-round,0
+401931089,eng.fa,cup,ENG,E0,2026-11-07 15:00,Barnsley,Aldershot Town,Barnsley,Aldershot,7,2,FT,first-round,0
+401931090,eng.fa,cup,ENG,E0,2026-11-07 15:00,Carlisle United,Salford City,Carlisle,Salford,1,0,FT,first-round,0
+401931091,eng.fa,cup,ENG,E0,2026-11-07 15:00,Bromley,Rotherham United,Bromley,Rotherham,0,2,FT,first-round,0
+401931092,eng.fa,cup,ENG,E0,2026-11-07 15:00,Guiseley,Sutton United,,Sutton,1,0,FT,first-round,0
+401931094,eng.fa,cup,ENG,E0,2026-11-07 15:00,Huddersfield Town,Exeter City,Huddersfield,Exeter,1,2,FT,first-round,0
+401931095,eng.fa,cup,ENG,E0,2026-11-07 15:00,Mansfield Town,Macclesfield FC,Mansfield,Macclesfield,3,0,FT,first-round,0
+401931096,eng.fa,cup,ENG,E0,2026-11-07 15:00,Harrogate Town,AFC Fylde,Harrogate,Fylde,1,4,FT,first-round,0
+401931099,eng.fa,cup,ENG,E0,2026-11-07 15:00,Eastleigh,Shrewsbury Town,Eastleigh,Shrewsbury,1,2,FT,first-round,0
+401931100,eng.fa,cup,ENG,E0,2026-11-07 15:00,Luton Town,Forest Green Rovers,Luton,Forest Green,2,0,FT,first-round,0
+401931101,eng.fa,cup,ENG,E0,2026-11-07 15:00,Gillingham,Barrow,Gillingham,Barrow,0,1,FT,first-round,0
+401931102,eng.fa,cup,ENG,E0,2026-11-07 15:00,Colchester United,Worcester City,Colchester,,1,0,FT,first-round,0
+401931103,eng.fa,cup,ENG,E0,2026-11-07 15:00,Barnet,Tranmere Rovers,Barnet,Tranmere,3,0,FT,first-round,0
+401931105,eng.fa,cup,ENG,E0,2026-11-07 15:00,Fleetwood Town,Rochdale,Fleetwood Town,Rochdale,1,2,ET,first-round,0
+401931106,eng.fa,cup,ENG,E0,2026-11-07 15:00,Kidderminster Harriers,Doncaster Rovers,,Doncaster,3,0,FT,first-round,0
+401931107,eng.fa,cup,ENG,E0,2026-11-07 15:00,Dover Athletic,Wealdstone,Dover Athletic,Wealdstone,2,0,FT,first-round,0
+401931110,eng.fa,cup,ENG,E0,2026-11-07 15:00,Leyton Orient,Harborough Town,Leyton Orient,,5,1,FT,first-round,0
+401931116,eng.fa,cup,ENG,E0,2026-11-07 15:00,AFC Hornchurch,Blackpool,Hornchurch,Blackpool,1,2,ET,first-round,0
+401931117,eng.fa,cup,ENG,E0,2026-11-07 15:00,Newport County,Walsall,Newport County,Walsall,3,1,FT,first-round,0
+401931118,eng.fa,cup,ENG,E0,2026-11-07 15:00,Bradford City,Marine,Bradford,,7,0,FT,first-round,0
+401931119,eng.fa,cup,ENG,E0,2026-11-07 15:00,Accrington Stanley,Wycombe Wanderers,,Wycombe,0,2,FT,first-round,0
+401931120,eng.fa,cup,ENG,E0,2026-11-07 15:00,Crewe Alexandra,AFC Wimbledon,,AFC Wimbledon,2,1,FT,first-round,0
+401931121,eng.fa,cup,ENG,E0,2026-11-07 15:00,Oxford United,Stevenage,Oxford,Stevenage,0,1,FT,first-round,0
+401931122,eng.fa,cup,ENG,E0,2026-11-07 15:00,Milton Keynes Dons,Swindon Town,Milton Keynes Dons,Swindon,2,1,FT,first-round,0
+401931275,eng.fa,cup,ENG,E0,2026-11-07 15:00,Plymouth Argyle,Alvechurch,Plymouth,,4,0,FT,first-round,0
+401882813,esp.1,league,ESP,SP1,2026-11-07 15:15,Espanyol,Deportivo,Espanol,La Coruna,0,0,FT,2026-27-laliga,0
+401875555,ned.1,league,NED,N1,2026-11-07 15:30,Fortuna Sittard,Telstar,For Sittard,Telstar,2,2,FT,regular-season,0
 401885398,por.1,league,POR,P1,2026-11-07 15:30,C.D. Nacional,Académico de Viseu,Nacional,Academico Viseu,0,0,VOID,2026-27-portuguese-primeira-liga,0
+401888252,tur.1,league,TUR,T1,2026-11-07 16:00,Goztepe,Istanbul Basaksehir,Goztep,Buyuksehyr,1,2,FT,2026-27-turkish-super-lig,0
+401888371,tur.1,league,TUR,T1,2026-11-07 16:00,Galatasaray,Amed SFK,Galatasaray,Amedspor,4,3,FT,2026-27-turkish-super-lig,0
