@@ -645,3 +645,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879242,eng.1,league,ENG,E0,2026-11-06 20:00,Everton,Coventry City,Everton,Coventry,3,1,FT,2026-27-english-premier-league,0
 401882809,esp.1,league,ESP,SP1,2026-11-06 20:00,Sevilla,Alavés,Sevilla,Alaves,0,0,FT,2026-27-laliga,0
 401885399,por.1,league,POR,P1,2026-11-06 20:45,FC Famalicao,Arouca,Famalicao,Arouca,1,0,FT,2026-27-portuguese-primeira-liga,0
+401888255,tur.1,league,TUR,T1,2026-11-07 10:30,Eyupspor,Kocaelispor,Eyupspor,Kocaelispor,0,2,FT,2026-27-turkish-super-lig,0
+401879808,rus.1,league,RUS,RUS,2026-11-07 11:00,Fakel Voronezh,Dinamo Moscow,Fakel Voronezh,Dynamo Moscow,1,2,FT,2026-27-russian-premier-league,0
