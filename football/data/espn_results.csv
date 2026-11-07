@@ -647,3 +647,9 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401885399,por.1,league,POR,P1,2026-11-06 20:45,FC Famalicao,Arouca,Famalicao,Arouca,1,0,FT,2026-27-portuguese-primeira-liga,0
 401888255,tur.1,league,TUR,T1,2026-11-07 10:30,Eyupspor,Kocaelispor,Eyupspor,Kocaelispor,0,2,FT,2026-27-turkish-super-lig,0
 401879808,rus.1,league,RUS,RUS,2026-11-07 11:00,Fakel Voronezh,Dinamo Moscow,Fakel Voronezh,Dynamo Moscow,1,2,FT,2026-27-russian-premier-league,0
+401878758,eng.1,league,ENG,E0,2026-11-07 12:30,Leeds United,Tottenham Hotspur,Leeds,Tottenham,1,0,FT,2026-27-english-premier-league,0
+401882812,esp.1,league,ESP,SP1,2026-11-07 13:00,Málaga,Racing Santander,Malaga,Santander,1,2,FT,2026-27-laliga,0
+401888250,tur.1,league,TUR,T1,2026-11-07 13:00,Samsunspor,Konyaspor,Samsunspor,Konyaspor,1,0,FT,2026-27-turkish-super-lig,0
+401879810,rus.1,league,RUS,RUS,2026-11-07 13:30,Akhmat Grozny,Rodina Moscow,Akhmat Grozny,Rodina Moscow,1,0,FT,2026-27-russian-premier-league,0
+401874791,ita.1,league,ITA,I1,2026-11-07 14:00,Cagliari,Frosinone,Cagliari,Frosinone,1,0,FT,2026-27-italian-serie-a,0
+401885398,por.1,league,POR,P1,2026-11-07 15:30,C.D. Nacional,Académico de Viseu,Nacional,Academico Viseu,0,0,VOID,2026-27-portuguese-primeira-liga,0
