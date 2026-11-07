@@ -635,6 +635,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879812,rus.1,league,RUS,RUS,2026-11-06 16:30,Lokomotiv Moscow,Rubin Kazan,Lokomotiv Moscow,Rubin Kazan,0,1,FT,2026-27-russian-premier-league,0
 401888256,tur.1,league,TUR,T1,2026-11-06 17:00,Gaziantep FK,Kasimpasa,Gaziantep,Kasimpasa,0,2,FT,2026-27-turkish-super-lig,0
 401875556,ned.1,league,NED,N1,2026-11-06 19:00,Willem II,PEC Zwolle,Willem II,Zwolle,1,1,FT,regular-season,0
+401933097,fra.coupe_de_france,cup,FRA,F1,2026-11-06 19:00,Olympique De Cayenne,AS Etoile Matoury,,,1,3,FT,seventh-round,0
 401884739,ger.1,league,GER,D1,2026-11-06 19:30,Hamburg SV,Borussia Mönchengladbach,Hamburg,M'gladbach,3,1,FT,2026-27-german-bundesliga,0
 401931085,eng.fa,cup,ENG,E0,2026-11-06 19:30,Bristol Rovers,Cambridge United,Bristol Rvs,Cambridge,2,0,FT,first-round,0
 401874815,ita.1,league,ITA,I1,2026-11-06 19:45,Venezia,Udinese,Venezia,Udinese,2,1,FT,2026-27-italian-serie-a,0
