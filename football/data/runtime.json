@@ -2,15 +2,15 @@
  "list_messages": [
   [
    570704006,
-   144
+   150
   ],
   [
    570704006,
-   145
+   151
   ],
   [
    570704006,
-   146
+   152
   ]
  ],
  "list_match_ids": [
@@ -142,14 +142,9 @@
   "label": "Ф2(+1.5)",
   "start_utc": "2026-11-08 17:45",
   "match": "FC Baltika Kaliningrad — Dynamo Makhachkala",
-  "text": "⭐ <b>Ставка дня · футбол · 08.11</b>\n🏆 РПЛ · 🕒 22:45\n<b>FC Baltika Kaliningrad — Dynamo Makhachkala</b>\n<b>Ф2(+1.5)</b> — вероятность 71% (Pinnacle без маржи)\nкф 1xBet ≈ 1,35 (оценка по Pinnacle)\n⚠️ уверенность в выгодности 14% (ниже 90%)\nизменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)\nизменено в 14:34: было ТМ3.5 75% (Oldham Athletic — Sheffield Wednesday)",
-  "ask": [
-   [
-    570704006,
-    138
-   ]
-  ],
-  "accepted": "",
+  "text": "⭐ <b>Ставка дня · футбол · 08.11</b>\n🏆 РПЛ · 🕒 22:45\n<b>FC Baltika Kaliningrad — Dynamo Makhachkala</b>\n<b>Ф2(+1.5)</b> — вероятность 71% (Pinnacle без маржи)\nкф 1xBet ≈ 1,35 (оценка по Pinnacle)\n⚠️ уверенность в выгодности 14% (ниже 90%)\nизменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)\nизменено в 14:34: было ТМ3.5 75% (Oldham Athletic — Sheffield Wednesday)\n✅ Принята в 14:51",
+  "ask": [],
+  "accepted": "yes",
   "key": [
    "401879813",
    "AH",
@@ -177,6 +172,8 @@
    "source": "api",
    "sigma": 0.38,
    "slot": 7
-  }
+  },
+  "accepted_at": "14:51",
+  "accepted_shown": true
  }
 }
