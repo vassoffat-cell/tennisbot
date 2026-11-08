@@ -195,6 +195,22 @@ class Store:
         df.map(_clean).to_csv(C.LOGS / f'{name}.csv', sep=';', index=False, encoding='utf-8-sig')
 
 
+def _fresh_after(fn):
+    """Запись в лист сбрасывает кэш чтений этого листа и до, и после (CSV-режим перечитывает файл внутри записи)."""
+    def wrapper(self, name, *a, **k):
+        self._cache.pop(name, None)
+        try:
+            return fn(self, name, *a, **k)
+        finally:
+            self._cache.pop(name, None)
+    return wrapper
+
+
+Store.append = _fresh_after(Store.append)
+Store.update = _fresh_after(Store.update)
+Store.write_all = _fresh_after(Store.write_all)
+
+
 # ======================================================================== ручные прогнозы (бот)
 def num(x, default=np.nan) -> float:
     try:
