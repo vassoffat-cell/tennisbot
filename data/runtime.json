@@ -1,13 +1,6 @@
 {
- "list_messages": [
-  [
-   570704006,
-   119
-  ]
- ],
- "list_match_ids": [
-  "187374"
- ],
+ "list_messages": [],
+ "list_match_ids": [],
  "last_daily": "2026-11-08",
  "last_retrain": "2026-11-08",
  "last_files": "2026-11-05",
