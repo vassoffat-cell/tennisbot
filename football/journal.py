@@ -71,9 +71,21 @@ def _clean(v):
     return v
 
 
+def _retry(fn, *a, **k):
+    """Вызов Google Sheets с повтором при превышении квоты (429: 60 чтений/мин на сервисный аккаунт; два бота делят её)."""
+    import time
+    for i in range(5):
+        try:
+            return fn(*a, **k)
+        except Exception as e:
+            if '429' not in str(e) and 'Quota exceeded' not in str(e) or i == 4:
+                raise
+            time.sleep(20 * (i + 1))
+
+
 class Store:
     def __init__(self) -> None:
-        self.sh, self.ws = None, {}
+        self.sh, self.ws, self._cache = None, {}, {}
         if C.SHEET_ID and Path(C.GOOGLE_CREDENTIALS).exists():
             import gspread
             self.sh = gspread.service_account(filename=C.GOOGLE_CREDENTIALS).open_by_key(C.SHEET_ID)
@@ -100,8 +112,10 @@ class Store:
     def read(self, name: str) -> pd.DataFrame:
         """Таблица листа; индекс — номер строки листа (данные со 2-й строки)."""
         cols = SHEETS[name]
+        if name in self._cache:                   # кэш на время запуска (квота чтений); сбрасывается при записи
+            return self._cache[name].copy()
         if self.sh:
-            vals = self._sheet(name).get_all_values(value_render_option='UNFORMATTED_VALUE')
+            vals = _retry(_retry(self._sheet, name).get_all_values, value_render_option='UNFORMATTED_VALUE')
             rows = [r + [''] * (len(cols) - len(r)) for r in vals[1:]]
             df = pd.DataFrame([r[:len(cols)] for r in rows], columns=cols)
         else:
@@ -114,9 +128,11 @@ class Store:
             df = df[cols]
         df = df.astype(object)
         df.index = range(2, len(df) + 2)
-        return df
+        self._cache[name] = df
+        return df.copy()
 
     def append(self, name: str, rows: list[dict]) -> None:
+        self._cache.pop(name, None)
         if not rows:
             return
         cols = SHEETS[name]
@@ -134,6 +150,7 @@ class Store:
 
     def update(self, name: str, df: pd.DataFrame, cols: list[str]) -> None:
         """Записать в строки df.index значения столбцов cols (столбцы идут подряд)."""
+        self._cache.pop(name, None)
         if df.empty:
             return
         allc = SHEETS[name]
@@ -145,7 +162,7 @@ class Store:
             data = [{'range': f'{rowcol_to_a1(r, i0 + 1)}:{rowcol_to_a1(r, i1 + 1)}',
                      'values': [[_clean(df.at[r, c]) if c in df.columns else '' for c in span]]} for r in df.index]
             for k in range(0, len(data), 500):
-                ws.batch_update(data[k:k + 500], value_input_option='RAW')
+                _retry(ws.batch_update, data[k:k + 500], value_input_option='RAW')
             return
         full = self.read(name)
         for r in df.index:
@@ -155,6 +172,7 @@ class Store:
         self.write_all(name, full)
 
     def write_all(self, name: str, df: pd.DataFrame) -> None:
+        self._cache.pop(name, None)
         cols = SHEETS[name]
         df = df.reindex(columns=cols)
         if self.sh:
