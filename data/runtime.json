@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   93
+   98
   ]
  ],
  "list_match_ids": [
@@ -89,5 +89,6 @@
   "label": "ИТ1 Б 4.5",
   "start_utc": "2026-11-08 08:00",
   "match": "Claire Liu — Alexandra Eala"
- }
+ },
+ "model_version": 4
 }
