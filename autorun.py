@@ -18,6 +18,7 @@ import argparse
 import datetime as dt
 import json
 import math
+import os
 import sys
 import traceback
 
@@ -442,8 +443,10 @@ def summary(auto: pd.DataFrame, ldf: pd.DataFrame, kcal: dict, off: dict) -> pd.
 
 
 def retrain(store: J.Store | None) -> list[str]:
+    import tml
     import updater
-    log = updater.rebuild()
+    log = tml.download() if os.getenv('CLOUD') else []        # T29 этап A: статистика подачи TennisMyLife — копится, в модель пока не идёт
+    log += updater.rebuild()
     P._MODELS.clear()
     if store is not None:
         n = attach_odds(store)
@@ -525,6 +528,9 @@ def run(dry: bool = False) -> str:
     log = []
     got, ilog = (False, []) if dry else take_inbox(rt)
     log += ilog
+    if os.getenv('CLOUD') and not (C.DATA / 'tml').exists():          # T29: первая загрузка TennisMyLife сразу, дальше — раз в сутки
+        import tml
+        log += tml.download()
     loc = _local(); today = loc.date().isoformat()
     daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
     retrain_log = []
