@@ -17,6 +17,7 @@ import config as C
 import flines as FL
 import journal as J
 import notify
+import rtable as RT
 
 NB = ' '                       # неразрывный пробел: ведущие пробелы Telegram иначе съедает
 MARKETS = [m for m in FL.MARKET_RU if m != '1X2']
@@ -157,85 +158,83 @@ def outcome_alarm(af: pd.DataFrame, rt: dict) -> list[str]:
 
 
 # ======================================================================== единый отчёт
-def bar(n: int, goal: int) -> str:
-    k = int(min(n / goal, 1) * 10) if goal else 10
-    return '▓' * k + '░' * (10 - k) + f' {n}/{goal}'
+def _day_items(d: pd.DataFrame) -> list[str]:
+    """Матчи суток для свёрнутого списка: ✅/❌ команды, исход модели, P, счёт."""
+    e, out = notify.esc, []
+    for r in d.itertuples():
+        p = [J.num(r.p_h), J.num(r.p_d), J.num(r.p_a)]; k = int(np.argmax(p))
+        sc = f'{int(J.num(r.hg))}:{int(J.num(r.ag))}' if str(r.status) == 'FT' else 'ничья в осн. время'
+        out.append(f"{'✅' if r.hit else '❌'} {e(r.home)} — {e(r.away)} · {['П1', 'X', 'П2'][k]} {fmt(p[k] * 100)}% · {sc}")
+    return out
 
 
 def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal: dict | None = None,
           kprev: dict | None = None, off: dict | None = None, notes: list[str] | None = None,
           daily_day=None, period: str = 'всего', extra: list[str] | None = None) -> list[str]:
-    """Блоки отчёта (HTML). daily_day — дата суток для суточного отчёта (строка «сутки a/b» и свёрнутый список матчей)."""
+    """Блоки отчёта (HTML): заголовок со статусом, таблица «Линия (цель) | Кол-во | %» (rtable), короткие примечания;
+    у суточного (daily_day) — строки «сутки / 7 дней / всего» и свёрнутый список матчей суток."""
     e = notify.esc
     M, L = matches(af), lines(ld)
     today = daily_day or (pd.Timestamp.now(tz='UTC').tz_localize(None) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).date()
     off = off or {}
-    rows, worst = [], 3
+    T, tail, worst = [], [], 3
+    d7 = (daily_day - pd.Timedelta(days=7).to_pytimedelta()) if daily_day is not None else None
 
-    # исходы
+    # исход
     if len(M):
         acc, n = M.hit.mean(), len(M)
         tgt, _ = step_target(M.hit.values, C.STEPS['outcome'])
         c = color_vs(acc, n, tgt); worst = min(worst, c)
-        exp = M.pmax.mean()
-        head = ''
+        g = RT.num(tgt) + '%'
         if daily_day is not None:
-            d = M[M.day == daily_day]
-            head = f'сутки {int(d.hit.sum())}/{len(d)} · ' if len(d) else 'сутки 0/0 · '
-            w7 = M[M.day > daily_day - pd.Timedelta(days=7).to_pytimedelta()]
-            head += f'7 дн {fmt(w7.hit.mean() * 100)}% · ' if len(w7) else ''
-        few = ' (мало данных)' if n < 30 else ''
-        rows.append(f'🎯 Исходы {head}{period} {int(M.hit.sum())}/{n} = {fmt(acc * 100)}% (ож. {fmt(exp * 100)}%, цель {fmt(tgt, 1)}%)'
-                    f' {trend(M, "hit", today)} {COLOR[c]}{few}')
+            T.append((f'Исход ({g})', '', '', ''))
+            d = M[M.day == daily_day]; w = M[M.day > d7]
+            T += [RT.row(' сутки', d.hit.sum(), len(d)), RT.row(' 7 дней', w.hit.sum(), len(w)),
+                  RT.row(' всего', M.hit.sum(), n, mark=COLOR[c] + trend(M, 'hit', today))]
+        else:
+            T.append(RT.row('Исход', M.hit.sum(), n, g, COLOR[c] + trend(M, 'hit', today)))
+        T.append((f' ожидание', '', RT.pct(M.pmax.mean()), ''))
         ll, ent = M.ll.mean(), M.ent.mean()
         se = M.ll.std(ddof=1) / np.sqrt(n) if n > 1 else 0.0
         z = (ll - ent) / se if se > 0 else 0.0
         c = 3 if z <= 1 else 2 if z <= 2 else 1; worst = min(worst, c)
-        rows.append(f'📉 Лог-лосс {fmt(ll, 3)} (ож. {fmt(ent, 3)} ± {fmt(se, 3)}) {COLOR[c]}')
-        cal, cw = [], 3
+        T.append((f'Лог-лосс ({RT.num(ent, 3)})', str(n), RT.num(ll, 3), COLOR[c]))
+        T.append(('Калибровка', '', '', ''))
         for lo, hi in BUCKETS:
             b = M[(M.pmax >= lo) & (M.pmax < hi)]
             if len(b) == 0:
                 continue
             pf, fa = b.pmax.mean(), b.hit.mean()
             sd = np.sqrt(pf * (1 - pf) / len(b))
-            cw = min(cw, 3 if abs(fa - pf) <= 2 * sd else 2 if abs(fa - pf) <= 3 * sd else 1)
-            cal.append(f'{fmt(pf * 100)}→{fmt(fa * 100)} ({len(b)})')
-        worst = min(worst, cw)
-        rows.append(f'⚖️ Калибровка {" · ".join(cal)} {COLOR[cw]}')
+            cc = 3 if abs(fa - pf) <= 2 * sd else 2 if abs(fa - pf) <= 3 * sd else 1; worst = min(worst, cc)
+            rng = f'{lo * 100:.0f}+' if hi > 1 else f'{lo * 100:.0f}–{hi * 100:.0f}'
+            T.append(RT.row(f' {rng}', b.hit.sum(), len(b), RT.pct(pf, 0) + '%', COLOR[cc]))
     else:
-        rows.append(f'🎯 Исходы: доигранных матчей модели пока нет')
+        T.append(('Исход — доигранных пока нет', '', '', ''))
 
     # линии
     if len(L):
-        nm = L.espn_id.astype(str).nunique()
         tgt, _ = step_target(L.won.values, C.STEPS['lines'])
         c = color_vs(L.won.mean(), len(L), tgt); worst = min(worst, c)
-        rows.append(f'🎯 Линии {len(L)} из {nm} {notify.plural(nm, "матча", "матчей", "матчей")} · верных {int(L.won.sum())} = '
-                    f'{fmt(L.won.mean() * 100)}% (ож. {fmt(L.p.sum(), 1)} = {fmt(L.p.mean() * 100)}%, цель {fmt(tgt, 1)}%) '
-                    f'{trend(L, "won", today)} {COLOR[c]}')
-        mk_rows = []
+        T.append(RT.row('Линии', L.won.sum(), len(L), RT.num(tgt) + '%', COLOR[c] + trend(L, 'won', today)))
+        if daily_day is not None:
+            d = L[L.day == daily_day]; w = L[L.day > d7]
+            T += [RT.row(' сутки', d.won.sum(), len(d)), RT.row(' 7 дней', w.won.sum(), len(w))]
         for mk in MARKETS:
             s = L[L.market.astype(str) == mk]
             if s.empty:
                 continue
-            t10, t100 = s.tail(10), s.tail(100)
-            z = zscore(t100.won.values, t100.p.values)               # рынок — против своего ожидания (Σ p)
+            z = zscore(s.won.values, s.p.values)                    # рынок — против своего ожидания Σp
             cc = 3 if z > -1 else 2 if z > -2 else 1
-            stop = ' ⛔' if mk in off else ''
-            side = ''
-            if daily_day is None and mk in ('TOT', 'TOTAL', 'IT1', 'IT2'):        # ТЗ-003 п. 3: больше / меньше отдельно
-                parts = []
+            T.append(RT.row(' ' + RT.SHORT.get(mk, mk), s.won.sum(), len(s), RT.pct(s.p.mean(), 0) + '%',
+                            COLOR[cc] + (' ⛔' if mk in off else '')))
+            if daily_day is None and mk in ('TOT', 'TOTAL', 'IT1', 'IT2'):   # ТЗ-003 п. 3: Б / М отдельно (не в суточном)
                 for pk, ru in (('O', 'Б'), ('U', 'М')):
                     q = s[s.pick.astype(str) == pk]
                     if len(q):
-                        parts.append(f'{ru} {int(q.won.sum())}/{len(q)} (ож. {fmt(q.p.mean() * 100)}%)')
-                side = ' · ' + ' · '.join(parts) if parts else ''
-            mk_rows.append(f'{FL.MARKET_RU[mk]} {int(t10.won.sum())}/{len(t10)} · {int(t100.won.sum())}/{len(t100)} '
-                           f'(ож. {fmt(t100.p.mean() * 100)}%) {COLOR[cc]}{stop}{side}')
-        rows.append('\n'.join(f'{NB * 3}{x}' if k == 0 else f'{NB}· {x}' for k, x in enumerate(mk_rows)))
+                        T.append(RT.row(f'  {ru}', q.won.sum(), len(q), RT.pct(q.p.mean(), 0) + '%'))
     else:
-        rows.append('🎯 Линии: рассчитанных показанных линий пока нет')
+        T.append(('Линии — рассчитанных пока нет', '', '', ''))
 
     # ставка дня
     D = dp[dp.result.astype(str).isin(['W', 'L'])].copy() if len(dp) else dp
@@ -244,74 +243,61 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         D['day'] = pd.to_datetime(D.date).dt.date
         tgt, _ = step_target(D.won.values, C.STEPS['daypick'])
         c = color_vs(D.won.mean(), len(D), tgt)
-        y = ''
+        T.append(RT.row('Ставка дня', D.won.sum(), len(D), RT.num(tgt, 0) + '%', COLOR[c]))
         if daily_day is not None:
-            yy = D[D.day == daily_day]
-            y = f'вчера {"✅" if yy.won.iloc[-1] else "❌"} {e(yy.label.iloc[-1])} · ' if len(yy) else 'вчера — · '
-            w7 = D[D.day > daily_day - pd.Timedelta(days=7).to_pytimedelta()]
-            y += f'7 дн {int(w7.won.sum())}/{len(w7)} · ' if len(w7) else ''
-        rows.append(f'⭐ Ставка дня: {y}{period} {int(D.won.sum())}/{len(D)} = {fmt(D.won.mean() * 100)}% '
-                    f'(ож. {fmt(D.p.mean() * 100)}%, цель {fmt(tgt, 1)}%) {COLOR[c]}')
+            yy, w = D[D.day == daily_day], D[D.day > d7]
+            if len(yy):
+                tail.append(f'⭐ Вчера: {"✅" if yy.won.iloc[-1] else "❌"} {e(yy.label.iloc[-1])}')
+            T.append(RT.row(' 7 дней', w.won.sum(), len(w)))
+        T.append((' ожидание', '', RT.pct(D.p.mean()), ''))
+    T += ops_rows(dp)
 
-    ops = daypick_ops(dp)
-    if ops:
-        rows.append(ops)
-    rows += [e(x) for x in (extra or [])]                       # охват: дорасчитано за прошлые дни, ждут результата
-
-    # самокалибровка
+    # набор данных и самокалибровка
+    T.append(('До выводов', '', '', ''))
+    T.append(RT.row(' калибровка', min(len(L), C.CALIB_PRIOR), C.CALIB_PRIOR))
+    T.append(RT.row(' точность', min(len(M), C.TARGET_N), C.TARGET_N))
     if kcal is not None:
         act = [(mk, v) for mk, v in kcal.items() if v[1] >= C.CALIB_MIN]
-        rest = [mk for mk, v in kcal.items() if v[1] < C.CALIB_MIN]
-        kr = []
-        for mk, (k, n) in act:
-            k0 = (kprev or {}).get(mk, (1.0, 0))[0]
-            kr.append(f'{FL.MARKET_RU.get(mk, mk)} {fmt(k0, 2)}→{fmt(k, 2)} ({n} {notify.plural(n, "линия", "линии", "линий")})')
-        if rest:
-            kr.append(f'остальные: k = 1,00 (меньше {C.CALIB_MIN} линий)')
-        rows.append('🧠 k: ' + f'\n{NB}· '.join(kr))
-    rows.append(f'📊 До выводов:\n{NB * 8}Калибровка {bar(len(L), C.CALIB_PRIOR)}\n{NB * 8}Точность {bar(len(M), C.TARGET_N)}')
+        kr = [f'{RT.SHORT.get(mk, mk)} {RT.num((kprev or {}).get(mk, (1.0, 0))[0], 2)}→{RT.num(k, 2)}' for mk, (k, n) in act]
+        tail.append('🧠 k: ' + (' · '.join(kr) if kr else f'1,00 (меньше {C.CALIB_MIN} линий)'))
+    tail += [e(x) for x in (extra or [])]                       # охват: дорасчитано за прошлые дни, ждут результата
     if notes is not None:
-        rows.append('⚠️ Данные: ' + ('; '.join(e(x) for x in notes) if notes else 'ок'))
+        tail.append('⚠️ Данные: ' + ('; '.join(e(x) for x in notes) if notes else 'ок'))
 
     status = {3: '🟢 модель в норме', 2: '🟡 есть отклонения', 1: '🔴 нужен разбор'}[worst]
-    blocks = [f'<b>{e(title)}</b> · {status}\n' + '\n'.join(rows)]
+    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + '\n'.join(tail) if tail else '')]
     if daily_day is not None:
         d = M[M.day == daily_day]
         if len(d):
-            items = []
-            for r in d.itertuples():
-                p = [J.num(r.p_h), J.num(r.p_d), J.num(r.p_a)]; k = int(np.argmax(p))
-                sc = f'{int(J.num(r.hg))}:{int(J.num(r.ag))}' if str(r.status) == 'FT' else 'ничья в осн. время'
-                items.append(f"{'✅' if r.hit else '❌'} {e(r.home)} — {e(r.away)} · {['П1', 'X', 'П2'][k]} {fmt(p[k] * 100)}% · {sc}")
-            blocks += notify.folded(f'▸ Матчи за сутки ({len(d)})', items)
+            blocks += notify.folded(f'▸ Матчи за сутки ({len(d)})', _day_items(d))
     return blocks
 
 
-def daypick_ops(dp: pd.DataFrame) -> str:
-    """Пакет №3: как часто меняли ставку дня, скриншоты, принятия, кф 1xBet и отдача (цель — скриншотов 0, замен меньше)."""
+def ops_rows(dp: pd.DataFrame) -> list:
+    """Пакет №3 в таблицу: замены ставки дня, скриншоты, принятия, отдача по кф 1xBet, выгодные (цель — скриншотов 0)."""
     if not len(dp):
-        return ''
+        return []
     days = dp.date.astype(str).nunique()
     ch = dp.changes.map(J.num).fillna(0)
-    out = [f'{int(ch.sum())} за {days} дн. (дней с заменой {fmt((ch > 0).mean() * 100)}%)']
+    out = [RT.row(' дни с заменой', int((ch > 0).sum()), days)]
     if 'screenshots' in dp.columns:
-        sc = dp.screenshots.map(J.num).fillna(0)
-        out.append(f'скриншотов {int(sc.sum())}')
+        out.append((' скриншотов', str(int(dp.screenshots.map(J.num).fillna(0).sum())), '', ''))
     if 'accepted' in dp.columns:
         acc = dp.accepted.astype(str)
-        asked = acc.isin(['yes', 'no']).sum()
+        asked = int(acc.isin(['yes', 'no']).sum())
         if asked:
-            out.append(f'принято {int((acc == "yes").sum())}/{int(asked)}')
+            out.append(RT.row(' принято', int((acc == 'yes').sum()), asked))
     if 'k' in dp.columns:
-        k = dp.k.map(J.num)
-        d = dp[k.notna() & dp.result.astype(str).isin(['W', 'L', 'P'])]
+        d = dp[dp.k.map(J.num).notna() & dp.result.astype(str).isin(['W', 'L', 'P'])]
         if len(d):
             pnl = [(J.num(r.k) - 1) if str(r.result) == 'W' else (0.0 if str(r.result) == 'P' else -1.0) for r in d.itertuples()]
-            out.append(f'с кф 1xBet {len(d)}: ср. кф {fmt(d.k.map(J.num).mean(), 2)}, отдача {fmt(np.mean(pnl) * 100)}%')
-        vo = dp.value_ok.map(J.num) if 'value_ok' in dp.columns else pd.Series(dtype=float)
+            out.append((f' отдача (кф {RT.num(d.k.map(J.num).mean(), 2)})', str(len(d)), RT.pct(float(np.mean(pnl))),
+                        '🟢' if np.mean(pnl) > 0 else '🔴'))
+    if 'value_ok' in dp.columns:
+        vo = dp.value_ok.map(J.num)
         if vo.notna().any():
-            out.append(f'выгодных (≥90%) {int((vo == 1).sum())}/{int(vo.notna().sum())}')
-    return '🔁 Ставка дня — замены: ' + ' · '.join(out)
+            out.append(RT.row(' выгодных (90%)', int((vo == 1).sum()), int(vo.notna().sum())))
+    return out
 
 
 def filtered(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, month: str | None = None, comp: str | None = None):
