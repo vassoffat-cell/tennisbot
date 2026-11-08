@@ -6,12 +6,16 @@
 Признаки матча с позиции игрока A (A − B):
   0 Elo (логит P(A) по Elo: общий + по покрытию)      5 дни отдыха (до 7)
   1 подача/приём → цепь с momentum (логит P(A))        6 защита: раунд на этом турнире год назад
+    (пакет №2: из модели очка T21/V4 — serve_model.py)
   2 возраст, лет                                        7 личные встречи (сглаженные)
   3 матчей за 14 дней                                   8 log(рейтинг B) − log(рейтинг A)
   4 смена покрытия                                      9 Elo по ГЕЙМАМ (доля выигранных геймов; общий + покрытие)
                                                        10 log(очки рейтинга A) − log(очки B) — только WTA
 Признаки 9–10 — пакет №1 (08.11.2026), проверка 2023–26 (research/tennis_exp2/3.py):
   WTA 65,15% → 66,25% (лог-лосс 0,6159 → 0,6083), ATP 65,53% → 66,00% (0,6155 → 0,6127; очки ATP мешают — не берутся).
+Признак 1 — пакет №2: вероятности очка на подаче из иерархической модели очка (serve_model.py, V4) вместо сырой
+Barnett–Clarke; уровень цепи для линий (pa_bc / pb_bc) — прежний. Проверка 2023–26 (engine/research/T21.md):
+  WTA 66,34% / 0,6085 → 66,56% / 0,6057, ATP 65,96% / 0,6127 → 66,13% / 0,6100.
 """
 from __future__ import annotations
 
@@ -27,11 +31,12 @@ from scipy.optimize import minimize
 import config as C
 import dataset
 import markets as MK
+import serve_model as SM
 from markov import match_distribution
 
-FEATURES = ['Elo', 'Подача/приём', 'Возраст', 'Матчей за 14 дней', 'Смена покрытия', 'Отдых',
+FEATURES = ['Elo', 'Подача/приём (модель очка)', 'Возраст', 'Матчей за 14 дней', 'Смена покрытия', 'Отдых',
             'Защита очков', 'Личные встречи', 'Рейтинг', 'Elo по геймам', 'Очки рейтинга']
-VERSION = 2                     # 2 — Elo по геймам (+ очки WTA); модель другой версии пересобирается автоматически
+VERSION = 3                     # 2 — Elo по геймам (+ очки WTA); 3 — модель очка T21/V4; модель другой версии пересобирается автоматически
 GRID = np.round(np.arange(0.40, 0.8001, 0.01), 4)
 PRIOR_PTS = 400.0
 
@@ -71,6 +76,7 @@ class TourState:
         self.pts: dict[float, float] = {}                                                  # очки рейтинга
         self.last_date = None
         self.table: RegularGridInterpolator | None = None
+        self.srv: SM.ServeModel | None = None                                              # модель очка (пакет №2)
 
     # ---------- признаки ----------
     def _sr(self, pid: float, date: pd.Timestamp) -> tuple[float, float]:
@@ -80,14 +86,23 @@ class TourState:
         sp = sum(x[1] for x in q); sw = sum(x[2] for x in q); rp = sum(x[3] for x in q); rw = sum(x[4] for x in q)
         return (sw + PRIOR_PTS * self.f_av) / (sp + PRIOR_PTS), (rw + PRIOR_PTS * self.g_av) / (rp + PRIOR_PTS)
 
-    def snapshot(self, a: float, b: float, date: pd.Timestamp, surface: str, location: str, season: int) -> Snapshot:
+    def _p_serve(self, a: float, b: float, surface: str, t21: tuple[float, float] | None) -> float:
+        """Признак 1: P(A) цепи по вероятностям очка из модели очка. t21 — готовая пара при обучении (недельная
+        переподгонка без утечки); в живом прогнозе — итоговая модель и текущий рейтинг. Нет оценки → 0,6 / 0,6 (равные)."""
+        if t21 is None:
+            t21 = self.srv.pair(a, b, surface, self.rank.get(a), self.rank.get(b)) if self.srv is not None else (np.nan, np.nan)
+        pa, pb = (0.6 if x != x else float(x) for x in t21)
+        return float(self.table([[float(np.clip(pa, 0.401, 0.799)), float(np.clip(pb, 0.401, 0.799))]])[0])
+
+    def snapshot(self, a: float, b: float, date: pd.Timestamp, surface: str, location: str, season: int,
+                 t21: tuple[float, float] | None = None) -> Snapshot:
         ra = (1 - self.w_surf) * self.elo[a] + self.w_surf * self.elo_s[(a, surface)]
         rb = (1 - self.w_surf) * self.elo[b] + self.w_surf * self.elo_s[(b, surface)]
         p_elo = 1 / (1 + 10 ** ((rb - ra) / 400))
         fa, ga = self._sr(a, date); fb, gb = self._sr(b, date)
         pa = float(np.clip(self.f_av + (fa - self.f_av) - (gb - self.g_av), 0.401, 0.799))
         pb = float(np.clip(self.f_av + (fb - self.f_av) - (ga - self.g_av), 0.401, 0.799))
-        p_sr = float(self.table([[pa, pb]])[0])
+        p_sr = self._p_serve(a, b, surface, t21)              # признак 1 — модель очка; pa/pb (BC) — уровень цепи для линий
 
         def age(p):
             d = self.dob.get(p)
@@ -194,12 +209,13 @@ def build(tour: str, verbose: bool = True) -> Model:
     f_av = float((t.w_1stWon + t.w_2ndWon + t.l_1stWon + t.l_2ndWon) / (t.w_svpt + t.l_svpt))
     st = TourState(tour, dict(zip(pl.player_id, pl.dob)), f_av)
     st.table = win_table(tour)
+    st.srv, t21_pa, t21_pb = SM.walk_forward(h, C.SERVE_MODEL[tour])   # модель очка: недельная переподгонка + итоговая
     X, seasons, use = [], [], []
-    for r in h.itertuples(index=False):
+    for i, r in enumerate(h.itertuples(index=False)):
         for pid, pt in ((r.winner_id, r.WPts), (r.loser_id, r.LPts)):     # очки рейтинга на момент матча (tennis-data)
             if pt == pt and pt:
                 st.pts[pid] = float(pt)
-        snap = st.snapshot(r.winner_id, r.loser_id, r.Date, r.Surface, r.Location, r.season)
+        snap = st.snapshot(r.winner_id, r.loser_id, r.Date, r.Surface, r.Location, r.season, t21=(t21_pa[i], t21_pb[i]))
         X.append(snap.x); seasons.append(r.season); use.append(r.Comment == 'Completed' and r.season >= 2020)
         st.update(r)
     st.td_last = st.last_date                       # последняя дата tennis-data (дальше — докатка из ESPN)
