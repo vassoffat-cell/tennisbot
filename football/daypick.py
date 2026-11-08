@@ -80,6 +80,8 @@ def _offer(m, row, market, pick, line, p, p_src, k, k_src, source) -> dict | Non
         p, p_src = pm, 'model'
     elif p_src == 'pinnacle':
         p = PK.fair(pm, p, 'pinnacle')                     # веса истории: рынок 1,11, модель −0,11
+    elif p_src == 'blend':
+        p = PK.blend(pm, p)                                # 1xBet без маржи: рынок 1,08, модель −0,09
     if p != p:
         return None
     return dict(_base(m, row), market=market, pick=pick, line=line, label=label(market, pick, line), p=float(p), p_src=p_src,
@@ -93,13 +95,15 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
     out = []
     # 1X2 и двойной шанс: P — Pinnacle без маржи по 3 исходам
     h2h = {side(n): b for (mk, n, pt), b in q.items() if mk == 'h2h'}
-    fair = None
+    fair, fsrc = None, 'model'
     if all(s in h2h and h2h[s].get('pinnacle') for s in 'HDA'):
-        fair = dict(zip('HDA', PK.shin([h2h[s]['pinnacle'] for s in 'HDA'])))
+        fair, fsrc = dict(zip('HDA', PK.shin([h2h[s]['pinnacle'] for s in 'HDA']))), 'pinnacle'
+    elif all(s in h2h and h2h[s].get('onexbet') for s in 'HDA'):
+        fair, fsrc = dict(zip('HDA', PK.shin([h2h[s]['onexbet'] for s in 'HDA']))), 'blend'
     for s, books in h2h.items():
         k1 = books.get('onexbet')
         k, ks = (k1, 'api') if k1 else ((round(r * books['pinnacle'], 3), 'est') if books.get('pinnacle') else (None, None))
-        o = _offer(m, row, '1X2', s, None, fair[s] if fair else None, 'pinnacle' if fair else 'model', k, ks, 'api')
+        o = _offer(m, row, '1X2', s, None, fair[s] if fair else None, fsrc, k, ks, 'api')
         if o:
             out.append(o)
     for (mk, n, pt), books in q.items():
@@ -109,7 +113,7 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
             code = {'HD': '1X', 'DA': 'X2', 'HA': '12'}.get(dc)
             if code:
                 p = sum(fair[x] for x in dc) if fair else None
-                o = _offer(m, row, 'DC', code, None, p, 'pinnacle' if fair else 'model', books['onexbet'], 'api', 'api')
+                o = _offer(m, row, 'DC', code, None, p, fsrc, books['onexbet'], 'api', 'api')
                 if o:
                     out.append(o)
     # тоталы и форы (основные и альтернативные): P — Pinnacle без маржи по паре сторон той же линии
@@ -130,12 +134,13 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
         if not all(x in sides for x in names):
             continue
         pin = [sides[x].get('pinnacle') for x in names]
-        fair2 = PK.shin(pin) if all(pin) else None
+        xb = [sides[x].get('onexbet') for x in names]
+        fair2, src2 = (PK.shin(pin), 'pinnacle') if all(pin) else ((PK.shin(xb), 'blend') if all(xb) else (None, 'model'))
         for idx, x in enumerate(names):
             line = lh if (mk == 'TOT' or x == 'H') else -lh
             k1 = sides[x].get('onexbet')
             k, ks = (k1, 'api') if k1 else ((round(r * pin[idx], 3), 'est') if pin[idx] else (None, None))
-            o = _offer(m, row, mk, x, line, fair2[idx] if fair2 else None, 'pinnacle' if fair2 else 'model', k, ks, 'api')
+            o = _offer(m, row, mk, x, line, fair2[idx] if fair2 else None, src2, k, ks, 'api')
             if o:
                 out.append(o)
     return out

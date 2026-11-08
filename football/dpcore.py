@@ -132,6 +132,14 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         same = [c for c in cands if key(c) == cur.get('key')]
         p_cur, t_cur = (same[0]['p'], same[0]['tier']) if same else (float(cur.get('p', 0)), 9)
         if key(best) == cur.get('key') or not (best['tier'] < t_cur or best['p'] >= p_cur + C.DAY_PICK_SWITCH):
+            if same and not dry and _changed(same[0], cur.get('best') or {}):
+                same[0]['slot'] = slot_fn(same[0], items)
+                cur['best'] = _plain(same[0]); cur['p'], cur['tier'] = same[0]['p'], same[0]['tier']
+                cur['text'] = text_fn(same[0], day, cur.get('history', []), score_fn(dp))
+                notify.edit(cur['msgs'], cur['text'], KB)
+                _sheet_row(store, dp, dstr, row_fn(same[0], dstr, int(cur.get('changes', 0)), cur.get('history', [])), cur)
+                rt['day_pick'] = cur
+                return 'ставка дня: цифры пересчитаны' + note
             rt['day_pick'] = cur
             return 'ставка дня: без изменений' + note
         reason = 'лучше'
@@ -174,6 +182,12 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     rt['day_pick'] = cur
     return (f"ставка дня: {'публикация' if first else 'замена (' + reason + ')'} → "
             f"{best['label'] + ' (ступень ' + str(best['tier']) + ')' if best else 'нет'}{note}")
+
+
+def _changed(new: dict, old: dict) -> bool:
+    """Цифры ставки изменились заметно (P на 1 п.п., кф, источник) — текст закреплённого сообщения надо обновить."""
+    return (abs(float(new.get('p', 0)) - float(old.get('p', 0) or 0)) >= 0.01 or new.get('k') != old.get('k')
+            or new.get('p_src') != old.get('p_src'))
 
 
 def _sheet_row(store: J.Store, dp: pd.DataFrame, dstr: str, row: dict, cur: dict) -> None:

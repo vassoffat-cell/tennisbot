@@ -97,10 +97,17 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
             continue
         pin = [sides[n].get('pinnacle') for n in names]
         fair = PK.shin(pin) if all(pin) else None
+        xb = [sides[n].get('onexbet') for n in names]
+        fair_x = PK.shin(xb) if all(xb) else None
         for i, n in enumerate(names):
             line = None if mk == 'ML' else (l1 if (mk == 'TOTAL' or n == '1') else -l1)
             pm, pp = model_price(D, mk, n, line) if D is not None else (np.nan, 0.0)
-            p, src = (PK.fair(pm, fair[i], 'pinnacle'), 'pinnacle') if fair else (pm, 'model')
+            if fair:
+                p, src = PK.fair(pm, fair[i], 'pinnacle'), 'pinnacle'
+            elif fair_x:                                   # нет Pinnacle — 1xBet без маржи (рынок на истории точнее модели)
+                p, src = PK.blend(pm, fair_x[i]), 'blend'
+            else:
+                p, src = pm, 'model'
             if p != p:
                 continue
             k1x = sides[n].get('onexbet')
