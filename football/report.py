@@ -250,7 +250,10 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
                 tail.append(f'⭐ Вчера: {"✅" if yy.won.iloc[-1] else "❌"} {e(yy.label.iloc[-1])}')
             T.append(RT.row(' 7 дней', w.won.sum(), len(w)))
         T.append((' ожидание', '', RT.pct(D.p.mean()), ''))
-    T += ops_rows(dp)
+    ops = ops_rows(dp)
+    if ops and not len(D):
+        T.append(('Ставка дня — итогов пока нет', '', '', ''))
+    T += ops
 
     # набор данных и самокалибровка
     T.append(('До выводов', '', '', ''))
