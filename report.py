@@ -84,13 +84,21 @@ def step_target(hits: np.ndarray, ladder: tuple) -> tuple[float, float | None]:
     return (nxt[0] if nxt else ladder[-1]), reached
 
 
-def color_vs(acc: float, n: int, target: float) -> int:
+def wilson(acc: float, n: int, z: float = 1.96) -> tuple[float, float]:
+    """95% интервал Уилсона для доли (в %)."""
     if n == 0:
-        return 2
-    if acc * 100 >= target:
-        return 3
-    sd = np.sqrt(target / 100 * (1 - target / 100) / n) * 100
-    return 2 if acc * 100 >= target - 2 * sd else 1
+        return 0.0, 100.0
+    d = 1 + z * z / n
+    c = (acc + z * z / (2 * n)) / d
+    h = z * np.sqrt(acc * (1 - acc) / n + z * z / (4 * n * n)) / d
+    return (c - h) * 100, (c + h) * 100
+
+
+def color_vs(acc: float, n: int, target: float) -> int:
+    """Высокая планка (решение пользователя 08.11): 🟢 — цель ДОКАЗАНА (нижняя граница 95% ≥ цели);
+    🔴 — значимо ниже (верхняя граница < цели); 🟡 — не доказано ни то, ни другое (мало данных или около цели)."""
+    lo, hi = wilson(acc, n)
+    return 3 if lo >= target else 1 if hi < target else 2
 
 
 def trend(df: pd.DataFrame, col: str, today) -> str:
@@ -184,11 +192,10 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
                   RT.row(' всего', M.hit.sum(), n, mark=COLOR[c] + trend(M, 'hit', today))]
         else:
             T.append(RT.row('Исход', M.hit.sum(), n, g, COLOR[c] + trend(M, 'hit', today)))
-        T.append((f' ожидание', '', RT.pct(M.pmax.mean()), ''))
         ll, ent = M.ll.mean(), M.ent.mean()
         se = M.ll.std(ddof=1) / np.sqrt(n) if n > 1 else 0.0
         z = (ll - ent) / se if se > 0 else 0.0
-        c = 3 if z <= 1 else 2 if z <= 2 else 1; worst = min(worst, c)
+        c = 3 if z <= 0 else 2 if z <= 2 else 1; worst = min(worst, c)          # 🟢 — не хуже ожидаемого
         T.append((f'Лог-лосс ({RT.num(ent, 3)})', str(n), RT.num(ll, 3), COLOR[c]))
         T.append(('Калибровка', '', '', ''))
         for lo, hi in BUCKETS:
@@ -197,9 +204,11 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
                 continue
             pf, fa = b.pmax.mean(), b.hit.mean()
             sd = np.sqrt(pf * (1 - pf) / len(b))
-            cc = 3 if abs(fa - pf) <= 2 * sd else 2 if abs(fa - pf) <= 3 * sd else 1; worst = min(worst, cc)
+            cc = 3 if abs(fa - pf) <= sd else 2 if abs(fa - pf) <= 2 * sd else 1
+            if len(b) >= 10:                                          # цвет корзины — с 10 матчей (меньше — шум)
+                worst = min(worst, cc)
             rng = f'{lo * 100:.0f}+' if hi > 1 else f'{lo * 100:.0f}–{hi * 100:.0f}'
-            T.append(RT.row(f' {rng}', b.hit.sum(), len(b), RT.pct(pf, 0) + '%', COLOR[cc]))
+            T.append(RT.row(f' {rng}', b.hit.sum(), len(b), RT.pct(pf, 0) + '%', COLOR[cc] if len(b) >= 10 else ''))
     else:
         T.append(('Исход — доигранных пока нет', '', '', ''))
 
@@ -216,7 +225,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
             if s.empty:
                 continue
             z = zscore(s.won.values, s.p.values)                    # рынок — против своего ожидания Σp
-            cc = 3 if z > -1 else 2 if z > -2 else 1
+            cc = 3 if z >= 0 else 2 if z > -2 else 1                 # 🟢 — не ниже обещанного моделью
             T.append(RT.row(' ' + RT.SHORT.get(mk, mk), s.won.sum(), len(s), RT.pct(s.p.mean(), 0) + '%',
                             COLOR[cc] + (' ⛔' if mk in off else '')))
             if daily_day is None and mk in ('TOT', 'TOTAL', 'IT1', 'IT2'):   # ТЗ-003 п. 3: Б / М отдельно (не в суточном)
@@ -240,7 +249,6 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
             if len(yy):
                 tail.append(f'⭐ Вчера: {"✅" if yy.won.iloc[-1] else "❌"} {e(yy.label.iloc[-1])}')
             T.append(RT.row(' 7 дней', w.won.sum(), len(w)))
-        T.append((' ожидание', '', RT.pct(D.p.mean()), ''))
     ops = ops_rows(dp)
     if ops and not len(D):
         T.append(('Ставка дня — итогов пока нет', '', '', ''))
@@ -258,7 +266,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     if notes is not None:
         tail.append('⚠️ Данные: ' + ('; '.join(e(x) for x in notes) if notes else 'ок'))
 
-    status = {3: '🟢 модель в норме', 2: '🟡 есть отклонения', 1: '🔴 нужен разбор'}[worst]
+    status = {3: '🟢 цели доказаны', 2: '🟡 цели ещё не доказаны', 1: '🔴 нужен разбор'}[worst]
     blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + '\n'.join(tail) if tail else '')]
     if daily_day is not None:
         d = M[M.day == daily_day]
