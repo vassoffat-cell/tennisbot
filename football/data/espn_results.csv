@@ -13,7 +13,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 757807,uefa.europa,uefa,,,2025-09-25 16:45,Go Ahead Eagles,FCSB,Go Ahead Eagles,,0,1,FT,league-phase,0
 757808,uefa.europa,uefa,,,2025-09-25 19:00,Aston Villa,Bologna,Aston Villa,Bologna,1,0,FT,league-phase,0
 757809,uefa.europa,uefa,,,2025-09-25 19:00,VfB Stuttgart,Celta Vigo,Stuttgart,Celta,2,1,FT,league-phase,0
-757810,uefa.europa,uefa,,,2025-09-25 19:00,Rangers,Racing Genk,Rangers,,0,1,FT,league-phase,0
+757810,uefa.europa,uefa,,,2025-09-25 19:00,Rangers,Racing Genk,Rangers,Genk,0,1,FT,league-phase,0
 757811,uefa.europa,uefa,,,2025-09-25 19:00,RB Salzburg,FC Porto,,Porto,0,1,FT,league-phase,0
 757812,uefa.europa,uefa,,,2025-09-25 19:00,Ferencvaros,Viktoria Plzen,,,1,1,FT,league-phase,0
 757813,uefa.europa,uefa,,,2025-09-25 19:00,FC Utrecht,Lyon,Utrecht,Lyon,0,1,FT,league-phase,0
@@ -41,7 +41,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 757826,uefa.europa,uefa,,,2025-10-02 19:00,Maccabi Tel-Aviv,Dinamo Zagreb,,,1,3,FT,league-phase,0
 757827,uefa.europa,uefa,,,2025-10-02 19:00,FC Basel,VfB Stuttgart,,Stuttgart,2,0,FT,league-phase,0
 757828,uefa.europa,uefa,,,2025-10-02 19:00,FC Porto,Red Star Belgrade,Porto,,2,1,FT,league-phase,0
-757829,uefa.europa,uefa,,,2025-10-02 19:00,Racing Genk,Ferencvaros,,,0,1,FT,league-phase,0
+757829,uefa.europa,uefa,,,2025-10-02 19:00,Racing Genk,Ferencvaros,Genk,,0,1,FT,league-phase,0
 757830,uefa.europa,uefa,,,2025-10-02 19:00,Nottingham Forest,FC Midtjylland,Nott'm Forest,,2,3,FT,league-phase,0
 757831,uefa.europa,uefa,,,2025-10-02 19:00,Feyenoord Rotterdam,Aston Villa,Feyenoord,Aston Villa,0,2,FT,league-phase,0
 757832,uefa.europa,uefa,,,2025-10-02 19:00,SK Sturm Graz,Rangers,,Rangers,2,1,FT,league-phase,0
@@ -54,7 +54,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 757980,uefa.europa.conf,uefa,,,2025-10-02 19:00,Shelbourne,BK Häcken,,,0,0,FT,league-phase,0
 757981,uefa.europa.conf,uefa,,,2025-10-02 19:00,Slovan Bratislava,Strasbourg,,Strasbourg,1,2,FT,league-phase,0
 757982,uefa.europa.conf,uefa,,,2025-10-02 19:00,NK Celje,AEK Athens,,AEK,3,1,FT,league-phase,0
-757833,uefa.europa,uefa,,,2025-10-23 16:45,Racing Genk,Real Betis,,Betis,0,0,FT,league-phase,0
+757833,uefa.europa,uefa,,,2025-10-23 16:45,Racing Genk,Real Betis,Genk,Betis,0,0,FT,league-phase,0
 757835,uefa.europa,uefa,,,2025-10-23 16:45,Braga,Red Star Belgrade,Sp Braga,,2,0,FT,league-phase,0
 757836,uefa.europa,uefa,,,2025-10-23 16:45,Lyon,FC Basel,Lyon,,2,0,FT,league-phase,0
 757837,uefa.europa,uefa,,,2025-10-23 16:45,Go Ahead Eagles,Aston Villa,Go Ahead Eagles,Aston Villa,2,1,FT,league-phase,0
@@ -114,7 +114,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 757864,uefa.europa,uefa,,,2025-11-06 20:00,Ferencvaros,Ludogorets Razgrad,,,3,1,FT,league-phase,0
 757865,uefa.europa,uefa,,,2025-11-06 20:00,Rangers,AS Roma,Rangers,Roma,0,2,FT,league-phase,0
 757866,uefa.europa,uefa,,,2025-11-06 20:00,Real Betis,Lyon,Betis,Lyon,2,0,FT,league-phase,0
-757867,uefa.europa,uefa,,,2025-11-06 20:00,Braga,Racing Genk,Sp Braga,,3,4,FT,league-phase,0
+757867,uefa.europa,uefa,,,2025-11-06 20:00,Braga,Racing Genk,Sp Braga,Genk,3,4,FT,league-phase,0
 757868,uefa.europa,uefa,,,2025-11-06 20:00,PAOK,Young Boys,PAOK,,4,0,FT,league-phase,0
 758010,uefa.europa.conf,uefa,,,2025-11-06 20:00,KF Shkëndija,Jagiellonia Bialystok,,,1,1,FT,league-phase,0
 758011,uefa.europa.conf,uefa,,,2025-11-06 20:00,Shelbourne,Drita Gjilan,,,0,1,FT,league-phase,0
@@ -145,7 +145,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 758027,uefa.europa.conf,uefa,,,2025-11-27 17:45,Zrinjski Mostar,BK Häcken,,,2,1,FT,league-phase,0
 757878,uefa.europa,uefa,,,2025-11-27 20:00,Rangers,Braga,Rangers,Sp Braga,1,1,FT,league-phase,0
 757879,uefa.europa,uefa,,,2025-11-27 20:00,Go Ahead Eagles,VfB Stuttgart,Go Ahead Eagles,Stuttgart,0,4,FT,league-phase,0
-757880,uefa.europa,uefa,,,2025-11-27 20:00,Racing Genk,FC Basel,,,2,1,FT,league-phase,0
+757880,uefa.europa,uefa,,,2025-11-27 20:00,Racing Genk,FC Basel,Genk,,2,1,FT,league-phase,0
 757881,uefa.europa,uefa,,,2025-11-27 20:00,Red Star Belgrade,FCSB,,,1,0,FT,league-phase,0
 757882,uefa.europa,uefa,,,2025-11-27 20:00,Panathinaikos,SK Sturm Graz,Panathinaikos,,2,1,FT,league-phase,0
 757883,uefa.europa,uefa,,,2025-11-27 20:00,Real Betis,FC Utrecht,Betis,Utrecht,2,1,FT,league-phase,0
@@ -169,7 +169,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 757892,uefa.europa,uefa,,,2025-12-11 17:45,Nice,Braga,Nice,Sp Braga,0,1,FT,league-phase,0
 757893,uefa.europa,uefa,,,2025-12-11 17:45,Ferencvaros,Rangers,,Rangers,2,1,FT,league-phase,0
 757894,uefa.europa,uefa,,,2025-12-11 17:45,Ludogorets Razgrad,PAOK,,PAOK,3,3,FT,league-phase,0
-757895,uefa.europa,uefa,,,2025-12-11 17:45,FC Midtjylland,Racing Genk,,,1,0,FT,league-phase,0
+757895,uefa.europa,uefa,,,2025-12-11 17:45,FC Midtjylland,Racing Genk,,Genk,1,0,FT,league-phase,0
 758037,uefa.europa.conf,uefa,,,2025-12-11 17:45,Jagiellonia Bialystok,Rayo Vallecano,,Vallecano,1,2,FT,league-phase,0
 758038,uefa.europa.conf,uefa,,,2025-12-11 17:45,BK Häcken,AEK Larnaca,,,1,1,FT,league-phase,0
 758039,uefa.europa.conf,uefa,,,2025-12-11 17:45,Samsunspor,AEK Athens,Samsunspor,AEK,1,2,FT,league-phase,0
@@ -232,7 +232,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 757920,uefa.europa,uefa,,,2026-01-22 20:00,AS Roma,VfB Stuttgart,Roma,Stuttgart,2,0,FT,league-phase,0
 757921,uefa.europa,uefa,,,2026-01-22 20:00,Braga,Nottingham Forest,Sp Braga,Nott'm Forest,1,0,FT,league-phase,0
 757922,uefa.europa,uefa,,,2026-01-22 20:00,Nice,Go Ahead Eagles,Nice,Go Ahead Eagles,3,1,FT,league-phase,0
-757916,uefa.europa,uefa,,,2026-01-22 20:50,FC Utrecht,Racing Genk,Utrecht,,0,2,FT,league-phase,0
+757916,uefa.europa,uefa,,,2026-01-22 20:50,FC Utrecht,Racing Genk,Utrecht,Genk,0,2,FT,league-phase,0
 757923,uefa.europa,uefa,,,2026-01-29 20:00,Lille,SC Freiburg,Lille,Freiburg,1,0,FT,league-phase,0
 757924,uefa.europa,uefa,,,2026-01-29 20:00,Ludogorets Razgrad,Nice,,Nice,1,0,FT,league-phase,0
 757925,uefa.europa,uefa,,,2026-01-29 20:00,Lyon,PAOK,Lyon,PAOK,4,2,FT,league-phase,0
@@ -242,7 +242,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 757929,uefa.europa,uefa,,,2026-01-29 20:00,Panathinaikos,AS Roma,Panathinaikos,Roma,1,1,FT,league-phase,0
 757930,uefa.europa,uefa,,,2026-01-29 20:00,Nottingham Forest,Ferencvaros,Nott'm Forest,,4,0,FT,league-phase,0
 757931,uefa.europa,uefa,,,2026-01-29 20:00,Go Ahead Eagles,Braga,Go Ahead Eagles,Sp Braga,0,0,FT,league-phase,0
-757932,uefa.europa,uefa,,,2026-01-29 20:00,Racing Genk,Malmö FF,,,2,1,FT,league-phase,0
+757932,uefa.europa,uefa,,,2026-01-29 20:00,Racing Genk,Malmö FF,Genk,,2,1,FT,league-phase,0
 757933,uefa.europa,uefa,,,2026-01-29 20:00,FCSB,Fenerbahce,,Fenerbahce,1,1,FT,league-phase,0
 757934,uefa.europa,uefa,,,2026-01-29 20:00,FC Porto,Rangers,Porto,Rangers,3,1,FT,league-phase,0
 757935,uefa.europa,uefa,,,2026-01-29 20:00,FC Basel,Viktoria Plzen,,,0,1,FT,league-phase,0
@@ -258,7 +258,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401858770,uefa.europa,uefa,,,2026-02-19 17:45,SK Brann,Bologna,,Bologna,0,1,FT,knockout-round-playoffs,0
 401858773,uefa.europa,uefa,,,2026-02-19 17:45,PAOK,Celta Vigo,PAOK,Celta,1,2,FT,knockout-round-playoffs,0
 401858776,uefa.europa,uefa,,,2026-02-19 17:45,Fenerbahce,Nottingham Forest,Fenerbahce,Nott'm Forest,0,3,FT,knockout-round-playoffs,0
-401858777,uefa.europa,uefa,,,2026-02-19 17:45,Dinamo Zagreb,Racing Genk,,,1,3,FT,knockout-round-playoffs,0
+401858777,uefa.europa,uefa,,,2026-02-19 17:45,Dinamo Zagreb,Racing Genk,,Genk,1,3,FT,knockout-round-playoffs,0
 401854523,uefa.europa.conf,uefa,,,2026-02-19 20:00,Drita Gjilan,NK Celje,,,2,3,FT,knockout-round-playoffs,0
 401854524,uefa.europa.conf,uefa,,,2026-02-19 20:00,Jagiellonia Bialystok,Fiorentina,,Fiorentina,0,3,FT,knockout-round-playoffs,0
 401854527,uefa.europa.conf,uefa,,,2026-02-19 20:00,Omonia Nicosia,Rijeka,,,0,1,FT,knockout-round-playoffs,0
@@ -281,7 +281,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401854537,uefa.europa.conf,uefa,,,2026-02-26 20:00,Lausanne Sports,Sigma Olomouc,,,1,2,FT,knockout-round-playoffs,0
 401858778,uefa.europa,uefa,,,2026-02-26 20:00,Bologna,SK Brann,Bologna,,1,0,FT,knockout-round-playoffs,0
 401858780,uefa.europa,uefa,,,2026-02-26 20:00,Nottingham Forest,Fenerbahce,Nott'm Forest,Fenerbahce,1,2,FT,knockout-round-playoffs,0
-401858781,uefa.europa,uefa,,,2026-02-26 20:00,Racing Genk,Dinamo Zagreb,,,3,3,ET,knockout-round-playoffs,0
+401858781,uefa.europa,uefa,,,2026-02-26 20:00,Racing Genk,Dinamo Zagreb,Genk,,3,3,ET,knockout-round-playoffs,0
 401858784,uefa.europa,uefa,,,2026-02-26 20:00,Celta Vigo,PAOK,Celta,PAOK,1,0,FT,knockout-round-playoffs,0
 401862752,uefa.europa,uefa,,,2026-03-12 17:45,VfB Stuttgart,FC Porto,Stuttgart,Porto,1,2,FT,round-of-16,1
 401862753,uefa.europa,uefa,,,2026-03-12 17:45,Panathinaikos,Real Betis,Panathinaikos,Betis,1,0,FT,round-of-16,1
@@ -292,7 +292,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401862855,uefa.europa.conf,uefa,,,2026-03-12 17:45,AZ Alkmaar,Sparta Prague,AZ Alkmaar,,2,1,FT,round-of-16,1
 401862871,uefa.europa,uefa,,,2026-03-12 17:45,Bologna,AS Roma,Bologna,Roma,1,1,FT,round-of-16,1
 401862755,uefa.europa,uefa,,,2026-03-12 20:00,Ferencvaros,Braga,,Sp Braga,2,0,FT,round-of-16,1
-401862769,uefa.europa,uefa,,,2026-03-12 20:00,Racing Genk,SC Freiburg,,Freiburg,1,0,FT,round-of-16,1
+401862769,uefa.europa,uefa,,,2026-03-12 20:00,Racing Genk,SC Freiburg,Genk,Freiburg,1,0,FT,round-of-16,1
 401862770,uefa.europa,uefa,,,2026-03-12 20:00,Nottingham Forest,FC Midtjylland,Nott'm Forest,,0,1,FT,round-of-16,1
 401862845,uefa.europa.conf,uefa,,,2026-03-12 20:00,NK Celje,AEK Athens,,AEK,0,4,FT,round-of-16,1
 401862846,uefa.europa.conf,uefa,,,2026-03-12 20:00,Fiorentina,Raków Czestochowa,Fiorentina,,2,1,FT,round-of-16,1
@@ -304,7 +304,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401862851,uefa.europa.conf,uefa,,,2026-03-19 17:45,AEK Athens,NK Celje,AEK,,0,2,FT,round-of-16,1
 401862858,uefa.europa.conf,uefa,,,2026-03-19 17:45,AEK Larnaca,Crystal Palace,,Crystal Palace,1,2,ET,round-of-16,1
 401862859,uefa.europa.conf,uefa,,,2026-03-19 17:45,Mainz,Sigma Olomouc,Mainz,,2,0,FT,round-of-16,1
-401862873,uefa.europa,uefa,,,2026-03-19 17:45,SC Freiburg,Racing Genk,Freiburg,,5,1,FT,round-of-16,1
+401862873,uefa.europa,uefa,,,2026-03-19 17:45,SC Freiburg,Racing Genk,Freiburg,Genk,5,1,FT,round-of-16,1
 401862875,uefa.europa,uefa,,,2026-03-19 17:45,FC Midtjylland,Nottingham Forest,,Nott'm Forest,1,2,ET,round-of-16,1
 401862876,uefa.europa,uefa,,,2026-03-19 17:45,Lyon,Celta Vigo,Lyon,Celta,0,2,FT,round-of-16,1
 401862756,uefa.europa,uefa,,,2026-03-19 20:00,FC Porto,VfB Stuttgart,Porto,Stuttgart,2,0,FT,round-of-16,1
@@ -344,55 +344,55 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879904,rus.1,league,RUS,RUS,2026-08-01 11:00,Akron Tolyatti,Rubin Kazan,Akron Togliatti,Rubin Kazan,1,2,FT,2026-27-russian-premier-league,0
 401879906,rus.1,league,RUS,RUS,2026-08-01 13:15,CSKA Moscow,Krylia Sovetov,CSKA Moscow,Krylya Sovetov,1,1,FT,2026-27-russian-premier-league,0
 401879911,rus.1,league,RUS,RUS,2026-08-01 15:30,Dynamo Makhachkala,Lokomotiv Moscow,Dynamo Makhachkala,Lokomotiv Moscow,2,1,FT,2026-27-russian-premier-league,0
-401879910,rus.1,league,RUS,RUS,2026-08-01 17:45,FC Baltika Kaliningrad,Dinamo Moscow,,,2,1,FT,2026-27-russian-premier-league,0
-401879909,rus.1,league,RUS,RUS,2026-08-02 13:00,Gazovik Orenburg,Zenit St Petersburg,,Zenit,0,3,FT,2026-27-russian-premier-league,0
+401879910,rus.1,league,RUS,RUS,2026-08-01 17:45,FC Baltika Kaliningrad,Dinamo Moscow,Baltika,Dynamo Moscow,2,1,FT,2026-27-russian-premier-league,0
+401879909,rus.1,league,RUS,RUS,2026-08-02 13:00,Gazovik Orenburg,Zenit St Petersburg,Orenburg,Zenit,0,3,FT,2026-27-russian-premier-league,0
 401879908,rus.1,league,RUS,RUS,2026-08-02 15:15,Krasnodar,Fakel Voronezh,Krasnodar,Fakel Voronezh,3,2,FT,2026-27-russian-premier-league,0
 401879907,rus.1,league,RUS,RUS,2026-08-02 17:30,Akhmat Grozny,Spartak Moscow,Akhmat Grozny,Spartak Moscow,1,2,FT,2026-27-russian-premier-league,0
-401879901,rus.1,league,RUS,RUS,2026-08-08 12:30,Krylia Sovetov,FC Baltika Kaliningrad,Krylya Sovetov,,0,2,FT,2026-27-russian-premier-league,0
+401879901,rus.1,league,RUS,RUS,2026-08-08 12:30,Krylia Sovetov,FC Baltika Kaliningrad,Krylya Sovetov,Baltika,0,2,FT,2026-27-russian-premier-league,0
 401879899,rus.1,league,RUS,RUS,2026-08-08 15:00,Lokomotiv Moscow,Akron Tolyatti,Lokomotiv Moscow,Akron Togliatti,0,0,FT,2026-27-russian-premier-league,0
 401879777,rus.1,league,RUS,RUS,2026-08-08 17:30,CSKA Moscow,Rostov,CSKA Moscow,FK Rostov,0,0,FT,2026-27-russian-premier-league,0
-401879903,rus.1,league,RUS,RUS,2026-08-09 11:30,Dinamo Moscow,Dynamo Makhachkala,,Dynamo Makhachkala,3,1,FT,2026-27-russian-premier-league,0
+401879903,rus.1,league,RUS,RUS,2026-08-09 11:30,Dinamo Moscow,Dynamo Makhachkala,Dynamo Moscow,Dynamo Makhachkala,3,1,FT,2026-27-russian-premier-league,0
 401879897,rus.1,league,RUS,RUS,2026-08-09 14:00,Zenit St Petersburg,Rodina Moscow,Zenit,Rodina Moscow,1,2,FT,2026-27-russian-premier-league,0
 401879902,rus.1,league,RUS,RUS,2026-08-09 17:00,Spartak Moscow,Krasnodar,Spartak Moscow,Krasnodar,1,2,FT,2026-27-russian-premier-league,0
-401879898,rus.1,league,RUS,RUS,2026-08-09 17:30,Rubin Kazan,Gazovik Orenburg,Rubin Kazan,,1,1,FT,2026-27-russian-premier-league,0
+401879898,rus.1,league,RUS,RUS,2026-08-09 17:30,Rubin Kazan,Gazovik Orenburg,Rubin Kazan,Orenburg,1,1,FT,2026-27-russian-premier-league,0
 401879896,rus.1,league,RUS,RUS,2026-08-10 16:30,Fakel Voronezh,Akhmat Grozny,Fakel Voronezh,Akhmat Grozny,0,0,FT,2026-27-russian-premier-league,0
 401873624,uefa.super_cup,uefa_super,,,2026-08-12 19:00,Paris Saint-Germain,Aston Villa,Paris SG,Aston Villa,2,1,FT,2026-uefa-super-cup,0
-401879892,rus.1,league,RUS,RUS,2026-08-14 14:00,Gazovik Orenburg,Lokomotiv Moscow,,Lokomotiv Moscow,1,1,FT,2026-27-russian-premier-league,0
+401879892,rus.1,league,RUS,RUS,2026-08-14 14:00,Gazovik Orenburg,Lokomotiv Moscow,Orenburg,Lokomotiv Moscow,1,1,FT,2026-27-russian-premier-league,0
 401879889,rus.1,league,RUS,RUS,2026-08-15 11:00,Rodina Moscow,Akron Tolyatti,Rodina Moscow,Akron Togliatti,3,3,FT,2026-27-russian-premier-league,0
 401879890,rus.1,league,RUS,RUS,2026-08-15 13:15,CSKA Moscow,Fakel Voronezh,CSKA Moscow,Fakel Voronezh,1,0,FT,2026-27-russian-premier-league,0
 401879894,rus.1,league,RUS,RUS,2026-08-15 15:30,Rostov,Rubin Kazan,FK Rostov,Rubin Kazan,1,1,FT,2026-27-russian-premier-league,0
 401879891,rus.1,league,RUS,RUS,2026-08-15 17:45,Krasnodar,Akhmat Grozny,Krasnodar,Akhmat Grozny,1,0,FT,2026-27-russian-premier-league,0
-401879888,rus.1,league,RUS,RUS,2026-08-16 11:30,Zenit St Petersburg,Dinamo Moscow,Zenit,,3,0,FT,2026-27-russian-premier-league,0
+401879888,rus.1,league,RUS,RUS,2026-08-16 11:30,Zenit St Petersburg,Dinamo Moscow,Zenit,Dynamo Moscow,3,0,FT,2026-27-russian-premier-league,0
 401879895,rus.1,league,RUS,RUS,2026-08-16 14:00,Krylia Sovetov,Dynamo Makhachkala,Krylya Sovetov,Dynamo Makhachkala,1,4,FT,2026-27-russian-premier-league,0
-401879893,rus.1,league,RUS,RUS,2026-08-16 16:30,FC Baltika Kaliningrad,Spartak Moscow,,Spartak Moscow,1,2,FT,2026-27-russian-premier-league,0
-401879886,rus.1,league,RUS,RUS,2026-08-22 12:30,Fakel Voronezh,Gazovik Orenburg,Fakel Voronezh,,0,0,FT,2026-27-russian-premier-league,0
+401879893,rus.1,league,RUS,RUS,2026-08-16 16:30,FC Baltika Kaliningrad,Spartak Moscow,Baltika,Spartak Moscow,1,2,FT,2026-27-russian-premier-league,0
+401879886,rus.1,league,RUS,RUS,2026-08-22 12:30,Fakel Voronezh,Gazovik Orenburg,Fakel Voronezh,Orenburg,0,0,FT,2026-27-russian-premier-league,0
 401879881,rus.1,league,RUS,RUS,2026-08-22 15:00,Akhmat Grozny,Rostov,Akhmat Grozny,FK Rostov,4,1,FT,2026-27-russian-premier-league,0
 401879880,rus.1,league,RUS,RUS,2026-08-22 17:15,CSKA Moscow,Lokomotiv Moscow,CSKA Moscow,Lokomotiv Moscow,3,2,FT,2026-27-russian-premier-league,0
 401879887,rus.1,league,RUS,RUS,2026-08-23 10:00,Akron Tolyatti,Krylia Sovetov,Akron Togliatti,Krylya Sovetov,0,3,FT,2026-27-russian-premier-league,0
-401879885,rus.1,league,RUS,RUS,2026-08-23 12:15,Dinamo Moscow,Rodina Moscow,,Rodina Moscow,3,1,FT,2026-27-russian-premier-league,0
+401879885,rus.1,league,RUS,RUS,2026-08-23 12:15,Dinamo Moscow,Rodina Moscow,Dynamo Moscow,Rodina Moscow,3,1,FT,2026-27-russian-premier-league,0
 401879883,rus.1,league,RUS,RUS,2026-08-23 14:30,Dynamo Makhachkala,Krasnodar,Dynamo Makhachkala,Krasnodar,0,1,FT,2026-27-russian-premier-league,0
 401879884,rus.1,league,RUS,RUS,2026-08-23 17:00,Spartak Moscow,Zenit St Petersburg,Spartak Moscow,Zenit,2,0,FT,2026-27-russian-premier-league,0
-401879882,rus.1,league,RUS,RUS,2026-08-24 17:30,FC Baltika Kaliningrad,Rubin Kazan,,Rubin Kazan,1,1,FT,2026-27-russian-premier-league,0
+401879882,rus.1,league,RUS,RUS,2026-08-24 17:30,FC Baltika Kaliningrad,Rubin Kazan,Baltika,Rubin Kazan,1,1,FT,2026-27-russian-premier-league,0
 401879873,rus.1,league,RUS,RUS,2026-08-28 15:00,Akron Tolyatti,CSKA Moscow,Akron Togliatti,CSKA Moscow,2,2,FT,2026-27-russian-premier-league,0
 401879872,rus.1,league,RUS,RUS,2026-08-29 12:00,Fakel Voronezh,Zenit St Petersburg,Fakel Voronezh,Zenit,0,1,FT,2026-27-russian-premier-league,0
 401879877,rus.1,league,RUS,RUS,2026-08-29 14:30,Krasnodar,Rostov,Krasnodar,FK Rostov,1,0,FT,2026-27-russian-premier-league,0
 401879876,rus.1,league,RUS,RUS,2026-08-29 17:00,Akhmat Grozny,Krylia Sovetov,Akhmat Grozny,Krylya Sovetov,3,3,FT,2026-27-russian-premier-league,0
-401879878,rus.1,league,RUS,RUS,2026-08-29 17:00,Lokomotiv Moscow,Dinamo Moscow,Lokomotiv Moscow,,0,1,FT,2026-27-russian-premier-league,0
-401879875,rus.1,league,RUS,RUS,2026-08-30 12:00,Rodina Moscow,FC Baltika Kaliningrad,Rodina Moscow,,0,3,FT,2026-27-russian-premier-league,0
-401879879,rus.1,league,RUS,RUS,2026-08-30 14:30,Spartak Moscow,Gazovik Orenburg,Spartak Moscow,,1,1,FT,2026-27-russian-premier-league,0
+401879878,rus.1,league,RUS,RUS,2026-08-29 17:00,Lokomotiv Moscow,Dinamo Moscow,Lokomotiv Moscow,Dynamo Moscow,0,1,FT,2026-27-russian-premier-league,0
+401879875,rus.1,league,RUS,RUS,2026-08-30 12:00,Rodina Moscow,FC Baltika Kaliningrad,Rodina Moscow,Baltika,0,3,FT,2026-27-russian-premier-league,0
+401879879,rus.1,league,RUS,RUS,2026-08-30 14:30,Spartak Moscow,Gazovik Orenburg,Spartak Moscow,Orenburg,1,1,FT,2026-27-russian-premier-league,0
 401879874,rus.1,league,RUS,RUS,2026-08-30 17:00,Rubin Kazan,Dynamo Makhachkala,Rubin Kazan,Dynamo Makhachkala,3,1,FT,2026-27-russian-premier-league,0
 401879870,rus.1,league,RUS,RUS,2026-09-05 11:00,Krylia Sovetov,Krasnodar,Krylya Sovetov,Krasnodar,2,2,FT,2026-27-russian-premier-league,0
 401879864,rus.1,league,RUS,RUS,2026-09-05 13:30,Zenit St Petersburg,CSKA Moscow,Zenit,CSKA Moscow,1,2,FT,2026-27-russian-premier-league,0
 401879868,rus.1,league,RUS,RUS,2026-09-05 16:00,Rostov,Fakel Voronezh,FK Rostov,Fakel Voronezh,3,1,FT,2026-27-russian-premier-league,0
-401879866,rus.1,league,RUS,RUS,2026-09-06 11:00,Gazovik Orenburg,Akron Tolyatti,,Akron Togliatti,2,2,FT,2026-27-russian-premier-league,0
+401879866,rus.1,league,RUS,RUS,2026-09-06 11:00,Gazovik Orenburg,Akron Tolyatti,Orenburg,Akron Togliatti,2,2,FT,2026-27-russian-premier-league,0
 401879869,rus.1,league,RUS,RUS,2026-09-06 13:15,Dynamo Makhachkala,Rodina Moscow,Dynamo Makhachkala,Rodina Moscow,2,0,FT,2026-27-russian-premier-league,0
-401879871,rus.1,league,RUS,RUS,2026-09-06 15:30,Dinamo Moscow,Spartak Moscow,,Spartak Moscow,2,1,FT,2026-27-russian-premier-league,0
-401879867,rus.1,league,RUS,RUS,2026-09-06 17:45,FC Baltika Kaliningrad,Lokomotiv Moscow,,Lokomotiv Moscow,0,1,FT,2026-27-russian-premier-league,0
+401879871,rus.1,league,RUS,RUS,2026-09-06 15:30,Dinamo Moscow,Spartak Moscow,Dynamo Moscow,Spartak Moscow,2,1,FT,2026-27-russian-premier-league,0
+401879867,rus.1,league,RUS,RUS,2026-09-06 17:45,FC Baltika Kaliningrad,Lokomotiv Moscow,Baltika,Lokomotiv Moscow,0,1,FT,2026-27-russian-premier-league,0
 401879865,rus.1,league,RUS,RUS,2026-09-07 16:30,Rubin Kazan,Akhmat Grozny,Rubin Kazan,Akhmat Grozny,1,1,FT,2026-27-russian-premier-league,0
 401879861,rus.1,league,RUS,RUS,2026-09-11 15:00,Krylia Sovetov,Rodina Moscow,Krylya Sovetov,Rodina Moscow,2,1,FT,2026-27-russian-premier-league,0
-401879856,rus.1,league,RUS,RUS,2026-09-12 11:00,Fakel Voronezh,FC Baltika Kaliningrad,Fakel Voronezh,,2,2,FT,2026-27-russian-premier-league,0
+401879856,rus.1,league,RUS,RUS,2026-09-12 11:00,Fakel Voronezh,FC Baltika Kaliningrad,Fakel Voronezh,Baltika,2,2,FT,2026-27-russian-premier-league,0
 401879857,rus.1,league,RUS,RUS,2026-09-12 13:15,Zenit St Petersburg,Lokomotiv Moscow,Zenit,Lokomotiv Moscow,2,1,FT,2026-27-russian-premier-league,0
-401879863,rus.1,league,RUS,RUS,2026-09-12 15:30,Dinamo Moscow,Gazovik Orenburg,,,1,0,FT,2026-27-russian-premier-league,0
+401879863,rus.1,league,RUS,RUS,2026-09-12 15:30,Dinamo Moscow,Gazovik Orenburg,Dynamo Moscow,Orenburg,1,0,FT,2026-27-russian-premier-league,0
 401879858,rus.1,league,RUS,RUS,2026-09-12 17:45,CSKA Moscow,Rubin Kazan,CSKA Moscow,Rubin Kazan,1,1,FT,2026-27-russian-premier-league,0
 401879859,rus.1,league,RUS,RUS,2026-09-13 11:30,Akhmat Grozny,Dynamo Makhachkala,Akhmat Grozny,Dynamo Makhachkala,3,2,FT,2026-27-russian-premier-league,0
 401879862,rus.1,league,RUS,RUS,2026-09-13 14:00,Spartak Moscow,Rostov,Spartak Moscow,FK Rostov,3,0,FT,2026-27-russian-premier-league,0
@@ -402,7 +402,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915594,uefa.europa,uefa,,,2026-09-16 16:45,Ararat-Armenia,Sparta Prague,,,1,4,FT,league-phase,0
 401915611,uefa.europa,uefa,,,2026-09-16 16:45,Omonia Nicosia,Celta Vigo,,Celta,1,0,FT,league-phase,0
 401879850,rus.1,league,RUS,RUS,2026-09-16 17:45,Lokomotiv Moscow,Krylia Sovetov,Lokomotiv Moscow,Krylya Sovetov,1,1,FT,2026-27-russian-premier-league,0
-401879852,rus.1,league,RUS,RUS,2026-09-16 17:45,FC Baltika Kaliningrad,Zenit St Petersburg,,Zenit,2,3,FT,2026-27-russian-premier-league,0
+401879852,rus.1,league,RUS,RUS,2026-09-16 17:45,FC Baltika Kaliningrad,Zenit St Petersburg,Baltika,Zenit,2,3,FT,2026-27-russian-premier-league,0
 401915586,uefa.europa,uefa,,,2026-09-16 19:00,AC Milan,Benfica,Milan,Benfica,0,2,FT,league-phase,0
 401915587,uefa.europa,uefa,,,2026-09-16 19:00,Bayer Leverkusen,NK Celje,Leverkusen,,2,0,FT,league-phase,0
 401915588,uefa.europa,uefa,,,2026-09-16 19:00,Olympiacos,Jagiellonia Bialystok,Olympiakos,,2,1,FT,league-phase,0
@@ -410,9 +410,9 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915590,uefa.europa,uefa,,,2026-09-16 19:00,Anderlecht,Lyon,Anderlecht,Lyon,1,2,FT,league-phase,0
 401915592,uefa.europa,uefa,,,2026-09-16 19:00,Sunderland,AZ Alkmaar,Sunderland,AZ Alkmaar,1,0,FT,league-phase,0
 401915593,uefa.europa,uefa,,,2026-09-16 19:00,SK Sturm Graz,Stade Rennais,,Rennes,0,0,FT,league-phase,0
-401879851,rus.1,league,RUS,RUS,2026-09-17 13:15,Gazovik Orenburg,Krasnodar,,Krasnodar,0,0,FT,2026-27-russian-premier-league,0
+401879851,rus.1,league,RUS,RUS,2026-09-17 13:15,Gazovik Orenburg,Krasnodar,Orenburg,Krasnodar,0,0,FT,2026-27-russian-premier-league,0
 401879848,rus.1,league,RUS,RUS,2026-09-17 15:30,Akron Tolyatti,Akhmat Grozny,Akron Togliatti,Akhmat Grozny,2,0,FT,2026-27-russian-premier-league,0
-401879853,rus.1,league,RUS,RUS,2026-09-17 15:30,Rostov,Dinamo Moscow,FK Rostov,,0,3,FT,2026-27-russian-premier-league,0
+401879853,rus.1,league,RUS,RUS,2026-09-17 15:30,Rostov,Dinamo Moscow,FK Rostov,Dynamo Moscow,0,3,FT,2026-27-russian-premier-league,0
 401915584,uefa.europa,uefa,,,2026-09-17 16:45,Levski Sofia,RB Salzburg,,,0,1,FT,league-phase,0
 401915585,uefa.europa,uefa,,,2026-09-17 16:45,OFI Crete,TSG Hoffenheim,OFI Crete,Hoffenheim,2,0,FT,league-phase,0
 401879854,rus.1,league,RUS,RUS,2026-09-17 17:45,Dynamo Makhachkala,CSKA Moscow,Dynamo Makhachkala,CSKA Moscow,1,3,FT,2026-27-russian-premier-league,0
@@ -424,13 +424,13 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915583,uefa.europa,uefa,,,2026-09-17 19:00,Real Sociedad,AFC Bournemouth,Sociedad,Bournemouth,1,2,FT,league-phase,0
 401915591,uefa.europa,uefa,,,2026-09-17 19:00,Besiktas,Marseille,Besiktas,Marseille,4,1,FT,league-phase,0
 401879846,rus.1,league,RUS,RUS,2026-10-09 16:30,Rostov,Akron Tolyatti,FK Rostov,Akron Togliatti,1,0,FT,2026-27-russian-premier-league,0
-401879845,rus.1,league,RUS,RUS,2026-10-10 10:00,Gazovik Orenburg,Dynamo Makhachkala,,Dynamo Makhachkala,4,0,FT,2026-27-russian-premier-league,0
+401879845,rus.1,league,RUS,RUS,2026-10-10 10:00,Gazovik Orenburg,Dynamo Makhachkala,Orenburg,Dynamo Makhachkala,4,0,FT,2026-27-russian-premier-league,0
 401879840,rus.1,league,RUS,RUS,2026-10-10 12:15,Fakel Voronezh,Lokomotiv Moscow,Fakel Voronezh,Lokomotiv Moscow,0,5,FT,2026-27-russian-premier-league,0
 401879847,rus.1,league,RUS,RUS,2026-10-10 14:30,Krylia Sovetov,Spartak Moscow,Krylya Sovetov,Spartak Moscow,1,1,FT,2026-27-russian-premier-league,0
 401879844,rus.1,league,RUS,RUS,2026-10-10 16:30,Krasnodar,Zenit St Petersburg,Krasnodar,Zenit,2,3,FT,2026-27-russian-premier-league,0
-401879843,rus.1,league,RUS,RUS,2026-10-11 11:00,Akhmat Grozny,FC Baltika Kaliningrad,Akhmat Grozny,,0,0,FT,2026-27-russian-premier-league,0
+401879843,rus.1,league,RUS,RUS,2026-10-11 11:00,Akhmat Grozny,FC Baltika Kaliningrad,Akhmat Grozny,Baltika,0,0,FT,2026-27-russian-premier-league,0
 401879842,rus.1,league,RUS,RUS,2026-10-11 13:30,CSKA Moscow,Rodina Moscow,CSKA Moscow,Rodina Moscow,3,0,FT,2026-27-russian-premier-league,0
-401879841,rus.1,league,RUS,RUS,2026-10-11 16:30,Rubin Kazan,Dinamo Moscow,Rubin Kazan,,0,1,FT,2026-27-russian-premier-league,0
+401879841,rus.1,league,RUS,RUS,2026-10-11 16:30,Rubin Kazan,Dinamo Moscow,Rubin Kazan,Dynamo Moscow,0,1,FT,2026-27-russian-premier-league,0
 401915566,uefa.europa,uefa,,,2026-10-15 16:45,Lyon,Crystal Palace,Lyon,Crystal Palace,3,2,FT,league-phase,0
 401915567,uefa.europa,uefa,,,2026-10-15 16:45,Sparta Prague,Lillestrom,,,1,1,FT,league-phase,0
 401915568,uefa.europa,uefa,,,2026-10-15 16:45,RB Salzburg,AC Milan,,Milan,0,4,FT,league-phase,0
@@ -448,7 +448,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915858,uefa.europa.conf,uefa,,,2026-10-15 16:45,KuPS Kuopio,Trabzonspor,,Trabzonspor,2,4,FT,league-phase,0
 401915859,uefa.europa.conf,uefa,,,2026-10-15 16:45,Egnatia,FC Midtjylland,,,1,1,FT,league-phase,0
 401915860,uefa.europa.conf,uefa,,,2026-10-15 16:45,KAA Gent,AGF,Gent,,1,0,FT,league-phase,0
-401915861,uefa.europa.conf,uefa,,,2026-10-15 16:45,Hajduk Split,Ajax Amsterdam,,,2,1,FT,league-phase,0
+401915861,uefa.europa.conf,uefa,,,2026-10-15 16:45,Hajduk Split,Ajax Amsterdam,,Ajax,2,1,FT,league-phase,0
 401915549,uefa.europa,uefa,,,2026-10-15 19:00,Dinamo Zagreb,Anderlecht,,Anderlecht,1,0,FT,league-phase,0
 401915550,uefa.europa,uefa,,,2026-10-15 19:00,Marseille,Olympiacos,Marseille,Olympiakos,0,1,FT,league-phase,0
 401915560,uefa.europa,uefa,,,2026-10-15 19:00,Celta Vigo,Juventus,Celta,Juventus,1,2,FT,league-phase,0
@@ -471,10 +471,10 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879836,rus.1,league,RUS,RUS,2026-10-17 13:30,Dynamo Makhachkala,Akron Tolyatti,Dynamo Makhachkala,Akron Togliatti,1,1,FT,2026-27-russian-premier-league,0
 401879834,rus.1,league,RUS,RUS,2026-10-17 16:30,Lokomotiv Moscow,Krasnodar,Lokomotiv Moscow,Krasnodar,3,3,FT,2026-27-russian-premier-league,0
 401879832,rus.1,league,RUS,RUS,2026-10-18 11:00,Zenit St Petersburg,Akhmat Grozny,Zenit,Akhmat Grozny,3,2,FT,2026-27-russian-premier-league,0
-401879839,rus.1,league,RUS,RUS,2026-10-18 13:15,Dinamo Moscow,CSKA Moscow,,CSKA Moscow,3,1,FT,2026-27-russian-premier-league,0
+401879839,rus.1,league,RUS,RUS,2026-10-18 13:15,Dinamo Moscow,CSKA Moscow,Dynamo Moscow,CSKA Moscow,3,1,FT,2026-27-russian-premier-league,0
 401879838,rus.1,league,RUS,RUS,2026-10-18 15:45,Spartak Moscow,Rubin Kazan,Spartak Moscow,Rubin Kazan,4,0,FT,2026-27-russian-premier-league,0
-401879835,rus.1,league,RUS,RUS,2026-10-18 18:00,FC Baltika Kaliningrad,Rostov,,FK Rostov,0,0,FT,2026-27-russian-premier-league,0
-401879833,rus.1,league,RUS,RUS,2026-10-19 16:30,Rodina Moscow,Gazovik Orenburg,Rodina Moscow,,2,2,FT,2026-27-russian-premier-league,0
+401879835,rus.1,league,RUS,RUS,2026-10-18 18:00,FC Baltika Kaliningrad,Rostov,Baltika,FK Rostov,0,0,FT,2026-27-russian-premier-league,0
+401879833,rus.1,league,RUS,RUS,2026-10-19 16:30,Rodina Moscow,Gazovik Orenburg,Rodina Moscow,Orenburg,2,2,FT,2026-27-russian-premier-league,0
 401915846,uefa.europa.conf,uefa,,,2026-10-22 14:30,Kairat Almaty,Panathinaikos,,Panathinaikos,1,5,FT,league-phase,0
 401915545,uefa.europa,uefa,,,2026-10-22 16:45,Union St.-Gilloise,Hapoel Be'er,St. Gilloise,,4,0,FT,league-phase,0
 401915546,uefa.europa,uefa,,,2026-10-22 16:45,Lech Poznan,Sunderland,,Sunderland,1,1,FT,league-phase,0
@@ -510,17 +510,17 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915834,uefa.europa.conf,uefa,,,2026-10-22 19:00,FC Thun,Hajduk Split,,,0,1,FT,league-phase,0
 401915835,uefa.europa.conf,uefa,,,2026-10-22 19:00,FC Midtjylland,Sint-Truidense,,,0,1,FT,league-phase,0
 401915836,uefa.europa.conf,uefa,,,2026-10-22 19:00,AS Monaco,SC Freiburg,Monaco,Freiburg,3,0,FT,league-phase,0
-401915837,uefa.europa.conf,uefa,,,2026-10-22 19:00,Ajax Amsterdam,Atalanta,,Atalanta,2,0,FT,league-phase,0
-401879829,rus.1,league,RUS,RUS,2026-10-23 16:30,Akhmat Grozny,Gazovik Orenburg,Akhmat Grozny,,0,1,FT,2026-27-russian-premier-league,0
-401879826,rus.1,league,RUS,RUS,2026-10-24 09:45,Akron Tolyatti,Dinamo Moscow,Akron Togliatti,,3,1,FT,2026-27-russian-premier-league,0
+401915837,uefa.europa.conf,uefa,,,2026-10-22 19:00,Ajax Amsterdam,Atalanta,Ajax,Atalanta,2,0,FT,league-phase,0
+401879829,rus.1,league,RUS,RUS,2026-10-23 16:30,Akhmat Grozny,Gazovik Orenburg,Akhmat Grozny,Orenburg,0,1,FT,2026-27-russian-premier-league,0
+401879826,rus.1,league,RUS,RUS,2026-10-24 09:45,Akron Tolyatti,Dinamo Moscow,Akron Togliatti,Dynamo Moscow,3,1,FT,2026-27-russian-premier-league,0
 401879824,rus.1,league,RUS,RUS,2026-10-24 12:00,Fakel Voronezh,Rodina Moscow,Fakel Voronezh,Rodina Moscow,0,1,FT,2026-27-russian-premier-league,0
 401879827,rus.1,league,RUS,RUS,2026-10-24 14:15,Rubin Kazan,Krylia Sovetov,Rubin Kazan,Krylya Sovetov,0,2,FT,2026-27-russian-premier-league,0
-401879830,rus.1,league,RUS,RUS,2026-10-24 16:30,Krasnodar,FC Baltika Kaliningrad,Krasnodar,,1,1,FT,2026-27-russian-premier-league,0
+401879830,rus.1,league,RUS,RUS,2026-10-24 16:30,Krasnodar,FC Baltika Kaliningrad,Krasnodar,Baltika,1,1,FT,2026-27-russian-premier-league,0
 401879831,rus.1,league,RUS,RUS,2026-10-25 10:45,Rostov,Lokomotiv Moscow,FK Rostov,Lokomotiv Moscow,2,0,FT,2026-27-russian-premier-league,0
 401879828,rus.1,league,RUS,RUS,2026-10-25 13:00,CSKA Moscow,Spartak Moscow,CSKA Moscow,Spartak Moscow,2,0,FT,2026-27-russian-premier-league,0
 401879825,rus.1,league,RUS,RUS,2026-10-25 15:30,Zenit St Petersburg,Dynamo Makhachkala,Zenit,Dynamo Makhachkala,2,0,FT,2026-27-russian-premier-league,0
 401879816,rus.1,league,RUS,RUS,2026-10-31 12:15,Rubin Kazan,Fakel Voronezh,Rubin Kazan,Fakel Voronezh,1,0,FT,2026-27-russian-premier-league,0
-401879823,rus.1,league,RUS,RUS,2026-10-31 14:30,Dinamo Moscow,Akhmat Grozny,,Akhmat Grozny,2,0,FT,2026-27-russian-premier-league,0
+401879823,rus.1,league,RUS,RUS,2026-10-31 14:30,Dinamo Moscow,Akhmat Grozny,Dynamo Moscow,Akhmat Grozny,2,0,FT,2026-27-russian-premier-league,0
 401884747,ger.1,league,GER,D1,2026-10-31 14:30,Schalke 04,RB Leipzig,Schalke 04,RB Leipzig,0,2,FT,2026-27-german-bundesliga,0
 401884748,ger.1,league,GER,D1,2026-10-31 14:30,Werder Bremen,TSG Hoffenheim,Werder Bremen,Hoffenheim,2,0,FT,2026-27-german-bundesliga,0
 401884749,ger.1,league,GER,D1,2026-10-31 14:30,Borussia Mönchengladbach,SC Paderborn 07,M'gladbach,Paderborn,0,0,FT,2026-27-german-bundesliga,0
