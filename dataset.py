@@ -1,10 +1,13 @@
 """Единая база матчей: tennis-data.co.uk (результаты, счёт по сетам, рейтинг, котировки) + связка с Sackmann
 (ID игроков, статистика подачи, возраст). Котировки в модель НЕ подаются — они нужны только для проверок.
+T29 (пакет №3): после последней даты Sackmann (2026: обрыв 25.05) — продолжение из TennisMyLife (data/tml/, тот же формат);
+игроки TennisMyLife связываются с ID Sackmann по полному имени, новые получают постоянный ID 9xxxxxx (по имени).
 """
 from __future__ import annotations
 
 import re
 import unicodedata
+import zlib
 
 import numpy as np
 import pandas as pd
@@ -21,8 +24,70 @@ PATTERNS = (r"^(.*?)\s+([A-Z][A-Za-z]*)[.\-]?(?:[A-Z.\-]*)$",     # «Badosa Gib
             r"^(.*?)\s+(\S+)$")                                     # «Aragone JC»
 
 
+TML_FILES = {'atp': ('{y}.csv', 'ongoing_tourneys.csv'), 'wta': ('{y}_wta.csv', 'wta_ongoing_tourneys.csv')}
+NEW_ID = 9_000_000
+
+
+def _full(first, last) -> str:
+    return norm(f'{first or ""}{last or ""}')
+
+
+def _new_id(name: str) -> int:
+    """Постоянный ID нового игрока (нет в Sackmann): по нормализованному имени."""
+    return NEW_ID + zlib.crc32(norm(name).encode()) % 1_000_000
+
+
+def _sackmann_players(tour: str) -> pd.DataFrame:
+    return pd.read_csv(C.SACKMANN / f'{tour}_players.csv', low_memory=False)
+
+
+def tml_raw(tour: str) -> pd.DataFrame:
+    """TennisMyLife: сезоны с FIRST_SEASON + текущие турниры; дубли (турнир, номер матча) — последняя версия."""
+    season, ongoing = TML_FILES[tour]
+    files = [C.DATA / 'tml' / season.format(y=y) for y in range(C.FIRST_SEASON, C.LAST_SEASON + 1)] + [C.DATA / 'tml' / ongoing]
+    parts = [pd.read_csv(f, low_memory=False) for f in files if f.exists()]
+    if not parts or not C.USE_TML:
+        return pd.DataFrame()
+    t = pd.concat(parts, ignore_index=True).drop_duplicates(['tourney_id', 'match_num'], keep='last')
+    t['tdate'] = pd.to_datetime(t.tourney_date.astype(str).str[:8], format='%Y%m%d', errors='coerce')
+    return t[t.tdate.notna()].reset_index(drop=True)
+
+
+def _tml_ids(tour: str, t: pd.DataFrame) -> dict[str, int]:
+    """Полное имя TennisMyLife → ID Sackmann (при однофамильцах — у кого позже последний матч в Sackmann), иначе новый ID."""
+    pl = _sackmann_players(tour)
+    pl['full'] = [_full(a, b) for a, b in zip(pl.name_first, pl.name_last)]
+    last = {}
+    for f in C.SACKMANN.glob(f'{tour}_matches_*.csv'):
+        d = pd.read_csv(f, usecols=['winner_id', 'loser_id', 'tourney_date'], low_memory=False)
+        for c in ('winner_id', 'loser_id'):
+            for pid, dt_ in zip(d[c], d.tourney_date):
+                last[pid] = max(last.get(pid, 0), int(dt_))
+    best = {}
+    for pid, full in zip(pl.player_id, pl.full):
+        if full not in best or last.get(pid, 0) > last.get(best[full], 0):
+            best[full] = pid
+    names = pd.unique(pd.concat([t.winner_name, t.loser_name]).astype(str))
+    return {n: best.get(norm(n), _new_id(n)) for n in names}
+
+
 def players(tour: str) -> pd.DataFrame:
-    pl = pd.read_csv(C.SACKMANN / f'{tour}_players.csv', low_memory=False)
+    pl = _sackmann_players(tour)
+    t = tml_raw(tour)
+    if len(t):                                   # новые игроки TennisMyLife (нет в Sackmann): имя, рука, страна, дата рождения по возрасту
+        ids = _tml_ids(tour, t)
+        rows = {}
+        for side in ('winner', 'loser'):
+            for r in t[[f'{side}_name', f'{side}_hand', f'{side}_ioc', f'{side}_age', 'tdate']].itertuples(index=False):
+                pid = ids.get(str(r[0]))
+                if pid is None or pid < NEW_ID or pid in rows:
+                    continue
+                first, _, lastn = str(r[0]).partition(' ')
+                dob = (r[4] - pd.Timedelta(days=float(r[3]) * 365.25)) if r[3] == r[3] else pd.NaT
+                rows[pid] = dict(player_id=pid, name_first=first, name_last=lastn or first, hand=r[1], ioc=r[2],
+                                 dob=float(dob.strftime('%Y%m%d')) if not pd.isna(dob) else np.nan)
+        if rows:
+            pl = pd.concat([pl, pd.DataFrame(rows.values())], ignore_index=True)
     pl['last'] = pl.name_last.map(norm); pl['fi'] = pl.name_first.map(lambda s: norm(s)[:1])
     pl['dob'] = pd.to_datetime(pl.dob.astype('Int64').astype(str), format='%Y%m%d', errors='coerce')
     return pl
@@ -32,6 +97,12 @@ def sackmann(tour: str) -> pd.DataFrame:
     files = [C.SACKMANN / f'{tour}_matches_{y}.csv' for y in range(C.FIRST_SEASON, C.LAST_SEASON + 1)]
     sk = pd.concat([pd.read_csv(f, low_memory=False) for f in files if f.exists()])
     sk['tdate'] = pd.to_datetime(sk.tourney_date.astype(str), format='%Y%m%d')
+    t = tml_raw(tour)
+    if len(t):                                   # T29: продолжение после последней даты Sackmann
+        t = t[t.tdate > sk.tdate.max()].copy()
+        ids = _tml_ids(tour, t)
+        t['winner_id'] = t.winner_name.astype(str).map(ids); t['loser_id'] = t.loser_name.astype(str).map(ids)
+        sk = pd.concat([sk, t[[c for c in sk.columns if c in t.columns]]], ignore_index=True)
     return sk.reset_index(drop=True)
 
 

@@ -117,10 +117,17 @@ def identify(name: str, players: pd.DataFrame, active: set) -> tuple[float | Non
     ck = (name, id(players), hash(frozenset(active)))
     if ck in _CACHE:
         return _CACHE[ck]
-    hit = _exact_index(players, active).get(NM._plain(name), [])
+    idx = _exact_index(players, active)
+    hit = idx.get(NM._plain(name), [])
     if len({h[0] for h in hit}) == 1:
         _CACHE[ck] = (hit[0][0], hit[0][1], 1.0)
         return _CACHE[ck]
+    parts = str(name).split()                     # «Adolfo Daniel Vallejo» → «Daniel Vallejo»: точное совпадение без первых имён
+    for k in range(1, len(parts) - 1):
+        hit = idx.get(NM._plain(' '.join(parts[k:])), [])
+        if len({h[0] for h in hit}) == 1:
+            _CACHE[ck] = (hit[0][0], hit[0][1], 0.99)
+            return _CACHE[ck]
     _CACHE[ck] = _fuzzy(name, players, active)
     return _CACHE[ck]
 
