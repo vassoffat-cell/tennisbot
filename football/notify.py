@@ -66,6 +66,25 @@ def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: boo
     return sent
 
 
+def send_markup(text: str, markup: dict | None = None, silent: bool = False) -> list[tuple[int, int]]:
+    """Одно сообщение (HTML) с кнопками под ним всем ALLOWED_USERS. Возвращает [(chat_id, message_id)]."""
+    if not C.BOT_TOKEN or not C.ALLOWED_USERS:
+        print(text)
+        return []
+    sent = []
+    for chat in C.ALLOWED_USERS:
+        try:
+            p = {'chat_id': chat, 'text': text[:4000], 'parse_mode': 'HTML', 'disable_web_page_preview': True,
+                 'disable_notification': silent}
+            if markup:
+                p['reply_markup'] = markup
+            r = _call('sendMessage', p)
+            sent.append((chat, r['result']['message_id']))
+        except Exception as e:
+            print(f'Telegram: не отправлено ({e})')
+    return sent
+
+
 def delete(messages: list) -> int:
     """Удалить сообщения бота [(chat_id, message_id)] пачками по 100. Старше 48 ч Telegram удалить не даёт — пропуск."""
     if not C.BOT_TOKEN:
@@ -98,8 +117,9 @@ def send(text: str, pre: bool = False) -> int:
     return send_blocks(blocks)
 
 
-def edit(messages: list, text: str) -> int:
-    """Изменить текст уже отправленных сообщений [(chat_id, message_id)] (HTML). Возвращает число изменённых."""
+def edit(messages: list, text: str, markup: dict | None = None) -> int:
+    """Изменить текст уже отправленных сообщений [(chat_id, message_id)] (HTML). markup — кнопки под сообщением
+    (None — убрать). Возвращает число изменённых."""
     if not C.BOT_TOKEN:
         print(text)
         return 0
@@ -107,7 +127,8 @@ def edit(messages: list, text: str) -> int:
     for chat, mid in messages:
         try:
             _call('editMessageText', {'chat_id': int(chat), 'message_id': int(mid), 'text': text, 'parse_mode': 'HTML',
-                                      'disable_web_page_preview': True})
+                                      'disable_web_page_preview': True,
+                                      'reply_markup': markup or {'inline_keyboard': []}})
             n += 1
         except Exception as e:
             if 'not modified' not in str(e):

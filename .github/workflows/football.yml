@@ -33,6 +33,8 @@ jobs:
           FOOT_BOT_TOKEN: ${{ secrets.FOOT_BOT_TOKEN }}
           FOOT_SHEET_ID: ${{ secrets.FOOT_SHEET_ID }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          CLOUD: '1'
       - name: Save data
         if: always()
         run: |

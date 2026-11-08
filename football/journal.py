@@ -36,9 +36,12 @@ LINE_COLS = ['created', 'espn_id', 'slot', 'comp', 'comp_name', 'source', 'start
 LINE_FCST_COLS = LINE_COLS[LINE_COLS.index('source'):LINE_COLS.index('z_hi') + 1]
 LINE_RESULT_COLS = ['status', 'result', 'settled', 'pnl_lo']
 DAY_COLS = ['date', 'espn_id', 'slot', 'comp_name', 'start_utc', 'start_local', 'home', 'away', 'market', 'label', 'p',
-            'p_low', 'published', 'changes', 'history', 'status', 'result', 'settled']
+            'p_low', 'published', 'changes', 'history', 'status', 'result', 'settled',
+            # пакет №3 (правило C): линия, кф 1xBet, источник P, уверенность в выгодности, принятие, скриншоты — только в конец
+            'pick', 'line', 'k', 'k_src', 'p_src', 'conf', 'value_ok', 'tier', 'source', 'p_model', 'accepted', 'accepted_at',
+            'screenshots']
 SHEETS = {'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS, 'summary': ['показатель', 'значение'],
-          'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS,
+          'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS, 'dp_actions': ['time', 'action', 'chat_id', 'message_id', 'done'],
           'reports': ['key', 'kind', 'title', 'text', 'updated'],     # готовые отчёты для кнопки «Аналитика» (бот только читает)
           'tg_cache': ['key', 'text', 'updated']}                     # последний список прогноза для кнопки «Прогноз 24 ч»
 

@@ -24,6 +24,7 @@ TABS = {'основная': 'main', '1-й': 'set1', '2-й': 'set2', 'эйсы': 
 MARKET_TITLES = [  # (регулярное выражение по нормализованной строке, код рынка)
     (r'^1x2', 'ML'), (r'^тотал(?!\s*(чет|сет|матч|самого))', 'TOTAL'), (r'^фора(?!\s*по)', 'HCP'),
     (r'^индивидуальныйтотал1', 'IT1'), (r'^индивидуальныйтотал2', 'IT2'), (r'^точныйсчет', 'EXACT'),
+    (r'^двойнойшанс(?!\s*\+)', 'DC'), (r'^обезабьют$', 'BTTS'),
 ]
 
 
@@ -35,6 +36,8 @@ class Parsed:
     surface: str | None = None
     players: tuple[str, str] | None = None
     date: str | None = None
+    time: str | None = None                          # «13:00» — время начала из шапки («08.11.2026 (13:00)»)
+    header: str = ''                                 # шапка целиком (вид спорта, лига / турнир) — для опознания матча
     lines: dict = field(default_factory=dict)       # (вкладка, рынок, линия) → (k1, k2) или для EXACT: счёт → k
 
 
@@ -87,6 +90,10 @@ def find_tab_bar(gray: Image.Image) -> tuple[int, str | None]:
 
 
 def parse_header(text: str, p: Parsed) -> None:
+    p.header = (p.header + '\n' + text).strip()
+    m = re.search(r'(\d{2}\.\d{2}\.\d{4})\s*\((\d{1,2})[:.](\d{2})\)', text)
+    if m:
+        p.time = f'{int(m.group(2)):02d}:{m.group(3)}'
     for line in text.splitlines():
         s = line.strip()
         m = re.search(r'Теннис\.\s*([^.]+)\.\s*([^№=]+)', s)

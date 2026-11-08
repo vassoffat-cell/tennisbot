@@ -253,6 +253,10 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         rows.append(f'⭐ Ставка дня: {y}{period} {int(D.won.sum())}/{len(D)} = {fmt(D.won.mean() * 100)}% '
                     f'(ож. {fmt(D.p.mean() * 100)}%, цель {fmt(tgt, 1)}%) {COLOR[c]}')
 
+    ops = daypick_ops(dp)
+    if ops:
+        rows.append(ops)
+
     # самокалибровка
     if kcal is not None:
         act = [(mk, v) for mk, v in kcal.items() if v[1] >= C.CALIB_MIN]
@@ -280,6 +284,33 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
                 items.append(f"{'✅' if r.hit else '❌'} {e(r.home)} — {e(r.away)} · {['П1', 'X', 'П2'][k]} {fmt(p[k] * 100)}% · {sc}")
             blocks += notify.folded(f'▸ Матчи за сутки ({len(d)})', items)
     return blocks
+
+
+def daypick_ops(dp: pd.DataFrame) -> str:
+    """Пакет №3: как часто меняли ставку дня, скриншоты, принятия, кф 1xBet и отдача (цель — скриншотов 0, замен меньше)."""
+    if not len(dp):
+        return ''
+    days = dp.date.astype(str).nunique()
+    ch = dp.changes.map(J.num).fillna(0)
+    out = [f'{int(ch.sum())} за {days} дн. (дней с заменой {fmt((ch > 0).mean() * 100)}%)']
+    if 'screenshots' in dp.columns:
+        sc = dp.screenshots.map(J.num).fillna(0)
+        out.append(f'скриншотов {int(sc.sum())}')
+    if 'accepted' in dp.columns:
+        acc = dp.accepted.astype(str)
+        asked = acc.isin(['yes', 'no']).sum()
+        if asked:
+            out.append(f'принято {int((acc == "yes").sum())}/{int(asked)}')
+    if 'k' in dp.columns:
+        k = dp.k.map(J.num)
+        d = dp[k.notna() & dp.result.astype(str).isin(['W', 'L', 'P'])]
+        if len(d):
+            pnl = [(J.num(r.k) - 1) if str(r.result) == 'W' else (0.0 if str(r.result) == 'P' else -1.0) for r in d.itertuples()]
+            out.append(f'с кф 1xBet {len(d)}: ср. кф {fmt(d.k.map(J.num).mean(), 2)}, отдача {fmt(np.mean(pnl) * 100)}%')
+        vo = dp.value_ok.map(J.num) if 'value_ok' in dp.columns else pd.Series(dtype=float)
+        if vo.notna().any():
+            out.append(f'выгодных (≥90%) {int((vo == 1).sum())}/{int(vo.notna().sum())}')
+    return '🔁 Ставка дня — замены: ' + ' · '.join(out)
 
 
 def filtered(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, month: str | None = None, comp: str | None = None):

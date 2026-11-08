@@ -258,6 +258,7 @@ def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched:
                 fh['dead'], fa['dead'] = dd.get(h, 0), dd.get(a, 0)
         lh, la = FF.adjust(*lam, fh, fa) if fh else lam
         P = dc.score_matrix(lh, la, C.RHO)
+        daypick.DISTS[str(m.id)] = P                                  # для линий ставки дня по правилу C
         lns = FL.build(P, kc)
         i, j = np.indices(P.shape)
         o = m.odds or {}
@@ -416,9 +417,11 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
     for x in sorted([x for x in lns if visible(x, off)], key=lambda x: (-tier(x), -float(x['p']), x['slot'])):
         t = e(f"{x['label']} — {float(x['p']) * 100:.0f}%")
         s = {3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[FL.tier(float(x.get('p_low') or x['p']))]
-        if star and (str(row['espn_id']), int(x['slot'])) == star:
+        if star and (str(row['espn_id']), int(x['slot'])) == star[:2]:
             s = '⭐ ' + s
         out.append(s)
+    if star and str(row['espn_id']) == star[0] and not star[1]:          # ставка дня вне линий списка
+        out.append(f'⭐ <b>{e(star[2])}</b> — {star[3] * 100:.0f}%')
     return '\n'.join(out)
 
 
@@ -440,7 +443,8 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
 def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict, dry: bool = False,
                  extra: list | None = None) -> str:
     dp = rt.get('day_pick') or {}
-    star = (str(dp['espn_id']), int(dp['slot'])) if dp.get('espn_id') and dp.get('date') == _local().date().isoformat() else None
+    star = ((str(dp['espn_id']), int(dp.get('slot') or 0), str(dp.get('label', '')), float(dp.get('p', 0)))
+            if dp.get('espn_id') and dp.get('date') == _local().date().isoformat() else None)
     blocks = list_blocks(items, off, star)
     ids = sorted(m.id for m, _, _ in items)
     if dry:
@@ -449,7 +453,11 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     cache = list(blocks)
     while cache and len(json.dumps(cache, ensure_ascii=False)) > 45000:   # ячейка Google Таблицы — до 50 000 символов
         cache.pop()
-    store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc())]))
+    dpt = (rt.get('day_pick') or {}).get('text', '') if (rt.get('day_pick') or {}).get('date') == _local().date().isoformat() else ''
+    store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
+                                              dict(key='daypick', text=dpt, updated=J.now_utc()),
+                                              dict(key='daypick_accepted', text=(rt.get('day_pick') or {}).get('accepted', ''),
+                                                   updated=J.now_utc())]))
     removed = notify.delete([tuple(x) for x in rt.get('list_messages', [])] + list(extra or []))
     sent = []
     if items:
@@ -492,14 +500,21 @@ def _need_text() -> str:
     return '\n'.join(f'• {n} — {u}' for _, n, u in _season_links()) + f'\nЕсли ссылка не открывается — страница со списком: {C.FD_PAGE}'
 
 
+SHOTS: list[tuple] = []          # скриншоты 1xBet из входящих этого запуска (id, имя, байты, описание)
+
+
 def take_inbox(rt: dict) -> tuple[bool, list[str]]:
     import inbox
+    import shots
     try:
         files, note = inbox.fetch()
     except Exception as ex:
         return False, [f'папка входящих недоступна: {ex}']
     log, got, msgs = ([note] if note else []), False, []
     for fid, name, raw in files:
+        if shots.is_image(raw) or str(name).startswith('shot_'):
+            SHOTS.append((fid, name, raw, inbox.DESC.get(fid, '')))   # скриншот 1xBet — разбор после прогноза (нужны матчи)
+            continue
         try:
             kind, text = fdata.save_file(raw)
             rt.setdefault('files', {})[kind] = _local().date().isoformat()
@@ -613,9 +628,22 @@ def run(dry: bool = False) -> str:
         except Exception as ex:
             log.append(f'новости: сбой {ex.__class__.__name__}')
     try:
-        log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today))
+        import dpcore
+        import inbox
+        import odds as OD
+        import shots
+        actions = dpcore.read_actions(store)
+        offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('football', _local().date().isoformat()))
+        log += slog + ([f'кнопки: {", ".join(actions)}'] if actions else [])
+        if replies:
+            notify.send_blocks(replies)
+        for fid, name, _, _ in SHOTS:
+            inbox.mark_done(fid, name)
+        log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today,
+                                   shots=offers_s, actions=actions))
     except Exception as ex:
         log.append(f'ставка дня: сбой {ex.__class__.__name__}: {ex}')
+        log.append(traceback.format_exc()[-800:])
     log.append(publish_list(rt, store, items, off, extra=extra_messages(store)))
     try:
         log.append(collect_lineups(st))

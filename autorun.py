@@ -205,6 +205,7 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
         p_raw = md.p_win(snap)
         p1 = LN.scale(p_raw, k_ml)
         _, D = FC.distribution(md, snap, best_of, tb, p_override=p1)
+        daypick.DISTS[str(m.id)] = (D, ids[0][1], ids[1][1])          # для линий ставки дня по правилу C
         f = FC.fair(md, snap, best_of, tb, p_override=p1)
         n1, n2 = int(st.n.get(ids[0][0], 0)), int(st.n.get(ids[1][0], 0))
         row = dict(created=J.now_utc(), espn_id=m.id, tour=tour.upper(), event=m.event, location=m.location, surface=surface,
@@ -289,9 +290,11 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
     tier = lambda x: LN.tier(float(x.get('p_low') or x['p']))
     for x in sorted([x for x in lns if visible(x, off)], key=lambda x: (-tier(x), -float(x['p']), x['slot'])):
         t = conf_line(f"{title(row, x)} — {float(x['p']) * 100:.0f}%", float(x.get('p_low') or x['p']))
-        if star and (str(row['espn_id']), int(x['slot'])) == star:
+        if star and (str(row['espn_id']), int(x['slot'])) == star[:2]:
             t = '⭐ ' + t
         out.append(t)
+    if star and str(row['espn_id']) == star[0] and not star[1]:          # ставка дня вне 7 линий списка
+        out.append(f'⭐ <b>{notify.esc(star[2])}</b> — {star[3] * 100:.0f}%')
     return '\n'.join(out)
 
 
@@ -324,7 +327,8 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
                  extra: list | None = None) -> str:
     """Удалить прошлый список и отправить свежий. Нет матчей — тишина. Звук — только если появились новые матчи."""
     dp = rt.get('day_pick') or {}
-    star = (str(dp['espn_id']), int(dp['slot'])) if dp.get('espn_id') and dp.get('date') == _local().date().isoformat() else None
+    star = ((str(dp['espn_id']), int(dp.get('slot') or 0), str(dp.get('label', '')), float(dp.get('p', 0)))
+            if dp.get('espn_id') and dp.get('date') == _local().date().isoformat() else None)
     blocks = list_blocks(items, off, star)
     ids = sorted(m.id for m, _, _ in items)
     if dry:
@@ -333,7 +337,11 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     cache = list(blocks)
     while cache and len(json.dumps(cache, ensure_ascii=False)) > 45000:   # ячейка Google Таблицы — до 50 000 символов
         cache.pop()
-    store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc())]))
+    dpt = (rt.get('day_pick') or {}).get('text', '') if (rt.get('day_pick') or {}).get('date') == _local().date().isoformat() else ''
+    store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
+                                              dict(key='daypick', text=dpt, updated=J.now_utc()),
+                                              dict(key='daypick_accepted', text=(rt.get('day_pick') or {}).get('accepted', ''),
+                                                   updated=J.now_utc())]))
     removed = notify.delete([tuple(x) for x in rt.get('list_messages', [])] + list(extra or []))
     sent = []
     if items:
@@ -467,6 +475,9 @@ def _need_text() -> str:
     return '\n'.join(f'• {t}: {u}' for t, u in _links()) + f'\nЕсли ссылка не открывается — страница со списком: {C.TENNIS_DATA_PAGE}'
 
 
+SHOTS: list[tuple] = []          # скриншоты 1xBet из входящих этого запуска (id, имя, байты, описание)
+
+
 def take_inbox(rt: dict) -> tuple[bool, list[str]]:
     """Файлы из папки Google Диска (кладёт бот). Проверка по содержимому; ответ в чат: принят / не принят и почему."""
     import inbox
@@ -476,7 +487,11 @@ def take_inbox(rt: dict) -> tuple[bool, list[str]]:
     except Exception as e:
         return False, [f'папка входящих недоступна: {e}']
     log, got, msgs = ([note] if note else []), False, []
+    import shots
     for fid, name, raw in files:
+        if shots.is_image(raw) or str(name).startswith('shot_'):
+            SHOTS.append((fid, name, raw, inbox.DESC.get(fid, '')))   # скриншот 1xBet — разбор после прогноза (нужны матчи)
+            continue
         try:
             tour, rep = updater.save_file(raw)
             rt.setdefault('files', {})[tour] = _local().date().isoformat()
@@ -595,9 +610,22 @@ def run(dry: bool = False) -> str:
             log.append(f'новости: сбой {e.__class__.__name__}')
     daypick.TITLE = title
     try:
-        log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today))
+        import dpcore
+        import inbox
+        import odds as OD
+        import shots
+        actions = dpcore.read_actions(store)
+        offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('tennis', _local().date().isoformat()))
+        log += slog + ([f'кнопки: {", ".join(actions)}'] if actions else [])
+        if replies:
+            notify.send_blocks(replies)
+        for fid, name, _, _ in SHOTS:
+            inbox.mark_done(fid, name)
+        log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today,
+                                   shots=offers_s, actions=actions))
     except Exception as e:
         log.append(f'ставка дня: сбой {e.__class__.__name__}: {e}')
+        log.append(traceback.format_exc()[-800:])
     log.append(publish_list(rt, store, items, off, extra=extra_messages(store)))
     if reminder_due(rt):
         notify.send_blocks([reminder_text(rt)])

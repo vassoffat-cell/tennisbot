@@ -9,6 +9,7 @@ import config as C
 
 FOLDER = 'tennisbot_inbox'
 API = 'https://www.googleapis.com/drive/v3/files'
+DESC: dict[str, str] = {}
 
 
 def _session():
@@ -33,13 +34,14 @@ def fetch() -> tuple[list[tuple[str, str, bytes]], str]:
     out = []
     for f in folders:
         q = f"'{f['id']}' in parents and trashed=false and not name contains 'processed_'"
-        r = s.get(API, params={'q': q, 'fields': 'files(id,name)', 'supportsAllDrives': 'true',
+        r = s.get(API, params={'q': q, 'fields': 'files(id,name,description)', 'supportsAllDrives': 'true',
                                'includeItemsFromAllDrives': 'true'})
         r.raise_for_status()
         for x in r.json().get('files', []):
             # любое имя и расширение: тип определяется по содержимому (решение 07.11.2026)
             d = s.get(f"{API}/{x['id']}", params={'alt': 'media', 'supportsAllDrives': 'true'})
             d.raise_for_status()
+            DESC[x['id']] = x.get('description', '')          # скриншот: ответ на какое сообщение, подпись (JSON от бота)
             out.append((x['id'], x['name'], d.content))
     return out, ''
 

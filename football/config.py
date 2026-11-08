@@ -101,4 +101,5 @@ BOT_TOKEN = os.getenv('FOOT_BOT_TOKEN', '')
 SHEET_ID = os.getenv('FOOT_SHEET_ID', '')
 GOOGLE_CREDENTIALS = os.getenv('GOOGLE_CREDENTIALS', str(ROOT.parent / 'service_account.json'))
 ALLOWED_USERS = {int(x) for x in os.getenv('ALLOWED_USERS', '').replace(' ', '').split(',') if x}
+TESSERACT_CMD = os.getenv('TESSERACT_CMD', 'tesseract')     # скриншоты 1xBet (пакет №3)
 INBOX_FOLDER = 'footbot_inbox'
