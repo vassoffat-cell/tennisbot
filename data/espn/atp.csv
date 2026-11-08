@@ -111,3 +111,5 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186493,2026-11-06,Paris,Rolex Paris Masters,Quarterfinal,5,0,134770,132686,Casper Ruud,Nuno Borges,7-6 6-4,STATUS_FINAL
 186504,2026-11-07,Paris,Rolex Paris Masters,Semifinal,6,0,210097,209414,Ben Shelton,Luca Van Assche,5-7 6-3 6-4,STATUS_FINAL
 186505,2026-11-07,Paris,Rolex Paris Masters,Semifinal,6,0,207989,134770,Carlos Alcaraz,Casper Ruud,6-4 6-4,STATUS_FINAL
+186534,2026-11-08,Stockholm,Bybit Stockholm Open,Round 1,1,0,207678,111200,Juan Manuel Cerundolo,Elias Ymer,6-1 7-6,STATUS_FINAL
+186507,2026-11-08,Paris,Rolex Paris Masters,Final,7,0,207989,210097,Carlos Alcaraz,Ben Shelton,7-6 7-5,STATUS_FINAL
