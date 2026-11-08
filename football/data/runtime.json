@@ -2,15 +2,15 @@
  "list_messages": [
   [
    570704006,
-   150
+   153
   ],
   [
    570704006,
-   151
+   154
   ],
   [
    570704006,
-   152
+   155
   ]
  ],
  "list_match_ids": [
@@ -175,5 +175,6 @@
   },
   "accepted_at": "14:51",
   "accepted_shown": true
- }
+ },
+ "model_version": 2
 }
