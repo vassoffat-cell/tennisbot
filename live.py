@@ -193,10 +193,17 @@ def apply_store(model) -> int:
     df = load_store(model.tour)
     df = df[(df.date > st.td_last) & ~df.espn_id.astype(str).isin(st.applied)].sort_values(['date', 'ridx'], kind='stable')
     for r in df.itertuples(index=False):
+        sets = {}
+        for k, sc in enumerate(str(r.score).split()[:5], 1):          # счёт с позиции победителя: «6-4 3-6 7-6»
+            try:
+                a_, b_ = sc.split('-')[:2]
+                sets[f'W{k}'], sets[f'L{k}'] = float(a_[:2]), float(b_[:2])
+            except ValueError:
+                pass
         x = SimpleNamespace(winner_id=float(r.winner_id), loser_id=float(r.loser_id),
                             Surface=surface_for(model.tour, r.location, r.date), Date=r.date,
                             w_svpt=np.nan, l_svpt=np.nan, w_1stWon=np.nan, w_2ndWon=np.nan, l_1stWon=np.nan, l_2ndWon=np.nan,
-                            WRank=np.nan, LRank=np.nan, ridx=int(r.ridx), season=r.date.year, Location=r.location)
+                            WRank=np.nan, LRank=np.nan, ridx=int(r.ridx), season=r.date.year, Location=r.location, **sets)
         st.update(x)
         st.applied.add(str(r.espn_id))
     return len(df)

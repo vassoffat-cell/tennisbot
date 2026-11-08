@@ -21,20 +21,42 @@ import config as C
 USER_AGENT = 'tennisbot/2.0 (personal research; weekly)'
 
 
-def save_file(raw: bytes) -> str:
-    """Проверить и сохранить файл tennis-data (тур и сезон определяются по содержимому). Возвращает отчёт."""
-    df = pd.read_excel(io.BytesIO(raw))
-    tour = str(df.columns[0]).upper()
+class WrongFile(ValueError):
+    """Файл не принят: причина для пользователя."""
+
+
+def save_file(raw: bytes, today: pd.Timestamp | None = None) -> tuple[str, str]:
+    """Проверить файл tennis-data ТОЛЬКО по содержимому (имя не важно): тур, сезон, свежесть. Возвращает (тур, отчёт).
+    Неподходящий файл — WrongFile с причиной (база не меняется)."""
+    today = (today or pd.Timestamp.now()).normalize()
+    try:
+        df = pd.read_excel(io.BytesIO(raw))
+    except Exception:
+        try:
+            df = pd.read_csv(io.BytesIO(raw), encoding='latin-1')
+        except Exception:
+            raise WrongFile('файл не открывается как таблица Excel или CSV')
+    tour = str(df.columns[0]).upper() if len(df.columns) else ''
     if tour not in ('WTA', 'ATP') or 'Date' not in df:
-        raise ValueError('это не файл tennis-data.co.uk (первый столбец должен быть WTA или ATP)')
-    dates = pd.to_datetime(df.Date)
-    year = int(dates.dt.year.max())
+        if {'HomeTeam', 'FTHG'} <= set(df.columns) or {'Country', 'Home'} <= set(df.columns):
+            raise WrongFile('это файл football-data — его нужно отправить футбольному боту')
+        raise WrongFile('это не файл tennis-data.co.uk (первый столбец должен быть WTA или ATP)')
+    dates = pd.to_datetime(df.Date, errors='coerce')
+    if dates.notna().sum() == 0:
+        raise WrongFile('в файле нет дат матчей')
+    year, last = int(dates.dt.year.max()), dates.max().normalize()
+    if year < today.year and not (today.month == 1 and year == today.year - 1):
+        raise WrongFile(f'это сезон {year}, а нужен текущий {today.year}')
+    if (today - last).days > C.FRESH_DAYS and year == today.year:
+        raise WrongFile(f'файл устарел: последний матч {last:%d.%m.%Y} — скачайте заново')
     dst = C.TENNIS_DATA / f'{year}_{tour}.xlsx'
     old = len(pd.read_excel(dst)) if dst.exists() else 0
     if len(df) < old:
-        return f'{tour} {year}: в файле {len(df)} матчей, у нас уже {old} — оставлен прежний'
+        raise WrongFile(f'в файле {len(df)} матчей, а у нас уже {old} — похоже, старая версия; скачайте заново')
+    if raw[:2] != b'PK':                                   # CSV — сохранить как Excel, чтобы база читалась одинаково
+        buf = io.BytesIO(); df.to_excel(buf, index=False); raw = buf.getvalue()
     dst.write_bytes(raw)
-    return f'{tour} {year}: {len(df)} матчей (+{len(df) - old}), по {dates.max().date()}'
+    return tour, f'{tour} {year}: {len(df)} матчей (+{len(df) - old}), по {last:%d.%m}'
 
 
 def download(tour: str, year: int) -> str:
@@ -55,7 +77,7 @@ def update_all() -> list[str]:
     for tour in ('wta', 'atp'):
         for y in years:
             try:
-                out.append(download(tour, y))
+                out.append(download(tour, y)[1])
             except Exception as e:
                 out.append(f'{tour.upper()} {y}: не скачан ({e.__class__.__name__}). Скачайте в браузере '
                            f'{C.TENNIS_DATA_URL[tour].format(y=y)} и отправьте файл боту')

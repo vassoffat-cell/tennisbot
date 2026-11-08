@@ -8,7 +8,10 @@
   1 подача/приём → цепь с momentum (логит P(A))        6 защита: раунд на этом турнире год назад
   2 возраст, лет                                        7 личные встречи (сглаженные)
   3 матчей за 14 дней                                   8 log(рейтинг B) − log(рейтинг A)
-  4 смена покрытия
+  4 смена покрытия                                      9 Elo по ГЕЙМАМ (доля выигранных геймов; общий + покрытие)
+                                                       10 log(очки рейтинга A) − log(очки B) — только WTA
+Признаки 9–10 — пакет №1 (08.11.2026), проверка 2023–26 (research/tennis_exp2/3.py):
+  WTA 65,15% → 66,25% (лог-лосс 0,6159 → 0,6083), ATP 65,53% → 66,00% (0,6155 → 0,6127; очки ATP мешают — не берутся).
 """
 from __future__ import annotations
 
@@ -27,7 +30,8 @@ import markets as MK
 from markov import match_distribution
 
 FEATURES = ['Elo', 'Подача/приём', 'Возраст', 'Матчей за 14 дней', 'Смена покрытия', 'Отдых',
-            'Защита очков', 'Личные встречи', 'Рейтинг']
+            'Защита очков', 'Личные встречи', 'Рейтинг', 'Elo по геймам', 'Очки рейтинга']
+VERSION = 2                     # 2 — Elo по геймам (+ очки WTA); модель другой версии пересобирается автоматически
 GRID = np.round(np.arange(0.40, 0.8001, 0.01), 4)
 PRIOR_PTS = 400.0
 
@@ -63,6 +67,8 @@ class TourState:
         self.rank: dict[float, float] = {}
         self.reached: dict[tuple, int] = {}                # (pid, сезон, город) → раунд (8 — титул)
         self.h2h: dict[tuple, list] = defaultdict(lambda: [0, 0])
+        self.ge = defaultdict(lambda: 1500.0); self.ge_s = defaultdict(lambda: 1500.0)   # Elo по геймам
+        self.pts: dict[float, float] = {}                                                  # очки рейтинга
         self.last_date = None
         self.table: RegularGridInterpolator | None = None
 
@@ -106,7 +112,35 @@ class TourState:
             self.reached.get((a, season - 1, location), 0) - self.reached.get((b, season - 1, location), 0),
             (wa - wb) / (wa + wb + 2),
             np.log(rb_) - np.log(ra_) if ra_ and rb_ and ra_ > 0 and rb_ > 0 else 0.0])
-        return Snapshot(x, pa, pb)
+        g = C.GAMES_ELO[self.tour]
+        ws = g['w_surf']
+        ga_ = (1 - ws) * self.ge[a] + ws * self.ge_s[(a, surface)]
+        gb_ = (1 - ws) * self.ge[b] + ws * self.ge_s[(b, surface)]
+        extra = [(ga_ - gb_) / g['scale']]
+        if g['points']:
+            pa_, pb_ = self.pts.get(a), self.pts.get(b)
+            extra.append(np.log(pa_) - np.log(pb_) if pa_ and pb_ and pa_ > 0 and pb_ > 0 else 0.0)
+        return Snapshot(np.concatenate([x, extra]), pa, pb)
+
+    def games_update(self, r) -> None:
+        """Elo по геймам: ожидаемая доля геймов из разницы рейтингов (масштаб 300), шаг K·(факт − ожидание)."""
+        gw = gl = 0
+        for k in range(1, 6):
+            a_, b_ = getattr(r, f'W{k}', np.nan), getattr(r, f'L{k}', np.nan)
+            try:
+                a_, b_ = float(a_), float(b_)
+            except (TypeError, ValueError):
+                continue
+            if a_ == a_ and b_ == b_:
+                gw += a_; gl += b_
+        if gw + gl < 6:
+            return
+        g = C.GAMES_ELO[self.tour]
+        sh = gw / (gw + gl)
+        w, l, s = r.winner_id, r.loser_id, r.Surface
+        for dct, kw, kl in ((self.ge, w, l), (self.ge_s, (w, s), (l, s))):
+            e = 1 / (1 + 10 ** ((dct[kl] - dct[kw]) / g['scale']))
+            dct[kw] += g['K'] * (sh - e); dct[kl] -= g['K'] * (sh - e)
 
     # ---------- обновление после матча ----------
     def update(self, r) -> None:
@@ -120,6 +154,7 @@ class TourState:
             ws, ls = r.w_1stWon + r.w_2ndWon, r.l_1stWon + r.l_2ndWon
             self.serve[w].append((d, r.w_svpt, ws, r.l_svpt, r.l_svpt - ls))
             self.serve[l].append((d, r.l_svpt, ls, r.w_svpt, r.w_svpt - ws))
+        self.games_update(r)
         for p in (w, l):
             self.dates[p].append(d); self.last_surface[p] = s
         if r.WRank == r.WRank: self.rank[w] = r.WRank
@@ -161,6 +196,9 @@ def build(tour: str, verbose: bool = True) -> Model:
     st.table = win_table(tour)
     X, seasons, use = [], [], []
     for r in h.itertuples(index=False):
+        for pid, pt in ((r.winner_id, r.WPts), (r.loser_id, r.LPts)):     # очки рейтинга на момент матча (tennis-data)
+            if pt == pt and pt:
+                st.pts[pid] = float(pt)
         snap = st.snapshot(r.winner_id, r.loser_id, r.Date, r.Surface, r.Location, r.season)
         X.append(snap.x); seasons.append(r.season); use.append(r.Comment == 'Completed' and r.season >= 2020)
         st.update(r)
@@ -181,7 +219,9 @@ def build(tour: str, verbose: bool = True) -> Model:
     if verbose:
         print(rep)
         print('  веса: ' + ', '.join(f'{k} {v:+.3f}' for k, v in zip(FEATURES, b)))
-    return Model(tour, st, b, rep)
+    m = Model(tour, st, b, rep)
+    m.version = VERSION
+    return m
 
 
 def save(model: Model) -> None:
@@ -189,6 +229,7 @@ def save(model: Model) -> None:
     st = model.state
     st.elo, st.n, st.elo_s, st.n_s = dict(st.elo), dict(st.n), dict(st.elo_s), dict(st.n_s)
     st.serve, st.dates, st.h2h = dict(st.serve), dict(st.dates), {k: v for k, v in st.h2h.items()}
+    st.ge, st.ge_s = dict(st.ge), dict(st.ge_s)
     with open(C.STATE / f'{model.tour}.pkl', 'wb') as f:
         pickle.dump(model, f)
 
@@ -201,6 +242,9 @@ def load(tour: str) -> Model:
     st.elo_s = defaultdict(lambda: 1500.0, st.elo_s); st.n_s = defaultdict(int, st.n_s)
     st.serve = defaultdict(deque, st.serve); st.dates = defaultdict(list, st.dates)
     st.h2h = defaultdict(lambda: [0, 0], st.h2h)
+    if getattr(m, 'version', 1) != VERSION:
+        raise ValueError(f'модель версии {getattr(m, "version", 1)}, нужна {VERSION}')
+    st.ge = defaultdict(lambda: 1500.0, st.ge); st.ge_s = defaultdict(lambda: 1500.0, st.ge_s)
     return m
 
 

@@ -37,8 +37,7 @@ def fetch() -> tuple[list[tuple[str, str, bytes]], str]:
                                'includeItemsFromAllDrives': 'true'})
         r.raise_for_status()
         for x in r.json().get('files', []):
-            if not x['name'].lower().endswith('.xlsx'):
-                continue
+            # любое имя и расширение: тип определяется по содержимому (решение 07.11.2026)
             d = s.get(f"{API}/{x['id']}", params={'alt': 'media', 'supportsAllDrives': 'true'})
             d.raise_for_status()
             out.append((x['id'], x['name'], d.content))

@@ -1,7 +1,9 @@
 """Хранилище: Google Таблица (основной режим) или CSV в папке logs (запасной, только на компьютере).
 
 Листы:
-  auto_lines      — все 7 линий каждого матча с диапазоном кф и их расчёт (основа самообучения по рынкам);
+  auto_lines      — все 7 линий каждого матча (вероятность, уверенность, показана ли) и их расчёт (самообучение по рынкам);
+  day_pick        — ⭐ ставка дня (одна линия на сутки) и её итог;  reports — готовые отчёты для «Аналитики»;
+  tg_cache        — последний список прогноза для кнопки «Прогноз 24 ч»;
   (forecasts, paper_bets — модуль скриншотов, отключён)
   auto_forecasts  — авто-прогнозы на все матчи основного тура из расписания ESPN, сделанные ДО начала матча,
                     их результат и проверочная ставка на победителя по закрывающим коэффициентам tennis-data;
@@ -40,14 +42,18 @@ AUTO_RESULT_COLS = ['status', 'winner', 'score', 'settled', 'logloss']
 AUTO_ODDS_COLS = ['b365_1', 'b365_2', 'avg_1', 'avg_2', 'max_1', 'max_2', 'bfe_1', 'bfe_2', 'bet_side', 'pnl_b365', 'pnl_avg', 'pnl_max']
 LINE_COLS = ['created', 'espn_id', 'slot', 'tour', 'event', 'level', 'round', 'surface',
              'start_utc', 'start_local', 'player1', 'player2', 'market', 'pick', 'line', 'label', 'p_raw', 'p', 'k_lo', 'k_hi',
-             'z_lo', 'z_hi', 'status', 'result', 'settled', 'pnl_lo']
+             'z_lo', 'z_hi', 'status', 'result', 'settled', 'pnl_lo', 'p_low', 'shown']   # новые — только в конец
 LINE_FCST_COLS = ['start_utc', 'start_local', 'player1', 'player2', 'market', 'pick', 'line', 'label', 'p_raw', 'p', 'k_lo', 'k_hi',
                   'z_lo', 'z_hi']
 LINE_RESULT_COLS = ['status', 'result', 'settled', 'pnl_lo']
 AUTO_FCST_COLS = AUTO_COLS[AUTO_COLS.index('start_utc'):AUTO_COLS.index('p_0_3') + 1]
 AUTO_TAIL_COLS = ['level', 'p1_raw', 'calib_k', 'confidence']
+DAY_COLS = ['date', 'espn_id', 'slot', 'tour', 'event', 'start_utc', 'start_local', 'player1', 'player2', 'market', 'label', 'p',
+            'p_low', 'published', 'changes', 'history', 'status', 'result', 'settled']
 SHEETS = {'forecasts': FORECAST_COLS, 'paper_bets': BET_COLS, 'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS,
-          'summary': ['показатель', 'значение'], 'tg_messages': ['chat_id', 'message_id']}
+          'summary': ['показатель', 'значение'], 'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS,
+          'reports': ['key', 'kind', 'title', 'text', 'updated'],     # готовые отчёты для кнопки «Аналитика» (бот только читает)
+          'tg_cache': ['key', 'text', 'updated']}                     # последний список прогноза для кнопки «Прогноз 24 ч»
 
 
 def now_utc() -> str:

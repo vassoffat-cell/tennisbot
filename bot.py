@@ -225,7 +225,7 @@ async def on_xlsx(msg: Message, bot: Bot) -> None:
     import updater
     import ghsync
     try:
-        rep = await run_blocking(updater.save_file, tmp.read_bytes())
+        rep = (await run_blocking(updater.save_file, tmp.read_bytes()))[1]
     except Exception as e:
         await msg.answer(esc(f'Файл не принят: {e}')); return
     push = await run_blocking(ghsync.push_tennis_data)
