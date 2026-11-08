@@ -721,4 +721,8 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401888253,tur.1,league,TUR,T1,2026-11-08 10:30,Caykur Rizespor,Erzurum BB,Rizespor,Erzurum BB,2,1,FT,2026-27-turkish-super-lig,0
 401879814,rus.1,league,RUS,RUS,2026-11-08 11:00,Krylia Sovetov,Gazovik Orenburg,Krylya Sovetov,Orenburg,2,0,FT,2026-27-russian-premier-league,0
 401874810,ita.1,league,ITA,I1,2026-11-08 11:30,Napoli,Lazio,Napoli,Lazio,1,1,FT,2026-27-italian-serie-a,0
+401931079,eng.fa,cup,ENG,E0,2026-11-08 12:00,Stafford Rangers,Grimsby Town,,Grimsby,3,3,ET,first-round,0
+401882814,esp.1,league,ESP,SP1,2026-11-08 13:00,Elche,Real Betis,Elche,Betis,0,2,FT,2026-27-laliga,0
+401888372,tur.1,league,TUR,T1,2026-11-08 13:00,Çorum FK,Fenerbahce,Corum,Fenerbahce,0,5,FT,2026-27-turkish-super-lig,0
+401879815,rus.1,league,RUS,RUS,2026-11-08 13:15,Spartak Moscow,Akron Tolyatti,Spartak Moscow,Akron Togliatti,2,1,FT,2026-27-russian-premier-league,0
 401885400,por.1,league,POR,P1,2026-11-08 15:30,Estoril,Maritimo,Estoril,Maritimo,0,0,VOID,2026-27-portuguese-primeira-liga,0
