@@ -34,6 +34,7 @@ import live
 import daypick
 import news
 import notify
+import learning
 import pipeline as P
 import report as R
 import runtime
@@ -341,6 +342,8 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
                                               dict(key='daypick', text=dpt, updated=J.now_utc()),
                                               dict(key='daypick_accepted', text=(rt.get('day_pick') or {}).get('accepted', ''),
+                                                   updated=J.now_utc()),
+                                              dict(key='stats_menu', text=json.dumps(STATS_MENU, ensure_ascii=False),
                                                    updated=J.now_utc())]))
     removed = notify.delete([tuple(x) for x in rt.get('list_messages', [])] + list(extra or []))
     sent = []
@@ -475,6 +478,8 @@ def _need_text() -> str:
     return '\n'.join(f'• {t}: {u}' for t, u in _links()) + f'\nЕсли ссылка не открывается — страница со списком: {C.TENNIS_DATA_PAGE}'
 
 
+STATS_MENU = [[{'text': '📊 Всё время', 'data': 'r:all'}, {'text': '📅 По месяцу', 'data': 'r:month'},
+               {'text': '🏆 По турниру', 'data': 'r:event'}], [{'text': '🧠 Самообучение', 'data': 'r:learn'}]]
 SHOTS: list[tuple] = []          # скриншоты 1xBet из входящих этого запуска (id, имя, байты, описание)
 
 
@@ -632,11 +637,62 @@ def run(dry: bool = False) -> str:
         rt['last_reminder'] = today
         log.append('напоминание о файлах отправлено')
     store.write_all('summary', summary(auto, ldf, kcal, off))
-    store.write_all('reports', R.all_reports(auto, ldf, store.read('day_pick'), kcal, off))
+    try:                                                               # 🧠 журнал самообучения (лист learning)
+        log += learn_cycle(store, rt, auto, ldf, retrain_log, kcal, knote, daily_due and not dry)
+    except Exception as e:
+        log.append(f'журнал самообучения: сбой {e.__class__.__name__}: {e}')
+    reps = R.all_reports(auto, ldf, store.read('day_pick'), kcal, off)
+    try:
+        reps = pd.concat([reps, pd.DataFrame([dict(key='learn', kind='learn', title='🧠 Самообучение',
+                                                   text=learning.report(store, rt, 'Самообучение · теннис'), updated=J.now_utc())])],
+                         ignore_index=True)
+    except Exception as e:
+        log.append(f'отчёт самообучения: сбой {e.__class__.__name__}: {e}')
+    store.write_all('reports', reps)
     runtime.save(rt)
     log += [f'{knote}: ' + ', '.join(f'{m} {v[0]} (n={v[1]})' for m, v in kcal.items()) + f'; ⛔ {", ".join(off) or "нет"}',
             f'прогнозов: новых {nn}, обновлено {nu}; пропущено {len(skipped)}']
     return '\n'.join(log + skipped[:20])
+
+
+# ======================================================================== 🧠 самообучение
+VERSION_NOTES = {4: ('V4: модель очка + подача TennisMyLife',
+                     'исход 2023–26: WTA 66,6% / лог-лосс 0,6052, ATP 66,2% / 0,6096 (без утечки, обучение 2020–22)')}
+HISTORY = [
+    ('2026-11-05 12:00', 'версия', 'V1: марковская цепь + логистика 9 признаков', 'исход 2023–26: 65,4%, лог-лосс 0,616'),
+    ('2026-11-08 08:00', 'внедрено', 'Пакет №1: Elo по геймам + очки рейтинга',
+     'WTA 65,15% → 66,25%, ATP 65,53% → 66,00%; ⭐ ставка дня, отчёты, ступени, ⛔/🚨'),
+    ('2026-11-08 13:32', 'версия', 'V3: иерархическая модель очка на подаче (T21/V4)',
+     'WTA 66,34% / 0,6085 → 66,56% / 0,6057; ATP 65,96% / 0,6127 → 66,13% / 0,6100; лог-лосс z ≈ −6'),
+    ('2026-11-08 13:50', 'версия', 'V4: статистика подачи TennisMyLife (Sackmann оборвался 25.05)',
+     'подача 2026: 46% → 94%; 2026: WTA 67,23% → 67,50%, ATP 66,24% → 66,57%; новые игроки опознаются'),
+    ('2026-11-08 14:35', 'внедрено', 'Пакет №3: ставка дня по правилу C',
+     'кф 1xBet ≥ 1,35, справедливая P (Pinnacle / 1xBet без маржи), уверенность в выгодности; скриншоты; кнопки ✅/🔄'),
+]
+
+
+def learn_cycle(store: J.Store, rt: dict, auto: pd.DataFrame, ldf: pd.DataFrame, retrain_log: list[str], kcal: dict,
+                knote: str, daily: bool) -> list[str]:
+    import state as ST
+    out = []
+    n = learning.backfill(store, HISTORY)
+    if n:
+        out.append(f'журнал: начальная история {n}')
+    title, text = VERSION_NOTES.get(ST.VERSION, (f'версия {ST.VERSION}', ''))
+    v = learning.version(store, rt, ST.VERSION, title, text)
+    if v:
+        out.append(v)
+    acc = [x.split(':')[0] + ' ' + x.split('точность')[-1].split(';')[0].strip() for x in retrain_log if 'точность' in x]
+    if acc:
+        learning.add(store, 'переобучение', 'Переобучение моделей', '; '.join(acc))
+    if daily and knote == 'k пересчитан':
+        learning.add(store, 'калибровка', 'Самокалибровка рынков', ', '.join(f'{m} {v[0]} (n={v[1]})' for m, v in kcal.items()))
+    if daily:
+        out += learning.steps(store, rt, R, auto, ldf, store.read('day_pick'), 'теннис')
+    sent = learning.to_telegram(store)
+    if sent:
+        out.append(f'журнал: в Telegram {sent}')
+    return out
 
 
 def main() -> None:

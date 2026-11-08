@@ -33,6 +33,7 @@ import flines as FL
 import fespn
 import journal as J
 import model
+import learning
 import names
 import news
 import notify
@@ -457,6 +458,8 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
                                               dict(key='daypick', text=dpt, updated=J.now_utc()),
                                               dict(key='daypick_accepted', text=(rt.get('day_pick') or {}).get('accepted', ''),
+                                                   updated=J.now_utc()),
+                                              dict(key='stats_menu', text=json.dumps(STATS_MENU, ensure_ascii=False),
                                                    updated=J.now_utc())]))
     removed = notify.delete([tuple(x) for x in rt.get('list_messages', [])] + list(extra or []))
     sent = []
@@ -500,6 +503,8 @@ def _need_text() -> str:
     return '\n'.join(f'• {n} — {u}' for _, n, u in _season_links()) + f'\nЕсли ссылка не открывается — страница со списком: {C.FD_PAGE}'
 
 
+STATS_MENU = [[{'text': '📊 Всё время', 'data': 'r:all'}, {'text': '📅 По месяцу', 'data': 'r:month'},
+               {'text': '🏆 По турниру', 'data': 'r:event'}], [{'text': '🧠 Самообучение', 'data': 'r:learn'}]]
 SHOTS: list[tuple] = []          # скриншоты 1xBet из входящих этого запуска (id, имя, байты, описание)
 
 
@@ -654,12 +659,55 @@ def run(dry: bool = False) -> str:
         rt['last_reminder'] = today
         log.append('напоминание о файлах отправлено')
     store.write_all('summary', summary(af, ld, kcal, off))
-    store.write_all('reports', R.all_reports(af, ld, store.read('day_pick'), kcal, off))
+    try:                                                               # 🧠 журнал самообучения (лист learning)
+        log += learn_cycle(store, rt, af, ld, kcal, knote, daily_due and not dry)
+    except Exception as ex:
+        log.append(f'журнал самообучения: сбой {ex.__class__.__name__}: {ex}')
+    reps = R.all_reports(af, ld, store.read('day_pick'), kcal, off)
+    try:
+        reps = pd.concat([reps, pd.DataFrame([dict(key='learn', kind='learn', title='🧠 Самообучение',
+                                                   text=learning.report(store, rt, 'Самообучение · футбол'), updated=J.now_utc())])],
+                         ignore_index=True)
+    except Exception as ex:
+        log.append(f'отчёт самообучения: сбой {ex.__class__.__name__}: {ex}')
+    store.write_all('reports', reps)
     runtime.save(rt)
     log += [f'{knote}; ⛔ {", ".join(off) or "нет"}; прогнозов: новых {nn}, обновлено {nu}; кф football-data (данные) {no}',
             f'пропущено {len(skipped)}; ошибка сопоставления {len(mp.missed)}, вне базы {mp.out_base}; '
             f'время {time.time() - t0:.0f} с']
     return '\n'.join(log + skipped[:15] + [f'не опознано: {k} ({v})' for k, v in list(mp.missed.items())[:15]] + errs[:10])
+
+
+# ======================================================================== 🧠 самообучение
+MODEL_VERSION = 2
+VERSION_NOTES = {2: ('V2: Dixon–Coles, разница сил — голы 50% + удары в створ 50%',
+                     'исход 07.2023–01.2026: 49,45% (было 49,05%); тоталы, ИТ, форы откалиброваны ≈ P (74–77%)')}
+HISTORY = [
+    ('2026-11-06 12:00', 'версия', 'V1: Dixon–Coles по странам + факторы', 'исход 49,05%; сила стран по еврокубкам'),
+    ('2026-11-08 08:00', 'внедрено', 'Пакет №1: удары в створ в разнице сил, 17 турниров',
+     'исход 49,05% → 49,45%; ⭐ ставка дня (бэктест 78,4%), отчёты, ступени, ⛔/🚨'),
+    ('2026-11-08 14:35', 'внедрено', 'Пакет №3: ставка дня по правилу C',
+     'кф 1xBet ≥ 1,35, справедливая P (Pinnacle / 1xBet без маржи), уверенность в выгодности; скриншоты; кнопки ✅/🔄'),
+]
+
+
+def learn_cycle(store: J.Store, rt: dict, af: pd.DataFrame, ld: pd.DataFrame, kcal: dict, knote: str, daily: bool) -> list[str]:
+    out = []
+    n = learning.backfill(store, HISTORY)
+    if n:
+        out.append(f'журнал: начальная история {n}')
+    title, text = VERSION_NOTES[MODEL_VERSION]
+    v = learning.version(store, rt, MODEL_VERSION, title, text)
+    if v:
+        out.append(v)
+    if daily and knote == 'k пересчитан':
+        learning.add(store, 'калибровка', 'Самокалибровка рынков', ', '.join(f'{m} {v[0]} (n={v[1]})' for m, v in kcal.items()))
+    if daily:
+        out += learning.steps(store, rt, R, af, ld, store.read('day_pick'), 'футбол')
+    sent = learning.to_telegram(store)
+    if sent:
+        out.append(f'журнал: в Telegram {sent}')
+    return out
 
 
 def main() -> None:

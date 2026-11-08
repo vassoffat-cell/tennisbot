@@ -1,7 +1,8 @@
 /**
- * TennisBot — Telegram-бот на Google Apps Script (бесплатно, круглосуточно в вашем аккаунте Google). Версия 3 (пакет №3, 08.11.2026).
+ * TennisBot — Telegram-бот на Google Apps Script (бесплатно, круглосуточно в вашем аккаунте Google). Версия 4 (08.11.2026): меню «Аналитики» — из облака, новые разделы без правки скрипта.
  *
- *   • кнопки: «Прогноз 24 ч», «Аналитика» (всё время / по месяцу / по турниру), «⭐ Ставка дня», «Очистить чат»;
+ *   • кнопки: «Прогноз 24 ч», «Аналитика» (разделы задаёт облако: всё время, месяц, турнир, 🧠 самообучение …),
+ *     «⭐ Ставка дня», «Очистить чат»;
  *   • ⭐ ставка дня с кнопками «✅ Принимаем» / «🔄 Другую» — нажатие записывается в лист dp_actions и сразу запускает облако;
  *   • скриншот 1xBet любого матча (фото) → папка Google Диска «tennisbot_inbox» → облако распознаёт кф и подбирает ставку дня;
  *     скриншот можно прислать ответом на сообщение со списком — так бот точнее поймёт, какой это матч;
@@ -129,7 +130,7 @@ function onMessage_(m) {
   if (m.document) return onFile_(chat, m.document);
   const t = String(m.text || '').trim();
   if (t === B.list) return remember_(chat, send_(chat, cachedList_()));
-  if (t === B.stats) return tg_('sendMessage', { chat_id: chat, text: '📊 <b>Аналитика</b> — выберите срез:', parse_mode: 'HTML', reply_markup: STATS_KB });
+  if (t === B.stats) return tg_('sendMessage', { chat_id: chat, text: '📊 <b>Аналитика</b> — выберите раздел:', parse_mode: 'HTML', reply_markup: statsKb_() });
   if (t === B.pick) return showPick_(chat);
   if (t === B.clear) return clearChat_(chat, m.message_id);
   send_(chat, '📋 <b>TennisBot</b>\nПрогноз на 24 ч (WTA и ATP: Большой шлем, 1000, 500, 250, итоговые) приходит сам каждые 2 часа: у матча — исход и линии с вероятностью (🟢 высокая, 🟡 средняя, ⚪ низкая уверенность).\n⭐ <b>Ставка дня</b> — закреплённое сообщение и кнопка внизу: кф 1xBet ≥ 1,35, максимальная вероятность; «✅ Принимаем» фиксирует ставку, «🔄 Другую» — бот подберёт следующую. Нет нужной линии или кф ниже — пришлите скриншот страницы матча 1xBet (любого матча из списка; лучше ответом на сообщение со списком): бот распознает кф и подберёт ставку.\nВ 00:00 — переобучение и суточный отчёт. По понедельникам — напоминание о файлах tennis-data.\n\nКнопки — внизу.');
@@ -142,7 +143,6 @@ function onCallback_(q) {
   const d = String(q.data || '');
   if (d === 'dp:yes' || d === 'dp:no') return dpAction_(chat, q.message.message_id, d.slice(3));
   const rep = table_('reports');
-  if (d === 'r:all') return sendReport_(chat, rep.filter(function (r) { return r.key === 'all'; })[0]);
   if (d === 'r:month' || d === 'r:event') {
     const kind = d === 'r:month' ? 'month' : 'event';
     const list = rep.map(function (r, i) { return { r: r, i: i }; }).filter(function (x) { return x.r.kind === kind; });
@@ -151,6 +151,24 @@ function onCallback_(q) {
     return tg_('sendMessage', { chat_id: chat, text: kind === 'month' ? 'Выберите месяц:' : 'Выберите турнир:', reply_markup: { inline_keyboard: kb } });
   }
   if (d.indexOf('k:') === 0) return sendReport_(chat, rep[+d.slice(2)]);
+  if (d.indexOf('r:') === 0) {                              // любой раздел отчёта по ключу (r:all, r:learn, …)
+    const key = d.slice(2);
+    return sendReport_(chat, rep.filter(function (r) { return String(r.key) === key; })[0]);
+  }
+}
+
+function statsKb_() {
+  // Разделы «Аналитики» задаёт облако (лист tg_cache, ключ stats_menu): [[{text, data}], …]; нет — стандартные.
+  try {
+    const c = table_('tg_cache').filter(function (r) { return r.key === 'stats_menu'; })[0];
+    const rows = c ? JSON.parse(String(c.text)) : null;
+    if (rows && rows.length) {
+      return { inline_keyboard: rows.map(function (row) {
+        return row.map(function (b) { return { text: String(b.text), callback_data: String(b.data).slice(0, 60) }; });
+      }) };
+    }
+  } catch (e) { log_('меню аналитики', String(e)); }
+  return STATS_KB;
 }
 
 function sendReport_(chat, r) {

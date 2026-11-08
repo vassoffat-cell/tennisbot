@@ -41,7 +41,7 @@ DAY_COLS = ['date', 'espn_id', 'slot', 'comp_name', 'start_utc', 'start_local', 
             'pick', 'line', 'k', 'k_src', 'p_src', 'conf', 'value_ok', 'tier', 'source', 'p_model', 'accepted', 'accepted_at',
             'screenshots']
 SHEETS = {'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS, 'summary': ['показатель', 'значение'],
-          'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS, 'dp_actions': ['time', 'action', 'chat_id', 'message_id', 'done'],
+          'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS, 'dp_actions': ['time', 'action', 'chat_id', 'message_id', 'done'], 'learning': ['when', 'kind', 'title', 'text', 'sent'],
           'reports': ['key', 'kind', 'title', 'text', 'updated'],     # готовые отчёты для кнопки «Аналитика» (бот только читает)
           'tg_cache': ['key', 'text', 'updated']}                     # последний список прогноза для кнопки «Прогноз 24 ч»
 

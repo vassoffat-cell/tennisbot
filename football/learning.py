@@ -1,0 +1,123 @@
+"""🧠 Самообучение — журнал (лист learning) и отчёт для кнопки «Аналитика → 🧠 Самообучение». Общий для обоих ботов
+(копия — football/learning.py). Решение пользователя 08.11.2026: система учится и развивается сама, пользователь время от
+времени смотрит историю, результаты и достижения.
+
+Записи (kind): версия — новая версия модели с цифрами проверки; переобучение — итог переобучения; калибровка — k по рынкам;
+ступень — достигнута ступень точности (нижняя граница 95% на последних 100 ≥ ступени); внедрено — улучшение системы;
+неделя — итог еженедельного аудита (пишет запланированная задача Claude; облако пересылает в Telegram); тревога — 🚨/⛔.
+"""
+from __future__ import annotations
+
+import pandas as pd
+
+import config as C
+import journal as J
+import notify
+
+COLS = ['when', 'kind', 'title', 'text', 'sent']
+ICON = {'версия': '🧬', 'переобучение': '🔁', 'калибровка': '🎯', 'ступень': '🏆', 'внедрено': '🚀', 'неделя': '📅', 'тревога': '🚨'}
+
+
+def _now() -> str:
+    return (pd.Timestamp.now(tz='UTC').tz_localize(None) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).strftime('%Y-%m-%d %H:%M')
+
+
+def add(store: J.Store, kind: str, title: str, text: str = '') -> None:
+    store.append('learning', [dict(when=_now(), kind=kind, title=title, text=text, sent='')])
+
+
+def backfill(store: J.Store, rows: list[tuple[str, str, str, str]]) -> int:
+    """Начальная история (если журнал пуст): [(когда, вид, заголовок, текст)]."""
+    df = store.read('learning')
+    if len(df):
+        return 0
+    store.append('learning', [dict(when=w, kind=k, title=t, text=x, sent='old') for w, k, t, x in rows])
+    return len(rows)
+
+
+def version(store: J.Store, rt: dict, ver: int, title: str, text: str) -> str:
+    """Запись о новой версии модели — один раз на версию."""
+    if rt.get('model_version') == ver:
+        return ''
+    if rt.get('model_version') is not None:
+        add(store, 'версия', title, text)
+    rt['model_version'] = ver
+    return f'журнал: версия модели {ver}'
+
+
+def steps(store: J.Store, rt: dict, R, af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, sport: str) -> list[str]:
+    """Новые достигнутые ступени точности (исход, линии, ставка дня) → записи «ступень»."""
+    out = []
+    M, L = R.matches(af), R.lines(ld)
+    D = dp[dp.result.astype(str).isin(['W', 'L'])] if len(dp) else dp
+    data = {'исход': (M.hit.values if len(M) else [], C.STEPS['outcome']),
+            'линии': (L.won.values if len(L) else [], C.STEPS['lines']),
+            'ставка дня': ((D.result.astype(str) == 'W').astype(int).values if len(D) else [], C.STEPS['daypick'])}
+    have = rt.setdefault('steps', {})
+    for name, (hits, ladder) in data.items():
+        if len(hits) < 30:
+            continue
+        _, reached = R.step_target(pd.Series(hits).values, ladder)
+        if reached is not None and (have.get(name) is None or reached > have[name]):
+            if have.get(name) is not None or reached > ladder[0]:
+                add(store, 'ступень', f'{sport}: {name} — ступень {reached:g}%'.replace('.', ','),
+                    f'нижняя граница 95% на последних 100 ≥ {reached:g}% ({int(sum(hits[-100:]))}/{len(hits[-100:])})')
+                out.append(f'достижение: {name} {reached:g}%')
+            have[name] = reached
+    return out
+
+
+def to_telegram(store: J.Store) -> int:
+    """Новые итоги недели и записи «внедрено» от задачи Claude — в Telegram (раз), отметка sent."""
+    df = store.read('learning')
+    if not len(df):
+        return 0
+    todo = df[df.kind.astype(str).isin(['неделя', 'внедрено']) & df.sent.astype(str).str.strip().isin(['', 'nan'])]
+    if todo.empty:
+        return 0
+    notify.send_blocks([f"{ICON.get(str(r.kind), '•')} <b>{notify.esc(str(r.title))}</b>\n{notify.esc(str(r.text))}"
+                        for r in todo.itertuples()])
+    df.loc[todo.index, 'sent'] = J.now_utc()
+    store.update('learning', df.loc[todo.index], ['sent'])
+    return len(todo)
+
+
+def report(store: J.Store, rt: dict, title: str, ladders: dict | None = None) -> str:
+    """Отчёт «🧠 Самообучение»: сейчас (версия, калибровка, ступени), достижения, история."""
+    df = store.read('learning')
+    e = notify.esc
+    out = [f'🧠 <b>{e(title)}</b>']
+    if len(df):
+        df = df.sort_values('when', kind='stable')
+        ver = df[df.kind.astype(str) == 'версия'].tail(1)
+        if len(ver):
+            out.append(f"🧬 Модель: <b>{e(str(ver.title.iloc[0]))}</b>\n{e(str(ver.text.iloc[0]))}")
+        rt_ = df[df.kind.astype(str) == 'переобучение'].tail(1)
+        if len(rt_):
+            out.append(f"🔁 Последнее переобучение {e(str(rt_.when.iloc[0]))}: {e(str(rt_.text.iloc[0]))}")
+    k = rt.get('kcal') or {}
+    if k:
+        out.append('🎯 Калибровка k: ' + ', '.join(f'{m} {v[0]:.2f} (n={v[1]})'.replace('.', ',') for m, v in k.items()))
+    st = rt.get('steps') or {}
+    lad = ladders or {'исход': C.STEPS['outcome'], 'линии': C.STEPS['lines'], 'ставка дня': C.STEPS['daypick']}
+    rows = []
+    for name, ladder in lad.items():
+        r = st.get(name)
+        nxt = [s for s in ladder if r is None or s > r]
+        rows.append((f"{name}: {'достигнута ' + format(r, 'g') + '%' if r is not None else 'ступеней пока нет'}"
+                     f" → следующая {nxt[0] if nxt else ladder[-1]:g}%").replace('.', ','))
+    out.append('🏆 Ступени: ' + '; '.join(rows))
+    if len(df):
+        ach = df[df.kind.astype(str).isin(['версия', 'ступень', 'внедрено'])].tail(10)
+        if len(ach):
+            out.append('🚀 Достижения:\n' + '\n'.join(f"{ICON.get(str(r.kind), '•')} {e(str(r.when)[:10])} · {e(str(r.title))}"
+                                                     for r in ach.iloc[::-1].itertuples()))
+        wk = df[df.kind.astype(str) == 'неделя'].tail(1)
+        if len(wk):
+            out.append(f"📅 Итог недели ({e(str(wk.when.iloc[0])[:10])}): {e(str(wk.text.iloc[0]))[:1500]}")
+        hist = df.tail(15).iloc[::-1]
+        out.append('🗂 История:\n<blockquote expandable>' + '\n'.join(
+            f"{ICON.get(str(r.kind), '•')} {e(str(r.when))} · {e(str(r.title))}" for r in hist.itertuples()) + '</blockquote>')
+    else:
+        out.append('Журнал пока пуст — записи появятся после ближайшего переобучения.')
+    return '\n\n'.join(out)
