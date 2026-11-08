@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   76
+   82
   ]
  ],
  "list_match_ids": [
@@ -21,5 +21,72 @@
  "last_daily": "2026-11-08",
  "last_retrain": "2026-11-08",
  "last_files": "2026-11-05",
- "last_reminder": ""
+ "last_reminder": "",
+ "files": {
+  "WTA": "2026-11-05",
+  "ATP": "2026-11-05"
+ },
+ "kcal": {
+  "ML": [
+   1.0,
+   19
+  ],
+  "HCP": [
+   1.0,
+   14
+  ],
+  "IT1": [
+   1.0,
+   14
+  ],
+  "IT2": [
+   1.0,
+   14
+  ],
+  "TOTAL": [
+   1.0,
+   14
+  ]
+ },
+ "kcal_prev": {
+  "ML": [
+   1.0,
+   0
+  ],
+  "HCP": [
+   1.0,
+   0
+  ],
+  "IT1": [
+   1.0,
+   0
+  ],
+  "IT2": [
+   1.0,
+   0
+  ],
+  "TOTAL": [
+   1.0,
+   0
+  ]
+ },
+ "kcal_date": "2026-11-08",
+ "breaker": {},
+ "day_pick": {
+  "date": "2026-11-08",
+  "msgs": [
+   [
+    570704006,
+    80
+   ]
+  ],
+  "changes": 0,
+  "history": [],
+  "espn_id": "186642",
+  "slot": 5,
+  "p": 0.7897,
+  "label": "ИТ1 Б 4.5",
+  "start_utc": "2026-11-08 08:00",
+  "match": "Claire Liu — Alexandra Eala"
+ }
 }
