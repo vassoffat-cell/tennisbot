@@ -30,6 +30,7 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           CLOUD: '1'
       - name: Save data and model
         if: always()

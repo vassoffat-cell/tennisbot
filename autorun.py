@@ -531,6 +531,9 @@ def run(dry: bool = False) -> str:
     if os.getenv('CLOUD') and not (C.DATA / 'tml').exists():          # T29: первая загрузка TennisMyLife сразу, дальше — раз в сутки
         import tml
         log += tml.download()
+    if os.getenv('CLOUD') and os.getenv('ODDS_API_KEY') and not (C.DATA / 'odds' / 'probe.json').exists():
+        import odds                                                    # пакет №3: разовая проба покрытия котировок
+        log += odds.probe()
     loc = _local(); today = loc.date().isoformat()
     daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
     retrain_log = []
