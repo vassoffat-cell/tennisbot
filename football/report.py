@@ -164,7 +164,7 @@ def bar(n: int, goal: int) -> str:
 
 def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal: dict | None = None,
           kprev: dict | None = None, off: dict | None = None, notes: list[str] | None = None,
-          daily_day=None, period: str = 'всего') -> list[str]:
+          daily_day=None, period: str = 'всего', extra: list[str] | None = None) -> list[str]:
     """Блоки отчёта (HTML). daily_day — дата суток для суточного отчёта (строка «сутки a/b» и свёрнутый список матчей)."""
     e = notify.esc
     M, L = matches(af), lines(ld)
@@ -256,6 +256,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     ops = daypick_ops(dp)
     if ops:
         rows.append(ops)
+    rows += [e(x) for x in (extra or [])]                       # охват: дорасчитано за прошлые дни, ждут результата
 
     # самокалибровка
     if kcal is not None:

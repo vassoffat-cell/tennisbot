@@ -142,8 +142,8 @@ def plan(base: pd.DataFrame, store: pd.DataFrame, auto: pd.DataFrame, rt: dict) 
             d = pd.Timestamp(str(s)).date()
         except ValueError:
             continue
-        if str(comp) in out and d >= today - dt.timedelta(days=10):
-            out[str(comp)] |= {d, d + dt.timedelta(days=1)}
+        if str(comp) in out and d >= today - dt.timedelta(days=30):        # зависшие — до 30 дней, с переносом на 1–2 дня
+            out[str(comp)] |= {d, d + dt.timedelta(days=1), d + dt.timedelta(days=2)}
     if not rt.get('uefa_backfill'):                                      # один раз: еврокубки 2025/26 без ЛЧ (она есть в CC0)
         for comp in ('uefa.europa', 'uefa.europa.conf'):
             for d in _days(C.UEFA_BACKFILL_FROM, today):
@@ -624,8 +624,10 @@ def run(dry: bool = False) -> str:
         if (loc.normalize() - last).days > 9:
             notes.append(f'файлы football-data по {last:%d.%m} — ждём файлы недели')
         yday = (loc - pd.Timedelta(days=1)).date()
+        import coverage
+        cov = coverage.report_rows(R.matches(af), R.lines(ld), af, yday, rt, R.fmt)        # дорасчитано / ждут результата
         notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
-                                   notes=notes, daily_day=yday))
+                                   notes=notes, daily_day=yday, extra=cov))
         rt['last_daily'] = today
         log.append('суточный отчёт отправлен')
         try:

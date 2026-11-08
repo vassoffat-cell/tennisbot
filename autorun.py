@@ -86,7 +86,7 @@ def collect(auto: pd.DataFrame) -> dict[str, list[espn.EspnMatch]]:
             try:
                 d = pd.Timestamp(str(s)).date()
                 if d >= today - dt.timedelta(days=30):
-                    days.add(d)
+                    days |= {d, d + dt.timedelta(days=1)}            # перенос / окончание после полуночи UTC
             except ValueError:
                 pass
         out[tour] = espn.fetch(tour, sorted(days))
@@ -386,6 +386,14 @@ def settle_auto(store: J.Store, by_id: dict[str, espn.EspnMatch]) -> pd.DataFram
         elif m.state == 'post':                                   # снят до начала, отменён
             df.loc[i, J.AUTO_RESULT_COLS] = ['VOID', '', '', today, '']
             upd.append(i)
+    import coverage                                               # запасной итог: TennisMyLife для зависших > 48 ч
+    for tour in TOURS:
+        for i, x in coverage.tml_settle(df.drop(index=upd), tour).items():
+            p1 = J.num(df.at[i, 'p1'])
+            pw = p1 if x['winner'] == 1 else 1 - p1
+            df.loc[i, J.AUTO_RESULT_COLS] = [x['status'], x['winner'], x['score'], today,
+                                             '' if x['status'] != 'FIN' else round(-math.log(max(pw, 1e-6)), 4)]
+            upd.append(i)
     store.update('auto_forecasts', df.loc[upd], J.AUTO_RESULT_COLS)
     return df
 
@@ -427,12 +435,23 @@ def settle_lines(store: J.Store, by_id: dict[str, espn.EspnMatch]) -> int:
     df = store.read('auto_lines')
     todo = df[df.settled.map(_blank).astype(bool)]
     upd = []
+    af = store.read('auto_forecasts')                             # итог матча без ESPN (запасной TennisMyLife)
+    af_res = {_id(e): (str(st), str(sc)) for e, st, sc, se in zip(af.espn_id, af.status, af.score, af.settled)
+              if str(se).strip() not in ('', 'nan') and str(st) in ('FIN', 'RET', 'VOID')}
     today = dt.date.today().isoformat()
     for i, r in todo.iterrows():
         m = by_id.get(_id(r.espn_id))
         if m is None or m.state != 'post':
-            continue
-        if m.completed and m.status == 'STATUS_FINAL':
+            x = af_res.get(_id(r.espn_id))                        # ESPN нет — итог из auto_forecasts (TennisMyLife)
+            if not x:
+                continue
+            st, sc = x
+            if st == 'FIN':
+                sets = tuple(tuple(int(v) for v in s_.split('-')[:2]) for s_ in sc.split())
+                res, status = LN.settle(str(r.market), str(r.pick), r.line, Outcome(sets)), 'FIN'
+            else:
+                res, status = 'P', st
+        elif m.completed and m.status == 'STATUS_FINAL':
             res, status = LN.settle(str(r.market), str(r.pick), r.line, Outcome(tuple(m.sets))), 'FIN'
         else:
             res, status = 'P', ('RET' if m.completed else 'VOID')
@@ -605,7 +624,9 @@ def run(dry: bool = False) -> str:
             notes.append('переобучено: ' + '; '.join(x.split(':')[0] + ' ' + x.split('точность')[-1].split(';')[0].strip()
                                                   for x in retrain_log if 'точность' in x))
         yday = (loc - pd.Timedelta(days=1)).date()
-        notify.send_blocks(R.build(auto, ldf, store.read('day_pick'), f'📈 Теннис · отчёт · {yday:%d.%m}', kcal=kcal,
+        import coverage
+        cov = coverage.report_rows(R.matches(auto), R.lines(ldf), auto, yday, rt, R.fmt)   # дорасчитано / ждут результата
+        notify.send_blocks(R.build(auto, ldf, store.read('day_pick'), f'📈 Теннис · отчёт · {yday:%d.%m}', kcal=kcal, extra=cov,
                                    kprev=kprev, off=off, notes=notes, daily_day=yday))
         rt['last_daily'] = today
         log.append('суточный отчёт отправлен')
