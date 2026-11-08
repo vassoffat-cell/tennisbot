@@ -2,15 +2,15 @@
  "list_messages": [
   [
    570704006,
-   135
+   139
   ],
   [
    570704006,
-   136
+   140
   ],
   [
    570704006,
-   137
+   141
   ]
  ],
  "list_match_ids": [
@@ -131,51 +131,52 @@
     126
    ]
   ],
-  "changes": 1,
+  "changes": 2,
   "history": [
-   "изменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)"
+   "изменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)",
+   "изменено в 14:34: было ТМ3.5 75% (Oldham Athletic — Sheffield Wednesday)"
   ],
-  "espn_id": "401931108",
-  "slot": 8,
-  "p": 0.7506334615576835,
-  "label": "ТМ3.5",
-  "start_utc": "2026-11-08 17:15",
-  "match": "Oldham Athletic — Sheffield Wednesday",
-  "text": "⭐ <b>Ставка дня · футбол · 08.11</b>\n🏆 Кубок Англии · 🕒 22:15\n<b>Oldham Athletic — Sheffield Wednesday</b>\n<b>ТМ3.5</b> — вероятность 75% (модель)\nкф 1xBet 1,55\n✅ выгодна с уверенностью 98%\nизменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)",
+  "espn_id": "401879813",
+  "slot": 7,
+  "p": 0.7076476099971031,
+  "label": "Ф2(+1.5)",
+  "start_utc": "2026-11-08 17:45",
+  "match": "FC Baltika Kaliningrad — Dynamo Makhachkala",
+  "text": "⭐ <b>Ставка дня · футбол · 08.11</b>\n🏆 РПЛ · 🕒 22:45\n<b>FC Baltika Kaliningrad — Dynamo Makhachkala</b>\n<b>Ф2(+1.5)</b> — вероятность 71% (Pinnacle без маржи)\nкф 1xBet ≈ 1,35 (оценка по Pinnacle)\n⚠️ уверенность в выгодности 14% (ниже 90%)\nизменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)\nизменено в 14:34: было ТМ3.5 75% (Oldham Athletic — Sheffield Wednesday)",
   "ask": [
    [
     570704006,
-    134
+    138
    ]
   ],
   "accepted": "",
   "key": [
-   "401931108",
-   "TOT",
-   "U",
-   "3.5"
+   "401879813",
+   "AH",
+   "A",
+   "1.5"
   ],
-  "tier": 1,
+  "tier": 2,
   "best": {
-   "espn_id": "401931108",
-   "comp_name": "Кубок Англии",
-   "start_utc": "2026-11-08 17:15",
-   "start_local": "08.11 22:15",
-   "home": "Oldham Athletic",
-   "away": "Sheffield Wednesday",
-   "market": "TOT",
-   "pick": "U",
-   "line": 3.5,
-   "label": "ТМ3.5",
-   "p": 0.7506334615576835,
-   "p_src": "model",
-   "p_model": 0.7506334615576835,
+   "espn_id": "401879813",
+   "comp_name": "РПЛ",
+   "start_utc": "2026-11-08 17:45",
+   "start_local": "08.11 22:45",
+   "home": "FC Baltika Kaliningrad",
+   "away": "Dynamo Makhachkala",
+   "market": "AH",
+   "pick": "A",
+   "line": 1.5,
+   "label": "Ф2(+1.5)",
+   "p": 0.7076476099971031,
+   "p_src": "pinnacle",
+   "p_model": 0.6759690646016003,
    "p_push": 0.0,
-   "k": 1.55,
-   "k_src": "api",
+   "k": 1.352,
+   "k_src": "est",
    "source": "api",
-   "sigma": 0.24,
-   "slot": 8
+   "sigma": 0.38,
+   "slot": 7
   }
  }
 }
