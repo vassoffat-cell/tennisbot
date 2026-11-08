@@ -1,0 +1,1066 @@
+{
+ "when": "2026-11-08T08:56:31+00:00",
+ "sports": [
+  {
+   "key": "americanfootball_cfl",
+   "group": "American Football",
+   "title": "CFL",
+   "active": true
+  },
+  {
+   "key": "americanfootball_ncaaf",
+   "group": "American Football",
+   "title": "NCAAF",
+   "active": true
+  },
+  {
+   "key": "americanfootball_ncaaf_championship_winner",
+   "group": "American Football",
+   "title": "NCAAF Championship Winner",
+   "active": true
+  },
+  {
+   "key": "americanfootball_nfl",
+   "group": "American Football",
+   "title": "NFL",
+   "active": true
+  },
+  {
+   "key": "americanfootball_nfl_super_bowl_winner",
+   "group": "American Football",
+   "title": "NFL Super Bowl Winner",
+   "active": true
+  },
+  {
+   "key": "aussierules_afl",
+   "group": "Aussie Rules",
+   "title": "AFL",
+   "active": true
+  },
+  {
+   "key": "basketball_euroleague",
+   "group": "Basketball",
+   "title": "Basketball Euroleague",
+   "active": true
+  },
+  {
+   "key": "basketball_nba",
+   "group": "Basketball",
+   "title": "NBA",
+   "active": true
+  },
+  {
+   "key": "basketball_nba_championship_winner",
+   "group": "Basketball",
+   "title": "NBA Championship Winner",
+   "active": true
+  },
+  {
+   "key": "basketball_ncaab",
+   "group": "Basketball",
+   "title": "NCAAB",
+   "active": true
+  },
+  {
+   "key": "basketball_ncaab_championship_winner",
+   "group": "Basketball",
+   "title": "NCAAB Championship Winner",
+   "active": true
+  },
+  {
+   "key": "boxing_boxing",
+   "group": "Boxing",
+   "title": "Boxing",
+   "active": true
+  },
+  {
+   "key": "cricket_big_bash",
+   "group": "Cricket",
+   "title": "Big Bash",
+   "active": true
+  },
+  {
+   "key": "cricket_odi",
+   "group": "Cricket",
+   "title": "One Day Internationals",
+   "active": true
+  },
+  {
+   "key": "cricket_test_match",
+   "group": "Cricket",
+   "title": "Test Matches",
+   "active": true
+  },
+  {
+   "key": "golf_masters_tournament_winner",
+   "group": "Golf",
+   "title": "Masters Tournament Winner",
+   "active": true
+  },
+  {
+   "key": "golf_pga_championship_winner",
+   "group": "Golf",
+   "title": "PGA Championship Winner",
+   "active": true
+  },
+  {
+   "key": "golf_the_open_championship_winner",
+   "group": "Golf",
+   "title": "The Open Winner",
+   "active": true
+  },
+  {
+   "key": "golf_us_open_winner",
+   "group": "Golf",
+   "title": "US Open Winner",
+   "active": true
+  },
+  {
+   "key": "icehockey_ahl",
+   "group": "Ice Hockey",
+   "title": "AHL",
+   "active": true
+  },
+  {
+   "key": "icehockey_liiga",
+   "group": "Ice Hockey",
+   "title": "Liiga",
+   "active": true
+  },
+  {
+   "key": "icehockey_nhl",
+   "group": "Ice Hockey",
+   "title": "NHL",
+   "active": true
+  },
+  {
+   "key": "icehockey_nhl_championship_winner",
+   "group": "Ice Hockey",
+   "title": "NHL Championship Winner",
+   "active": true
+  },
+  {
+   "key": "icehockey_sweden_hockey_league",
+   "group": "Ice Hockey",
+   "title": "SHL",
+   "active": true
+  },
+  {
+   "key": "mma_mixed_martial_arts",
+   "group": "Mixed Martial Arts",
+   "title": "MMA",
+   "active": true
+  },
+  {
+   "key": "politics_us_presidential_election_winner",
+   "group": "Politics",
+   "title": "US Presidential Elections Winner",
+   "active": true
+  },
+  {
+   "key": "soccer_argentina_primera_division",
+   "group": "Soccer",
+   "title": "Primera División - Argentina",
+   "active": true
+  },
+  {
+   "key": "soccer_australia_aleague",
+   "group": "Soccer",
+   "title": "A-League",
+   "active": true
+  },
+  {
+   "key": "soccer_austria_bundesliga",
+   "group": "Soccer",
+   "title": "Austrian Football Bundesliga",
+   "active": true
+  },
+  {
+   "key": "soccer_belgium_first_div",
+   "group": "Soccer",
+   "title": "Belgium First Div",
+   "active": true
+  },
+  {
+   "key": "soccer_brazil_campeonato",
+   "group": "Soccer",
+   "title": "Brazil Série A",
+   "active": true
+  },
+  {
+   "key": "soccer_brazil_serie_b",
+   "group": "Soccer",
+   "title": "Brazil Série B",
+   "active": true
+  },
+  {
+   "key": "soccer_chile_campeonato",
+   "group": "Soccer",
+   "title": "Primera División - Chile",
+   "active": true
+  },
+  {
+   "key": "soccer_china_superleague",
+   "group": "Soccer",
+   "title": "Super League - China",
+   "active": true
+  },
+  {
+   "key": "soccer_conmebol_copa_libertadores",
+   "group": "Soccer",
+   "title": "Copa Libertadores",
+   "active": true
+  },
+  {
+   "key": "soccer_conmebol_copa_sudamericana",
+   "group": "Soccer",
+   "title": "Copa Sudamericana",
+   "active": true
+  },
+  {
+   "key": "soccer_denmark_superliga",
+   "group": "Soccer",
+   "title": "Denmark Superliga",
+   "active": true
+  },
+  {
+   "key": "soccer_efl_champ",
+   "group": "Soccer",
+   "title": "Championship",
+   "active": true
+  },
+  {
+   "key": "soccer_england_efl_cup",
+   "group": "Soccer",
+   "title": "EFL Cup",
+   "active": true
+  },
+  {
+   "key": "soccer_england_league1",
+   "group": "Soccer",
+   "title": "League 1",
+   "active": true
+  },
+  {
+   "key": "soccer_england_league2",
+   "group": "Soccer",
+   "title": "League 2",
+   "active": true
+  },
+  {
+   "key": "soccer_epl",
+   "group": "Soccer",
+   "title": "EPL",
+   "active": true
+  },
+  {
+   "key": "soccer_fa_cup",
+   "group": "Soccer",
+   "title": "FA Cup",
+   "active": true
+  },
+  {
+   "key": "soccer_finland_veikkausliiga",
+   "group": "Soccer",
+   "title": "Veikkausliiga - Finland",
+   "active": true
+  },
+  {
+   "key": "soccer_france_ligue_one",
+   "group": "Soccer",
+   "title": "Ligue 1 - France",
+   "active": true
+  },
+  {
+   "key": "soccer_germany_bundesliga",
+   "group": "Soccer",
+   "title": "Bundesliga - Germany",
+   "active": true
+  },
+  {
+   "key": "soccer_germany_bundesliga2",
+   "group": "Soccer",
+   "title": "Bundesliga 2 - Germany",
+   "active": true
+  },
+  {
+   "key": "soccer_germany_bundesliga_women",
+   "group": "Soccer",
+   "title": "Frauen-Bundesliga",
+   "active": true
+  },
+  {
+   "key": "soccer_germany_dfb_pokal",
+   "group": "Soccer",
+   "title": "DFB-Pokal",
+   "active": true
+  },
+  {
+   "key": "soccer_germany_liga3",
+   "group": "Soccer",
+   "title": "3. Liga - Germany",
+   "active": true
+  },
+  {
+   "key": "soccer_greece_super_league",
+   "group": "Soccer",
+   "title": "Super League - Greece",
+   "active": true
+  },
+  {
+   "key": "soccer_italy_serie_a",
+   "group": "Soccer",
+   "title": "Serie A - Italy",
+   "active": true
+  },
+  {
+   "key": "soccer_italy_serie_b",
+   "group": "Soccer",
+   "title": "Serie B - Italy",
+   "active": true
+  },
+  {
+   "key": "soccer_japan_j_league",
+   "group": "Soccer",
+   "title": "J League",
+   "active": true
+  },
+  {
+   "key": "soccer_korea_kleague1",
+   "group": "Soccer",
+   "title": "K League 1",
+   "active": true
+  },
+  {
+   "key": "soccer_mexico_ligamx",
+   "group": "Soccer",
+   "title": "Liga MX",
+   "active": true
+  },
+  {
+   "key": "soccer_netherlands_eredivisie",
+   "group": "Soccer",
+   "title": "Dutch Eredivisie",
+   "active": true
+  },
+  {
+   "key": "soccer_norway_eliteserien",
+   "group": "Soccer",
+   "title": "Eliteserien - Norway",
+   "active": true
+  },
+  {
+   "key": "soccer_poland_ekstraklasa",
+   "group": "Soccer",
+   "title": "Ekstraklasa - Poland",
+   "active": true
+  },
+  {
+   "key": "soccer_portugal_primeira_liga",
+   "group": "Soccer",
+   "title": "Primeira Liga - Portugal",
+   "active": true
+  },
+  {
+   "key": "soccer_russia_premier_league",
+   "group": "Soccer",
+   "title": "Premier League - Russia",
+   "active": true
+  },
+  {
+   "key": "soccer_spain_copa_del_rey",
+   "group": "Soccer",
+   "title": "Copa del Rey",
+   "active": true
+  },
+  {
+   "key": "soccer_spain_la_liga",
+   "group": "Soccer",
+   "title": "La Liga - Spain",
+   "active": true
+  },
+  {
+   "key": "soccer_spain_segunda_division",
+   "group": "Soccer",
+   "title": "La Liga 2 - Spain",
+   "active": true
+  },
+  {
+   "key": "soccer_spl",
+   "group": "Soccer",
+   "title": "Premiership - Scotland",
+   "active": true
+  },
+  {
+   "key": "soccer_sweden_allsvenskan",
+   "group": "Soccer",
+   "title": "Allsvenskan - Sweden",
+   "active": true
+  },
+  {
+   "key": "soccer_switzerland_superleague",
+   "group": "Soccer",
+   "title": "Swiss Superleague",
+   "active": true
+  },
+  {
+   "key": "soccer_turkey_super_league",
+   "group": "Soccer",
+   "title": "Turkey Super League",
+   "active": true
+  },
+  {
+   "key": "soccer_uefa_champs_league",
+   "group": "Soccer",
+   "title": "UEFA Champions League",
+   "active": true
+  },
+  {
+   "key": "soccer_uefa_champs_league_women",
+   "group": "Soccer",
+   "title": "UEFA Champions League Women",
+   "active": true
+  },
+  {
+   "key": "soccer_uefa_europa_league",
+   "group": "Soccer",
+   "title": "UEFA Europa League",
+   "active": true
+  },
+  {
+   "key": "soccer_uefa_nations_league",
+   "group": "Soccer",
+   "title": "UEFA Nations League",
+   "active": true
+  },
+  {
+   "key": "tennis_atp_paris_masters",
+   "group": "Tennis",
+   "title": "ATP Paris Masters",
+   "active": true
+  }
+ ],
+ "events": {
+  "tennis_atp_paris_masters": [
+   {
+    "id": "2c1005d01a3f63cd2249facf4ce5f5ed",
+    "sport_key": "tennis_atp_paris_masters",
+    "sport_title": "ATP Paris Masters",
+    "commence_time": "2026-11-08T14:00:00Z",
+    "home_team": "Ben Shelton",
+    "away_team": "Carlos Alcaraz",
+    "bookmakers": [
+     {
+      "key": "onexbet",
+      "title": "1xBet",
+      "last_update": "2026-11-08T08:56:18Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:18Z",
+        "outcomes": [
+         {
+          "name": "Ben Shelton",
+          "price": 4.03
+         },
+         {
+          "name": "Carlos Alcaraz",
+          "price": 1.26
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:18Z",
+        "outcomes": [
+         {
+          "name": "Ben Shelton",
+          "price": 1.91,
+          "point": 3.5
+         },
+         {
+          "name": "Carlos Alcaraz",
+          "price": 1.94,
+          "point": -3.5
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:18Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 1.86,
+          "point": 22.5
+         },
+         {
+          "name": "Under",
+          "price": 1.99,
+          "point": 22.5
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "key": "pinnacle",
+      "title": "Pinnacle",
+      "last_update": "2026-11-08T08:56:18Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:18Z",
+        "outcomes": [
+         {
+          "name": "Ben Shelton",
+          "price": 4.29
+         },
+         {
+          "name": "Carlos Alcaraz",
+          "price": 1.26
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:18Z",
+        "outcomes": [
+         {
+          "name": "Ben Shelton",
+          "price": 2.0,
+          "point": 3.5
+         },
+         {
+          "name": "Carlos Alcaraz",
+          "price": 1.88,
+          "point": -3.5
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:18Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 1.87,
+          "point": 22.5
+         },
+         {
+          "name": "Under",
+          "price": 2.03,
+          "point": 22.5
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "soccer_russia_premier_league": [
+   {
+    "id": "1a6cb63ec0b53ed6d554a9bd784a0dd5",
+    "sport_key": "soccer_russia_premier_league",
+    "sport_title": "Premier League - Russia",
+    "commence_time": "2026-11-08T11:00:00Z",
+    "home_team": "Kryliya Sovetov",
+    "away_team": "Gazovik Orenburg",
+    "bookmakers": [
+     {
+      "key": "pinnacle",
+      "title": "Pinnacle",
+      "last_update": "2026-11-08T08:56:25Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "Gazovik Orenburg",
+          "price": 2.92
+         },
+         {
+          "name": "Kryliya Sovetov",
+          "price": 2.55
+         },
+         {
+          "name": "Draw",
+          "price": 3.38
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "Gazovik Orenburg",
+          "price": 2.09,
+          "point": -0.0
+         },
+         {
+          "name": "Kryliya Sovetov",
+          "price": 1.83,
+          "point": 0.0
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 1.99,
+          "point": 2.5
+         },
+         {
+          "name": "Under",
+          "price": 1.9,
+          "point": 2.5
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "key": "onexbet",
+      "title": "1xBet",
+      "last_update": "2026-11-08T08:56:08Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "Gazovik Orenburg",
+          "price": 2.88
+         },
+         {
+          "name": "Kryliya Sovetov",
+          "price": 2.58
+         },
+         {
+          "name": "Draw",
+          "price": 3.57
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "Gazovik Orenburg",
+          "price": 2.08,
+          "point": 0.0
+         },
+         {
+          "name": "Kryliya Sovetov",
+          "price": 1.87,
+          "point": 0.0
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 2.0,
+          "point": 2.5
+         },
+         {
+          "name": "Under",
+          "price": 1.94,
+          "point": 2.5
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "2a545a674edbdb2648dff3becd841e0b",
+    "sport_key": "soccer_russia_premier_league",
+    "sport_title": "Premier League - Russia",
+    "commence_time": "2026-11-08T13:15:00Z",
+    "home_team": "Spartak Moscow",
+    "away_team": "FC Akron Tolyatti",
+    "bookmakers": [
+     {
+      "key": "pinnacle",
+      "title": "Pinnacle",
+      "last_update": "2026-11-08T08:56:25Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "FC Akron Tolyatti",
+          "price": 10.4
+         },
+         {
+          "name": "Spartak Moscow",
+          "price": 1.26
+         },
+         {
+          "name": "Draw",
+          "price": 6.53
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "FC Akron Tolyatti",
+          "price": 1.97,
+          "point": 1.75
+         },
+         {
+          "name": "Spartak Moscow",
+          "price": 1.92,
+          "point": -1.75
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 1.86,
+          "point": 3.25
+         },
+         {
+          "name": "Under",
+          "price": 2.01,
+          "point": 3.25
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "key": "onexbet",
+      "title": "1xBet",
+      "last_update": "2026-11-08T08:56:08Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "FC Akron Tolyatti",
+          "price": 12.0
+         },
+         {
+          "name": "Spartak Moscow",
+          "price": 1.26
+         },
+         {
+          "name": "Draw",
+          "price": 7.08
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "FC Akron Tolyatti",
+          "price": 2.29,
+          "point": 1.5
+         },
+         {
+          "name": "Spartak Moscow",
+          "price": 1.73,
+          "point": -1.5
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 2.05,
+          "point": 3.5
+         },
+         {
+          "name": "Under",
+          "price": 1.9,
+          "point": 3.5
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "c286aa4bd4d463cee5588444fc382bec",
+    "sport_key": "soccer_russia_premier_league",
+    "sport_title": "Premier League - Russia",
+    "commence_time": "2026-11-08T15:30:00Z",
+    "home_team": "Zenit St Petersburg",
+    "away_team": "FK Rostov",
+    "bookmakers": [
+     {
+      "key": "pinnacle",
+      "title": "Pinnacle",
+      "last_update": "2026-11-08T08:56:25Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "FK Rostov",
+          "price": 8.06
+         },
+         {
+          "name": "Zenit St Petersburg",
+          "price": 1.43
+         },
+         {
+          "name": "Draw",
+          "price": 4.74
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "FK Rostov",
+          "price": 1.9,
+          "point": 1.25
+         },
+         {
+          "name": "Zenit St Petersburg",
+          "price": 2.0,
+          "point": -1.25
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 1.94,
+          "point": 2.5
+         },
+         {
+          "name": "Under",
+          "price": 1.94,
+          "point": 2.5
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "key": "onexbet",
+      "title": "1xBet",
+      "last_update": "2026-11-08T08:56:08Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "FK Rostov",
+          "price": 8.2
+         },
+         {
+          "name": "Zenit St Petersburg",
+          "price": 1.46
+         },
+         {
+          "name": "Draw",
+          "price": 4.82
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "FK Rostov",
+          "price": 1.74,
+          "point": 1.5
+         },
+         {
+          "name": "Zenit St Petersburg",
+          "price": 2.27,
+          "point": -1.5
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 1.93,
+          "point": 2.5
+         },
+         {
+          "name": "Under",
+          "price": 2.01,
+          "point": 2.5
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "4963f0a1fdba101362e25a8ad678af74",
+    "sport_key": "soccer_russia_premier_league",
+    "sport_title": "Premier League - Russia",
+    "commence_time": "2026-11-08T17:45:00Z",
+    "home_team": "FC Baltika Kaliningrad",
+    "away_team": "FC Dynamo Makhachkala",
+    "bookmakers": [
+     {
+      "key": "pinnacle",
+      "title": "Pinnacle",
+      "last_update": "2026-11-08T08:56:25Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "FC Baltika Kaliningrad",
+          "price": 1.7
+         },
+         {
+          "name": "FC Dynamo Makhachkala",
+          "price": 5.81
+         },
+         {
+          "name": "Draw",
+          "price": 3.65
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "FC Baltika Kaliningrad",
+          "price": 1.93,
+          "point": -0.75
+         },
+         {
+          "name": "FC Dynamo Makhachkala",
+          "price": 1.97,
+          "point": 0.75
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:25Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 1.85,
+          "point": 2.0
+         },
+         {
+          "name": "Under",
+          "price": 2.04,
+          "point": 2.0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "key": "onexbet",
+      "title": "1xBet",
+      "last_update": "2026-11-08T08:56:08Z",
+      "markets": [
+       {
+        "key": "h2h",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "FC Baltika Kaliningrad",
+          "price": 1.76
+         },
+         {
+          "name": "FC Dynamo Makhachkala",
+          "price": 5.69
+         },
+         {
+          "name": "Draw",
+          "price": 3.67
+         }
+        ]
+       },
+       {
+        "key": "spreads",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "FC Baltika Kaliningrad",
+          "price": 3.55,
+          "point": -1.5
+         },
+         {
+          "name": "FC Dynamo Makhachkala",
+          "price": 1.36,
+          "point": 1.5
+         }
+        ]
+       },
+       {
+        "key": "totals",
+        "last_update": "2026-11-08T08:56:08Z",
+        "outcomes": [
+         {
+          "name": "Over",
+          "price": 2.53,
+          "point": 2.5
+         },
+         {
+          "name": "Under",
+          "price": 1.61,
+          "point": 2.5
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "meta": {
+  "remaining": "494",
+  "used": "6",
+  "last": "3"
+ }
+}
