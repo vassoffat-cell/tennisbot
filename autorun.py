@@ -534,6 +534,10 @@ def run(dry: bool = False) -> str:
     if os.getenv('CLOUD') and os.getenv('ODDS_API_KEY') and not (C.DATA / 'odds' / 'probe.json').exists():
         import odds                                                    # пакет №3: разовая проба покрытия котировок
         log += odds.probe()
+    if os.getenv('CLOUD') and os.getenv('ODDS_API_KEY') and not (C.DATA / 'odds' / 'probe_event.json').exists():
+        import odds                                                    # пакет №3: разовая проба альтернативных линий (матч РПЛ 08.11)
+        log += odds.probe_event('soccer_russia_premier_league', '4963f0a1fdba101362e25a8ad678af74',
+                                ('alternate_totals', 'alternate_spreads', 'team_totals', 'alternate_team_totals', 'btts', 'double_chance'))
     loc = _local(); today = loc.date().isoformat()
     daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
     retrain_log = []

@@ -86,3 +86,21 @@ def probe(groups: tuple[str, ...] = ('Tennis',), extra: tuple[str, ...] = ('socc
     (DIR / 'probe.json').write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding='utf-8')
     log.append(f"кф: кредитов осталось {meta.get('remaining')}, использовано {meta.get('used')}")
     return log
+
+
+def event_odds(sport_key: str, event_id: str, markets: tuple[str, ...]) -> tuple[dict, dict]:
+    """Котировки одного матча по любым рынкам (альтернативные линии, индивидуальные тоталы). Стоимость: рынки × 1 за матч."""
+    return _get(f'/sports/{sport_key}/events/{event_id}/odds', dict(bookmakers=','.join(BOOKS), markets=','.join(markets),
+                                                                       oddsFormat='decimal', dateFormat='iso'))
+
+
+def probe_event(sport_key: str, event_id: str, markets: tuple[str, ...]) -> list[str]:
+    """Разовая проба рынков одного матча → data/odds/probe_event.json."""
+    try:
+        ev, meta = event_odds(sport_key, event_id, markets)
+    except OddsError as e:
+        return [f'кф: проба матча не удалась ({e})']
+    (DIR / 'probe_event.json').write_text(json.dumps(dict(event=ev, meta=meta), ensure_ascii=False, indent=1), encoding='utf-8')
+    got = sorted({(b['key'], m['key'], len(m['outcomes'])) for b in ev.get('bookmakers', []) for m in b.get('markets', [])})
+    return [f'кф: матч {ev.get("home_team")} — {ev.get("away_team")}: ' + ', '.join(f'{b}/{m} {n}' for b, m, n in got),
+            f"кф: кредитов осталось {meta.get('remaining')}, стоимость запроса {meta.get('last')}"]
