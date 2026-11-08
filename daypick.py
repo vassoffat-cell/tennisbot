@@ -139,7 +139,7 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
     """Все предложения дня по правилу C (уже упорядочены pick.choose)."""
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     todays = [(m, row) for m, row, _ in items
-              if m.start > now and (m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).date() == day]
+              if m.start > now and C.wday(m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)) == day]
     if not todays:
         return []
     events, r = [], OD.r_ratio()

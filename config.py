@@ -48,14 +48,13 @@ ALARM_N = 50                                            # 🚨 исход: z ≤
 TARGET_N = 550                                          # «до выводов»: матчей для точности ±4 п.п.
 DAY_PICK_SWITCH = 0.02     # ⭐ ставка дня: замена только если новая лучше на ≥ 2 п.п.
 DAY_PICK_LOCK_HOUR = 17    # после 17:00 (Ташкент) и после начала матча ставки — без замен
-DAILY_HOUR = (0, 2)        # суточный отчёт, самообучение и переобучение: первый запуск после 00:00 (окно до 02:00)
 FRESH_DAYS = 14            # файл tennis-data, где последний матч старше 14 дней, — устаревший
 TENNIS_DATA_PAGE = 'http://www.tennis-data.co.uk/alldata.php'
 NEWS = DATA / 'news.csv.gz'   # новости ESPN (травмы, снятия) — копятся для будущей проверки (T22)
 
 # авто-режим: часовой пояс сообщений, горизонт прогноза, источники
 TZ_OFFSET_HOURS = 5                     # Ташкент, UTC+5
-HORIZON_HOURS = 24                      # список и прогноз — матчи, начинающиеся в ближайшие 24 часа
+HORIZON_HOURS = 24                      # (до 08.11.2026) — заменено сутками 08:00 → 08:00, см. window_end_utc
 LEVELS = {'Grand Slam', '1000', '500', '250', 'Finals'}   # категории турниров для авто-прогноза
 CALIB_PRIOR = 300                       # сила априорного «доверия» исходной модели при самокалибровке (матчей)
 TENNIS_DATA_URL = {'wta': 'http://www.tennis-data.co.uk/{y}w/{y}.xlsx', 'atp': 'http://www.tennis-data.co.uk/{y}/{y}.xlsx'}
@@ -78,3 +77,22 @@ ALLOWED_USERS = {int(x) for x in os.getenv('ALLOWED_USERS', '').replace(' ', '')
 TESSERACT_CMD = os.getenv('TESSERACT_CMD', 'tesseract')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')      # отправка файлов tennis-data с компьютера в облако (ghsync.py)
 GITHUB_REPO = os.getenv('GITHUB_REPO', '')        # например vassoffat-cell/tennisbot
+
+# сутки системы (решение пользователя 08.11.2026): 08:00 → 08:00 Ташкента. 08:00 (футбол 08:30) — переобучение, ⭐ ставка дня
+# первым сообщением, список на сутки (сужается по мере игры, правится каждые 2 ч); 11:00 / 11:30 — отчёт за прошлые сутки,
+# самокалибровка k и самообучение (3 ч запаса на доигрывание матчей, начатых до 08:00).
+DAY_START_HOUR = 8
+START_HOURS = (8, 11)      # первый запуск новых суток (с запасом на задержку расписания GitHub)
+DAILY_HOUR = (11, 13)      # суточный отчёт: теннис 11:00, футбол 11:30
+
+
+def wday(loc) -> _dt.date:
+    """Дата суток системы для местного времени (00:00–07:59 — ещё прошлые сутки)."""
+    return (loc - _dt.timedelta(hours=DAY_START_HOUR)).date()
+
+
+def window_end_utc(now_utc):
+    """Конец текущих суток системы (ближайшие 08:00 Ташкента) в UTC — горизонт списка прогноза."""
+    loc = now_utc + _dt.timedelta(hours=TZ_OFFSET_HOURS)
+    end = _dt.datetime.combine(wday(loc) + _dt.timedelta(days=1), _dt.time(DAY_START_HOUR))
+    return end - _dt.timedelta(hours=TZ_OFFSET_HOURS)

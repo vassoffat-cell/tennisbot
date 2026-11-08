@@ -46,7 +46,7 @@ def matches(af: pd.DataFrame) -> pd.DataFrame:
     f['pmax'] = np.maximum(p1, 1 - p1)
     f['ll'] = -np.log(np.clip(np.where(w1, p1, 1 - p1), 1e-6, 1))
     f['ent'] = -(p1 * np.log(np.clip(p1, 1e-9, 1)) + (1 - p1) * np.log(np.clip(1 - p1, 1e-9, 1)))
-    f['day'] = (pd.to_datetime(f.start_utc) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).dt.date
+    f['day'] = (pd.to_datetime(f.start_utc) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - C.DAY_START_HOUR)).dt.date
     return f.sort_values('start_utc')
 
 
@@ -66,7 +66,7 @@ def lines(ld: pd.DataFrame) -> pd.DataFrame:
         x = x[[_shown(r) for r in x.itertuples()]]
     x['p'] = x.p.map(J.num).astype(float)
     x['won'] = (x.result.astype(str) == 'W').astype(int)
-    x['day'] = (pd.to_datetime(x.start_utc) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).dt.date
+    x['day'] = (pd.to_datetime(x.start_utc) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - C.DAY_START_HOUR)).dt.date
     return x.sort_values('start_utc')
 
 
@@ -191,7 +191,7 @@ def day_lists(af: pd.DataFrame, ld: pd.DataFrame, daily_day, late: set | None = 
     if not len(af):
         return []
     A = af[af.source.astype(str) == 'model'].copy() if 'source' in af.columns else af.copy()
-    A['day'] = (pd.to_datetime(A.start_utc, errors='coerce') + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).dt.date
+    A['day'] = (pd.to_datetime(A.start_utc, errors='coerce') + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - C.DAY_START_HOUR)).dt.date
     A['sid'] = A.espn_id.map(lambda x: str(J.num(x)))
     A = A.sort_values('start_utc')
     lc = {}
@@ -230,7 +230,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     у суточного (daily_day) — строки «сутки / 7 дней / всего» и свёрнутый список матчей суток."""
     e = notify.esc
     M, L = matches(af), lines(ld)
-    today = daily_day or (pd.Timestamp.now(tz='UTC').tz_localize(None) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).date()
+    today = daily_day or C.wday(pd.Timestamp.now(tz='UTC').tz_localize(None) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS))
     off = off or {}
     T, tail, worst = [], [], 3
     d7 = (daily_day - pd.Timedelta(days=7).to_pytimedelta()) if daily_day is not None else None

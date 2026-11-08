@@ -4,7 +4,7 @@
 match, changes, history, accepted ('' | 'yes'), rejected [ключи], shots [предложения со скриншотов за день], screenshots, text.
 
 События и реакция:
-  • новые сутки — публикация лучшей ставки (после суточного отчёта, не позднее 08:00), закрепление, кнопки ✅ / 🔄;
+  • новые сутки (08:00 → 08:00) — публикация лучшей ставки первым сообщением в 08:00, закрепление, кнопки ✅ / 🔄;
   • ✅ «Принимаем» (кнопка; бот пишет в лист dp_actions) — ставка зафиксирована, бот её больше сам не меняет;
   • 🔄 «Другую» — ставка в «отказанные», выбирается следующая лучшая (в этом или другом матче);
   • скриншот — кф 1xBet по его линиям становятся точными; выбор пересчитывается сразу;
@@ -61,7 +61,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             offers_fn: Callable, text_fn: Callable, row_fn: Callable, slot_fn: Callable, match_fn: Callable,
             score_fn: Callable, shots: list[dict] | None = None, actions: list[str] | None = None, dry: bool = False) -> str:
     loc = _local_now()
-    day = loc.date(); dstr = day.isoformat()
+    day = C.wday(loc); dstr = day.isoformat()                   # сутки системы 08:00 → 08:00
     cur = rt.get('day_pick') or {}
     if cur.get('date') != dstr:
         cur = {}
@@ -69,8 +69,6 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     dp = store.read('day_pick')
     force, reason = False, ''
     if not cur.get('date'):                                     # новые сутки: прошлое сообщение — открепить и удалить
-        if not (daily_done or loc.hour >= 8) and not shots:
-            return 'ставка дня: ждёт суточного отчёта'
         old = rt.get('day_pick') or {}
         if not dry and old.get('msgs'):
             notify.pin(old['msgs'], on=False)
@@ -113,7 +111,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     if started and not force:
         rt['day_pick'] = cur
         return 'ставка дня: матч начался — замок'
-    if cur.get('msgs') and not force and loc.hour >= C.DAY_PICK_LOCK_HOUR:
+    if cur.get('msgs') and not force and (loc.hour >= C.DAY_PICK_LOCK_HOUR or loc.hour < C.DAY_START_HOUR):
         rt['day_pick'] = cur
         return 'ставка дня: без изменений (после 17:00)'
 

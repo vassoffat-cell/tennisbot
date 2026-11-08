@@ -189,7 +189,7 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
     for m in matches:
         if m.state != 'pre' or m.tbd or m.qualifying or m.id in settled:
             continue
-        if not (now < m.start <= now + pd.Timedelta(hours=C.HORIZON_HOURS)):
+        if not (now < m.start <= C.window_end_utc(now)):
             continue
         level = live.level_for(tour, m.location, m.start, m.major)
         if level not in C.LEVELS:
@@ -315,7 +315,7 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
     if not groups:
         return []
     n = sum(len(v) for v in groups.values())
-    blocks = [f"📋 <b>Прогноз на 24 ч</b> · {_local().strftime('%d.%m %H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
+    blocks = [f"📋 <b>Прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · {_local().strftime('%H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
               + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')]
     for (tour, event, level, surface), ms in groups.items():
         head = (f"🏆 <b>{notify.esc(tour)} {LEVEL_RU.get(str(level), str(level or ''))} · {notify.esc(event)}</b> · "
@@ -329,7 +329,7 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     """Удалить прошлый список и отправить свежий. Нет матчей — тишина. Звук — только если появились новые матчи."""
     dp = rt.get('day_pick') or {}
     star = ((str(dp['espn_id']), int(dp.get('slot') or 0), str(dp.get('label', '')), float(dp.get('p', 0)))
-            if dp.get('espn_id') and dp.get('date') == _local().date().isoformat() else None)
+            if dp.get('espn_id') and dp.get('date') == C.wday(_local()).isoformat() else None)
     blocks = list_blocks(items, off, star)
     ids = sorted(m.id for m, _, _ in items)
     if dry:
@@ -338,7 +338,7 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     cache = list(blocks)
     while cache and len(json.dumps(cache, ensure_ascii=False)) > 45000:   # ячейка Google Таблицы — до 50 000 символов
         cache.pop()
-    dpt = (rt.get('day_pick') or {}).get('text', '') if (rt.get('day_pick') or {}).get('date') == _local().date().isoformat() else ''
+    dpt = (rt.get('day_pick') or {}).get('text', '') if (rt.get('day_pick') or {}).get('date') == C.wday(_local()).isoformat() else ''
     store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
                                               dict(key='daypick', text=dpt, updated=J.now_utc()),
                                               dict(key='daypick_accepted', text=(rt.get('day_pick') or {}).get('accepted', ''),
@@ -582,10 +582,11 @@ def run(dry: bool = False) -> str:
         import odds                                                    # пакет №3: разовая проба альтернативных линий (матч РПЛ 08.11)
         log += odds.probe_event('soccer_russia_premier_league', '4963f0a1fdba101362e25a8ad678af74',
                                 ('alternate_totals', 'alternate_spreads', 'team_totals', 'alternate_team_totals', 'btts', 'double_chance'))
-    loc = _local(); today = loc.date().isoformat()
+    loc = _local(); today = C.wday(loc).isoformat()                  # дата суток системы (08:00 → 08:00)
     daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
+    start_due = C.START_HOURS[0] <= loc.hour < C.START_HOURS[1]
     retrain_log = []
-    if got or (daily_due and rt.get('last_retrain') != today):
+    if got or (start_due and rt.get('last_retrain') != today):
         retrain_log = retrain(None if dry else store)
         log += retrain_log
         rt['last_retrain'] = today
@@ -628,7 +629,7 @@ def run(dry: bool = False) -> str:
         if retrain_log:
             notes.append('переобучено: ' + '; '.join(x.split(':')[0] + ' ' + x.split('точность')[-1].split(';')[0].strip()
                                                   for x in retrain_log if 'точность' in x))
-        yday = (loc - pd.Timedelta(days=1)).date()
+        yday = C.wday(loc) - dt.timedelta(days=1)                     # прошлые сутки 08:00 → 08:00
         import coverage
         try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
             late = coverage.late_ids(R.matches(auto), yday, rt)
@@ -650,7 +651,7 @@ def run(dry: bool = False) -> str:
         import odds as OD
         import shots
         actions = dpcore.read_actions(store)
-        offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('tennis', _local().date().isoformat()))
+        offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('tennis', today))
         log += slog + ([f'кнопки: {", ".join(actions)}'] if actions else [])
         if replies:
             notify.send_blocks(replies)

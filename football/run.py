@@ -241,7 +241,7 @@ def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched:
     kc = {k: v[0] for k, v in kcal.items()}
     out, skipped = [], []
     for m in matches:
-        if m.state != 'pre' or m.id in settled or not (now < m.start <= now + pd.Timedelta(hours=C.HORIZON_HOURS)):
+        if m.state != 'pre' or m.id in settled or not (now < m.start <= C.window_end_utc(now)):
             continue
         name, country, div, kind = C.COMPETITIONS[m.comp]
         h, a = mp(m.home, m.comp), mp(m.away, m.comp)
@@ -434,7 +434,7 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
     if not groups:
         return []
     n = sum(len(v) for v in groups.values())
-    blocks = [f"⚽ <b>Прогноз на 24 ч</b> · {_local().strftime('%d.%m %H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
+    blocks = [f"⚽ <b>Прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · {_local().strftime('%H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
               + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')]
     for comp, ms in groups.items():
         blocks += notify.folded(f'🏆 <b>{notify.esc(comp)}</b>', ms)
@@ -445,7 +445,7 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
                  extra: list | None = None) -> str:
     dp = rt.get('day_pick') or {}
     star = ((str(dp['espn_id']), int(dp.get('slot') or 0), str(dp.get('label', '')), float(dp.get('p', 0)))
-            if dp.get('espn_id') and dp.get('date') == _local().date().isoformat() else None)
+            if dp.get('espn_id') and dp.get('date') == C.wday(_local()).isoformat() else None)
     blocks = list_blocks(items, off, star)
     ids = sorted(m.id for m, _, _ in items)
     if dry:
@@ -454,7 +454,7 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     cache = list(blocks)
     while cache and len(json.dumps(cache, ensure_ascii=False)) > 45000:   # ячейка Google Таблицы — до 50 000 символов
         cache.pop()
-    dpt = (rt.get('day_pick') or {}).get('text', '') if (rt.get('day_pick') or {}).get('date') == _local().date().isoformat() else ''
+    dpt = (rt.get('day_pick') or {}).get('text', '') if (rt.get('day_pick') or {}).get('date') == C.wday(_local()).isoformat() else ''
     store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
                                               dict(key='daypick', text=dpt, updated=J.now_utc()),
                                               dict(key='daypick_accepted', text=(rt.get('day_pick') or {}).get('accepted', ''),
@@ -592,7 +592,7 @@ def run(dry: bool = False) -> str:
     log.append(f"модель: стран {len(world.sup)}, команд {len(world.team_country)}, еврокубков в оценке силы стран {world.uefa.get('n', 0)}")
     sched = FF.Schedule(train[['date', 'home', 'away']], usched)
 
-    loc = _local(); today = loc.date().isoformat()
+    loc = _local(); today = C.wday(loc).isoformat()                  # дата суток системы (08:00 → 08:00)
     daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
     if not dry:                                                        # итоги прошедших матчей — до пересчёта k
         ns, nl = settle(store, results_index(st))
@@ -623,7 +623,7 @@ def run(dry: bool = False) -> str:
         last = base.date.max()
         if (loc.normalize() - last).days > 9:
             notes.append(f'файлы football-data по {last:%d.%m} — ждём файлы недели')
-        yday = (loc - pd.Timedelta(days=1)).date()
+        yday = C.wday(loc) - dt.timedelta(days=1)                     # прошлые сутки 08:00 → 08:00
         import coverage
         try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
             late = coverage.late_ids(R.matches(af), yday, rt)
@@ -644,7 +644,7 @@ def run(dry: bool = False) -> str:
         import odds as OD
         import shots
         actions = dpcore.read_actions(store)
-        offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('football', _local().date().isoformat()))
+        offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('football', today))
         log += slog + ([f'кнопки: {", ".join(actions)}'] if actions else [])
         if replies:
             notify.send_blocks(replies)

@@ -42,7 +42,6 @@ TARGET_N = 550                                          # «до выводов�
 DAY_PICK_SWITCH = 0.02     # заменить только если новая лучше на ≥ 2 п.п.
 DAY_PICK_LOCK_HOUR = 17    # после 17:00 (Ташкент) и после начала матча ставки — без замен
 
-DAILY_HOUR = (0, 2)        # суточный отчёт и самообучение: первый запуск 00:30 (окно до 02:00)
 
 TZ_OFFSET_HOURS = 5
 HORIZON_HOURS = 24
@@ -103,3 +102,22 @@ GOOGLE_CREDENTIALS = os.getenv('GOOGLE_CREDENTIALS', str(ROOT.parent / 'service_
 ALLOWED_USERS = {int(x) for x in os.getenv('ALLOWED_USERS', '').replace(' ', '').split(',') if x}
 TESSERACT_CMD = os.getenv('TESSERACT_CMD', 'tesseract')     # скриншоты 1xBet (пакет №3)
 INBOX_FOLDER = 'footbot_inbox'
+
+# сутки системы (решение пользователя 08.11.2026): 08:00 → 08:00 Ташкента. 08:00 (футбол 08:30) — переобучение, ⭐ ставка дня
+# первым сообщением, список на сутки (сужается по мере игры, правится каждые 2 ч); 11:00 / 11:30 — отчёт за прошлые сутки,
+# самокалибровка k и самообучение (3 ч запаса на доигрывание матчей, начатых до 08:00).
+DAY_START_HOUR = 8
+START_HOURS = (8, 11)      # первый запуск новых суток (с запасом на задержку расписания GitHub)
+DAILY_HOUR = (11, 13)      # суточный отчёт: теннис 11:00, футбол 11:30
+
+
+def wday(loc) -> _dt.date:
+    """Дата суток системы для местного времени (00:00–07:59 — ещё прошлые сутки)."""
+    return (loc - _dt.timedelta(hours=DAY_START_HOUR)).date()
+
+
+def window_end_utc(now_utc):
+    """Конец текущих суток системы (ближайшие 08:00 Ташкента) в UTC — горизонт списка прогноза."""
+    loc = now_utc + _dt.timedelta(hours=TZ_OFFSET_HOURS)
+    end = _dt.datetime.combine(wday(loc) + _dt.timedelta(days=1), _dt.time(DAY_START_HOUR))
+    return end - _dt.timedelta(hours=TZ_OFFSET_HOURS)

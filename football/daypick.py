@@ -165,7 +165,7 @@ def model_offers(m, row) -> list[dict]:
 
 def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
-    todays = [(m, row) for m, row, _ in items if m.start > now and (m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).date() == day]
+    todays = [(m, row) for m, row, _ in items if m.start > now and C.wday(m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)) == day]
     if not todays:
         return []
     events, r = [], OD.r_ratio()

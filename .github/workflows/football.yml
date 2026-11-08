@@ -2,6 +2,7 @@ name: football
 on:
   schedule:
     - cron: '30 1-23/2 * * *'
+    - cron: '30 6 * * *'      # 11:30 Ташкента — суточный отчёт
   workflow_dispatch: {}
 permissions:
   contents: write
