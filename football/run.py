@@ -1,15 +1,14 @@
-"""Футбол: автономный цикл в облаке (GitHub Actions каждые 2 часа).
+"""Футбол: автономный цикл в облаке (GitHub Actions каждые 2 часа, в :30 по Ташкенту).
 
-  1. входящие файлы football-data из папки Google Диска (кладёт бот) → база матчей;
-  2. ESPN: расписание, результаты, кф DraftKings — только игровые дни турниров (календарь), параллельно;
-  3. подгонка модели (Dixon–Coles по странам + сила стран в еврокубках) — каждый запуск, ~2 с;
-  4. прогноз матчей ближайших 24 ч:
-       режим «рынок»  — есть кф: Шин + инверсия (исход + тотал) → λ; поправка «после еврокубка» −4,5%;
-       режим «модель» — кф нет: модель + факторы (нечего играть, плей-офф ЕК впереди, после ЕК, короткий отдых);
-     11 линий с диапазоном кф в зоне 1,35–1,65; самокалибровка по рынку и источнику;
-  5. расчёт по 90 минутам, закрывающие кф football-data для проверки, сбор составов (этап 2);
-  6. Telegram: свежий список (прошлый удаляется, без матчей — тишина), итоги в 00:00, отчёт каждые 10 матчей,
-     напоминание о файлах по понедельникам.
+  1. входящие файлы football-data из папки Google Диска (кладёт бот) → проверка ПО СОДЕРЖИМОМУ → база матчей;
+  2. ESPN: расписание и результаты 17 турниров — только игровые дни (календарь), параллельно;
+  3. подгонка модели (Dixon–Coles по странам: разница сил — голы 50% + удары в створ 50%, уровень голов — голы;
+     + сила стран в еврокубках) — каждый запуск, ~2 с;
+  4. прогноз матчей ближайших 24 ч — ТОЛЬКО модель + факторы (кф букмекеров не используются):
+     исход в каждом матче + 11 линий (показываются с кф ≥ 1,25), самокалибровка k по рынкам — раз в сутки;
+  5. расчёт по 90 минутам, сбор составов (этап 2) и новостей (раз в сутки);
+  6. Telegram: свежий список (прошлый удаляется); в 00:30 — один суточный отчёт (итоги + самообучение);
+     ⭐ ставка дня (закреплённое сообщение); ⛔/🚨 по рынкам; напоминание о файлах по понедельникам с прямыми ссылками.
 
   python run.py [--dry]
 """
@@ -17,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import json
 import sys
 import time
 import traceback
@@ -25,19 +25,20 @@ import numpy as np
 import pandas as pd
 
 import config as C
+import daypick
 import dc
 import fdata
 import ffactors as FF
 import flines as FL
-import fmarket
 import fespn
 import journal as J
 import model
 import names
+import news
 import notify
+import report as R
 import runtime
 
-REPORT_EVERY = 10
 LEAGUE_KINDS = ('league',)
 SRC_RU = {'market': 'рынок', 'model': 'модель'}
 STORE_COLS = ['id', 'comp', 'kind', 'country', 'div', 'date', 'home', 'away', 'home_fd', 'away_fd', 'hg', 'ag', 'status',
@@ -95,7 +96,8 @@ class Mapper:
         self.by_c = {c: set(g.t) for c, g in t.groupby('country')}
         self.all = set(t.t)
         self.cache: dict[tuple, str | None] = {}
-        self.missed: dict[str, str] = {}
+        self.missed: dict[str, str] = {}          # ошибка сопоставления: лига или похожий кандидат (сходство ≥ 0,60)
+        self.out_base = 0                          # вне базы (кубки/еврокубки, кандидата нет) — пропуск штатный
         self.missed_uefa = 0
 
     def __call__(self, name: str, comp: str) -> str | None:
@@ -105,10 +107,14 @@ class Mapper:
             cand = self.all if country is None else self.by_c.get(country, set())
             r = names.match(name, cand)
             self.cache[k] = r
-            if r is None and country is not None:          # в еврокубках неопознанные — в основном клубы других стран
-                self.missed[name] = C.COMPETITIONS[comp][0]
-            elif r is None:
-                self.missed_uefa += 1
+            if r is None:
+                near, ratio = names.nearest(name, cand)
+                if kind == 'league' or (country is not None and ratio >= 0.60):
+                    self.missed[name] = f'{C.COMPETITIONS[comp][0]}' + (f' → {near}? {ratio:.2f}' if near and ratio >= 0.60 else '')
+                else:
+                    self.out_base += 1
+                    if country is None:
+                        self.missed_uefa += 1
         return self.cache[k]
 
 
@@ -138,9 +144,9 @@ def plan(base: pd.DataFrame, store: pd.DataFrame, auto: pd.DataFrame, rt: dict) 
         if str(comp) in out and d >= today - dt.timedelta(days=10):
             out[str(comp)] |= {d, d + dt.timedelta(days=1)}
     if not rt.get('uefa_backfill'):                                      # один раз: еврокубки 2025/26 без ЛЧ (она есть в CC0)
-        for comp in ('uefa.europa', 'uefa.europa.conf', 'uefa.super_cup'):
+        for comp in ('uefa.europa', 'uefa.europa.conf'):
             for d in _days(C.UEFA_BACKFILL_FROM, today):
-                if d.weekday() in (1, 2, 3) or (d.weekday() == 5 and d.month in (5, 6)) or comp == 'uefa.super_cup':
+                if d.weekday() in (1, 2, 3) or (d.weekday() == 5 and d.month in (5, 6)):
                     out[comp].add(d)
     return {k: sorted(v) for k, v in out.items()}
 
@@ -164,6 +170,21 @@ def persist(store: pd.DataFrame, matches: list[fespn.FMatch], mp: Mapper) -> pd.
     return out
 
 
+def remap(store: pd.DataFrame, mp: Mapper) -> tuple[pd.DataFrame, int]:
+    """ТЗ-001 A: уже сохранённые результаты ESPN с неопознанной командой — сопоставить заново (после новых алиасов);
+    новые запросы к ESPN не нужны. Матчи турниров, которых больше нет в списке, сопоставляются по стране турнира."""
+    if store.empty:
+        return store, 0
+    n = 0
+    for col, name in (('home_fd', 'home'), ('away_fd', 'away')):
+        bad = store[col].map(_blank) & store.comp.astype(str).isin(C.COMPETITIONS)
+        for i in store.index[bad]:
+            r = mp(str(store.at[i, name]), str(store.at[i, 'comp']))
+            if r:
+                store.at[i, col] = r; n += 1
+    return store, n
+
+
 # ======================================================================== еврокубки: история + ESPN
 def uefa_frames(store: pd.DataFrame, matches: list[fespn.FMatch], mp: Mapper) -> tuple[pd.DataFrame, pd.DataFrame]:
     """(матчи для силы стран: date, comp, home_fd, away_fd, hg, ag, status) и (календарь команд: date, team, ko)."""
@@ -184,65 +205,71 @@ def uefa_frames(store: pd.DataFrame, matches: list[fespn.FMatch], mp: Mapper) ->
     return fit, sched
 
 
-# ======================================================================== самокалибровка
+# ======================================================================== самокалибровка (раз в сутки)
 def calibration(ldf: pd.DataFrame) -> dict[str, tuple[float, int]]:
-    """k по рынку и источнику прогноза: P' = σ(k·logit P), включается после 30 рассчитанных линий."""
+    """k по рынку: P' = σ(k·logit P) по рассчитанным ПОКАЗАННЫМ линиям модели; включается с 30 линий (n = число линий)."""
+    L = R.lines(ldf)
     out = {}
-    done = ldf[ldf.result.astype(str).isin(['W', 'L'])]
     for mk in FL.MARKET_RU:
-        for src in SRC_RU:
-            sub = done[(done.market.astype(str) == mk) & (done.source.astype(str) == src)]
-            out[f'{mk}|{src}'] = FL.calibrate(sub.p_raw.map(J.num).values.astype(float), (sub.result.astype(str) == 'W').values)
+        sub = L[L.market.astype(str) == mk]
+        out[mk] = FL.calibrate(sub.p_raw.map(J.num).values.astype(float), sub.won.values.astype(bool))
     return out
 
 
-# ======================================================================== прогноз
+def daily_k(rt: dict, ld: pd.DataFrame, due: bool) -> tuple[dict, dict, str]:
+    """Зафиксированные на сутки k (пересчёт только в суточном цикле 00:30). Возвращает (k, k вчера, отметка)."""
+    have = rt.get('kcal')
+    if due or not have:
+        prev = {k: tuple(v) for k, v in (have or {}).items()}
+        new = calibration(ld)
+        rt['kcal'] = {k: list(v) for k, v in new.items()}
+        rt['kcal_prev'] = {k: list(v) for k, v in prev.items()} if prev else {k: [1.0, 0] for k in new}
+        rt['kcal_date'] = _local().date().isoformat()
+        return new, {k: tuple(v) for k, v in rt['kcal_prev'].items()}, 'k пересчитан'
+    return ({k: tuple(v) for k, v in have.items()}, {k: tuple(v) for k, v in rt.get('kcal_prev', {}).items()},
+            f"k от {rt.get('kcal_date', '?')}")
+
+
+# ======================================================================== прогноз (только модель)
 def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched: FF.Schedule, train: pd.DataFrame,
              auto: pd.DataFrame, kcal: dict) -> tuple[list[tuple], list[str]]:
     now = _now()
     settled = set(auto[~auto.settled.map(_blank).astype(bool)].espn_id.map(_id))
     season_start = pd.Timestamp(now.year if now.month >= 7 else now.year - 1, 7, 1)
     seasons: dict[str, pd.DataFrame] = {}
+    kc = {k: v[0] for k, v in kcal.items()}
     out, skipped = [], []
     for m in matches:
         if m.state != 'pre' or m.id in settled or not (now < m.start <= now + pd.Timedelta(hours=C.HORIZON_HOURS)):
             continue
         name, country, div, kind = C.COMPETITIONS[m.comp]
         h, a = mp(m.home, m.comp), mp(m.away, m.comp)
-        mk = fmarket.invert(m.odds) if m.odds else None
+        lam = world.lambdas(m.comp, h, a, m.neutral) if (h and a) else None
+        if lam is None:
+            skipped.append(f'{m.home} — {m.away} ({name}): ' + ('команда не опознана' if not (h and a) else 'нет оценки силы'))
+            continue
         fh, fa = {}, {}
-        if kind in LEAGUE_KINDS and h and a:
+        if kind in LEAGUE_KINDS:
             fh, fa = sched.features(h, m.start), sched.features(a, m.start)
             if div in C.TOPDIV:
                 if div not in seasons:
                     seasons[div] = train[(train['div'] == div) & (train.date >= season_start) & train.hg.notna()]
                 dd = FF.dead_flags(seasons[div], div, m.start)
                 fh['dead'], fa['dead'] = dd.get(h, 0), dd.get(a, 0)
-        if mk is not None and mk['fit_err'] < 0.03:
-            src = 'market'
-            lh, la = FF.adjust(mk['lh'], mk['la'], fh, fa, 'market') if fh else (mk['lh'], mk['la'])
-        else:
-            lam = world.lambdas(m.comp, h, a, m.neutral) if (h and a) else None
-            if lam is None:
-                skipped.append(f'{m.home} — {m.away} ({name}): нет кф и ' +
-                               ('команда не опознана' if not (h and a) else 'нет оценки силы'))
-                continue
-            src = 'model'
-            lh, la = FF.adjust(*lam, fh, fa, 'model') if fh else lam
+        lh, la = FF.adjust(*lam, fh, fa) if fh else lam
         P = dc.score_matrix(lh, la, C.RHO)
-        kc = {k.split('|')[0]: v[0] for k, v in kcal.items() if k.endswith('|' + src)}
-        lns = FL.build(P, kc, src)
+        lns = FL.build(P, kc)
         i, j = np.indices(P.shape)
         o = m.odds or {}
         row = dict(created=J.now_utc(), espn_id=m.id, comp=m.comp, comp_name=name, kind=kind, stage=m.stage,
                    start_utc=m.start.strftime('%Y-%m-%d %H:%M'), start_local=J.to_local(m.start), home=m.home, away=m.away,
-                   home_fd=h or '', away_fd=a or '', source=src, lam_h=round(lh, 3), lam_a=round(la, 3),
+                   home_fd=h, away_fd=a, source='model', lam_h=round(lh, 3), lam_a=round(la, 3),
                    p_h=round(float(P[i > j].sum()), 4), p_d=round(float(np.trace(P)), 4), p_a=round(float(P[i < j].sum()), 4),
                    p_o25=round(float(P[(i + j) > 2.5].sum()), 4), p_btts=round(float(P[(i >= 1) & (j >= 1)].sum()), 4),
                    dk_h=o.get('h', ''), dk_d=o.get('d', ''), dk_a=o.get('a', ''), dk_line=o.get('line', ''),
                    dk_o=o.get('over', ''), dk_u=o.get('under', ''), f_home=FF.describe(fh), f_away=FF.describe(fa))
         for x in lns:
-            x.update(created=row['created'], espn_id=m.id, comp=m.comp, comp_name=name, source=src,
+            x.update(created=row['created'], espn_id=m.id, comp=m.comp, comp_name=name, source='model',
                      start_utc=row['start_utc'], start_local=row['start_local'], home=m.home, away=m.away,
                      status='', result='', settled='', pnl_lo='')
         out.append((m, row, lns))
@@ -264,7 +291,9 @@ def save_forecasts(store: J.Store, items: list[tuple], auto: pd.DataFrame, ldf: 
     if upd_rows:
         store.update('auto_forecasts', pd.DataFrame.from_dict(upd_rows, orient='index'), J.AUTO_FCST_COLS)
     if upd_lines:
-        store.update('auto_lines', pd.DataFrame.from_dict(upd_lines, orient='index'), J.LINE_FCST_COLS)
+        dfl = pd.DataFrame.from_dict(upd_lines, orient='index')
+        store.update('auto_lines', dfl, J.LINE_FCST_COLS)
+        store.update('auto_lines', dfl, ['p_low', 'shown'])
     return len(new_rows), len(upd_rows)
 
 
@@ -301,15 +330,15 @@ def settle(store: J.Store, res: dict) -> tuple[int, int]:
             continue
         st, hg, ag = x
         v = FL.settle(str(r.market), str(r.pick), r.line, st, int(hg) if st == 'FT' else None, int(ag) if st == 'FT' else None)
-        k = J.num(r.z_lo) if not _blank(r.z_lo) else J.num(r.k_lo)
-        ld.loc[i, J.LINE_RESULT_COLS] = [st, v, today, round({'W': k - 1, 'L': -1.0, 'P': 0.0}[v], 3)]
+        k = J.num(r.z_lo) if not _blank(r.z_lo) else J.num(r.k_lo)          # старые записи — нижний кф зоны, новые — 1/P
+        ld.loc[i, J.LINE_RESULT_COLS] = [st, v, today, round({'W': k - 1, 'L': -1.0, 'P': 0.0}[v], 3) if k == k else '']
         lu.append(i)
     store.update('auto_lines', ld.loc[lu], J.LINE_RESULT_COLS)
     return len(upd), len(lu)
 
 
 def attach_odds(store: J.Store, base: pd.DataFrame) -> int:
-    """Закрывающие кф football-data (средний рынок, биржа Betfair) к рассчитанным матчам — проверка против рынка."""
+    """Закрывающие кф football-data к рассчитанным матчам — только как данные для исследований (в прогнозе и отчёте не участвуют)."""
     af = store.read('auto_forecasts')
     todo = af[af.status.astype(str).isin(['FT', 'ET']) & af.avg_h.map(_blank).astype(bool) & ~af.home_fd.map(_blank).astype(bool)]
     if todo.empty:
@@ -370,55 +399,62 @@ def _safe_lineups(comp: str, ev: str):
 
 
 # ======================================================================== Telegram: список
-def shown(x: dict) -> bool:
-    return not _blank(x.get('z_lo'))
+def visible(x: dict, off: dict) -> bool:
+    return int(J.num(x.get('shown'), 0) or 0) == 1 and x['market'] not in off
 
 
-def match_block(row: dict, lns: list[dict], today: str) -> str | None:
+def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple | None) -> str:
+    """Матч: время · команды; исход (всегда); линии с кф ≥ 1,25 от самой уверенной:
+    🟢 жирным — высокая, 🟡 обычным — средняя, ⚪ курсивом — низкая уверенность; ⭐ — ставка дня."""
     e = notify.esc
-    vis = [x for x in sorted(lns, key=lambda x: x['slot']) if shown(x)]
-    if not vis:
-        return None
     when = row['start_local'][6:] if row['start_local'][:5] == today else row['start_local']
-    out = [f"🕒 <b>{e(when)}</b> · <b>{e(row['home'])}</b> — <b>{e(row['away'])}</b> · {SRC_RU[row['source']]}"]
-    for x in vis:
-        out.append(f"{e(x['label'])}: <b>{float(x['z_lo']):.2f}–{float(x['z_hi']):.2f}</b>")
+    p3 = [row['p_h'], row['p_d'], row['p_a']]
+    k = int(np.argmax(p3))
+    out = [f"🕒 <b>{e(when)}</b> · <b>{e(row['home'])}</b> — <b>{e(row['away'])}</b>",
+           f"🎯 Исход: <b>{['П1', 'X', 'П2'][k]} — {p3[k] * 100:.0f}%</b>"]
+    tier = lambda x: FL.tier(float(x.get('p_low') or x['p']))
+    for x in sorted([x for x in lns if visible(x, off)], key=lambda x: (-tier(x), -float(x['p']), x['slot'])):
+        t = e(f"{x['label']} — {float(x['p']) * 100:.0f}%")
+        s = {3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[FL.tier(float(x.get('p_low') or x['p']))]
+        if star and (str(row['espn_id']), int(x['slot'])) == star:
+            s = '⭐ ' + s
+        out.append(s)
     return '\n'.join(out)
 
 
-def list_blocks(items: list[tuple]) -> list[str]:
+def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
     today = _local().strftime('%d.%m')
     groups: dict[str, list] = {}
     for m, row, lns in sorted(items, key=lambda t: t[1]['start_utc']):
-        b = match_block(row, lns, today)
-        if b:
-            groups.setdefault(row['comp_name'], []).append(b)
+        groups.setdefault(row['comp_name'], []).append(match_block(row, lns, today, off, star))
     if not groups:
         return []
     n = sum(len(v) for v in groups.values())
-    blocks = [f"⚽ <b>Прогноз на 24 ч</b> · {_local().strftime('%d.%m %H:%M')} · {n} матч."]
+    blocks = [f"⚽ <b>Прогноз на 24 ч</b> · {_local().strftime('%d.%m %H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
+              + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')]
     for comp, ms in groups.items():
-        head = f'🏆 <b>{notify.esc(comp)}</b>'
-        chunk = head
-        for mb in ms:
-            if len(chunk) + len(mb) + 2 > 3700:
-                blocks.append(chunk); chunk = head + ' (продолжение)'
-            chunk += '\n\n' + mb
-        blocks.append(chunk)
+        blocks += notify.folded(f'🏆 <b>{notify.esc(comp)}</b>', ms)
     return blocks
 
 
-def publish_list(rt: dict, items: list[tuple], dry: bool = False, extra: list | None = None) -> str:
-    items = [t for t in items if any(shown(x) for x in t[2])]
+def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict, dry: bool = False,
+                 extra: list | None = None) -> str:
+    dp = rt.get('day_pick') or {}
+    star = (str(dp['espn_id']), int(dp['slot'])) if dp.get('espn_id') and dp.get('date') == _local().date().isoformat() else None
+    blocks = list_blocks(items, off, star)
     ids = sorted(m.id for m, _, _ in items)
     if dry:
-        print('\n\n'.join(list_blocks(items)))
+        print('\n\n'.join(blocks))
         return 'dry'
+    cache = list(blocks)
+    while cache and len(json.dumps(cache, ensure_ascii=False)) > 45000:   # ячейка Google Таблицы — до 50 000 символов
+        cache.pop()
+    store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc())]))
     removed = notify.delete([tuple(x) for x in rt.get('list_messages', [])] + list(extra or []))
     sent = []
     if items:
         silent = set(ids) <= set(rt.get('list_match_ids', []))
-        sent = notify.send_blocks(list_blocks(items), silent=silent)
+        sent = notify.send_blocks(blocks, silent=silent)
     rt['list_messages'] = [list(x) for x in sent]
     rt['list_match_ids'] = ids
     return f'список: удалено {removed}, отправлено {len(sent)} сообщ., матчей {len(ids)}'
@@ -433,125 +469,54 @@ def extra_messages(store: J.Store) -> list[tuple[int, int]]:
     return out
 
 
-# ======================================================================== статистика
-def _outcome(r) -> int | None:
-    if str(r.status) == 'ET':
-        return 1
-    if str(r.status) != 'FT':
-        return None
-    hg, ag = J.num(r.hg), J.num(r.ag)
-    return 0 if hg > ag else 1 if hg == ag else 2
-
-
-def match_stats(af: pd.DataFrame) -> list[str]:
-    fin = af[af.status.astype(str).isin(['FT', 'ET'])]
-    if fin.empty:
-        return []
-    out = []
-    for src in SRC_RU:
-        s = fin[fin.source.astype(str) == src]
-        if s.empty:
-            continue
-        o = np.array([_outcome(r) for r in s.itertuples()])
-        p = s[['p_h', 'p_d', 'p_a']].map(J.num).values.astype(float)
-        ll = -np.log(np.clip(p[np.arange(len(s)), o], 1e-6, 1)).mean()
-        hit = np.mean(p.argmax(1) == o)
-        line = f'{SRC_RU[src].capitalize()}: матчей {len(s)} · исход угадан {hit * 100:.0f}% · лог-лосс 1X2 {ll:.4f}'
-        a = s[['avg_h', 'avg_d', 'avg_a']].map(J.num)
-        ok = (a > 1.01).all(axis=1).values
-        if ok.sum() >= 10:
-            pm = np.array([fmarket.shin(x) for x in a.values[ok]])
-            llm = -np.log(np.clip(pm[np.arange(ok.sum()), o[ok]], 1e-6, 1)).mean()
-            lls = -np.log(np.clip(p[ok][np.arange(ok.sum()), o[ok]], 1e-6, 1)).mean()
-            line += f' · против закрытия рынка (n={int(ok.sum())}): {lls:.4f} vs {llm:.4f}'
-        out.append(line)
-    return out
-
-
-def line_stats(ldf: pd.DataFrame, kcal: dict | None = None) -> list[str]:
-    done = ldf[ldf.result.astype(str).isin(['W', 'L']) & ~ldf.z_lo.map(_blank).astype(bool)]
-    out = []
-    for mk, ru in FL.MARKET_RU.items():
-        sub = done[done.market.astype(str) == mk]
-        if sub.empty:
-            continue
-        won = (sub.result.astype(str) == 'W').values
-        roi = np.nanmean(sub.pnl_lo.map(J.num).values) * 100
-        out.append(f'{ru}: {len(sub)} · попадание {won.mean() * 100:.0f}% (модель {np.nanmean(sub.p.map(J.num).values) * 100:.0f}%)'
-                   f' · ROI при мин. кф {roi:+.1f}%')
-    return out
-
-
-def calib_line(kcal: dict) -> str:
-    act = [f'{FL.MARKET_RU[k.split("|")[0]]} ({SRC_RU[k.split("|")[1]]}) k={v[0]:.3f} n={v[1]}' for k, v in kcal.items() if v[1] > 0]
-    return 'Самокалибровка (включается после 30 линий): ' + ('; '.join(act) if act else 'данных пока нет')
-
-
-def summary(store: J.Store, kcal: dict) -> pd.DataFrame:
-    af, ld = store.read('auto_forecasts'), store.read('auto_lines')
-    rows = [('обновлено (UTC)', J.now_utc()), ('прогнозов', len(af)), ('линий', len(ld))]
-    rows += [('матчи', x) for x in match_stats(af)] + [('линии', x) for x in line_stats(ld)] + [('калибровка', calib_line(kcal))]
+def summary(af: pd.DataFrame, ld: pd.DataFrame, kcal: dict, off: dict) -> pd.DataFrame:
+    M, L = R.matches(af), R.lines(ld)
+    rows = [('обновлено (UTC)', J.now_utc()), ('прогнозов модели', int((af.source.astype(str) == 'model').sum())),
+            ('доиграно (модель)', len(M)), ('исход угадан', f'{int(M.hit.sum())}/{len(M)}' if len(M) else '—'),
+            ('показанных линий рассчитано', len(L)), ('линий верных', f'{int(L.won.sum())}/{len(L)}' if len(L) else '—'),
+            ('k по рынкам', '; '.join(f'{m} {v[0]} (n={v[1]})' for m, v in kcal.items())),
+            ('⛔ выключены', ', '.join(off) or 'нет')]
     return pd.DataFrame(rows, columns=['показатель', 'значение'])
 
 
-def progress_report(af: pd.DataFrame, ld: pd.DataFrame, kcal: dict) -> list[str]:
-    e = notify.esc
-    fin = af[af.status.astype(str).isin(['FT', 'ET'])].sort_values('start_utc')
-    if fin.empty:
-        return []
-    head = (f'📈 <b>Футбол · отчёт модели · {len(fin)} доигранных матчей</b>\n'
-            f'Период: {str(fin.start_utc.iloc[0])[:10]} — {str(fin.start_utc.iloc[-1])[:10]}. Перешлите этот отчёт в чат с Claude.')
-    rec = ['<b>Последние 10:</b>']
-    for r in fin.tail(REPORT_EVERY).itertuples():
-        p = [J.num(r.p_h), J.num(r.p_d), J.num(r.p_a)]
-        k = int(np.argmax(p)); o = _outcome(r)
-        sc = f'{int(J.num(r.hg))}:{int(J.num(r.ag))}' if str(r.status) == 'FT' else 'ничья в осн. время'
-        rec.append(f"{'✅' if k == o else '❌'} {e(r.home)} — {e(r.away)} · {['П1', 'X', 'П2'][k]} {p[k] * 100:.0f}% · {sc} · {SRC_RU.get(str(r.source), '')}")
-    q = ['<b>Качество:</b>'] + [e(x) for x in match_stats(af)]
-    ln = ['<b>Линии по рынкам:</b>'] + [e(x) for x in line_stats(ld)] + [e(calib_line(kcal))]
-    return [head, '\n'.join(rec), '\n'.join(q), '\n'.join(ln)]
-
-
-def daily(af: pd.DataFrame, ld: pd.DataFrame, kcal: dict, notes: list[str]) -> list[str]:
-    e = notify.esc
-    since = (_now() - pd.Timedelta(hours=24)).strftime('%Y-%m-%d %H:%M')
-    fin = af[af.status.astype(str).isin(['FT', 'ET'])]
-    last = fin[fin.start_utc.astype(str) >= since]
-    b = [f"🧠 <b>Футбол · итоги самообучения · {_local().strftime('%d.%m.%Y')}</b>"]
-    if len(last):
-        o = np.array([_outcome(r) for r in last.itertuples()])
-        p = last[['p_h', 'p_d', 'p_a']].map(J.num).values.astype(float)
-        b.append(f'За сутки доиграно {len(last)} матч. · исход угадан в {int(np.sum(p.argmax(1) == o))}')
-    else:
-        b.append('За сутки доигранных матчей нет.')
-    ms, ls = match_stats(af), line_stats(ld)
-    if ms:
-        b.append('<b>Всего:</b>\n' + '\n'.join(e(x) for x in ms))
-    if ls:
-        b.append('<b>Линии по рынкам:</b>\n' + '\n'.join(e(x) for x in ls))
-    b.append(e(calib_line(kcal)))
-    if notes:
-        b.append('<b>Данные:</b> ' + e('; '.join(notes)))
-    return b
-
-
 # ======================================================================== файлы и напоминание
-def take_inbox() -> tuple[bool, list[str]]:
+def _season_links() -> list[tuple[str, str, str]]:
+    """[(ключ, имя файла, прямая ссылка)] на текущий сезон (с июля — новый)."""
+    loc = _local()
+    y = loc.year if loc.month >= 7 else loc.year - 1
+    sub = dict(y=y, y1=y + 1, yy=f'{y % 100:02d}', yy1=f'{(y + 1) % 100:02d}')
+    return [(k, n.format(**sub), u.format(**sub)) for k, (n, u) in C.FD_LINKS.items()]
+
+
+def _need_text() -> str:
+    return '\n'.join(f'• {n} — {u}' for _, n, u in _season_links()) + f'\nЕсли ссылка не открывается — страница со списком: {C.FD_PAGE}'
+
+
+def take_inbox(rt: dict) -> tuple[bool, list[str]]:
     import inbox
     try:
         files, note = inbox.fetch()
     except Exception as ex:
         return False, [f'папка входящих недоступна: {ex}']
-    log, got = ([note] if note else []), False
+    log, got, msgs = ([note] if note else []), False, []
     for fid, name, raw in files:
         try:
-            log.append(f'файл принят: {fdata.save_file(raw)}')
+            kind, text = fdata.save_file(raw)
+            rt.setdefault('files', {})[kind] = _local().date().isoformat()
+            log.append(f'файл принят: {text}')
+            msgs.append(f'✅ Файл <b>{notify.esc(name)}</b> принят: {notify.esc(text)}')
             got = True
-        except Exception as ex:
+        except fdata.WrongFile as ex:
             log.append(f'файл {name} не принят: {ex}')
+            msgs.append(f'❌ Файл <b>{notify.esc(name)}</b> не принят: {notify.esc(str(ex))}.\nОтправьте корректный:\n'
+                        + notify.esc(_need_text()))
+        except Exception as ex:
+            log.append(f'файл {name} не принят: {ex.__class__.__name__}: {ex}')
+            msgs.append(f'❌ Файл <b>{notify.esc(name)}</b> не прочитан ({notify.esc(ex.__class__.__name__)}).\n'
+                        'Отправьте корректный:\n' + notify.esc(_need_text()))
         inbox.mark_done(fid, name)
-    if files:
-        notify.send('Футбол: файлы обработаны\n' + '\n'.join(log))
+    if msgs:
+        notify.send_blocks(msgs)
     return got, log
 
 
@@ -560,77 +525,112 @@ def reminder_due(rt: dict) -> bool:
     if not (12 <= loc.hour < 14):
         return False
     monday = (loc.date() - dt.timedelta(days=loc.weekday())).isoformat()
-    return (rt.get('last_files') or '2000-01-01') < monday and rt.get('last_reminder') != loc.date().isoformat()
+    have = rt.get('files', {})
+    missing = [k for k in C.FD_LINKS if (have.get(k) or '2000-01-01') < monday]
+    return bool(missing) and rt.get('last_reminder') != loc.date().isoformat()
 
 
-def reminder_text() -> str:
-    y = _local().year if _local().month >= 7 else _local().year - 1
-    return ('⏰ <b>Пора прислать файлы football-data</b>\n'
-            f'1) all-euro-data-{y}-{y + 1}.xlsx — {C.FD_PAGES[0]}\n'
-            f'2) RUS.xlsx — {C.FD_PAGES[1]}\n'
-            'Отправьте оба файла сюда. Они обновляют базу и проверку прогнозов по закрывающим кф. '
-            'Напоминание повторится завтра, если файлов не будет.')
+def reminder_text(rt: dict) -> str:
+    loc = _local()
+    monday = (loc.date() - dt.timedelta(days=loc.weekday())).isoformat()
+    have = rt.get('files', {})
+    rows = []
+    for k, n, u in _season_links():
+        ok = (have.get(k) or '2000-01-01') >= monday
+        rows.append(f'✅ {notify.esc(n)} — получен' if ok else f'⬜ {notify.esc(n)} — {u}')
+    return ('⏰ <b>Пора прислать файлы football-data</b>\n' + '\n'.join(rows) +
+            f'\nЕсли ссылка не открывается — страница со списком: {C.FD_PAGE}\n'
+            'Скачайте и отправьте сюда (название не важно — бот проверит содержимое). '
+            'Напоминание повторится завтра, пока не придут все файлы.')
 
 
 # ======================================================================== цикл
 def run(dry: bool = False) -> str:
     t0 = time.time()
     store, rt = J.Store(), runtime.load()
+    if 'files' not in rt:                                              # переход со старого учёта (одна дата на оба файла)
+        rt['files'] = {k: rt.get('last_files', '') for k in C.FD_LINKS}
     log = []
-    got, ilog = (False, []) if dry else take_inbox()
+    got, ilog = (False, []) if dry else take_inbox(rt)
     log += ilog
-    if got:
-        rt['last_files'] = _local().date().isoformat()
     base = fdata.load()
     mp = Mapper(base)
     st = load_store()
     af, ld = store.read('auto_forecasts'), store.read('auto_lines')
     matches, errs = fespn.fetch(plan(base, st, af, rt))
     st = persist(st, matches, mp)
+    st, n_remap = remap(st, mp)
+    if n_remap:
+        log.append(f'досопоставлено сохранённых результатов: {n_remap}')
     if not dry:
         save_store(st)
         rt['uefa_backfill'] = rt.get('uefa_backfill') or J.now_utc()
-    n_odds = sum(1 for m in matches if m.odds and m.state == 'pre')
-    log.append(f'ESPN: матчей {len(matches)}, с кф {n_odds}, ошибок запросов {len(errs)}; в базе результатов {len(st)}')
+    log.append(f'ESPN: матчей {len(matches)}, ошибок запросов {len(errs)}; в базе результатов {len(st)}')
     train = fdata.training_set(st)
     ufit, usched = uefa_frames(st, matches, mp)
     world = model.build(train, ufit, _now())
     log.append(f"модель: стран {len(world.sup)}, команд {len(world.team_country)}, еврокубков в оценке силы стран {world.uefa.get('n', 0)}")
     sched = FF.Schedule(train[['date', 'home', 'away']], usched)
-    kcal = calibration(ld)
+
+    loc = _local(); today = loc.date().isoformat()
+    daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
+    if not dry:                                                        # итоги прошедших матчей — до пересчёта k
+        ns, nl = settle(store, results_index(st))
+        nd = daypick.settle(store)
+        log.append(f'рассчитано матчей {ns}, линий {nl}, ставок дня {nd}')
+        af, ld = store.read('auto_forecasts'), store.read('auto_lines')
+    kcal, kprev, knote = daily_k(rt, ld, daily_due and not dry)
+    off, bmsg = R.breaker(ld, rt.get('breaker', {}))
     items, skipped = forecast(matches, mp, world, sched, train, af, kcal)
     if dry:
-        print('\n'.join(log)); publish_list(rt, items, dry=True); print('\n'.join(skipped))
+        print('\n'.join(log)); publish_list(rt, None, items, off, dry=True); print('\n'.join(skipped))
         return f'dry {time.time() - t0:.0f} с'
+    rt['breaker'] = off
+    alarms = bmsg + R.outcome_alarm(af, rt)
+    if alarms:
+        notify.send_blocks(alarms)
     nn, nu = save_forecasts(store, items, af, ld)
-    n_before = int(af.status.astype(str).isin(['FT', 'ET']).sum())
-    ns, nl = settle(store, results_index(st))
     no = attach_odds(store, base)
     af, ld = store.read('auto_forecasts'), store.read('auto_lines')
-    n_after = int(af.status.astype(str).isin(['FT', 'ET']).sum())
-    if n_after // REPORT_EVERY > n_before // REPORT_EVERY:
-        notify.send_blocks(progress_report(af, ld, kcal))
-        log.append(f'отчёт для Claude: {n_after} матчей')
-    log.append(publish_list(rt, items, extra=extra_messages(store)))
+    dpk = store.read('day_pick')
+    if daily_due:
+        notes = []
+        if mp.missed:
+            notes.append(f'ошибка сопоставления (лиги): {", ".join(list(mp.missed)[:8])}')
+        if mp.out_base:
+            notes.append(f'вне базы (кубки, еврокубки — пропуск штатно): {mp.out_base} '
+                         f'{notify.plural(mp.out_base, "команда", "команды", "команд")}')
+        last = base.date.max()
+        if (loc.normalize() - last).days > 9:
+            notes.append(f'файлы football-data по {last:%d.%m} — ждём файлы недели')
+        yday = (loc - pd.Timedelta(days=1)).date()
+        notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
+                                   notes=notes, daily_day=yday))
+        rt['last_daily'] = today
+        log.append('суточный отчёт отправлен')
+        try:
+            log.append(news.collect())
+        except Exception as ex:
+            log.append(f'новости: сбой {ex.__class__.__name__}')
+    try:
+        log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today))
+    except Exception as ex:
+        log.append(f'ставка дня: сбой {ex.__class__.__name__}: {ex}')
+    log.append(publish_list(rt, store, items, off, extra=extra_messages(store)))
     try:
         log.append(collect_lineups(st))
     except Exception as ex:
         log.append(f'составы: сбой {ex.__class__.__name__}')
-    today = _local().date().isoformat()
-    if _local().hour < 2 and rt.get('last_daily') != today:
-        notes = [f'не опознаны: {", ".join(list(mp.missed)[:8])}'] if mp.missed else []
-        notify.send_blocks(daily(af, ld, kcal, notes))
-        rt['last_daily'] = today
-        log.append('итоги отправлены')
     if reminder_due(rt):
-        notify.send_blocks([reminder_text()])
+        notify.send_blocks([reminder_text(rt)])
         rt['last_reminder'] = today
         log.append('напоминание о файлах отправлено')
-    store.write_all('summary', summary(store, kcal))
+    store.write_all('summary', summary(af, ld, kcal, off))
+    store.write_all('reports', R.all_reports(af, ld, store.read('day_pick'), kcal, off))
     runtime.save(rt)
-    by_src = pd.Series([r['source'] for _, r, _ in items]).value_counts().to_dict()
-    log += [f'прогнозов: новых {nn}, обновлено {nu} ({by_src}); рассчитано матчей {ns}, линий {nl}; кф football-data {no}',
-            f'пропущено {len(skipped)}; не опознано команд: в чемпионатах и кубках {len(mp.missed)}, в еврокубках {mp.missed_uefa} (клубы других стран); время {time.time() - t0:.0f} с']
+    log += [f'{knote}; ⛔ {", ".join(off) or "нет"}; прогнозов: новых {nn}, обновлено {nu}; кф football-data (данные) {no}',
+            f'пропущено {len(skipped)}; ошибка сопоставления {len(mp.missed)}, вне базы {mp.out_base}; '
+            f'время {time.time() - t0:.0f} с']
     return '\n'.join(log + skipped[:15] + [f'не опознано: {k} ({v})' for k, v in list(mp.missed.items())[:15]] + errs[:10])
 
 

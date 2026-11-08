@@ -75,11 +75,8 @@ def dead_flags(season: pd.DataFrame, div: str, day: pd.Timestamp) -> dict[str, i
     return out
 
 
-def adjust(lh: float, la: float, fh: dict, fa: dict, mode: str) -> tuple[float, float]:
-    """Поправка λ на факторы. mode: 'model' — все проверенные поправки; 'market' — только еврокубок ≤4 дня назад."""
-    if mode == 'market':
-        b = C.EU_PREV_MARKET
-        return lh * np.exp(b * fh.get('eu_prev', 0)), la * np.exp(b * fa.get('eu_prev', 0))
+def adjust(lh: float, la: float, fh: dict, fa: dict, mode: str = 'model') -> tuple[float, float]:
+    """Поправка λ модели на проверенные факторы (нечего играть, плей-офф ЕК впереди, после ЕК, короткий отдых)."""
     B = C.FACTORS_MODEL
     sh = int(fh.get('rest', 99) <= 3) if fh.get('rest') == fh.get('rest') else 0
     sa = int(fa.get('rest', 99) <= 3) if fa.get('rest') == fa.get('rest') else 0

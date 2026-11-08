@@ -1,9 +1,9 @@
-"""Футбол: рекомендованные линии с диапазоном кф из одного распределения счёта (90 минут).
+"""Футбол: линии матча из одного распределения счёта (90 минут) — только модель (система независима от букмекеров).
 
 Рынки: 1X2, двойной шанс, азиатская фора (полулинии — без возврата), тотал, индивидуальные тоталы, «обе забьют».
-Фора и тоталы выбираются там, где вероятность стороны ближе всего к TARGET_P (≈0,75) → кф в зоне 1,35–1,65.
-Диапазон: [1,05/P ; 1/σ(logit P − σ_m)], σ_m — ошибка модели против Pinnacle на отложенной выборке
-(1X2/фора 0,38, тоталы 0,24). Показывается часть внутри зоны ODDS_ZONE.
+Значение форы/тоталов выбирается там, где вероятность стороны ближе всего к TARGET_P (≈0,75) — это правило выбора линии.
+Показываются линии с 0,50 ≤ P ≤ 0,80 (справедливый кф 1/P ≥ MIN_ODDS = 1,25): линии с низким кф не предлагаются.
+Уверенность P_low = σ(logit P − σ_m), σ_m — типичная ошибка модели (1X2/ДШ/фора 0,38, тоталы 0,24).
 """
 from __future__ import annotations
 
@@ -24,23 +24,12 @@ def scale(p: float, k: float) -> float:
     return float(1 / (1 + np.exp(-k * logit(p))))
 
 
-def k_range(p: float, market: str, source: str = 'model') -> tuple[float, float]:
-    """Нижняя граница — кф с +5% EV. Верхняя: «модель» — расхождение больше типичной ошибки модели против Pinnacle (1σ);
-    «рынок» — на 3σ шума одной конторы выше порога ценности (дальше — скорее устаревшая линия или новость)."""
-    lo = (1 + C.EV_THRESHOLD) / p
-    if source == 'market':
-        p_low = 1 / (1 + np.exp(-(logit(1 / lo) - 3 * C.SIGMA_MARKET[market])))
-    else:
-        p_low = 1 / (1 + np.exp(-(logit(p) - C.SIGMA[market])))
-    return round(lo, 2), round(float(1 / p_low), 2)
+def visible(p: float, market: str) -> bool:
+    """Линия предлагается: сторона модели (P ≥ 0,5) и справедливый кф не ниже MIN_ODDS. Исход (1X2) — отдельной строкой матча."""
+    return market != '1X2' and C.P_SHOW[0] <= p <= C.P_SHOW[1]
 
 
-def zone(lo: float, hi: float):
-    a, b = max(lo, C.ODDS_ZONE[0]), min(hi, C.ODDS_ZONE[1])
-    return (round(a, 2), round(b, 2)) if a < b else ('', '')
-
-
-def build(P: np.ndarray, kc: dict[str, float], source: str = 'model') -> list[dict]:
+def build(P: np.ndarray, kc: dict[str, float]) -> list[dict]:
     """11 линий матча (слоты 1–11). P — матрица счёта 90 минут (строки — голы хозяев)."""
     i, j = np.indices(P.shape)
     ph, pd_, pa = P[i > j].sum(), np.trace(P), P[i < j].sum()
@@ -48,10 +37,10 @@ def build(P: np.ndarray, kc: dict[str, float], source: str = 'model') -> list[di
 
     def add(slot, market, pick, line, label, p_raw):
         p = scale(p_raw, kc.get(market, 1.0))
-        lo, hi = k_range(p, market, source)
-        zl, zh = zone(lo, hi)
         out.append(dict(slot=slot, market=market, pick=pick, line=line, label=label, p_raw=round(float(p_raw), 4),
-                        p=round(p, 4), k_lo=lo, k_hi=hi, z_lo=zl, z_hi=zh))
+                        p=round(p, 4), k_lo=round(1 / max(p, 1e-6), 2), k_hi='', z_lo='', z_hi='',
+                        p_low=round(float(1 / (1 + np.exp(-(logit(p) - C.SIGMA[market])))), 4),
+                        shown=int(visible(p, market))))
 
     add(1, '1X2', 'H', '', 'П1', ph); add(2, '1X2', 'D', '', 'X', pd_); add(3, '1X2', 'A', '', 'П2', pa)
     add(4, 'DC', '1X', '', '1X', ph + pd_); add(5, 'DC', 'X2', '', 'X2', pd_ + pa); add(6, 'DC', '12', '', '12', ph + pa)
@@ -83,6 +72,12 @@ def build(P: np.ndarray, kc: dict[str, float], source: str = 'model') -> list[di
     return out
 
 
+def tier(p_low: float) -> int:
+    """3 — высокая уверенность, 2 — средняя, 1 — низкая (пороги C.CONF_TIERS)."""
+    hi, mid = C.CONF_TIERS
+    return 3 if p_low >= hi else 2 if p_low >= mid else 1
+
+
 def settle(market: str, pick: str, line, kind: str, hg: int | None, ag: int | None) -> str:
     """'W' / 'L' / 'P'. kind: 'FT' — счёт 90 минут; 'ET' — ничья в основное время (счёт неизвестен); иное — возврат."""
     if kind == 'ET':
@@ -112,10 +107,11 @@ def settle(market: str, pick: str, line, kind: str, hg: int | None, ag: int | No
 
 
 def calibrate(p_raw: np.ndarray, won: np.ndarray) -> tuple[float, int]:
+    """k самокалибровки рынка: максимум правдоподобия σ(k·logit P), сжатие к 1 (n/(n+300)); n — рассчитанные линии (W/L)."""
     ok = ~np.isnan(p_raw)
     x, y = logit(p_raw[ok]), won[ok].astype(float)
     n = len(x)
-    if n < 30:
+    if n < C.CALIB_MIN:
         return 1.0, n
     ks = np.linspace(0.5, 1.6, 221)
     k_hat = float(ks[int(np.argmin([np.sum(np.logaddexp(0, k * x) - y * k * x) for k in ks]))])

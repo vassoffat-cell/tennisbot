@@ -1,11 +1,14 @@
 """Хранилище футбола: Google Таблица «Football» (основной режим) или CSV в папке logs (запасной, на компьютере).
 
 Листы:
-  auto_forecasts — прогноз каждого матча: источник (рынок / модель), λ, вероятности, кф DraftKings, факторы,
-                   результат и закрывающие кф football-data (средний рынок и биржа Betfair) для проверки;
-  auto_lines     — 11 линий матча с диапазоном кф и их расчёт (основа самообучения по рынкам);
+  auto_forecasts — прогноз каждого матча: источник (модель; «рынок» — только старые записи до 08.11.2026), λ, вероятности,
+                   факторы, результат (кф DraftKings / football-data пишутся только как данные, в прогнозе не участвуют);
+  auto_lines     — 11 линий матча (вероятность, уверенность, показана ли) и их расчёт (основа самообучения по рынкам);
   summary        — сводка (пересчитывается каждый запуск);
-  tg_messages    — списки, отправленные кнопкой бота (облако удалит их при следующем обновлении).
+  tg_messages    — списки, отправленные кнопкой бота (облако удалит их при следующем обновлении);
+  day_pick       — ⭐ ставка дня (одна линия на сутки) и её итог;
+  reports        — готовые отчёты (всё время / месяц / турнир) для кнопки «Аналитика»;
+  tg_cache       — последний список прогноза для кнопки «Прогноз 24 ч».
 Числа пишутся как числа (RAW). Новые столбцы — только в конец.
 """
 from __future__ import annotations
@@ -29,11 +32,15 @@ AUTO_RESULT_COLS = ['status', 'hg', 'ag', 'settled', 'logloss']
 AUTO_ODDS_COLS = ['avg_h', 'avg_d', 'avg_a', 'bf_h', 'bf_d', 'bf_a', 'avg_o25', 'avg_u25']
 LINE_COLS = ['created', 'espn_id', 'slot', 'comp', 'comp_name', 'source', 'start_utc', 'start_local', 'home', 'away',
              'market', 'pick', 'line', 'label', 'p_raw', 'p', 'k_lo', 'k_hi', 'z_lo', 'z_hi', 'status', 'result', 'settled',
-             'pnl_lo']
+             'pnl_lo', 'p_low', 'shown']              # новые столбцы — только в конец
 LINE_FCST_COLS = LINE_COLS[LINE_COLS.index('source'):LINE_COLS.index('z_hi') + 1]
 LINE_RESULT_COLS = ['status', 'result', 'settled', 'pnl_lo']
+DAY_COLS = ['date', 'espn_id', 'slot', 'comp_name', 'start_utc', 'start_local', 'home', 'away', 'market', 'label', 'p',
+            'p_low', 'published', 'changes', 'history', 'status', 'result', 'settled']
 SHEETS = {'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS, 'summary': ['показатель', 'значение'],
-          'tg_messages': ['chat_id', 'message_id']}
+          'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS,
+          'reports': ['key', 'kind', 'title', 'text', 'updated'],     # готовые отчёты для кнопки «Аналитика» (бот только читает)
+          'tg_cache': ['key', 'text', 'updated']}                     # последний список прогноза для кнопки «Прогноз 24 ч»
 
 
 def now_utc() -> str:

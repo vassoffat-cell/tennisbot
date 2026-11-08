@@ -77,9 +77,11 @@ ALIASES = {
     'real sociedad de futbol': 'Sociedad', 'olympique de marseille': 'Marseille', 'montpellier hsc': 'Montpellier',
     'racing club de lens': 'Lens', 'rc lens': 'Lens', 'racing genk': 'Genk', 'ajax amsterdam': 'Ajax', 'gazovik orenburg': 'Orenburg',
     'fc baltika kaliningrad': 'Baltika', 'c d nacional': 'Nacional', 'cd nacional': 'Nacional', 'deportivo': 'La Coruna',
+    # ТЗ-001 A (07.11.2026): match() давал None
+    'kvc westerlo': 'Westerlo', 'westerlo': 'Westerlo', 'royal charleroi sc': 'Charleroi', 'royal charleroi': 'Charleroi',
 }
 SUFFIX = r'\s+(united|utd|city|town|county|athletic|rovers|wanderers|albion)$'
-DROP = r'\b(fc|cf|afc|sc|ac|as|ss|ssc|sv|vfl|vfb|tsg|rcd|cd|ud|sd|ca|club|calcio|sk|fk|kv|krc|kaa|bk)\b'
+DROP = r'\b(fc|cf|afc|sc|ac|as|ss|ssc|sv|vfl|vfb|tsg|rcd|cd|ud|sd|ca|club|calcio|sk|fk|kv|kvc|kvk|krc|kaa|bk|rsc|royal|royale)\b'
 
 
 def norm(s: str) -> str:
@@ -115,3 +117,14 @@ def match(espn_name: str, candidates: set[str]) -> str | None:
     if short != core and short in by_core and len(by_core[short]) == 1:
         return by_core[short][0]
     return None
+
+
+def nearest(espn_name: str, candidates: set[str]) -> tuple[str | None, float]:
+    """Ближайший кандидат и сходство (0–1) — для журнала неопознанных (ТЗ-001 B)."""
+    core = _core(espn_name)
+    best = (None, 0.0)
+    for c in candidates:
+        r = difflib.SequenceMatcher(None, core, _core(c)).ratio()
+        if r > best[1]:
+            best = (c, r)
+    return best

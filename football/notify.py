@@ -21,6 +21,20 @@ def _call(method: str, payload: dict | None = None, timeout: int = 30) -> dict:
         return json.loads(r.read().decode())
 
 
+def folded(head: str, items: list[str], limit: int = 3500) -> list[str]:
+    """Турнир: заголовок + матчи в сворачиваемой цитате Telegram (<blockquote expandable>, разворачивается касанием).
+    Длинный турнир делится на несколько цитат, заголовок повторяется с пометкой «продолжение»."""
+    out, cur, h = [], [], head
+    for it in items:
+        if cur and sum(len(x) + 2 for x in cur) + len(it) > limit:
+            out.append(f'{h}\n<blockquote expandable>' + '\n\n'.join(cur) + '</blockquote>')
+            cur, h = [], head + ' (продолжение)'
+        cur.append(it)
+    if cur:
+        out.append(f'{h}\n<blockquote expandable>' + '\n\n'.join(cur) + '</blockquote>')
+    return out
+
+
 def _pack(blocks: list[str], limit: int = 3800) -> list[str]:
     """Склеить блоки в сообщения не длиннее limit, не разрывая блок (HTML-теги внутри блока не рвутся)."""
     out, cur = [], ''
@@ -82,3 +96,47 @@ def send(text: str, pre: bool = False) -> int:
     if pre:
         blocks = [f'<pre>{b}</pre>' for b in blocks]
     return send_blocks(blocks)
+
+
+def edit(messages: list, text: str) -> int:
+    """Изменить текст уже отправленных сообщений [(chat_id, message_id)] (HTML). Возвращает число изменённых."""
+    if not C.BOT_TOKEN:
+        print(text)
+        return 0
+    n = 0
+    for chat, mid in messages:
+        try:
+            _call('editMessageText', {'chat_id': int(chat), 'message_id': int(mid), 'text': text, 'parse_mode': 'HTML',
+                                      'disable_web_page_preview': True})
+            n += 1
+        except Exception as e:
+            if 'not modified' not in str(e):
+                print(f'Telegram: не изменено ({e})')
+    return n
+
+
+def pin(messages: list, on: bool = True) -> int:
+    """Закрепить (on) или открепить сообщения бота в чате. Закрепление — без звука."""
+    if not C.BOT_TOKEN:
+        return 0
+    n = 0
+    for chat, mid in messages:
+        try:
+            if on:
+                _call('pinChatMessage', {'chat_id': int(chat), 'message_id': int(mid), 'disable_notification': True})
+            else:
+                _call('unpinChatMessage', {'chat_id': int(chat), 'message_id': int(mid)})
+            n += 1
+        except Exception as e:
+            print(f'Telegram: закрепление не выполнено ({e})')
+    return n
+
+
+def plural(n: int, one: str, few: str, many: str) -> str:
+    """Согласование с числом: 1 матч, 2 матча, 5 матчей (ТЗ-001 C)."""
+    n = abs(int(n))
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return few
+    return many
