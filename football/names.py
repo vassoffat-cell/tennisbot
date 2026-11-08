@@ -18,6 +18,7 @@ ALIASES = {
     'swansea city': 'Swansea', 'cardiff city': 'Cardiff', 'norwich city': 'Norwich', 'birmingham city': 'Birmingham',
     'blackburn rovers': 'Blackburn', 'bolton wanderers': 'Bolton', 'derby county': 'Derby', 'charlton athletic': 'Charlton',
     'lincoln city': 'Lincoln', 'oxford united': 'Oxford', 'luton town': 'Luton', 'plymouth argyle': 'Plymouth',
+    'kidderminster harriers': 'Kidderminster', 'accrington stanley': 'Accrington', 'peterborough united': 'Peterboro',
     # Испания
     'atletico madrid': 'Ath Madrid', 'atletico de madrid': 'Ath Madrid', 'athletic club': 'Ath Bilbao',
     'athletic bilbao': 'Ath Bilbao', 'real sociedad': 'Sociedad', 'celta vigo': 'Celta', 'celta de vigo': 'Celta',
