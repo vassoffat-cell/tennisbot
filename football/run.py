@@ -626,11 +626,12 @@ def run(dry: bool = False) -> str:
         yday = (loc - pd.Timedelta(days=1)).date()
         import coverage
         try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
+            late = coverage.late_ids(R.matches(af), yday, rt)
             cov = coverage.report_rows(R.matches(af), R.lines(ld), af, yday, rt, R.fmt)
         except Exception as ex:
-            cov = [f'⚠️ контроль охвата: {type(ex).__name__}']
+            late, cov = set(), [f'⚠️ контроль охвата: {type(ex).__name__}']
         notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
-                                   notes=notes, daily_day=yday, extra=cov))
+                                   notes=notes, daily_day=yday, extra=cov, late=late))
         rt['last_daily'] = today
         log.append('суточный отчёт отправлен')
         try:

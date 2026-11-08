@@ -23,6 +23,15 @@ def _last(name: str) -> str:
     return norm(str(name).split()[-1]) if str(name).strip() else ''
 
 
+def late_ids(M: pd.DataFrame, daily_day, rt: dict) -> set[str]:
+    """id матчей прошлых дней, рассчитанных после своего суточного отчёта (вызывать ДО report_rows)."""
+    if 'reported' not in rt or not len(M):
+        return set()
+    rep = {str(J.num(x)) for x in rt['reported']}
+    ids = {str(J.num(x)) for x in M[M.day < daily_day].espn_id}
+    return ids - rep
+
+
 def report_rows(M: pd.DataFrame, L: pd.DataFrame, af: pd.DataFrame, daily_day, rt: dict, fmt) -> list[str]:
     """Строки суточного отчёта: дорасчитано за прошлые дни и ждут результата. Обновляет rt['reported']."""
     if 'reported' not in rt:                                        # первый отчёт с учётом: всё прошлое уже «показано»
@@ -44,7 +53,7 @@ def report_rows(M: pd.DataFrame, L: pd.DataFrame, af: pd.DataFrame, daily_day, r
         st = pd.to_datetime(pend.start_utc, errors='coerce')
         old = pend[st < now - pd.Timedelta(hours=36)]
         if len(old):
-            out.append(f'⏳ Ждут результата: {len(old)} (начались > 36 ч назад) — бот перепроверяет каждые 2 ч')
+            pass                                                    # список — свёрнутый «▸ Ждут результата» (report.day_lists)
     keep = now.date() - pd.Timedelta(days=60).to_pytimedelta()
     rt['reported'] = sorted({str(J.num(r.espn_id)) for r in M.itertuples() if keep <= r.day <= daily_day}) if len(M) else []
     return out

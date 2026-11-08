@@ -157,19 +157,75 @@ def outcome_alarm(af: pd.DataFrame, rt: dict) -> list[str]:
 
 
 # ======================================================================== единый отчёт
-def _day_items(d: pd.DataFrame) -> list[str]:
-    """Матчи суток для свёрнутого списка: ✅/❌ тур, фаворит модели, P, счёт с его позиции."""
+def _day_items(d: pd.DataFrame, lc: dict) -> list[str]:
+    """Каждый прогноз: ✅/❌ (в счёт), ⚪ снятие/не состоялся (не в счёт), ⏳ ждёт итога, 🕒 не начат; фаворит модели, P, счёт,
+    линии угадано/рассчитано (lc: espn_id → (угадано, рассчитано, показано))."""
     e, out = notify.esc, []
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     for r in d.itertuples():
-        fav = 1 if r.p1n >= 0.5 else 2
-        sc = str(r.score) if fav == 1 else ' '.join('-'.join(x.split('-')[::-1]) for x in str(r.score).split())
-        out.append(f"{'✅' if r.hit else '❌'} {e(r.tour)} {e(r.player1 if fav == 1 else r.player2)} {fmt(r.pmax * 100)}% · {e(sc)}")
+        p1 = J.num(r.p1); fav = 1 if p1 >= 0.5 else 2
+        name, pm = (r.player1 if fav == 1 else r.player2), max(p1, 1 - p1)
+        st, sc = str(r.status), str(r.score) if not _blank(r.score) else ''
+        if fav == 2 and sc:
+            sc = ' '.join('-'.join(x.split('-')[::-1]) for x in sc.split())
+        won, ln, shown = lc.get(str(J.num(r.espn_id)), (0, 0, 0))
+        lt = f' · линии {won}/{ln}' if ln else (f' · линий {shown}' if shown else '')
+        if st == 'FIN':
+            mark, tail = ('✅' if J.num(r.winner) == fav else '❌'), sc
+        elif st == 'RET':
+            mark, tail = '⚪', f'{sc} снятие — не в счёт'.strip()
+        elif st in ('VOID', 'W/O'):
+            mark, tail = '⚪', 'не состоялся — не в счёт'
+        elif pd.to_datetime(r.start_utc, errors='coerce') > now:
+            mark, tail = '🕒', 'не начат (перенос)'
+        else:
+            mark, tail = '⏳', 'ждёт итога'
+        out.append(f'{mark} {e(r.tour)} {e(name)} {fmt(pm * 100)}% · {e(tail)}{lt}')
+    return out
+
+
+def day_lists(af: pd.DataFrame, ld: pd.DataFrame, daily_day, late: set | None = None) -> list[str]:
+    """Свёрнутые списки суточного отчёта (охват — каждый прогноз под контролем):
+    ▸ Матчи за сутки — все прогнозы суток со статусом; ▸ Дорасчитано за прошлые дни — доигранные после своего отчёта;
+    ▸ Ждут результата — прогнозы прошлых дней без итога (> 36 ч)."""
+    if not len(af):
+        return []
+    A = af[af.source.astype(str) == 'model'].copy() if 'source' in af.columns else af.copy()
+    A['day'] = (pd.to_datetime(A.start_utc, errors='coerce') + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).dt.date
+    A['sid'] = A.espn_id.map(lambda x: str(J.num(x)))
+    A = A.sort_values('start_utc')
+    lc = {}
+    if len(ld):
+        X = ld.copy(); X['sid'] = X.espn_id.map(lambda x: str(J.num(x)))
+        X = X[[_shown(r) for r in X.itertuples()]]
+        for sid, g in X.groupby('sid'):
+            res = g.result.astype(str)
+            lc[sid] = (int((res == 'W').sum()), int(res.isin(['W', 'L']).sum()), len(g))
+    out = []
+    d = A[A.day == daily_day]
+    if len(d):
+        it = _day_items(d, lc)
+        cnt = {m: sum(x.startswith(m) for x in it) for m in ('✅', '❌', '⏳', '🕒', '⚪')}
+        head = ' · '.join(f'{m} {n}' for m, n in cnt.items() if n)
+        out += notify.folded(f'▸ Матчи за сутки ({len(d)}: {head})', it)
+    if late:
+        x = A[A.sid.isin(late)]
+        if len(x):
+            out += notify.folded(f'▸ Дорасчитано за прошлые дни ({len(x)})',
+                                 [f'{r.day:%d.%m} {s}' for r, s in zip(x.itertuples(), _day_items(x, lc))])
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
+    old = A[(A.day < daily_day) & A.settled.map(_blank).astype(bool)
+            & (pd.to_datetime(A.start_utc, errors='coerce') < now - pd.Timedelta(hours=36))]
+    if len(old):
+        out += notify.folded(f'▸ Ждут результата ({len(old)})',
+                             [f'{r.day:%d.%m} {s}' for r, s in zip(old.itertuples(), _day_items(old, lc))])
     return out
 
 
 def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal: dict | None = None,
           kprev: dict | None = None, off: dict | None = None, notes: list[str] | None = None,
-          daily_day=None, period: str = 'всего', extra: list[str] | None = None) -> list[str]:
+          daily_day=None, period: str = 'всего', extra: list[str] | None = None,
+          late: set | None = None) -> list[str]:
     """Блоки отчёта (HTML): заголовок со статусом, таблица «Линия (цель) | Кол-во | %» (rtable), короткие примечания;
     у суточного (daily_day) — строки «сутки / 7 дней / всего» и свёрнутый список матчей суток."""
     e = notify.esc
@@ -269,9 +325,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     status = {3: '🟢 цели доказаны', 2: '🟡 цели ещё не доказаны', 1: '🔴 нужен разбор'}[worst]
     blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + '\n'.join(tail) if tail else '')]
     if daily_day is not None:
-        d = M[M.day == daily_day]
-        if len(d):
-            blocks += notify.folded(f'▸ Матчи за сутки ({len(d)})', _day_items(d))
+        blocks += day_lists(af, ld, daily_day, late)
     return blocks
 
 
