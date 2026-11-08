@@ -2,15 +2,15 @@
  "list_messages": [
   [
    570704006,
-   131
+   135
   ],
   [
    570704006,
-   132
+   136
   ],
   [
    570704006,
-   133
+   137
   ]
  ],
  "list_match_ids": [
@@ -131,13 +131,51 @@
     126
    ]
   ],
-  "changes": 0,
-  "history": [],
-  "espn_id": "401879813",
+  "changes": 1,
+  "history": [
+   "изменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)"
+  ],
+  "espn_id": "401931108",
   "slot": 8,
-  "p": 0.7999,
+  "p": 0.7506334615576835,
   "label": "ТМ3.5",
-  "start_utc": "2026-11-08 17:45",
-  "match": "FC Baltika Kaliningrad — Dynamo Makhachkala"
+  "start_utc": "2026-11-08 17:15",
+  "match": "Oldham Athletic — Sheffield Wednesday",
+  "text": "⭐ <b>Ставка дня · футбол · 08.11</b>\n🏆 Кубок Англии · 🕒 22:15\n<b>Oldham Athletic — Sheffield Wednesday</b>\n<b>ТМ3.5</b> — вероятность 75% (модель)\nкф 1xBet 1,55\n✅ выгодна с уверенностью 98%\nизменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)",
+  "ask": [
+   [
+    570704006,
+    134
+   ]
+  ],
+  "accepted": "",
+  "key": [
+   "401931108",
+   "TOT",
+   "U",
+   "3.5"
+  ],
+  "tier": 1,
+  "best": {
+   "espn_id": "401931108",
+   "comp_name": "Кубок Англии",
+   "start_utc": "2026-11-08 17:15",
+   "start_local": "08.11 22:15",
+   "home": "Oldham Athletic",
+   "away": "Sheffield Wednesday",
+   "market": "TOT",
+   "pick": "U",
+   "line": 3.5,
+   "label": "ТМ3.5",
+   "p": 0.7506334615576835,
+   "p_src": "model",
+   "p_model": 0.7506334615576835,
+   "p_push": 0.0,
+   "k": 1.55,
+   "k_src": "api",
+   "source": "api",
+   "sigma": 0.24,
+   "slot": 8
+  }
  }
 }
