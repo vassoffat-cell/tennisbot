@@ -66,6 +66,7 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186625,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,214906,236955,Claire Liu,Tatiana Prozorova,6-2 6-4,STATUS_FINAL
 186622,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,205925,220465,Aliaksandra Sasnovich,Katie Volynets,6-3 6-2,STATUS_FINAL
 186617,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,223168,200748,Mary Stoiana,Venus Williams,6-2 6-3,STATUS_FINAL
+186620,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,206289,221803,Maria Sakkari,Carol Young Suh Lee,6-1 6-4,STATUS_FINAL
 186581,2026-11-03,Chennai,Chennai Open,Round 1,1,0,221407,267439,Oksana Selekhmeteva,Teodora Kostovic,6-4 6-3,STATUS_FINAL
 186583,2026-11-03,Chennai,Chennai Open,Round 1,1,0,220466,213525,Joanna Garland,Jil Teichmann,6-3 6-4,STATUS_FINAL
 186577,2026-11-03,Chennai,Chennai Open,Round 1,1,0,221905,215910,Robin Montgomery,Panna Udvardy,6-4 1-6 6-1,STATUS_FINAL

@@ -82,6 +82,7 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186451,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,210506,208103,Alex Michelsen,Jiri Lehecka,6-7 6-2 6-4,STATUS_FINAL
 186457,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,126203,126127,Taylor Fritz,Benjamin Bonzi,3-6 6-3 6-4,STATUS_FINAL
 186470,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,105526,210338,Jan Lennard Struff,Arthur Gea,7-6 6-3,STATUS_FINAL
+186473,2026-11-03,Paris,Rolex Paris Masters,Round 1,1,0,210530,118808,Learner Tien,Daniel Vallejo,6-3 5-7 7-5,STATUS_FINAL
 186477,2026-11-03,Paris,Rolex Paris Masters,Round 2,2,0,210097,111815,Ben Shelton,Cameron Norrie,6-3 6-4,STATUS_FINAL
 186484,2026-11-03,Paris,Rolex Paris Masters,Round 2,2,0,134770,212588,Casper Ruud,Rafael Jodar,6-3 6-4,STATUS_FINAL
 186488,2026-11-04,Paris,Rolex Paris Masters,Round 2,2,0,126239,208233,Arthur Rinderknech,Mattia Bellucci,6-4 6-1,STATUS_FINAL
