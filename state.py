@@ -224,27 +224,36 @@ def build(tour: str, verbose: bool = True) -> Model:
     return m
 
 
-def save(model: Model) -> None:
-    C.STATE.mkdir(exist_ok=True)
-    st = model.state
+def _plain(st: TourState) -> None:
     st.elo, st.n, st.elo_s, st.n_s = dict(st.elo), dict(st.n), dict(st.elo_s), dict(st.n_s)
     st.serve, st.dates, st.h2h = dict(st.serve), dict(st.dates), {k: v for k, v in st.h2h.items()}
     st.ge, st.ge_s = dict(st.ge), dict(st.ge_s)
-    with open(C.STATE / f'{model.tour}.pkl', 'wb') as f:
-        pickle.dump(model, f)
+
+
+def _restore(st: TourState) -> None:
+    """Словари со значениями по умолчанию (новый игрок / новая пара) — после загрузки и после сохранения."""
+    st.elo = defaultdict(lambda: 1500.0, st.elo); st.n = defaultdict(int, st.n)
+    st.elo_s = defaultdict(lambda: 1500.0, st.elo_s); st.n_s = defaultdict(int, st.n_s)
+    st.serve = defaultdict(deque, st.serve); st.dates = defaultdict(list, st.dates)
+    st.h2h = defaultdict(lambda: [0, 0], st.h2h)
+    st.ge = defaultdict(lambda: 1500.0, getattr(st, 'ge', {})); st.ge_s = defaultdict(lambda: 1500.0, getattr(st, 'ge_s', {}))
+
+
+def save(model: Model) -> None:
+    """Сохранить модель. Состояние в памяти после сохранения остаётся рабочим (словари по умолчанию восстанавливаются)."""
+    C.STATE.mkdir(exist_ok=True)
+    _plain(model.state)
+    try:
+        with open(C.STATE / f'{model.tour}.pkl', 'wb') as f:
+            pickle.dump(model, f)
+    finally:
+        _restore(model.state)
 
 
 def load(tour: str) -> Model:
     with open(C.STATE / f'{tour}.pkl', 'rb') as f:
         m: Model = pickle.load(f)
-    st = m.state
-    st.elo = defaultdict(lambda: 1500.0, st.elo); st.n = defaultdict(int, st.n)
-    st.elo_s = defaultdict(lambda: 1500.0, st.elo_s); st.n_s = defaultdict(int, st.n_s)
-    st.serve = defaultdict(deque, st.serve); st.dates = defaultdict(list, st.dates)
-    st.h2h = defaultdict(lambda: [0, 0], st.h2h)
     if getattr(m, 'version', 1) != VERSION:
         raise ValueError(f'модель версии {getattr(m, "version", 1)}, нужна {VERSION}')
-    st.ge = defaultdict(lambda: 1500.0, st.ge); st.ge_s = defaultdict(lambda: 1500.0, st.ge_s)
+    _restore(m.state)
     return m
-
-
