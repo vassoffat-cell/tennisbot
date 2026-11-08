@@ -625,7 +625,10 @@ def run(dry: bool = False) -> str:
             notes.append(f'файлы football-data по {last:%d.%m} — ждём файлы недели')
         yday = (loc - pd.Timedelta(days=1)).date()
         import coverage
-        cov = coverage.report_rows(R.matches(af), R.lines(ld), af, yday, rt, R.fmt)        # дорасчитано / ждут результата
+        try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
+            cov = coverage.report_rows(R.matches(af), R.lines(ld), af, yday, rt, R.fmt)
+        except Exception as ex:
+            cov = [f'⚠️ контроль охвата: {type(ex).__name__}']
         notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
                                    notes=notes, daily_day=yday, extra=cov))
         rt['last_daily'] = today

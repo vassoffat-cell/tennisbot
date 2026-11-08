@@ -388,7 +388,12 @@ def settle_auto(store: J.Store, by_id: dict[str, espn.EspnMatch]) -> pd.DataFram
             upd.append(i)
     import coverage                                               # запасной итог: TennisMyLife для зависших > 48 ч
     for tour in TOURS:
-        for i, x in coverage.tml_settle(df.drop(index=upd), tour).items():
+        try:
+            tml = coverage.tml_settle(df.drop(index=upd), tour)
+        except Exception as ex:
+            print(f'TML-итоги {tour}: {type(ex).__name__} {ex}')
+            tml = {}
+        for i, x in tml.items():
             p1 = J.num(df.at[i, 'p1'])
             pw = p1 if x['winner'] == 1 else 1 - p1
             df.loc[i, J.AUTO_RESULT_COLS] = [x['status'], x['winner'], x['score'], today,
@@ -625,7 +630,10 @@ def run(dry: bool = False) -> str:
                                                   for x in retrain_log if 'точность' in x))
         yday = (loc - pd.Timedelta(days=1)).date()
         import coverage
-        cov = coverage.report_rows(R.matches(auto), R.lines(ldf), auto, yday, rt, R.fmt)   # дорасчитано / ждут результата
+        try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
+            cov = coverage.report_rows(R.matches(auto), R.lines(ldf), auto, yday, rt, R.fmt)
+        except Exception as ex:
+            cov = [f'⚠️ контроль охвата: {type(ex).__name__}']
         notify.send_blocks(R.build(auto, ldf, store.read('day_pick'), f'📈 Теннис · отчёт · {yday:%d.%m}', kcal=kcal, extra=cov,
                                    kprev=kprev, off=off, notes=notes, daily_day=yday))
         rt['last_daily'] = today
