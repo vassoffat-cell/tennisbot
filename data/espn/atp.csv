@@ -114,3 +114,5 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186534,2026-11-08,Stockholm,Bybit Stockholm Open,Round 1,1,0,207678,111200,Juan Manuel Cerundolo,Elias Ymer,6-1 7-6,STATUS_FINAL
 186528,2026-11-08,Stockholm,Bybit Stockholm Open,Round 1,1,0,202058,144719,Thiago Agustin Tirante,Jaume Munar,7-6 6-3,STATUS_FINAL
 186507,2026-11-08,Paris,Rolex Paris Masters,Final,7,0,207989,210097,Carlos Alcaraz,Ben Shelton,7-6 7-5,STATUS_FINAL
+186535,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,210506,105870,Alex Michelsen,Yannick Hanfmann,6-2 6-3,STATUS_FINAL
+186529,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,111815,105902,Cameron Norrie,James Duckworth,7-5 6-0,STATUS_FINAL
