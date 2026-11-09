@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   136
+   137
   ]
  ],
  "list_match_ids": [
@@ -18,7 +18,7 @@
  "last_daily": "2026-11-09",
  "last_retrain": "2026-11-09",
  "last_files": "2026-11-05",
- "last_reminder": "",
+ "last_reminder": "2026-11-09",
  "files": {
   "WTA": "2026-11-05",
   "ATP": "2026-11-05"
