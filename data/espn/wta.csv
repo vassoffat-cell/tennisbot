@@ -67,6 +67,7 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186622,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,205925,220465,Aliaksandra Sasnovich,Katie Volynets,6-3 6-2,STATUS_FINAL
 186617,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,223168,200748,Mary Stoiana,Venus Williams,6-2 6-3,STATUS_FINAL
 186620,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,206289,221803,Maria Sakkari,Carol Young Suh Lee,6-1 6-4,STATUS_FINAL
+186618,2026-11-02,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,216133,220453,Xin Yu Wang,Adithya Karunaratne,6-1 6-1,STATUS_FINAL
 186581,2026-11-03,Chennai,Chennai Open,Round 1,1,0,221407,267439,Oksana Selekhmeteva,Teodora Kostovic,6-4 6-3,STATUS_FINAL
 186583,2026-11-03,Chennai,Chennai Open,Round 1,1,0,220466,213525,Joanna Garland,Jil Teichmann,6-3 6-4,STATUS_FINAL
 186577,2026-11-03,Chennai,Chennai Open,Round 1,1,0,221905,215910,Robin Montgomery,Panna Udvardy,6-4 1-6 6-1,STATUS_FINAL
@@ -85,6 +86,12 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186571,2026-11-03,Chennai,Chennai Open,Round 1,1,0,266722,203514,Maaya Rajeshwaran Revathi,Katarzyna Kawa,6-4 2-6 7-6,STATUS_FINAL
 186569,2026-11-03,Chennai,Chennai Open,Round 1,1,0,215988,216566,Mai Hontama,Mananchaya Sawangkaew,7-6 6-2,STATUS_FINAL
 186580,2026-11-03,Chennai,Chennai Open,Round 1,1,0,215899,246481,Simona Waltert,Sahaja Yamalapalli,6-4 3-6 6-3,STATUS_FINAL
+186575,2026-11-03,Chennai,Chennai Open,Round 1,1,0,259871,211846,Jeline Vandromme,Kyoka Okamura,7-5 6-1,STATUS_FINAL
+186573,2026-11-03,Chennai,Chennai Open,Round 1,1,0,216579,222258,Weronika Falkowska,Linda Fruhvirtova,7-6 6-4,STATUS_FINAL
+186614,2026-11-03,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,260168,214643,Alexandra Shubladze,Liudmila Samsonova,5-7 6-1 6-2,STATUS_FINAL
+186586,2026-11-03,Chennai,Chennai Open,Round 1,1,0,222145,222866,Janice Tjen,Katherine Hui,6-1 6-2,STATUS_FINAL
+186578,2026-11-03,Chennai,Chennai Open,Round 1,1,0,214593,260951,Lucrezia Stefanini,Rada Zolotareva,6-2 6-2,STATUS_FINAL
+186568,2026-11-03,Chennai,Chennai Open,Round 1,1,0,214992,215614,Zhibek Kulambayeva,Mei Yamaguchi,6-4 7-5,STATUS_FINAL
 186616,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,222045,221406,Antonia Ruzic,Alina Charaeva,7-6 6-4,STATUS_FINAL
 186627,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 1,1,0,261963,213550,Mika Stojsavljevic,Sofia Kenin,6-3 4-6 6-4,STATUS_FINAL
 186633,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,205925,221883,Aliaksandra Sasnovich,Talia Gibson,6-1 5-7 7-6,STATUS_FINAL
@@ -92,6 +99,8 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186574,2026-11-04,Chennai,Chennai Open,Round 2,2,0,221236,221407,Polina Kudermetova,Oksana Selekhmeteva,6-3 6-0,STATUS_FINAL
 186632,2026-11-04,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,206289,233741,Maria Sakkari,Maya Joint,4-6 6-3 6-3,STATUS_FINAL
 186576,2026-11-04,Chennai,Chennai Open,Round 2,2,0,222145,220466,Janice Tjen,Joanna Garland,7-6 6-1,STATUS_FINAL
+186572,2026-11-04,Chennai,Chennai Open,Round 2,2,0,221905,259871,Robin Montgomery,Jeline Vandromme,6-4 3-6 7-5,STATUS_FINAL
+186570,2026-11-04,Chennai,Chennai Open,Round 2,2,0,266722,216579,Maaya Rajeshwaran Revathi,Weronika Falkowska,6-4 6-3,STATUS_FINAL
 186631,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,222045,216133,Antonia Ruzic,Xin Yu Wang,6-3 4-6 6-2,STATUS_FINAL
 186639,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,220309,261963,Zeynep Sonmez,Mika Stojsavljevic,7-6 6-4,STATUS_FINAL
 186590,2026-11-05,Chennai,Chennai Open,Round 2,2,0,202663,220416,Magda Linette,Moyuka Uchijima,7-6 6-0,STATUS_FINAL
@@ -99,6 +108,8 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186585,2026-11-05,Chennai,Chennai Open,Round 2,2,0,214593,215899,Lucrezia Stefanini,Simona Waltert,6-2 6-3,STATUS_FINAL
 186588,2026-11-05,Chennai,Chennai Open,Round 2,2,0,220435,261038,Anastasia Zakharova,Vaishnavi Adkar,6-3 6-0,STATUS_FINAL
 186641,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,201514,223168,Sorana Cirstea,Mary Stoiana,7-5 6-1,STATUS_FINAL
+186640,2026-11-05,Hong Kong,Prudential Hong Kong Tennis Open,Round 2,2,0,260168,239389,Alexandra Shubladze,Elena Pridankina,6-7 6-1 6-3,STATUS_FINAL
+186591,2026-11-05,Chennai,Chennai Open,Round 2,2,0,215988,214992,Mai Hontama,Zhibek Kulambayeva,4-6 6-4 7-5,STATUS_FINAL
 186636,2026-11-06,Hong Kong,Prudential Hong Kong Tennis Open,Quarterfinal,5,0,214906,220309,Claire Liu,Zeynep Sonmez,6-1 6-4,STATUS_FINAL
 186592,2026-11-06,Chennai,Chennai Open,Quarterfinal,5,0,222145,221236,Janice Tjen,Polina Kudermetova,5-7 6-4 6-2,STATUS_FINAL
 186635,2026-11-06,Hong Kong,Prudential Hong Kong Tennis Open,Quarterfinal,5,0,206289,205925,Maria Sakkari,Aliaksandra Sasnovich,6-2 6-3,STATUS_FINAL
@@ -106,9 +117,11 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186634,2026-11-06,Hong Kong,Prudential Hong Kong Tennis Open,Quarterfinal,5,0,223253,222045,Alexandra Eala,Antonia Ruzic,7-6 7-5,STATUS_FINAL
 186596,2026-11-06,Chennai,Chennai Open,Quarterfinal,5,0,202663,215988,Magda Linette,Mai Hontama,4-6 7-5 6-4,STATUS_FINAL
 186595,2026-11-06,Chennai,Chennai Open,Quarterfinal,5,0,220435,214593,Anastasia Zakharova,Lucrezia Stefanini,6-2 5-2,STATUS_RETIRED
+186637,2026-11-06,Hong Kong,Prudential Hong Kong Tennis Open,Quarterfinal,5,0,260168,201514,Alexandra Shubladze,Sorana Cirstea,6-2 6-3,STATUS_FINAL
 186643,2026-11-07,Hong Kong,Prudential Hong Kong Tennis Open,Semifinal,6,0,223253,206289,Alexandra Eala,Maria Sakkari,7-5 3-6 6-4,STATUS_FINAL
 186594,2026-11-07,Chennai,Chennai Open,Semifinal,6,0,222145,221905,Janice Tjen,Robin Montgomery,6-3 6-4,STATUS_FINAL
 186593,2026-11-07,Chennai,Chennai Open,Semifinal,6,0,202663,220435,Magda Linette,Anastasia Zakharova,2-6 6-2 6-3,STATUS_FINAL
+186644,2026-11-07,Hong Kong,Prudential Hong Kong Tennis Open,Semifinal,6,0,214906,260168,Claire Liu,Alexandra Shubladze,7-5 6-4,STATUS_FINAL
 187373,2026-11-08,Indian Wells,FAGE WTA Finals Indian Wells,Group Stage,1,0,222328,216146,Linda Noskova,Marta Kostyuk,6-2 6-4,STATUS_FINAL
 187374,2026-11-08,Indian Wells,FAGE WTA Finals Indian Wells,Group Stage,1,0,221103,202468,Coco Gauff,Jessica Pegula,6-4 6-7 6-2,STATUS_FINAL
 186642,2026-11-08,Hong Kong,Prudential Hong Kong Tennis Open,Final,7,0,214906,223253,Claire Liu,Alexandra Eala,6-3 6-0,STATUS_FINAL
