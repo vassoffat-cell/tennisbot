@@ -1,8 +1,23 @@
 {
- "list_messages": [],
- "list_match_ids": [],
+ "list_messages": [
+  [
+   570704006,
+   126
+  ]
+ ],
+ "list_match_ids": [
+  "186522",
+  "186529",
+  "186530",
+  "186535",
+  "186536",
+  "186537",
+  "186598",
+  "187381",
+  "187382"
+ ],
  "last_daily": "2026-11-08",
- "last_retrain": "2026-11-08",
+ "last_retrain": "2026-11-09",
  "last_files": "2026-11-05",
  "last_reminder": "",
  "files": {
@@ -56,21 +71,55 @@
  "kcal_date": "2026-11-08",
  "breaker": {},
  "day_pick": {
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "msgs": [
    [
     570704006,
-    80
+    124
    ]
   ],
+  "ask": [],
   "changes": 0,
   "history": [],
-  "espn_id": "186642",
-  "slot": 5,
-  "p": 0.7897,
-  "label": "ИТ1 Б 4.5",
-  "start_utc": "2026-11-08 08:00",
-  "match": "Claire Liu — Alexandra Eala"
+  "accepted": "",
+  "rejected": [],
+  "shots": [],
+  "screenshots": 0,
+  "text": "⭐ <b>Ставка дня · теннис · 09.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 23:30\n<b>Leo Borg — Toby Samuel</b>\n<b>ТМ 27.5</b> — вероятность 71% (модель)\nкф 1xBet неизвестен — пришлите скриншот, если он ниже 1,35\nуверенность в выгодности — после кф\n<i>Котировок по матчу нет — линия модели с запасом по кф.</i>\n📈 Ставки дня: 1/1 (100%)",
+  "espn_id": "186522",
+  "slot": 0,
+  "key": [
+   "186522",
+   "TOTAL",
+   "U",
+   "27.5"
+  ],
+  "p": 0.7093369023578693,
+  "tier": 3,
+  "label": "ТМ 27.5",
+  "start_utc": "2026-11-09 18:30",
+  "match": "Leo Borg — Toby Samuel",
+  "best": {
+   "espn_id": "186522",
+   "tour": "ATP",
+   "event": "Bybit Stockholm Open",
+   "start_utc": "2026-11-09 18:30",
+   "start_local": "09.11 23:30",
+   "player1": "Leo Borg",
+   "player2": "Toby Samuel",
+   "market": "TOTAL",
+   "pick": "U",
+   "line": 27.5,
+   "label": "ТМ 27.5",
+   "p": 0.7093369023578693,
+   "p_src": "model",
+   "p_model": 0.7093369023578693,
+   "p_push": 0.0,
+   "k": null,
+   "k_src": null,
+   "source": "model",
+   "slot": 0
+  }
  },
  "model_version": 4
 }
