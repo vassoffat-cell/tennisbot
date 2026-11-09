@@ -757,3 +757,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401875003,ita.1,league,ITA,I1,2026-11-08 19:45,Fiorentina,Juventus,Fiorentina,Juventus,2,2,FT,2026-27-italian-serie-a,0
 401876404,fra.1,league,FRA,F1,2026-11-08 19:45,Lens,Marseille,Lens,Marseille,1,2,FT,2026-27-ligue-1,0
 401882816,esp.1,league,ESP,SP1,2026-11-08 20:00,Atlético Madrid,Barcelona,Ath Madrid,Barcelona,1,2,FT,2026-27-laliga,0
+401885397,por.1,league,POR,P1,2026-11-08 20:30,Rio Ave,Braga,Rio Ave,Sp Braga,0,1,FT,2026-27-portuguese-primeira-liga,0
+401885401,por.1,league,POR,P1,2026-11-08 20:30,Estrela,Benfica,Estrela,Benfica,2,3,FT,2026-27-portuguese-primeira-liga,0
