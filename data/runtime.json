@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   132
+   134
   ]
  ],
  "list_match_ids": [
@@ -77,17 +77,12 @@
     124
    ]
   ],
-  "ask": [
-   [
-    570704006,
-    131
-   ]
-  ],
+  "ask": [],
   "changes": 1,
   "history": [
    "по скриншоту в 10:57: было ТМ 27.5 71% (Leo Borg — Toby Samuel)"
   ],
-  "accepted": "",
+  "accepted": "yes",
   "rejected": [],
   "shots": [
    {
@@ -532,7 +527,7 @@
    }
   ],
   "screenshots": 1,
-  "text": "⭐ <b>Ставка дня · теннис · 09.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 23:30\n<b>Leo Borg — Toby Samuel</b>\n<b>ТМ 21.5</b> — вероятность 67% (1xBet без маржи)\nкф 1xBet 1,42 (скриншот)\n⚠️ уверенность в выгодности 27% (ниже 90%)\nпо скриншоту в 10:57: было ТМ 27.5 71% (Leo Borg — Toby Samuel)\n📈 Ставки дня: 1/1 (100%)",
+  "text": "⭐ <b>Ставка дня · теннис · 09.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 23:30\n<b>Leo Borg — Toby Samuel</b>\n<b>ТМ 21.5</b> — вероятность 67% (1xBet без маржи)\nкф 1xBet 1,42 (скриншот)\n⚠️ уверенность в выгодности 27% (ниже 90%)\nпо скриншоту в 10:57: было ТМ 27.5 71% (Leo Borg — Toby Samuel)\n📈 Ставки дня: 1/1 (100%)\n✅ Принята в 10:59",
   "espn_id": "186522",
   "slot": 0,
   "key": [
@@ -566,7 +561,9 @@
    "k_src": "screenshot",
    "source": "screenshot",
    "slot": 0
-  }
+  },
+  "accepted_at": "10:59",
+  "accepted_shown": true
  },
  "model_version": 4
 }
