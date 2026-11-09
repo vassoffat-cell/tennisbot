@@ -76,57 +76,21 @@
   "BTTS": "2026-11-08"
  },
  "day_pick": {
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "msgs": [
    [
     570704006,
-    126
+    207
    ]
   ],
-  "changes": 2,
-  "history": [
-   "изменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)",
-   "изменено в 14:34: было ТМ3.5 75% (Oldham Athletic — Sheffield Wednesday)"
-  ],
-  "espn_id": "401879813",
-  "slot": 7,
-  "p": 0.7076476099971031,
-  "label": "Ф2(+1.5)",
-  "start_utc": "2026-11-08 17:45",
-  "match": "FC Baltika Kaliningrad — Dynamo Makhachkala",
-  "text": "⭐ <b>Ставка дня · футбол · 08.11</b>\n🏆 РПЛ · 🕒 22:45\n<b>FC Baltika Kaliningrad — Dynamo Makhachkala</b>\n<b>Ф2(+1.5)</b> — вероятность 71% (Pinnacle без маржи)\nкф 1xBet ≈ 1,35 (оценка по Pinnacle)\n⚠️ уверенность в выгодности 14% (ниже 90%)\nизменено в 14:32: было ТМ3.5 80% (FC Baltika Kaliningrad — Dynamo Makhachkala)\nизменено в 14:34: было ТМ3.5 75% (Oldham Athletic — Sheffield Wednesday)\n✅ Принята в 14:51",
   "ask": [],
-  "accepted": "yes",
-  "key": [
-   "401879813",
-   "AH",
-   "A",
-   "1.5"
-  ],
-  "tier": 2,
-  "best": {
-   "espn_id": "401879813",
-   "comp_name": "РПЛ",
-   "start_utc": "2026-11-08 17:45",
-   "start_local": "08.11 22:45",
-   "home": "FC Baltika Kaliningrad",
-   "away": "Dynamo Makhachkala",
-   "market": "AH",
-   "pick": "A",
-   "line": 1.5,
-   "label": "Ф2(+1.5)",
-   "p": 0.7076476099971031,
-   "p_src": "pinnacle",
-   "p_model": 0.6759690646016003,
-   "p_push": 0.0,
-   "k": 1.352,
-   "k_src": "est",
-   "source": "api",
-   "sigma": 0.38,
-   "slot": 7
-  },
-  "accepted_at": "14:51",
-  "accepted_shown": true
+  "changes": 0,
+  "history": [],
+  "accepted": "",
+  "rejected": [],
+  "shots": [],
+  "screenshots": 0,
+  "text": "⭐ <b>Ставка дня · футбол · 09.11</b>\nСегодня ставки дня нет: нет линий с кф 1xBet ≥ 1,35 и вероятностью ≥ 60% — пришлите скриншот 1xBet любого матча из списка.\n📈 Ставки дня: 1/1 (100%) · с кф: 1, отдача +35.2%"
  },
  "model_version": 2
 }
