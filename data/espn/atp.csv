@@ -116,3 +116,5 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186507,2026-11-08,Paris,Rolex Paris Masters,Final,7,0,207989,210097,Carlos Alcaraz,Ben Shelton,7-6 7-5,STATUS_FINAL
 186535,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,210506,105870,Alex Michelsen,Yannick Hanfmann,6-2 6-3,STATUS_FINAL
 186529,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,111815,105902,Cameron Norrie,James Duckworth,7-5 6-0,STATUS_FINAL
+186537,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,127339,207830,Borna Gojo,Tomas Machac,6-3 6-4,STATUS_FINAL
+186536,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,200005,118808,Ugo Humbert,Daniel Vallejo,6-4 6-3,STATUS_FINAL
