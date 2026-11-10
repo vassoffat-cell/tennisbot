@@ -201,6 +201,19 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
             out += api_offers(m, row, ev, flip, r)
         out += model_offers(m, row)
     out = [o for o in out if o['market'] not in off]
+    try:                                                   # 👥 вето надёжного капера (ТЗ-005): несовместимые кандидаты — вне выбора
+        import tips
+        keep = []
+        for o in out:
+            bad, good = tips.conflicts(o['espn_id'], DISTS.get(o['espn_id']), o['market'], o['pick'], o['line'])
+            o['tips_for'] = good
+            if bad:
+                log.append(f"👥 вето: {o['home']} — {o['away']} {o['label']} (против надёжного капера)")
+            else:
+                keep.append(o)
+        out = keep
+    except Exception as e:
+        log.append(f'👥 каперы в ставке дня: сбой {e.__class__.__name__}')
     return PK.choose(out)
 
 
@@ -215,6 +228,13 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
            f"<b>{e(c['label'])}</b> — вероятность {c['p'] * 100:.0f}% ({src})", e(PK.k_text(c)), e(PK.group_text(c))]
     if c.get('tier') == 3:
         out.append('<i>Котировок по матчу нет — линия модели с запасом по кф.</i>')
+    try:
+        import tips
+        tl = tips.match_line(str(c['espn_id']))
+        if tl:
+            out.append(e(tl))
+    except Exception:
+        pass
     out += [e(h) for h in hist]
     if score:
         out.append(score)

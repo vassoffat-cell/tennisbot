@@ -39,6 +39,7 @@ import news
 import notify
 import report as R
 import runtime
+import tips
 
 LEAGUE_KINDS = ('league',)
 SRC_RU = {'market': 'рынок', 'model': 'модель'}
@@ -491,6 +492,12 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
         if star and (str(row['espn_id']), int(x['slot'])) == star[:2]:
             s = '⭐ ' + s
         out.append(s)
+    try:
+        tl = tips.match_line(str(row['espn_id']))
+        if tl:
+            out.append(e(tl))
+    except Exception:
+        pass
     if star and str(row['espn_id']) == star[0] and not star[1]:          # ставка дня вне линий списка
         out.append(f'⭐ <b>{e(star[2])}</b> — {star[3] * 100:.0f}%')
     return '\n'.join(out)
@@ -676,6 +683,13 @@ def run(dry: bool = False) -> str:
     kcal, kprev, knote = daily_k(rt, ld, daily_due and not dry)
     off, bmsg = R.breaker(ld, rt.get('breaker', {}))
     items, skipped = forecast(matches, mp, world, sched, train, af, kcal)
+    if not dry:                                                        # 👥 каперы: итоги прошлых, новые посты (ТЗ-005)
+        try:
+            nt = tips.settle(results_index(st))
+            tips.collect(items, log)
+            log[-1] += f'; рассчитано {nt}'
+        except Exception as ex:
+            log.append(f'👥 каперы: сбой {ex.__class__.__name__}: {ex}')
     if dry:
         print('\n'.join(log)); publish_list(rt, None, items, off, dry=True); print('\n'.join(skipped))
         return f'dry {time.time() - t0:.0f} с'
@@ -705,6 +719,10 @@ def run(dry: bool = False) -> str:
             cov = coverage.report_rows(R.matches(af), R.lines(ld), af, yday, rt, R.fmt)
         except Exception as ex:
             late, cov = set(), [f'⚠️ контроль охвата: {type(ex).__name__}']
+        try:
+            cov = cov + [tips.report_block()]
+        except Exception as ex:
+            cov = cov + [f'👥 каперы: сбой {type(ex).__name__}']
         notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
                                    notes=notes, daily_day=yday, extra=cov, late=late))
         rt['last_daily'] = today
@@ -767,7 +785,8 @@ def run(dry: bool = False) -> str:
         reps = pd.concat([reps, pd.DataFrame([dict(key='learn', kind='learn', title='🧠 Самообучение',
                                                    text=learning.report(store, rt, 'Самообучение · футбол'), updated=J.now_utc()),
                                               dict(key='audit', kind='audit', title='🔎 Аудит',
-                                                   text=learning.audit_report(store, week_table(store, af, ld)),
+                                                   text=learning.audit_report(store, week_table(store, af, ld))
+                                                   + '\n' + tips.report_block(),
                                                    updated=J.now_utc())])],
                          ignore_index=True)
     except Exception as ex:
@@ -790,6 +809,8 @@ HISTORY = [
      'исход 49,05% → 49,45%; ⭐ ставка дня (бэктест 78,4%), отчёты, ступени, ⛔/🚨'),
     ('2026-11-08 14:35', 'внедрено', 'Пакет №3: ставка дня по правилу C',
      'кф 1xBet ≥ 1,35, справедливая P (Pinnacle / 1xBet без маржи), уверенность в выгодности; скриншоты; кнопки ✅/🔄'),
+    ('2026-11-11 03:00', 'внедрено', 'ТЗ-005: 👥 каперы — 5 Telegram-каналов и nb-bet.com',
+     'сбор раз в 2 ч, ставки на наши матчи, P модели; точность и z против модели; спор; вето надёжного (n≥30, z≥1,64)'),
 ]
 
 
