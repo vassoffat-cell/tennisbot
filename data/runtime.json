@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   193
+   195
   ]
  ],
  "list_match_ids": [
@@ -85,7 +85,7 @@
    "отказ в 08:45: было ТБ 21 69% (Holger Rune — Zizou Bergs)",
    "по скриншоту в 21:21: было ТБ 21.5 64% (Holger Rune — Zizou Bergs)"
   ],
-  "accepted": "",
+  "accepted": "yes",
   "rejected": [
    [
     "186525",
@@ -892,7 +892,7 @@
    "source": "screenshot",
    "slot": 0
   },
-  "accepted_at": "08:46",
+  "accepted_at": "21:23",
   "accepted_shown": true
  },
  "model_version": 4,
