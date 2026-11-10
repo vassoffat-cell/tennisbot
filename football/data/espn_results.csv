@@ -765,3 +765,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401885397,por.1,league,POR,P1,2026-11-08 20:30,Rio Ave,Braga,Rio Ave,Sp Braga,0,1,FT,2026-27-portuguese-primeira-liga,0
 401885401,por.1,league,POR,P1,2026-11-08 20:30,Estrela,Benfica,Estrela,Benfica,2,3,FT,2026-27-portuguese-primeira-liga,0
 401931098,eng.fa,cup,ENG,E0,2026-11-09 19:30,Plymouth Parkway,Berkhamsted,,,2,1,ET,first-round,0
+401928514,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 18:00,Anaitasuna,Alavés,,Alaves,1,6,FT,first-round,0
+401928516,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 18:00,CD Pamplona,Eibar,,Eibar,0,3,FT,first-round,0
