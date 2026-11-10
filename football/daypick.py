@@ -212,7 +212,7 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
         return f'{head}\nСегодня ставки дня нет: {e(reason)}.' + (f'\n{score}' if score else '')
     src = {'pinnacle': 'Pinnacle без маржи', 'blend': '1xBet без маржи', 'model': 'модель'}[c['p_src']]
     out = [head, f"🏆 {e(c['comp_name'])} · 🕒 {e(str(c['start_local'])[6:])}", f"<b>{e(c['home'])} — {e(c['away'])}</b>",
-           f"<b>{e(c['label'])}</b> — вероятность {c['p'] * 100:.0f}% ({src})", e(PK.k_text(c)), e(PK.conf_text(c))]
+           f"<b>{e(c['label'])}</b> — вероятность {c['p'] * 100:.0f}% ({src})", e(PK.k_text(c)), e(PK.group_text(c))]
     if c.get('tier') == 3:
         out.append('<i>Котировок по матчу нет — линия модели с запасом по кф.</i>')
     out += [e(h) for h in hist]
