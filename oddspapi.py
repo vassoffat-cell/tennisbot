@@ -105,7 +105,8 @@ def probe() -> str:
             pin = (books.get('pinnacle') or {}).get('markets', {})
             win = pin.get(WINNER, {}).get('outcomes', {})
             k = [_price(win.get(OUT1, {})), _price(win.get(OUT2, {}))]
-            info.update(odds_fixture=cand[0]['fixtureId'], books=sorted(books)[:40], pin_markets=sorted(pin)[:30], pin_winner=k)
+            info.update(odds_fixture=cand[0]['fixtureId'], books=sorted(books)[:40], pin_markets=sorted(pin)[:30], pin_winner=k,
+                        raw121=pin.get(WINNER))
             msg = (f"; Pinnacle на исход: {cand[0].get('participant1Name')} — {cand[0].get('participant2Name')} {k}, "
                    f"1xBet в списке: {'да' if any('1xbet' in b for b in books) else 'нет'}")
         f.write_text(json.dumps(info, ensure_ascii=False), encoding='utf-8')
