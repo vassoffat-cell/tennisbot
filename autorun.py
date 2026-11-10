@@ -251,11 +251,13 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
         daypick.DISTS[str(m.id)] = (D, ids[0][1], ids[1][1])          # для линий ставки дня по правилу C
         f = FC.fair(md, snap, best_of, tb, p_override=p1)
         p_lines = p1                                                   # линии — по модели (A1 трогает только исход)
+        pin_used = False
         if C.A1_PIN_OUTCOME.get(tour):
             pin = pin_ml(m, ids[0][1], ids[1][1], m.start.strftime('%Y-%m-%d %H:%M'))
             if pin:
                 import pick as PK
                 p1 = min(max(PK.fair(p_raw, PK.shin(list(pin))[0], 'pinnacle'), 0.01), 0.99)
+                pin_used = True
         n1, n2 = int(st.n.get(ids[0][0], 0)), int(st.n.get(ids[1][0], 0))
         row = dict(created=J.now_utc(), espn_id=m.id, tour=tour.upper(), event=m.event, location=m.location, surface=surface,
                    round=m.round, best_of=best_of, start_utc=m.start.strftime('%Y-%m-%d %H:%M'), start_local=J.to_local(m.start),
@@ -269,6 +271,16 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
         for k in J.EXACT_COLS:
             row[k] = round(f[k], 4) if k in f else ''
         lns = LN.build(D, p_lines, kc, LN.sigma_for(min(n1, n2)))
+        if pin_used and best_of == 3 and C.A1B_PIN_HCP.get(tour):     # A1b: фора — из распределения со смесью Pinnacle+модель
+            try:
+                import markets as MK
+                _, Db = FC.distribution(md, snap, best_of, tb, p_override=p1)
+                hb = {x['slot']: x for x in LN.build(Db, p1, kc, LN.sigma_for(min(n1, n2))) if x['market'] == 'HCP'}
+                pm1 = MK.price(D, MK.mk_handicap(True, float(hb[3]['line'])))[0]      # p_raw — модель на той же линии (для k)
+                hb[3]['p_raw'], hb[4]['p_raw'] = round(pm1, 4), round(1 - pm1, 4)
+                lns = [hb.get(x['slot'], x) if x['market'] == 'HCP' else x for x in lns]
+            except Exception:
+                pass                                                   # сбой A1b — остаётся фора модели
         for x in lns:
             x.update(espn_id=m.id, tour=row['tour'], event=m.event, level=level, round=m.round, surface=surface,
                      start_utc=row['start_utc'], start_local=row['start_local'], player1=row['player1'], player2=row['player2'],
