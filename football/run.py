@@ -782,6 +782,7 @@ def run(dry: bool = False) -> str:
         print('\n'.join(log)); publish_list(rt, None, items, off, dry=True); print('\n'.join(skipped))
         return f'dry {time.time() - t0:.0f} с'
     rt['breaker'] = off
+    off = {**off, **{mk: 'A5' for mk in C.MARKETS_OFF}}               # A5: рынки, выключенные автопилотом (в состояние ⛔ не пишутся)
     alarms = bmsg + R.outcome_alarm(af, rt) + R.daypick_alarms(store.read('day_pick'), rt)
     if alarms:
         notify.send_blocks(alarms)

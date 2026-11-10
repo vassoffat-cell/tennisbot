@@ -26,7 +26,7 @@ def scale(p: float, k: float) -> float:
 
 def visible(p: float, market: str) -> bool:
     """Линия предлагается: сторона модели (P ≥ 0,5) и справедливый кф не ниже MIN_ODDS. Исход (1X2) — отдельной строкой матча."""
-    return market != '1X2' and C.P_SHOW[0] <= p <= C.P_SHOW[1]
+    return market != '1X2' and market not in C.MARKETS_OFF and C.P_SHOW[0] <= p <= C.P_SHOW[1]
 
 
 def build(P: np.ndarray, kc: dict[str, float]) -> list[dict]:
