@@ -767,3 +767,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401931098,eng.fa,cup,ENG,E0,2026-11-09 19:30,Plymouth Parkway,Berkhamsted,,,2,1,ET,first-round,0
 401928514,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 18:00,Anaitasuna,Alavés,,Alaves,1,6,FT,first-round,0
 401928516,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 18:00,CD Pamplona,Eibar,,Eibar,0,3,FT,first-round,0
+401928519,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 19:00,Amorebieta,UD Logroñés,Amorebieta,Logrones,1,0,FT,first-round,0
+401928550,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 19:00,Trival Valderas,Leganés,,Leganes,0,1,FT,first-round,0
