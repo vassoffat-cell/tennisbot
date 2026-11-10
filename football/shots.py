@@ -21,7 +21,7 @@ import daypick as DP
 import odds as OD
 import pick as PK
 
-LEAGUE_WORDS = {'rus.1': ('росси',), 'eng.1': ('англи',), 'eng.fa': ('англи', 'кубок'), 'esp.1': ('испани',),
+LEAGUE_WORDS = {'ned.1': ('нидерланд',), 'eng.1': ('англи',), 'eng.fa': ('англи', 'кубок'), 'esp.1': ('испани',),
                 'esp.copa_del_rey': ('испани', 'кубок'), 'fra.1': ('франци',), 'fra.coupe_de_france': ('франци', 'кубок'),
                 'ger.1': ('германи',), 'ger.dfb_pokal': ('германи', 'кубок'), 'ita.1': ('итали',), 'ita.coppa_italia': ('итали', 'кубок'),
                 'por.1': ('португали',), 'por.taca.portugal': ('португали', 'кубок'), 'tur.1': ('турци',),

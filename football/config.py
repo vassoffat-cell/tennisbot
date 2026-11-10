@@ -55,11 +55,13 @@ COMPETITIONS = {
     'ger.1': ('Бундеслига', 'GER', 'D1', 'league'), 'ger.dfb_pokal': ('Кубок Германии', 'GER', 'D1', 'cup'),
     'ita.1': ('Серия A', 'ITA', 'I1', 'league'), 'ita.coppa_italia': ('Кубок Италии', 'ITA', 'I1', 'cup'),
     'por.1': ('Примейра', 'POR', 'P1', 'league'), 'por.taca.portugal': ('Кубок Португалии', 'POR', 'P1', 'cup'),
-    'rus.1': ('РПЛ', 'RUS', 'RUS', 'league'), 'tur.1': ('Суперлига Турции', 'TUR', 'T1', 'league'),
+    'ned.1': ('Эредивизи', 'NED', 'N1', 'league'), 'tur.1': ('Суперлига Турции', 'TUR', 'T1', 'league'),
     'uefa.champions': ('Лига чемпионов', None, None, 'uefa'), 'uefa.europa': ('Лига Европы', None, None, 'uefa'),
     'uefa.europa.conf': ('Лига конференций', None, None, 'uefa'),
 }
-# данные NED/BEL/SCO/GRE из football-data остаются в модели — для силы соперников в еврокубках
+# 10.11.2026: РПЛ исключена (football-data RUS не обновляется с 02.08, нет ударов в створ) → Эредивизи (N1 из all-euro-data:
+# фаворит Pinnacle 56,8% — 3-я по предсказуемости лига файла, 3,14 гола/матч, удары в створ 100%). Данные RUS остаются в базе.
+# данные BEL/SCO/GRE из football-data остаются в модели — для силы соперников в еврокубках
 
 # априорная сила стран (лог-шкала голов) для еврокубков; уточняется по результатам еврокубков из ESPN
 COUNTRY_PRIOR = {'ENG': 0.30, 'ESP': 0.25, 'ITA': 0.22, 'GER': 0.22, 'FRA': 0.12, 'POR': 0.08, 'NED': 0.05,
@@ -78,8 +80,8 @@ FACTORS_MODEL = {'const': 0.0078, 'own_eu_prev': -0.0406, 'opp_eu_prev': 0.0345,
                  'opp_short': -0.0415, 'both_short': -0.0216}
 
 # файлы football-data: прямые ссылки (сезон с июля) и страница со списком — на случай, если ссылку сменят
-FD_LINKS = {'EURO': ('all-euro-data-{y}-{y1}.xlsx', 'https://www.football-data.co.uk/mmz4281/{yy}{yy1}/all-euro-data-{y}-{y1}.xlsx'),
-            'RUS': ('RUS.xlsx', 'https://www.football-data.co.uk/new/RUS.xlsx')}
+FD_LINKS = {'EURO': ('all-euro-data-{y}-{y1}.xlsx', 'https://www.football-data.co.uk/mmz4281/{yy}{yy1}/all-euro-data-{y}-{y1}.xlsx')}
+# RUS.xlsx больше не нужен (10.11.2026: Россия исключена)
 FD_PAGE = 'https://www.football-data.co.uk/downloadm.php'
 FRESH_DAYS = 14            # файл, где последний матч старше 14 дней, — устаревший
 NEWS = DATA / 'news.csv.gz'  # новости ESPN (смена тренера, травмы) — копятся для будущей проверки (F4)

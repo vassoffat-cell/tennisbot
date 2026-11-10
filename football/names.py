@@ -61,6 +61,12 @@ ALIASES = {
     'union st gilloise': 'St. Gilloise', 'union saint gilloise': 'St. Gilloise', 'royale union saint gilloise': 'St. Gilloise',
     'standard liege': 'Standard', 'sint truiden': 'St Truiden', 'zulte waregem': 'Waregem', 'raal la louviere': 'RAAL La Louviere',
     'la louviere': 'RAAL La Louviere', 'lommel': 'Lommel SK', 'kv kortrijk': 'Kortrijk', 'sporting charleroi': 'Charleroi',
+    # Нидерланды (ESPN → football-data)
+    'fortuna sittard': 'For Sittard', 'nec': 'Nijmegen', 'nec nijmegen': 'Nijmegen', 'pec zwolle': 'Zwolle',
+    'heracles almelo': 'Heracles', 'ajax amsterdam': 'Ajax', 'feyenoord rotterdam': 'Feyenoord', 'psv': 'PSV Eindhoven',
+    'az': 'AZ Alkmaar', 'fc twente': 'Twente', 'fc utrecht': 'Utrecht', 'fc groningen': 'Groningen', 'sc heerenveen': 'Heerenveen',
+    'fc volendam': 'Volendam', 'sc cambuur': 'Cambuur', 'ado den haag': 'Den Haag', 'sbv excelsior': 'Excelsior',
+    'sc telstar': 'Telstar', 'telstar 1963': 'Telstar',
     # Шотландия
     'heart of midlothian': 'Hearts', 'st mirren': 'St Mirren', 'st johnstone': 'St Johnstone',
     # Россия

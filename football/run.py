@@ -541,8 +541,9 @@ def take_inbox(rt: dict) -> tuple[bool, list[str]]:
 
 
 def reminder_due(rt: dict) -> bool:
+    """С понедельника — сразу после суточного отчёта (11:30), раз в день, пока не придёт файл недели."""
     loc = _local()
-    if not (12 <= loc.hour < 14):
+    if loc.hour < 11 or rt.get('last_daily') != C.wday(loc).isoformat():
         return False
     monday = (loc.date() - dt.timedelta(days=loc.weekday())).isoformat()
     have = rt.get('files', {})
@@ -558,10 +559,10 @@ def reminder_text(rt: dict) -> str:
     for k, n, u in _season_links():
         ok = (have.get(k) or '2000-01-01') >= monday
         rows.append(f'✅ {notify.esc(n)} — получен' if ok else f'⬜ {notify.esc(n)} — {u}')
-    return ('⏰ <b>Пора прислать файлы football-data</b>\n' + '\n'.join(rows) +
+    return ('⏰ <b>Пора прислать файл football-data</b> (один — все лиги сезона; Россия больше не нужна)\n' + '\n'.join(rows) +
             f'\nЕсли ссылка не открывается — страница со списком: {C.FD_PAGE}\n'
             'Скачайте и отправьте сюда (название не важно — бот проверит содержимое). '
-            'Напоминание повторится завтра, пока не придут все файлы.')
+            'Напоминание повторится завтра, пока не придёт файл.')
 
 
 # ======================================================================== цикл
@@ -634,6 +635,16 @@ def run(dry: bool = False) -> str:
                                    notes=notes, daily_day=yday, extra=cov, late=late))
         rt['last_daily'] = today
         log.append('суточный отчёт отправлен')
+        if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
+            d0 = yday - dt.timedelta(days=6)
+            a_, l_, d_ = R.week(af, ld, dpk, d0, yday)
+            notify.send_blocks(R.build(a_, l_, d_, f'📅 Футбол · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
+                                       period='за неделю'))
+            log.append('недельный отчёт отправлен')
+        if reminder_due(rt):                                      # запрос файла — сразу после отчётов
+            notify.send_blocks([reminder_text(rt)])
+            rt['last_reminder'] = today
+            log.append('напоминание о файлах отправлено')
         try:
             log.append(news.collect())
         except Exception as ex:

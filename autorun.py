@@ -542,9 +542,9 @@ def take_inbox(rt: dict) -> tuple[bool, list[str]]:
 
 
 def reminder_due(rt: dict) -> bool:
-    """С понедельника в 12:00 по Ташкенту, раз в день, пока на этой неделе не пришли ОБА файла (WTA и ATP)."""
+    """С понедельника — сразу после суточного отчёта (11:00), раз в день, пока на этой неделе не пришли ОБА файла (WTA и ATP)."""
     loc = _local()
-    if not (12 <= loc.hour < 14):
+    if loc.hour < 11 or rt.get('last_daily') != C.wday(loc).isoformat():
         return False
     monday = (loc.date() - dt.timedelta(days=loc.weekday())).isoformat()
     have = rt.get('files', {})
@@ -640,6 +640,16 @@ def run(dry: bool = False) -> str:
                                    kprev=kprev, off=off, notes=notes, daily_day=yday))
         rt['last_daily'] = today
         log.append('суточный отчёт отправлен')
+        if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
+            d0 = yday - dt.timedelta(days=6)
+            a_, l_, d_ = R.week(auto, ldf, store.read('day_pick'), d0, yday)
+            notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
+                                       period='за неделю'))
+            log.append('недельный отчёт отправлен')
+        if reminder_due(rt):                                      # запрос файлов — сразу после отчётов
+            notify.send_blocks([reminder_text(rt)])
+            rt['last_reminder'] = today
+            log.append('напоминание о файлах отправлено')
         try:
             log.append(news.collect())
         except Exception as e:

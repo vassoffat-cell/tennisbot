@@ -83,7 +83,8 @@ def classify(sheets: dict[str, pd.DataFrame]) -> str:
         if divs & {'E0', 'SP1', 'I1', 'D1', 'F1'}:
             return 'EURO'
     if 'Country' in first and 'Home' in first:
-        return 'RUS'
+        raise WrongFile('Россия исключена с 10.11.2026 (данные football-data по ней не обновляются) — этот файл больше не нужен, '
+                        'нужен только all-euro-data')
     raise WrongFile('это не файл football-data.co.uk (нет столбцов HomeTeam/FTHG или Country/Home)')
 
 

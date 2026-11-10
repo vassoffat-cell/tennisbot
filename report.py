@@ -356,6 +356,19 @@ def ops_rows(dp: pd.DataFrame) -> list:
     return out
 
 
+def week(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, d0, d1):
+    """Выборка недели по суткам системы (08:00 → 08:00) с d0 по d1 включительно — для недельного отчёта по понедельникам."""
+    def f(df):
+        if df.empty:
+            return df
+        dd = (pd.to_datetime(df.start_utc, errors='coerce') + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - C.DAY_START_HOUR)).dt.date
+        return df[(dd >= d0) & (dd <= d1)]
+    if len(dp):
+        dd = pd.to_datetime(dp.date, errors='coerce').dt.date
+        dp = dp[(dd >= d0) & (dd <= d1)]
+    return f(af), f(ld), dp
+
+
 def filtered(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, month: str | None = None, comp: str | None = None):
     def f(df, col_date='start_utc'):
         if df.empty:

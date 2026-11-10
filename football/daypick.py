@@ -28,7 +28,7 @@ SPORT_KEYS = {'eng.1': 'soccer_epl', 'eng.fa': 'soccer_fa_cup', 'esp.1': 'soccer
               'fra.coupe_de_france': 'soccer_france_coupe_de_france', 'ger.1': 'soccer_germany_bundesliga',
               'ger.dfb_pokal': 'soccer_germany_dfb_pokal', 'ita.1': 'soccer_italy_serie_a', 'ita.coppa_italia': 'soccer_italy_coppa_italia',
               'por.1': 'soccer_portugal_primeira_liga', 'por.taca.portugal': 'soccer_portugal_taca_de_portugal',
-              'rus.1': 'soccer_russia_premier_league', 'tur.1': 'soccer_turkey_super_league',
+              'ned.1': 'soccer_netherlands_eredivisie', 'tur.1': 'soccer_turkey_super_league',
               'uefa.champions': 'soccer_uefa_champs_league', 'uefa.europa': 'soccer_uefa_europa_league',
               'uefa.europa.conf': 'soccer_uefa_europa_conference_league'}
 API_MARKETS = ('h2h', 'totals')
