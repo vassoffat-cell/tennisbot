@@ -279,7 +279,7 @@ def title(row: dict, x: dict) -> str:
     return LINE_TITLE[int(x['slot'])].format(p1=_last(row['player1']), p2=_last(row['player2']), line=line, label=label)
 
 
-def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple | None) -> str:
+def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple | None, xb: dict | None = None) -> str:
     """Матч: время · раунд · игроки; исход (всегда); линии с кф ≥ 1,25 от самой уверенной:
     🟢 жирным — высокая, 🟡 обычным — средняя, ⚪ курсивом — низкая уверенность; ⭐ — ставка дня."""
     e = notify.esc
@@ -296,6 +296,12 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
         out.append(t)
     if star and str(row['espn_id']) == star[0] and not star[1]:          # ставка дня вне 7 линий списка
         out.append(f'⭐ <b>{notify.esc(star[2])}</b> — {star[3] * 100:.0f}%')
+    if xb:                                                             # ТЗ-004: лучшая линия матча по кф 1xBet со скриншота
+        x = xb['best']
+        ev = x.get('edge') if x.get('edge') is not None else x.get('ev')
+        out.append(f"💡 1xBet: <b>{e(x['label'])}</b> · {x['k']:.2f} · {x['p'] * 100:.0f}%".replace('.', ',')
+                   + (f" · {'📈' if x.get('group') == 'value' else 'МО'} {ev * 100:+.0f}%" if ev is not None else '')
+                   + (f" | П1 {xb['k1']:.2f} · П2 {xb['k2']:.2f}".replace('.', ',') if xb.get('k1') else ''))
     return '\n'.join(out)
 
 
@@ -305,18 +311,38 @@ def conf_line(text: str, p_low: float) -> str:
     return {3: f'🟢 <b>{t_html}</b>', 2: f'🟡 {t_html}', 1: f'⚪ <i>{t_html}</i>'}[t]
 
 
-def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
+def screenshot_best(rt: dict) -> dict:
+    """ТЗ-004: по матчам со скриншотами сегодняшней проверки — лучшая ставка (pick.choose: перевес → правило C) и П1/П2."""
+    r = rt.get('r4') or {}
+    if r.get('date') != C.wday(_local()).isoformat() or not r.get('offers'):
+        return {}
+    import pick as PK
+    out = {}
+    by: dict[str, list] = {}
+    for o in r['offers']:
+        by.setdefault(str(o['espn_id']), []).append(dict(o))
+    for mid, offs in by.items():
+        ch = PK.choose(offs)
+        if not ch:
+            continue
+        k = r.get('got', {}).get(mid) or [None, None]
+        out[mid] = dict(best=ch[0], k1=k[0], k2=k[1])
+    return out
+
+
+def list_blocks(items: list[tuple], off: dict, star: tuple | None, xb: dict | None = None) -> list[str]:
     """Список на 24 ч: заголовок турнира один раз, под ним матчи по времени; турниры — по времени первого матча."""
     today = _local().strftime('%d.%m')
     groups: dict[tuple, list] = {}
     for m, row, lns in sorted(items, key=lambda t: t[1]['start_utc']):
         groups.setdefault((row['tour'], row['event'], row.get('level'), row['surface']), []).append(
-            match_block(row, lns, today, off, star))
+            match_block(row, lns, today, off, star, (xb or {}).get(str(row['espn_id']))))
     if not groups:
         return []
     n = sum(len(v) for v in groups.values())
     blocks = [f"📋 <b>Прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · {_local().strftime('%H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
-              + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')]
+              + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')
+              + ('\n💡 — лучшая линия по кф 1xBet со скриншота: кф · вероятность · МО (матожидание) или 📈 перевес' if xb else '')]
     for (tour, event, level, surface), ms in groups.items():
         head = (f"🏆 <b>{notify.esc(tour)} {LEVEL_RU.get(str(level), str(level or ''))} · {notify.esc(event)}</b> · "
                 f"{SURF_RU.get(surface, surface)}")
@@ -330,7 +356,11 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     dp = rt.get('day_pick') or {}
     star = ((str(dp['espn_id']), int(dp.get('slot') or 0), str(dp.get('label', '')), float(dp.get('p', 0)))
             if dp.get('espn_id') and dp.get('date') == C.wday(_local()).isoformat() else None)
-    blocks = list_blocks(items, off, star)
+    try:
+        xb = screenshot_best(rt)
+    except Exception:
+        xb = {}
+    blocks = list_blocks(items, off, star, xb)
     ids = sorted(m.id for m, _, _ in items)
     if dry:
         print('\n\n'.join(blocks))
