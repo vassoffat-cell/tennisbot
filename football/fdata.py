@@ -161,4 +161,9 @@ def training_set(espn: pd.DataFrame | None) -> pd.DataFrame:
         return df
     add = pd.DataFrame(dict(div=e['div'], season='espn', date=e.date, time='', home=e.home_fd, away=e.away_fd,
                             hg=e.hg.astype(float), ag=e.ag.astype(float), country=e.country))
+    if C.SHOTS.exists():                         # T30: удары в створ ESPN (сверка 10.11: 98,8% совпадают с football-data, r = 0,999)
+        sh = pd.read_csv(C.SHOTS, dtype={'event': str}).drop_duplicates('event', keep='last').set_index('event')
+        ids = e.id.astype(str).values
+        add['hst'] = [sh.hst.get(i, np.nan) for i in ids]
+        add['ast'] = [sh.ast.get(i, np.nan) for i in ids]
     return pd.concat([df, add], ignore_index=True).sort_values('date', kind='stable')

@@ -614,6 +614,8 @@ def take_inbox(rt: dict) -> tuple[bool, list[str]]:
 def reminder_due(rt: dict) -> bool:
     """С понедельника — сразу после суточного отчёта (11:30), раз в день, пока не придёт файл недели."""
     loc = _local()
+    if not C.FD_FILES_REQUIRED:                # T30: результаты и удары в створ — из ESPN, файл football-data не нужен
+        return False
     if loc.hour < 11 or rt.get('last_daily') != C.wday(loc).isoformat():
         return False
     monday = (loc.date() - dt.timedelta(days=loc.weekday())).isoformat()
@@ -694,7 +696,8 @@ def run(dry: bool = False) -> str:
                          f'{notify.plural(mp.out_base, "команда", "команды", "команд")}')
         last = base.date.max()
         if (loc.normalize() - last).days > 9:
-            notes.append(f'файлы football-data по {last:%d.%m} — ждём файлы недели')
+            notes.append(f'football-data по {last:%d.%m}; дальше — результаты и удары ESPN') if not C.FD_FILES_REQUIRED \
+                else notes.append(f'файлы football-data по {last:%d.%m} — ждём файлы недели')
         yday = C.wday(loc) - dt.timedelta(days=1)                     # прошлые сутки 08:00 → 08:00
         import coverage
         try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
