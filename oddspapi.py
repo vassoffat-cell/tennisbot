@@ -73,8 +73,10 @@ def pinnacle_ml(items: list[tuple], day: dt.date, same_name, log: list[str]) -> 
                 c['calls'] += 1
                 js = _get('/odds', dict(fixtureId=fid))
                 pin = ((js.get('bookmakerOdds') or {}).get('pinnacle') or {}).get('markets', {}).get(WINNER, {}).get('outcomes', {})
-                c['odds'][fid] = [_price(pin.get(OUT1, {})), _price(pin.get(OUT2, {}))]
-            k = c['odds'][fid]
+                k = [_price(pin.get(OUT1, {})), _price(pin.get(OUT2, {}))]
+                if None not in k:                                # пустое не кэшируем: рынок мог быть закрыт временно
+                    c['odds'][fid] = k
+            k = c['odds'].get(fid)
             if k and None not in k:
                 out[mid] = (k[1], k[0]) if flip else (k[0], k[1])
         log.append(f'OddsPapi: Pinnacle по {len(out)} матчам, запросов за сутки {c["calls"]}/{DAILY_MAX}')
@@ -97,7 +99,9 @@ def probe() -> str:
         fx = _get('/fixtures', dict(sportId=TENNIS, **{'from': day.isoformat(), 'to': (day + dt.timedelta(days=1)).isoformat()}))
         data = fx if isinstance(fx, list) else (fx.get('data') or [])
         info = dict(n=len(data), sample=data[:3])
+        now = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:%M')
         cand = [x for x in data if x.get('hasOdds') and (x.get('externalProviders') or {}).get('pinnacleId')]
+        cand.sort(key=lambda x: (str(x.get('startTime', '')) < now, str(x.get('startTime', ''))))   # не начавшиеся — первыми
         msg = ''
         if cand:                                                   # 1 запрос: проверка разбора котировок Pinnacle (рынок 121)
             js = _get('/odds', dict(fixtureId=cand[0]['fixtureId']))
@@ -105,8 +109,7 @@ def probe() -> str:
             pin = (books.get('pinnacle') or {}).get('markets', {})
             win = pin.get(WINNER, {}).get('outcomes', {})
             k = [_price(win.get(OUT1, {})), _price(win.get(OUT2, {}))]
-            info.update(odds_fixture=cand[0]['fixtureId'], books=sorted(books)[:40], pin_markets=sorted(pin)[:30], pin_winner=k,
-                        raw121=pin.get(WINNER))
+            info.update(odds_fixture=cand[0]['fixtureId'], books=sorted(books)[:40], pin_markets=sorted(pin)[:30], pin_winner=k)
             msg = (f"; Pinnacle на исход: {cand[0].get('participant1Name')} — {cand[0].get('participant2Name')} {k}, "
                    f"1xBet в списке: {'да' if any('1xbet' in b for b in books) else 'нет'}")
         f.write_text(json.dumps(info, ensure_ascii=False), encoding='utf-8')
