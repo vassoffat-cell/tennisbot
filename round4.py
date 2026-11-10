@@ -58,10 +58,38 @@ def candidates(items: list[tuple], day) -> list[dict]:
     return out
 
 
+def _short(match: str) -> str:
+    """«Marta Kostyuk — Jessica Pegula» → «Kostyuk–Pegula» (фамилии, до 16 знаков)."""
+    a, _, b = match.partition(' — ')
+    return f"{a.split()[-1] if a.split() else a}–{b.split()[-1] if b.split() else b}"[:14]
+
+
+def _pre(head: list[str], rows: list[list[str]], left: tuple = (0,)) -> str:
+    """Моноширинная таблица (стандарт отчётов пользователя: как Excel, минимум букв); текстовые столбцы — по левому краю."""
+    w = [max(len(str(r[i])) for r in [head] + rows) for i in range(len(head))]
+    fmt = lambda r: ' '.join(str(c).ljust(w[i]) if i in left else str(c).rjust(w[i]) for i, c in enumerate(r))
+    return '<pre>' + notify.esc('\n'.join([fmt(head), '─' * (sum(w) + len(w) - 1)] + [fmt(r) for r in rows])) + '</pre>'
+
+
+def _cells(x: dict, k: list | None) -> list[str]:
+    """Строка таблицы: матч · П1 · П2 · P1 1xBet · P1 модель · перевес (лучшая сторона, если есть Pinnacle)."""
+    if not k or None in k:
+        return [_short(x['match']), '—', '—', f"{x['pm'] * 100:.0f}", 'скрин?']
+    if x.get('p1'):
+        e = max((x['p1'] * k[0] - 1, 'П1'), (x['p2'] * k[1] - 1, 'П2'))
+        ed = f"{e[1]}{e[0] * 100:+.0f}%"
+    else:
+        ed = '—'
+    return [_short(x['match']), _f(k[0]), _f(k[1]), f"{x['pm'] * 100:.0f}", ed]
+
+
+HEAD = ['Матч', 'П1', 'П2', 'Мод', 'Пер.']
+
+
 def _request(q: list[dict], i: int) -> str:
     x = q[i]
-    return (f"📸 <b>Скриншот {i + 1} из {len(q)}</b>: {notify.esc(x['match'])} · {notify.esc(x['t'])}\n"
-            'Страница матча 1xBet, вкладка «Основная игра»: блок <b>1X2 (П1/П2)</b> и <b>Тотал</b> (можно 2 скриншота).')
+    return (f"📸 <b>{i + 1}/{len(q)} · {notify.esc(x['t'])} · {notify.esc(_short(x['match']))}</b>\n"
+            '1xBet → «Основная игра»: 1X2 и Тотал')
 
 
 def _next(r: dict, now: pd.Timestamp) -> int | None:
@@ -98,11 +126,11 @@ def step(rt: dict, items: list[tuple], day, shot_offers: list[dict], replies: li
         if not q:
             r['state'] = 'done'
             return 'done_now', ['🔎 <b>Проверка ставки дня</b>: матчей до конца суток нет.'], []
-        lines = [f"{i + 1}) {notify.esc(x['t'])} {notify.esc(x['tour'])} · {notify.esc(x['match'])}"
-                 + (f" — П1 выгодно от {_f(x['kmin1'])} · П2 от {_f(x['kmin2'])}" if x['p1'] else '') for i, x in enumerate(q)]
+        rows = [[str(i + 1), x['t'], _short(x['match']), _f(x['kmin1']) if x['p1'] else '—', _f(x['kmin2']) if x['p1'] else '—']
+                for i, x in enumerate(q)]
         msgs.append(f'🔎 <b>Проверка ставки дня · {len(q)} {notify.plural(len(q), "матч", "матча", "матчей")}</b>\n'
-                    + '\n'.join(lines) + '\nПрогноз на сутки и ставка дня — после скриншотов (не позднее 14:00). '
-                    '«Выгодно от» — где есть цена Pinnacle.')
+                    + _pre(['№', 'Время', 'Матч', 'П1 от', 'П2 от'], rows, left=(0, 1, 2))
+                    + '\n«от» — кф 1xBet для перевеса +3% (нужна цена Pinnacle). Прогноз и ставка дня — после скриншотов, до 14:00.')
         msgs.append(_request(q, 0))
         return 'wait', msgs, []
     if r.get('state') == 'done':
@@ -120,10 +148,11 @@ def step(rt: dict, items: list[tuple], day, shot_offers: list[dict], replies: li
     got_now = [x for x in r['queue'] if x['id'] in r['got'] and not x.get('replied')]
     for x in got_now:
         k = r['got'][x['id']]
-        msgs.append('✅ Принят: ' + notify.esc(_edge_row(x, k if None not in k else None)))
+        c = _cells(x, k if None not in k else None)
+        msgs.append(f"✅ {notify.esc(c[0])}: П1 {c[1]} · П2 {c[2]}")
         x['replied'] = True
-    if got_now:                                                 # общий ответ shots заменён коротким
-        replies[:] = [y for y in replies if not any(x['match'].split(' — ')[0] in y for x in got_now)]
+    names = [x['match'].split(' — ')[0] for x in r['queue']]   # во время проверки общие ответы скриншотов не нужны
+    replies[:] = [y for y in replies if not any(n in y for n in names)]
     nxt = _next(r, now)
     late = DEADLINE_HOUR <= loc.hour and C.wday(loc) == pd.Timestamp(r['date']).date()      # 14:00 своих суток
     if nxt is not None and not late:
@@ -137,10 +166,9 @@ def step(rt: dict, items: list[tuple], day, shot_offers: list[dict], replies: li
             msgs.append('⚠️ Скриншоты не пришли к сроку третий день подряд — ставка дня выбиралась без свежих кф 1xBet.')
     else:
         r['misses'] = 0
-    table = '\n'.join(notify.esc(_edge_row(x, r['got'].get(x['id']) if None not in r['got'].get(x['id'], [None]) else None))
-                      for x in r['queue'])
-    msgs.append('📊 <b>Проверка ставки дня — итог</b> (перевес = P Pinnacle × кф 1xBet − 1; ставка с перевесом — от +3% при кф 1,70–2,50; '
-                'без цены Pinnacle — ставка дня по запасному правилу с точными кф скриншотов)\n' + table)
+    rows = [_cells(x, r['got'].get(x['id'])) for x in r['queue']]
+    msgs.append('📊 <b>Проверка ставки дня · итог</b>\n' + _pre(HEAD, rows)
+                + '\nМод — вероятность П1 по модели, %. Пер. — перевес над Pinnacle (— нет цены Pinnacle). Ставка с перевесом — от +3% при кф 1,70–2,50.')
     offers = []
     for o in r['offers']:
         x = dict(o)
