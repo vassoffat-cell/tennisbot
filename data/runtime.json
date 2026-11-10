@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   162
+   164
   ]
  ],
  "list_match_ids": [
@@ -78,18 +78,13 @@
     152
    ]
   ],
-  "ask": [
-   [
-    570704006,
-    161
-   ]
-  ],
+  "ask": [],
   "changes": 2,
   "history": [
    "по скриншоту в 08:44: было ТБ 20.5 71% (Holger Rune — Zizou Bergs)",
    "отказ в 08:45: было ТБ 21 69% (Holger Rune — Zizou Bergs)"
   ],
-  "accepted": "",
+  "accepted": "yes",
   "rejected": [
    [
     "186525",
@@ -381,7 +376,7 @@
    }
   ],
   "screenshots": 1,
-  "text": "⭐ <b>Ставка дня · теннис · 10.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 22:00\n<b>Holger Rune — Zizou Bergs</b>\n<b>ТБ 21.5</b> — вероятность 64% (1xBet без маржи)\nкф 1xBet 1,44 (скриншот)\n⚠️ уверенность в выгодности 18% (ниже 90%)\nпо скриншоту в 08:44: было ТБ 20.5 71% (Holger Rune — Zizou Bergs)\nотказ в 08:45: было ТБ 21 69% (Holger Rune — Zizou Bergs)\n📈 Ставки дня: 2/2 (100%) · с кф: 1, отдача +42.0%",
+  "text": "⭐ <b>Ставка дня · теннис · 10.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 22:00\n<b>Holger Rune — Zizou Bergs</b>\n<b>ТБ 21.5</b> — вероятность 64% (1xBet без маржи)\nкф 1xBet 1,44 (скриншот)\n⚠️ уверенность в выгодности 18% (ниже 90%)\nпо скриншоту в 08:44: было ТБ 20.5 71% (Holger Rune — Zizou Bergs)\nотказ в 08:45: было ТБ 21 69% (Holger Rune — Zizou Bergs)\n📈 Ставки дня: 2/2 (100%) · с кф: 1, отдача +42.0%\n✅ Принята в 08:46",
   "espn_id": "186525",
   "slot": 0,
   "key": [
@@ -415,7 +410,9 @@
    "k_src": "screenshot",
    "source": "screenshot",
    "slot": 0
-  }
+  },
+  "accepted_at": "08:46",
+  "accepted_shown": true
  },
  "model_version": 4,
  "reported": [
