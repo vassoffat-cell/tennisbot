@@ -187,7 +187,7 @@ def audit_report(store: J.Store, table_fn=None) -> str:
     df = store.read('learning')
     if not len(df):
         return '🔎 <b>Аудит</b>\nАудитов пока не было.'
-    df = df.sort_values('when', kind='stable')
+    df = df.assign(when=df.when.astype(str)).sort_values('when', kind='stable')
     wk = df[df.kind.astype(str) == 'неделя'].tail(1)
     out = [card(wk.iloc[0], table_fn)] if len(wk) else ['🔎 <b>Аудит</b>\nИтогов недели пока нет.']
     imp = df[df.kind.astype(str) == 'внедрено'].tail(5).iloc[::-1]
