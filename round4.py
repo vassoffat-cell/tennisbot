@@ -40,6 +40,12 @@ def candidates(items: list[tuple], day) -> list[dict]:
         events, _ = OD.day_events('tennis', keys, ('h2h', 'spreads', 'totals'), day.isoformat(), refresh_hours=24)
     except Exception:
         events = []
+    extra: dict = {}
+    try:                                                       # нет Pinnacle в The Odds API — OddsPapi (ключ ODDSPAPI_KEY)
+        import oddspapi
+        extra = oddspapi.pinnacle_ml([(m, row, None) for m, row in todays], day, OD.same_name, [])
+    except Exception:
+        extra = {}
     out = []
     for m, row in sorted(todays, key=lambda x: x[0].start):
         ev, _ = OD.find_event(events, row['player1'], row['player2'], row['start_utc']) if events else (None, False)
@@ -49,6 +55,8 @@ def candidates(items: list[tuple], day) -> list[dict]:
                 s = '1' if OD.same_name(name, row['player1']) >= OD.same_name(name, row['player2']) else '2'
                 pin[s] = books['pinnacle']
         p1 = p2 = None
+        if ('1' not in pin or '2' not in pin) and str(m.id) in extra:
+            pin = {'1': extra[str(m.id)][0], '2': extra[str(m.id)][1]}
         if '1' in pin and '2' in pin:
             p1, p2 = PK.shin([pin['1'], pin['2']])
         out.append(dict(id=str(m.id), t=str(row['start_local'])[6:], tour=row['tour'], event=row['event'],
@@ -141,6 +149,8 @@ def step(rt: dict, items: list[tuple], day, shot_offers: list[dict], replies: li
         if str(o.get('espn_id')) in ids and o.get('k'):
             r['offers'] = [x for x in r['offers'] if not (x['espn_id'] == o['espn_id'] and x['market'] == o['market']
                                                           and str(x['pick']) == str(o['pick']) and x.get('line') == o.get('line'))]
+            if o.get('market') == 'ML' and not o.get('p_pin') and ids[str(o['espn_id'])].get('p1'):   # Pinnacle из списка проверки
+                o['p_pin'] = ids[str(o['espn_id'])]['p1' if str(o['pick']) == '1' else 'p2']
             r['offers'].append({k: (str(v) if k == 'start' else v) for k, v in o.items()})
         if o.get('market') == 'ML' and str(o.get('espn_id')) in ids and o.get('k'):
             g = r['got'].setdefault(str(o['espn_id']), [None, None])
