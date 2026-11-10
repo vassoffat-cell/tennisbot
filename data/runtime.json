@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   159
+   162
   ]
  ],
  "list_match_ids": [
@@ -81,15 +81,23 @@
   "ask": [
    [
     570704006,
-    158
+    161
    ]
   ],
-  "changes": 1,
+  "changes": 2,
   "history": [
-   "по скриншоту в 08:44: было ТБ 20.5 71% (Holger Rune — Zizou Bergs)"
+   "по скриншоту в 08:44: было ТБ 20.5 71% (Holger Rune — Zizou Bergs)",
+   "отказ в 08:45: было ТБ 21 69% (Holger Rune — Zizou Bergs)"
   ],
   "accepted": "",
-  "rejected": [],
+  "rejected": [
+   [
+    "186525",
+    "TOTAL",
+    "O",
+    "21"
+   ]
+  ],
   "shots": [
    {
     "espn_id": "186525",
@@ -373,18 +381,18 @@
    }
   ],
   "screenshots": 1,
-  "text": "⭐ <b>Ставка дня · теннис · 10.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 22:00\n<b>Holger Rune — Zizou Bergs</b>\n<b>ТБ 21</b> — вероятность 69% (1xBet без маржи)\nкф 1xBet 1,36 (скриншот)\n⚠️ уверенность в выгодности 17% (ниже 90%)\nпо скриншоту в 08:44: было ТБ 20.5 71% (Holger Rune — Zizou Bergs)\n📈 Ставки дня: 2/2 (100%) · с кф: 1, отдача +42.0%",
+  "text": "⭐ <b>Ставка дня · теннис · 10.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 22:00\n<b>Holger Rune — Zizou Bergs</b>\n<b>ТБ 21.5</b> — вероятность 64% (1xBet без маржи)\nкф 1xBet 1,44 (скриншот)\n⚠️ уверенность в выгодности 18% (ниже 90%)\nпо скриншоту в 08:44: было ТБ 20.5 71% (Holger Rune — Zizou Bergs)\nотказ в 08:45: было ТБ 21 69% (Holger Rune — Zizou Bergs)\n📈 Ставки дня: 2/2 (100%) · с кф: 1, отдача +42.0%",
   "espn_id": "186525",
   "slot": 0,
   "key": [
    "186525",
    "TOTAL",
    "O",
-   "21"
+   "21.5"
   ],
-  "p": 0.6853975228378257,
+  "p": 0.6442399052865977,
   "tier": 2,
-  "label": "ТБ 21",
+  "label": "ТБ 21.5",
   "start_utc": "2026-11-10 17:00",
   "match": "Holger Rune — Zizou Bergs",
   "best": {
@@ -397,13 +405,13 @@
    "player2": "Zizou Bergs",
    "market": "TOTAL",
    "pick": "O",
-   "line": 21.0,
-   "label": "ТБ 21",
-   "p": 0.6853975228378257,
+   "line": 21.5,
+   "label": "ТБ 21.5",
+   "p": 0.6442399052865977,
    "p_src": "blend",
    "p_model": 0.6552245115851724,
-   "p_push": 0.05443773088164298,
-   "k": 1.36,
+   "p_push": 0.0,
+   "k": 1.44,
    "k_src": "screenshot",
    "source": "screenshot",
    "slot": 0
