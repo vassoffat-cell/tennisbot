@@ -24,6 +24,17 @@ def _now() -> str:
     return (pd.Timestamp.now(tz='UTC').tz_localize(None) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).strftime('%Y-%m-%d %H:%M')
 
 
+def when_str(x) -> str:
+    """Время записи строкой «ГГГГ-ММ-ДД ЧЧ:ММ» (Таблица могла сохранить дату числом-серийником)."""
+    try:
+        v = float(x)
+        if 20000 < v < 80000:
+            return (pd.Timestamp('1899-12-30') + pd.Timedelta(days=v)).strftime('%Y-%m-%d %H:%M')
+    except (TypeError, ValueError):
+        pass
+    return str(x)
+
+
 def add(store: J.Store, kind: str, title: str, text: str = '') -> None:
     store.append('learning', [dict(when=_now(), kind=kind, title=title, text=text, sent='')])
 
@@ -90,7 +101,7 @@ def report(store: J.Store, rt: dict, title: str, ladders: dict | None = None) ->
     e = notify.esc
     out = [f'🧠 <b>{e(title)}</b>']
     if len(df):
-        df = df.sort_values('when', kind='stable')
+        df = df.assign(when=df.when.map(when_str)).sort_values('when', kind='stable')
         ver = df[df.kind.astype(str) == 'версия'].tail(1)
         if len(ver):
             out.append(f"🧬 Модель: <b>{e(str(ver.title.iloc[0]))}</b>\n{e(str(ver.text.iloc[0]))}")
@@ -167,7 +178,7 @@ def card(r, table_fn=None) -> str:
     kind = str(r.kind)
     head = f"{ICON.get(kind, '•')} <b>{notify.esc(str(r.title))}</b>"
     if kind == 'неделя':
-        head = f"📅 <b>Аудит · {notify.esc(str(r.title))}</b>\n<i>{notify.esc(str(r.when))}</i>"
+        head = f"📅 <b>Аудит · {notify.esc(str(r.title))}</b>\n<i>{notify.esc(when_str(r.when))}</i>"
     parts = [head]
     if kind == 'неделя' and table_fn is not None:
         wd = week_dates(r.title)
@@ -187,7 +198,7 @@ def audit_report(store: J.Store, table_fn=None) -> str:
     df = store.read('learning')
     if not len(df):
         return '🔎 <b>Аудит</b>\nАудитов пока не было.'
-    df = df.assign(when=df.when.astype(str)).sort_values('when', kind='stable')
+    df = df.assign(when=df.when.map(when_str)).sort_values('when', kind='stable')
     wk = df[df.kind.astype(str) == 'неделя'].tail(1)
     out = [card(wk.iloc[0], table_fn)] if len(wk) else ['🔎 <b>Аудит</b>\nИтогов недели пока нет.']
     imp = df[df.kind.astype(str) == 'внедрено'].tail(5).iloc[::-1]
