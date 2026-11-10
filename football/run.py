@@ -232,7 +232,89 @@ def daily_k(rt: dict, ld: pd.DataFrame, due: bool) -> tuple[dict, dict, str]:
             f"k от {rt.get('kcal_date', '?')}")
 
 
-# ======================================================================== прогноз (только модель)
+# ======================================================================== A2: Pinnacle из кэша
+_PIN: dict[str, list[dict]] = {}
+A2_HITS = [0, 0]                                                     # матчей с Pinnacle / всего в прогнозе
+
+
+def pin_quotes(m) -> dict:
+    """A2: кф Pinnacle {'1x2': (П1, X, П2), 'tot25': (Б, М)} из уже скачанного кэша The Odds API (день матча и 7 дней до него,
+    новейший первым) — без новых запросов; нет — пустой словарь."""
+    import odds as OD
+    day = C.wday(m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS))
+    out: dict = {}
+    for back in range(8):
+        d = (day - dt.timedelta(days=back)).isoformat()
+        if d not in _PIN:
+            try:
+                _PIN[d] = OD.cached_events('football', d)
+            except Exception:
+                _PIN[d] = []
+        if not _PIN[d]:
+            continue
+        try:
+            ev, flip = OD.find_event(_PIN[d], m.home, m.away, m.start.strftime('%Y-%m-%d %H:%M'))
+        except Exception:
+            ev = None
+        if not ev:
+            continue
+        q = OD.quotes(ev)
+        hn, an = (ev['away_team'], ev['home_team']) if flip else (ev['home_team'], ev['away_team'])
+        k = {name: b.get('pinnacle') for (mk, name, _), b in q.items() if mk == 'h2h'}
+        if '1x2' not in out and all(k.get(n) for n in (hn, 'Draw', an)):
+            out['1x2'] = (k[hn], k['Draw'], k[an])
+        t = {name: b.get('pinnacle') for (mk, name, pt), b in q.items()
+             if mk == 'totals' and pt is not None and abs(float(pt) - 2.5) < 1e-9}
+        if 'tot25' not in out and t.get('Over') and t.get('Under'):
+            out['tot25'] = (t['Over'], t['Under'])
+        if len(out) == 2:
+            break
+    return out
+
+
+def pool(p_model, odds, w) -> np.ndarray:
+    """p ∝ p_мод^w0 · p_Pin^w1 (Pinnacle — без маржи по Шину)."""
+    import fmarket
+    pm = np.clip(np.asarray(p_model, float), 1e-6, 1.0); pp = np.clip(np.asarray(fmarket.shin(list(odds)), float), 1e-6, 1.0)
+    z = w[0] * np.log(pm) + w[1] * np.log(pp)
+    p = np.exp(z - z.max())
+    return p / p.sum()
+
+
+def _set_p(x: dict, p: float) -> None:
+    """P линии из смеси с рынком: p_raw (модель) не трогаем — по нему учится k."""
+    x.update(p=round(float(p), 4), k_lo=round(1 / max(p, 1e-6), 2),
+             p_low=round(float(1 / (1 + np.exp(-(FL.logit(p) - C.SIGMA[x['market']])))), 4),
+             shown=int(FL.visible(p, x['market'])))
+
+
+def apply_pinnacle(m, row: dict, lns: list[dict], P: np.ndarray) -> int:
+    """A2: исход 1X2 и тотал 2,5 по смеси Pinnacle + модель. Возвращает 1, если что-то изменено."""
+    if not (C.A2_PIN_1X2 or C.A2_PIN_TOT25):
+        return 0
+    q = pin_quotes(m)
+    hit = 0
+    if C.A2_PIN_1X2 and '1x2' in q:
+        ph, pd_, pa = (float(v) for v in pool([row['p_h'], row['p_d'], row['p_a']], q["1x2"], C.A2_W_1X2))
+        row.update(p_h=round(ph, 4), p_d=round(pd_, 4), p_a=round(pa, 4))
+        for x in lns:
+            if x['market'] == '1X2':
+                _set_p(x, {'H': ph, 'D': pd_, 'A': pa}[x['pick']])
+        hit = 1
+    if C.A2_PIN_TOT25 and 'tot25' in q:
+        po = float(pool([row['p_o25'], 1 - row['p_o25']], q['tot25'], C.A2_W_TOT25)[0])
+        row['p_o25'] = round(po, 4)
+        for x in lns:
+            if x['market'] == 'TOT' and abs(float(x['line']) - 2.5) < 1e-9:
+                s = 'O' if po >= 0.5 else 'U'
+                if s != x['pick']:                                      # смена стороны: p_raw — модель для той же стороны
+                    x.update(pick=s, label=f'Т{"Б" if s == "O" else "М"}2.5', p_raw=round(1 - float(x['p_raw']), 4))
+                _set_p(x, max(po, 1 - po))
+        hit = 1
+    return hit
+
+
+# ======================================================================== прогноз (модель + A2)
 def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched: FF.Schedule, train: pd.DataFrame,
              auto: pd.DataFrame, kcal: dict) -> tuple[list[tuple], list[str]]:
     now = _now()
@@ -275,6 +357,11 @@ def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched:
             x.update(created=row['created'], espn_id=m.id, comp=m.comp, comp_name=name, source='model',
                      start_utc=row['start_utc'], start_local=row['start_local'], home=m.home, away=m.away,
                      status='', result='', settled='', pnl_lo='')
+        try:
+            A2_HITS[0] += apply_pinnacle(m, row, lns, P)
+        except Exception as ex:                                          # сбой A2 не ломает прогноз — остаётся модель
+            skipped.append(f'A2 {m.home} — {m.away}: {type(ex).__name__}')
+        A2_HITS[1] += 1
         out.append((m, row, lns))
     return out, skipped
 
@@ -683,6 +770,7 @@ def run(dry: bool = False) -> str:
     kcal, kprev, knote = daily_k(rt, ld, daily_due and not dry)
     off, bmsg = R.breaker(ld, rt.get('breaker', {}))
     items, skipped = forecast(matches, mp, world, sched, train, af, kcal)
+    log.append(f'A2 Pinnacle: {A2_HITS[0]} из {A2_HITS[1]} матчей')
     if not dry:                                                        # 👥 каперы: итоги прошлых, новые посты (ТЗ-005)
         try:
             nt = tips.settle(results_index(st))
