@@ -43,15 +43,23 @@ def visible(p: float, market: str) -> bool:
     return market != 'ML' and C.P_SHOW[0] <= p <= C.P_SHOW[1]
 
 
+def _key(p: float, L: float):
+    """Ключ выбора линии. Вариант Б (выбор пользователя 10.11.2026, C.LINE_P_MIN): ближе всего к центру среди линий,
+    где P стороны ≥ C.LINE_P_MIN (меньшая подходящая P); иначе — P ближе всего к TARGET_P."""
+    if getattr(C, 'LINE_P_MIN', None):
+        return (p < C.LINE_P_MIN, p if p >= C.LINE_P_MIN else -p, L)
+    return (abs(p - TARGET_P), L)
+
+
 def _pick_ou(pr, make, grid) -> tuple[float, str, float]:
-    """Линия Б/М с вероятностью стороны ≥ 0,5, ближайшей к TARGET_P. Возвращает (линия, 'Б'|'М', P)."""
+    """Линия Б/М с вероятностью стороны ≥ 0,5 по правилу выбора (_key). Возвращает (линия, 'Б'|'М', P)."""
     best = None
     for L in grid:
         po = pr(make(L, True))
         for side, p in (('Б', po), ('М', 1 - po)):
             if p < 0.5:
                 continue
-            key = (abs(p - TARGET_P), L)
+            key = _key(p, L)
             if best is None or key < best[0]:
                 best = (key, L, side, p)
     return best[1], best[2], best[3]
@@ -72,7 +80,7 @@ def build(D: dict, p1: float, kc: dict[str, float], sigma: float) -> list[dict]:
     add(2, 'ML', '2', '', 'П2', 1 - p1, 1.0)
     # фора по геймам: линия для игрока 1, сторона модели ближе к TARGET_P
     hs = [x + 0.5 for x in range(-15, 15)]
-    h = min(hs, key=lambda h: (abs(max(pr(MK.mk_handicap(True, h)), 1 - pr(MK.mk_handicap(True, h))) - TARGET_P), abs(h)))
+    h = min(hs, key=lambda h: _key(max(pr(MK.mk_handicap(True, h)), 1 - pr(MK.mk_handicap(True, h))), abs(h)))
     ph = pr(MK.mk_handicap(True, h))
     k = kc.get('HCP', 1.0)
     p1h = scale(ph, k)
