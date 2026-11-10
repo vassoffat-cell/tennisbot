@@ -158,6 +158,54 @@ def _name_map(td: pd.DataFrame, sk: pd.DataFrame, pl: pd.DataFrame) -> dict:
     return out
 
 
+# ---- T30: база матчей без ручных файлов — TennisMyLife продолжает tennis-data после его последней даты
+TML_ROUND = {'QF': 5, 'SF': 6, 'F': 7, 'RR': 4}
+TML_EARLY = ['R128', 'R64', 'R32', 'R16']
+
+
+def _sets(score: str) -> dict:
+    """«6-4 3-6 7-6(5) RET» → W1..W5 / L1..L5 (с позиции победителя)."""
+    out = {}
+    for k, (a, b) in enumerate(re.findall(r'(\d+)-(\d+)(?:\(\d+\))?', str(score))[:5], 1):
+        out[f'W{k}'], out[f'L{k}'] = float(a), float(b)
+    return out
+
+
+def tml_as_td(tour: str, after: pd.Timestamp, loc_map: dict[str, str]) -> pd.DataFrame:
+    """Матчи TennisMyLife позже даты after в формате базы tennis-data (Date, Location, Surface, Round/ridx, W1..L5,
+    WRank/LRank, WPts/LPts, Comment, подача). Дата матча — оценка: начало турнира + доля длины турнира по номеру круга."""
+    t = tml_raw(tour)
+    if t.empty:
+        return pd.DataFrame()
+    t = t[t.tourney_level.astype(str) != 'D'].copy()                 # командные кубки — не в базе tennis-data
+    ids = _tml_ids(tour, t)
+    rows = []
+    for tid, g in t.groupby('tourney_id', sort=False):
+        early = [r for r in TML_EARLY if r in set(g['round'])]
+        big = (g.draw_size.max() >= 96) or (g.best_of.max() == 5)
+        span, nr = (13 if big else 6), len(early) + 3
+        for r in g.itertuples(index=False):
+            rd = str(r.round)
+            ridx = TML_ROUND.get(rd, early.index(rd) + 1 if rd in early else 1)
+            order = (early.index(rd) if rd in early else len(early) + {'QF': 0, 'SF': 1, 'F': 2, 'RR': 0}.get(rd, 0))
+            date = r.tdate + pd.Timedelta(days=round(span * order / max(nr - 1, 1)))
+            if date <= after:
+                continue
+            sc = str(r.score)
+            d = dict(Date=date, season=date.year, Location=loc_map.get(str(r.tourney_name), str(r.tourney_name)),
+                     Tournament=str(r.tourney_name), Surface=str(r.surface).replace('Carpet', 'Hard'), Round=rd, ridx=ridx,
+                     Winner=str(r.winner_name), Loser=str(r.loser_name),
+                     winner_id=ids.get(str(r.winner_name)), loser_id=ids.get(str(r.loser_name)),
+                     WRank=pd.to_numeric(r.winner_rank, errors='coerce'), LRank=pd.to_numeric(r.loser_rank, errors='coerce'),
+                     WPts=pd.to_numeric(r.winner_rank_points, errors='coerce'), LPts=pd.to_numeric(r.loser_rank_points, errors='coerce'),
+                     Comment='Retired' if re.search(r'RET|W/O|DEF|ABD', sc, re.I) else 'Completed',
+                     w_svpt=r.w_svpt, w_1stWon=r.w_1stWon, w_2ndWon=r.w_2ndWon, l_svpt=r.l_svpt, l_1stWon=r.l_1stWon,
+                     l_2ndWon=r.l_2ndWon, minutes=r.minutes, source='tml')
+            d.update(_sets(sc))
+            rows.append(d)
+    return pd.DataFrame(rows)
+
+
 def build(tour: str) -> pd.DataFrame:
     """Хронологическая база матчей тура со связкой на Sackmann."""
     pl, sk, td = players(tour), sackmann(tour), tennis_data(tour)
@@ -174,6 +222,20 @@ def build(tour: str) -> pd.DataFrame:
     h = td.join(sub)
     h = h[h.winner_id.notna() & h.loser_id.notna()].copy()
     h['ridx'] = h.Round.map(ROUND_IDX).fillna(1)
+    if C.USE_TML_BASE and 'tourney_name' in sk.columns:            # T30: после последней даты tennis-data — TennisMyLife
+        lm = m[['td_idx', 'sk_idx']].dropna()
+        pairs = pd.DataFrame({'loc': td.loc[lm.td_idx.astype(int), 'Location'].values,
+                              'tn': sk.loc[lm.sk_idx.astype(int), 'tourney_name'].astype(str).values})
+        loc_map = pairs.groupby('tn')['loc'].agg(lambda x: x.mode().iloc[0]).to_dict()
+        cut = td.Date.max() if C.TD_CUTOFF is None else min(td.Date.max(), pd.Timestamp(C.TD_CUTOFF))
+        h = h[h.Date <= cut]
+        x = tml_as_td(tour, cut, loc_map)
+        if len(x):
+            x = x[x.winner_id.notna() & x.loser_id.notna()]
+            recent = h[h.Date > cut - pd.Timedelta(days=21)]                # матч уже есть в tennis-data (дата TML — оценка)
+            have = {frozenset((int(a), int(b))) for a, b in zip(recent.winner_id, recent.loser_id)}
+            x = x[[frozenset((int(a), int(b))) not in have for a, b in zip(x.winner_id, x.loser_id)]]
+            h = pd.concat([h, x], ignore_index=True)
     h = h.sort_values(['Date', 'ridx'], kind='stable').reset_index(drop=True)
     h['Surface'] = h.Surface.replace({'Carpet': 'Hard'})
     return h

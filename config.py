@@ -8,6 +8,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / 'data'
 SACKMANN = DATA / 'sackmann'          # wta_matches_2019.csv … , wta_players.csv, atp_…
+USE_TML_BASE = True                   # T30 (10.11.2026): база матчей после tennis-data — из TennisMyLife; файлы tennis-data
+                                      # больше не обязательны (проверка 06–11.2026: WTA лог-лосс 0,5934 → 0,5884, z −5,3; ATP 0,6240 → 0,6241)
+TD_CUTOFF = None                      # T30 (проверка): обрезать tennis-data этой датой, дальше — TennisMyLife
 USE_TML = True                        # T29: статистика подачи TennisMyLife после обрыва Sackmann (data/tml/)
 TENNIS_DATA = DATA / 'tennis-data'    # 2019_WTA.xlsx … 2026_WTA.xlsx, 2019_ATP.xlsx …
 STATE = ROOT / 'state'                # собранное состояние игроков и веса модели

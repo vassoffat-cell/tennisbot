@@ -545,6 +545,8 @@ def take_inbox(rt: dict) -> tuple[bool, list[str]]:
 def reminder_due(rt: dict) -> bool:
     """С понедельника — сразу после суточного отчёта (11:00), раз в день, пока на этой неделе не пришли ОБА файла (WTA и ATP)."""
     loc = _local()
+    if C.USE_TML_BASE:                         # T30: база пополняется из TennisMyLife ежедневно — файлы tennis-data не нужны
+        return False
     if loc.hour < 11 or rt.get('last_daily') != C.wday(loc).isoformat():
         return False
     monday = (loc.date() - dt.timedelta(days=loc.weekday())).isoformat()
@@ -626,7 +628,7 @@ def run(dry: bool = False) -> str:
         for tour in TOURS:
             last = getattr(P.model(tour).state, 'td_last', None)
             if last is not None and (loc.normalize() - last).days > 9:
-                notes.append(f'tennis-data {tour.upper()} по {last:%d.%m} — ждём файл недели (форма до него — по ESPN)')
+                notes.append(f'база {tour.upper()} (TennisMyLife) по {last:%d.%m} — старше 9 дней, проверить загрузку')
         if retrain_log:
             notes.append('переобучено: ' + '; '.join(x.split(':')[0] + ' ' + x.split('точность')[-1].split(';')[0].strip()
                                                   for x in retrain_log if 'точность' in x))
