@@ -1,13 +1,6 @@
 {
- "list_messages": [
-  [
-   570704006,
-   243
-  ]
- ],
- "list_match_ids": [
-  "187375"
- ],
+ "list_messages": [],
+ "list_match_ids": [],
  "last_daily": "2026-11-10",
  "last_retrain": "2026-11-10",
  "last_files": "2026-11-05",
@@ -61,7 +54,9 @@
   ]
  },
  "kcal_date": "2026-11-10",
- "breaker": {},
+ "breaker": {
+  "IT1": "2026-11-10"
+ },
  "day_pick": {
   "date": "2026-11-10",
   "msgs": [
