@@ -934,11 +934,39 @@
  "dp_alarm": {},
  "r4": {
   "date": "2026-11-10",
-  "queue": [],
+  "queue": [
+   {
+    "id": "187372",
+    "t": "01:00",
+    "tour": "WTA",
+    "event": "FAGE WTA Finals Indian Wells",
+    "match": "Marta Kostyuk — Jessica Pegula",
+    "p1": null,
+    "p2": null,
+    "pm": 0.4663,
+    "kmin1": null,
+    "kmin2": null,
+    "start": "2026-11-10 20:00"
+   },
+   {
+    "id": "187375",
+    "t": "02:30",
+    "tour": "WTA",
+    "event": "FAGE WTA Finals Indian Wells",
+    "match": "Coco Gauff — Linda Noskova",
+    "p1": null,
+    "p2": null,
+    "pm": 0.5953,
+    "kmin1": null,
+    "kmin2": null,
+    "start": "2026-11-10 21:30"
+   }
+  ],
   "got": {},
   "offers": [],
-  "state": "done",
+  "state": "wait",
   "misses": 0,
-  "asked_at": "2026-11-10 19:12:26.945135"
+  "asked_at": "2026-11-10 19:15:43.631318",
+  "v": 2
  }
 }
