@@ -177,6 +177,48 @@ def apply_rankings(tour: str) -> int:
     return n
 
 
+_PIN_CACHE: dict[str, tuple[list[dict], dict]] = {}
+
+
+def pin_ml(m: espn.EspnMatch, p1n: str, p2n: str, start_utc: str) -> tuple[float, float] | None:
+    """A1: кф Pinnacle П1/П2 из уже скачанного кэша (The Odds API, затем OddsPapi) — без новых запросов; нет — None."""
+    import odds as OD
+    import oddspapi
+    day = C.wday(m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)).isoformat()
+    if day not in _PIN_CACHE:
+        try:
+            evs = OD.cached_events('tennis', day)
+        except Exception:
+            evs = []
+        try:
+            op = oddspapi._cache(day)[1]
+        except Exception:
+            op = {}
+        _PIN_CACHE[day] = (evs, op)
+    evs, op = _PIN_CACHE[day]
+    try:
+        ev, _ = OD.find_event(evs, p1n, p2n, start_utc) if evs else (None, False)
+        if ev:
+            for (mk, name, _pt), books in OD.quotes(ev).items():
+                if mk != 'h2h' or not books.get('pinnacle'):
+                    continue
+                k = books['pinnacle']
+                other = [b.get('pinnacle') for (mk2, n2, _), b in OD.quotes(ev).items() if mk2 == 'h2h' and n2 != name]
+                if other and other[0]:
+                    return (k, other[0]) if OD.same_name(name, p1n) >= OD.same_name(name, p2n) else (other[0], k)
+        for x in op.get('fixtures') or []:
+            s1 = OD.same_name(x['a'], p1n) + OD.same_name(x['b'], p2n)
+            s2 = OD.same_name(x['a'], p2n) + OD.same_name(x['b'], p1n)
+            if max(s1, s2) >= 1.6:
+                k = (op.get('odds') or {}).get(x['id'])
+                if k and None not in k:
+                    return (k[1], k[0]) if s2 > s1 else (k[0], k[1])
+                break
+    except Exception:
+        return None
+    return None
+
+
 def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k_ml: float,
                  kc: dict[str, float]) -> tuple[list[tuple], list[str]]:
     """Прогноз и линии для всех матчей тура, начинающихся в ближайшие HORIZON_HOURS часов: [(матч, строка, линии)]."""
@@ -208,6 +250,12 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
         _, D = FC.distribution(md, snap, best_of, tb, p_override=p1)
         daypick.DISTS[str(m.id)] = (D, ids[0][1], ids[1][1])          # для линий ставки дня по правилу C
         f = FC.fair(md, snap, best_of, tb, p_override=p1)
+        p_lines = p1                                                   # линии — по модели (A1 трогает только исход)
+        if C.A1_PIN_OUTCOME.get(tour):
+            pin = pin_ml(m, ids[0][1], ids[1][1], m.start.strftime('%Y-%m-%d %H:%M'))
+            if pin:
+                import pick as PK
+                p1 = min(max(PK.fair(p_raw, PK.shin(list(pin))[0], 'pinnacle'), 0.01), 0.99)
         n1, n2 = int(st.n.get(ids[0][0], 0)), int(st.n.get(ids[1][0], 0))
         row = dict(created=J.now_utc(), espn_id=m.id, tour=tour.upper(), event=m.event, location=m.location, surface=surface,
                    round=m.round, best_of=best_of, start_utc=m.start.strftime('%Y-%m-%d %H:%M'), start_local=J.to_local(m.start),
@@ -220,7 +268,7 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
                    level=level, p1_raw=round(p_raw, 4), calib_k=k_ml, confidence=confidence(p1, min(n1, n2), auto))
         for k in J.EXACT_COLS:
             row[k] = round(f[k], 4) if k in f else ''
-        lns = LN.build(D, p1, kc, LN.sigma_for(min(n1, n2)))
+        lns = LN.build(D, p_lines, kc, LN.sigma_for(min(n1, n2)))
         for x in lns:
             x.update(espn_id=m.id, tour=row['tour'], event=m.event, level=level, round=m.round, surface=surface,
                      start_utc=row['start_utc'], start_local=row['start_local'], player1=row['player1'], player2=row['player2'],
