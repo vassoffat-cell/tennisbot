@@ -121,4 +121,5 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186530,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,144869,211609,Tomas Martin Etcheverry,Max Dahlin,6-4 6-7 6-3,STATUS_FINAL
 186522,2026-11-09,Stockholm,Bybit Stockholm Open,Round 1,1,0,210389,209863,Toby Samuel,Leo Borg,6-3 6-2,STATUS_FINAL
 186526,2026-11-10,Stockholm,Bybit Stockholm Open,Round 1,1,0,207686,105173,Alexander Shevchenko,Adrian Mannarino,6-1 6-3,STATUS_FINAL
+186533,2026-11-10,Stockholm,Bybit Stockholm Open,Round 1,1,0,132283,111460,Lorenzo Sonego,Quentin Halys,6-4 7-6,STATUS_FINAL
 186541,2026-11-10,Stockholm,Bybit Stockholm Open,Round 2,2,0,210506,207678,Alex Michelsen,Juan Manuel Cerundolo,6-3 6-2,STATUS_FINAL
