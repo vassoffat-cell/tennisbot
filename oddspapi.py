@@ -72,7 +72,10 @@ def pinnacle_ml(items: list[tuple], day: dt.date, same_name, log: list[str]) -> 
                     continue
                 c['calls'] += 1
                 js = _get('/odds', dict(fixtureId=fid))
-                pin = ((js.get('bookmakerOdds') or {}).get('pinnacle') or {}).get('markets', {}).get(WINNER, {}).get('outcomes', {})
+                books = js.get('bookmakerOdds') or {}
+                pin = (books.get('pinnacle') or {}).get('markets', {}).get(WINNER, {}).get('outcomes', {})
+                xb = (books.get('1xbet') or {}).get('markets', {}).get(WINNER, {}).get('outcomes', {})
+                c.setdefault('x1', {})[fid] = [_price(xb.get(OUT1, {})), _price(xb.get(OUT2, {}))]   # 1xBet П1/П2 — для сверки со скринами
                 k = [_price(pin.get(OUT1, {})), _price(pin.get(OUT2, {}))]
                 if None not in k:                                # пустое не кэшируем: рынок мог быть закрыт временно
                     c['odds'][fid] = k
