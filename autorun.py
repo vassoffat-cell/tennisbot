@@ -615,6 +615,12 @@ def run(dry: bool = False) -> str:
         import odds                                                    # пакет №3: разовая проба альтернативных линий (матч РПЛ 08.11)
         log += odds.probe_event('soccer_russia_premier_league', '4963f0a1fdba101362e25a8ad678af74',
                                 ('alternate_totals', 'alternate_spreads', 'team_totals', 'alternate_team_totals', 'btts', 'double_chance'))
+    if os.getenv('CLOUD'):
+        try:
+            import oddspapi
+            log.append(oddspapi.probe())
+        except Exception as e:
+            log.append(f'OddsPapi: проверка не удалась ({e.__class__.__name__})')
     loc = _local(); today = C.wday(loc).isoformat()                  # дата суток системы (08:00 → 08:00)
     daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
     start_due = C.START_HOURS[0] <= loc.hour < C.START_HOURS[1]

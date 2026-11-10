@@ -82,3 +82,21 @@ def pinnacle_ml(items: list[tuple], day: dt.date, same_name, log: list[str]) -> 
         log.append(f'OddsPapi: недоступен ({e.__class__.__name__})')
     f.write_text(json.dumps(c, ensure_ascii=False), encoding='utf-8')
     return out
+
+
+def probe() -> str:
+    """Проверка ключа один раз в сутки: есть ли ключ, отвечает ли API, сколько теннисных матчей на сегодня (1 запрос)."""
+    if not os.getenv('ODDSPAPI_KEY'):
+        return 'OddsPapi: ключа нет (секрет ODDSPAPI_KEY не найден)'
+    day = dt.date.today()
+    f = DIR / f'oddspapi_probe_{day.isoformat()}.json'
+    if f.exists():
+        return 'OddsPapi: ключ есть (проверен сегодня)'
+    DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        fx = _get('/fixtures', dict(sportId=TENNIS, **{'from': day.isoformat(), 'to': (day + dt.timedelta(days=1)).isoformat()}))
+        data = fx if isinstance(fx, list) else (fx.get('data') or [])
+        f.write_text(json.dumps(dict(n=len(data), sample=data[:3]), ensure_ascii=False), encoding='utf-8')
+        return f'OddsPapi: ключ работает, теннисных матчей на сегодня {len(data)}'
+    except Exception as e:
+        return f'OddsPapi: ключ есть, но API ответил ошибкой ({e.__class__.__name__}: {str(e)[:80]})'
