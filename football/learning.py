@@ -69,16 +69,16 @@ def steps(store: J.Store, rt: dict, R, af: pd.DataFrame, ld: pd.DataFrame, dp: p
     return out
 
 
-def to_telegram(store: J.Store) -> int:
-    """Новые итоги недели и записи «внедрено» от задачи Claude — в Telegram (раз), отметка sent."""
+def to_telegram(store: J.Store, table_fn=None) -> int:
+    """Новые итоги недели, «внедрено» и вопросы от задачи Claude — в Telegram карточками (раз), отметка sent.
+    table_fn(d0, d1) → HTML-таблица недели (report.build) — для карточки «неделя»."""
     df = store.read('learning')
     if not len(df):
         return 0
     todo = df[df.kind.astype(str).isin(['неделя', 'внедрено', 'вопрос']) & df.sent.astype(str).str.strip().isin(['', 'nan'])]
     if todo.empty:
         return 0
-    notify.send_blocks([f"{ICON.get(str(r.kind), '•')} <b>{notify.esc(str(r.title))}</b>\n{notify.esc(str(r.text))}"
-                        for r in todo.itertuples()])
+    notify.send_blocks([card(r, table_fn) for r in todo.itertuples()])
     df.loc[todo.index, 'sent'] = J.now_utc()
     store.update('learning', df.loc[todo.index], ['sent'])
     return len(todo)
@@ -122,4 +122,76 @@ def report(store: J.Store, rt: dict, title: str, ladders: dict | None = None) ->
             f"{ICON.get(str(r.kind), '•')} {e(str(r.when))} · {e(str(r.title))}" for r in hist.itertuples()) + '</blockquote>')
     else:
         out.append('Журнал пока пуст — записи появятся после ближайшего переобучения.')
+    return '\n\n'.join(out)
+
+# ---- структурированный вид записей аудита (решение пользователя 10.11.2026: красиво, по разделам, итоги аудита — в ботах)
+# Разметка текста записи «неделя» / «внедрено» (её пишет аудит): строки «[раздел]» — заголовки, «- пункт» — пункты.
+SECTIONS = {'данные': '📥 Данные', 'итоги': '📊 Итоги', 'выводы': '🔎 Выводы', 'охват': '🧮 Охват', 'сделано': '🛠 Сделано',
+            'внедрено': '🚀 Внедрено', 'дальше': '➡️ Дальше', 'предложения': '💡 Предложения'}
+
+
+def fmt_text(text: str) -> str:
+    """Разметка аудита → HTML Telegram: разделы жирным с иконкой, пункты «•». Старый сплошной текст — по «; » в пункты."""
+    e = notify.esc
+    raw = str(text or '').replace('\\n', '\n').strip()
+    lines = [x.strip() for x in raw.split('\n') if x.strip()]
+    if len(lines) <= 1 and '[' not in raw:                       # старый формат: одна строка через «; »
+        parts = [p.strip() for p in raw.replace('. ', '; ').split('; ') if p.strip()]
+        return '\n'.join(f'• {e(p)}' for p in parts)
+    out = []
+    for x in lines:
+        if x.startswith('[') and x.endswith(']'):
+            k = x[1:-1].strip()
+            out.append(('\n' if out else '') + f'<b>{SECTIONS.get(k.lower(), k)}</b>')
+        elif x.startswith(('- ', '• ')):
+            out.append(f'• {e(x[2:].strip())}')
+        else:
+            out.append(e(x))
+    return '\n'.join(out)
+
+
+def week_dates(title: str):
+    """«Итог недели 02.11–08.11» → (date 02.11, date 08.11) текущего года (декабрь → январь — прошлый год) или None."""
+    import re
+    m = re.search(r'(\d{2})\.(\d{2})\s*[–-]\s*(\d{2})\.(\d{2})', str(title))
+    if not m:
+        return None
+    now = pd.Timestamp.now()
+    y1 = now.year if int(m.group(4)) <= now.month else now.year - 1
+    y0 = y1 if int(m.group(2)) <= int(m.group(4)) else y1 - 1
+    return (pd.Timestamp(y0, int(m.group(2)), int(m.group(1))).date(), pd.Timestamp(y1, int(m.group(4)), int(m.group(3))).date())
+
+
+def card(r, table_fn=None) -> str:
+    """Запись журнала карточкой: заголовок, (для «неделя») таблица недели, разделы."""
+    kind = str(r.kind)
+    head = f"{ICON.get(kind, '•')} <b>{notify.esc(str(r.title))}</b>"
+    if kind == 'неделя':
+        head = f"📅 <b>Аудит · {notify.esc(str(r.title))}</b>\n<i>{notify.esc(str(r.when))}</i>"
+    parts = [head]
+    if kind == 'неделя' and table_fn is not None:
+        wd = week_dates(r.title)
+        if wd:
+            try:
+                parts.append(table_fn(*wd))
+            except Exception:
+                pass
+    body = fmt_text(r.text)
+    if body:
+        parts.append(body)
+    return '\n\n'.join(parts)
+
+
+def audit_report(store: J.Store, table_fn=None) -> str:
+    """Раздел «Аналитика → 🔎 Аудит»: последний итог недели (таблица + выводы) и последние внедрения."""
+    df = store.read('learning')
+    if not len(df):
+        return '🔎 <b>Аудит</b>\nАудитов пока не было.'
+    df = df.sort_values('when', kind='stable')
+    wk = df[df.kind.astype(str) == 'неделя'].tail(1)
+    out = [card(wk.iloc[0], table_fn)] if len(wk) else ['🔎 <b>Аудит</b>\nИтогов недели пока нет.']
+    imp = df[df.kind.astype(str) == 'внедрено'].tail(5).iloc[::-1]
+    if len(imp):
+        out.append('🚀 <b>Последние внедрения</b>\n' + '\n'.join(
+            f"• {notify.esc(str(r.when)[:10])} — {notify.esc(str(r.title))}" for r in imp.itertuples()))
     return '\n\n'.join(out)

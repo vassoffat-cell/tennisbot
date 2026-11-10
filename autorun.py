@@ -503,7 +503,8 @@ def _need_text() -> str:
 
 
 STATS_MENU = [[{'text': '📊 Всё время', 'data': 'r:all'}, {'text': '📅 По месяцу', 'data': 'r:month'},
-               {'text': '🏆 По турниру', 'data': 'r:event'}], [{'text': '🧠 Самообучение', 'data': 'r:learn'}]]
+               {'text': '🏆 По турниру', 'data': 'r:event'}],
+              [{'text': '🔎 Аудит', 'data': 'r:audit'}, {'text': '🧠 Самообучение', 'data': 'r:learn'}]]
 SHOTS: list[tuple] = []          # скриншоты 1xBet из входящих этого запуска (id, имя, байты, описание)
 
 
@@ -685,7 +686,10 @@ def run(dry: bool = False) -> str:
     reps = R.all_reports(auto, ldf, store.read('day_pick'), kcal, off)
     try:
         reps = pd.concat([reps, pd.DataFrame([dict(key='learn', kind='learn', title='🧠 Самообучение',
-                                                   text=learning.report(store, rt, 'Самообучение · теннис'), updated=J.now_utc())])],
+                                                   text=learning.report(store, rt, 'Самообучение · теннис'), updated=J.now_utc()),
+                                              dict(key='audit', kind='audit', title='🔎 Аудит',
+                                                   text=learning.audit_report(store, week_table(store, auto, ldf)),
+                                                   updated=J.now_utc())])],
                          ignore_index=True)
     except Exception as e:
         log.append(f'отчёт самообучения: сбой {e.__class__.__name__}: {e}')
@@ -712,6 +716,13 @@ HISTORY = [
 ]
 
 
+def week_table(store: J.Store, af: pd.DataFrame, ld: pd.DataFrame):
+    """Таблица недели (как недельный отчёт понедельника) для карточки аудита: (d0, d1) → HTML."""
+    dp = store.read('day_pick')
+    return lambda d0, d1: R.build(*R.week(af, ld, dp, d0, d1), f'📊 Теннис · неделя {d0:%d.%m}–{d1:%d.%m}',
+                                  period='за неделю')[0]
+
+
 def learn_cycle(store: J.Store, rt: dict, auto: pd.DataFrame, ldf: pd.DataFrame, retrain_log: list[str], kcal: dict,
                 knote: str, daily: bool) -> list[str]:
     import state as ST
@@ -730,7 +741,7 @@ def learn_cycle(store: J.Store, rt: dict, auto: pd.DataFrame, ldf: pd.DataFrame,
         learning.add(store, 'калибровка', 'Самокалибровка рынков', ', '.join(f'{m} {v[0]} (n={v[1]})' for m, v in kcal.items()))
     if daily:
         out += learning.steps(store, rt, R, auto, ldf, store.read('day_pick'), 'теннис')
-    sent = learning.to_telegram(store)
+    sent = learning.to_telegram(store, week_table(store, auto, ldf))
     if sent:
         out.append(f'журнал: в Telegram {sent}')
     return out

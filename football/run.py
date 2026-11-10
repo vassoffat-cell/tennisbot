@@ -511,7 +511,8 @@ def _need_text() -> str:
 
 
 STATS_MENU = [[{'text': '📊 Всё время', 'data': 'r:all'}, {'text': '📅 По месяцу', 'data': 'r:month'},
-               {'text': '🏆 По турниру', 'data': 'r:event'}], [{'text': '🧠 Самообучение', 'data': 'r:learn'}]]
+               {'text': '🏆 По турниру', 'data': 'r:event'}],
+              [{'text': '🔎 Аудит', 'data': 'r:audit'}, {'text': '🧠 Самообучение', 'data': 'r:learn'}]]
 SHOTS: list[tuple] = []          # скриншоты 1xBet из входящих этого запуска (id, имя, байты, описание)
 
 
@@ -690,7 +691,10 @@ def run(dry: bool = False) -> str:
     reps = R.all_reports(af, ld, store.read('day_pick'), kcal, off)
     try:
         reps = pd.concat([reps, pd.DataFrame([dict(key='learn', kind='learn', title='🧠 Самообучение',
-                                                   text=learning.report(store, rt, 'Самообучение · футбол'), updated=J.now_utc())])],
+                                                   text=learning.report(store, rt, 'Самообучение · футбол'), updated=J.now_utc()),
+                                              dict(key='audit', kind='audit', title='🔎 Аудит',
+                                                   text=learning.audit_report(store, week_table(store, af, ld)),
+                                                   updated=J.now_utc())])],
                          ignore_index=True)
     except Exception as ex:
         log.append(f'отчёт самообучения: сбой {ex.__class__.__name__}: {ex}')
@@ -715,6 +719,13 @@ HISTORY = [
 ]
 
 
+def week_table(store: J.Store, af: pd.DataFrame, ld: pd.DataFrame):
+    """Таблица недели (как недельный отчёт понедельника) для карточки аудита: (d0, d1) → HTML."""
+    dp = store.read('day_pick')
+    return lambda d0, d1: R.build(*R.week(af, ld, dp, d0, d1), f'📊 Футбол · неделя {d0:%d.%m}–{d1:%d.%m}',
+                                  period='за неделю')[0]
+
+
 def learn_cycle(store: J.Store, rt: dict, af: pd.DataFrame, ld: pd.DataFrame, kcal: dict, knote: str, daily: bool) -> list[str]:
     out = []
     n = learning.backfill(store, HISTORY)
@@ -728,7 +739,7 @@ def learn_cycle(store: J.Store, rt: dict, af: pd.DataFrame, ld: pd.DataFrame, kc
         learning.add(store, 'калибровка', 'Самокалибровка рынков', ', '.join(f'{m} {v[0]} (n={v[1]})' for m, v in kcal.items()))
     if daily:
         out += learning.steps(store, rt, R, af, ld, store.read('day_pick'), 'футбол')
-    sent = learning.to_telegram(store)
+    sent = learning.to_telegram(store, week_table(store, af, ld))
     if sent:
         out.append(f'журнал: в Telegram {sent}')
     return out
