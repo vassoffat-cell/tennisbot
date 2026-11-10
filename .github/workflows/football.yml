@@ -2,7 +2,7 @@ name: football
 on:
   schedule:
     - cron: '37 1-23/2 * * *'   # :37, а не :30 — меньше задержка GitHub (замер 08–10.11: до 65 мин)
-    - cron: '37 6 * * *'      # 11:37 Ташкента — суточный отчёт
+    - cron: '17 3 * * *'      # 08:17 Ташкента — прогноз на сутки и ставка дня до 09:00
   workflow_dispatch: {}
 permissions:
   contents: write
