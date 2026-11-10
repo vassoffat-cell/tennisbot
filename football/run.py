@@ -680,7 +680,7 @@ def run(dry: bool = False) -> str:
         print('\n'.join(log)); publish_list(rt, None, items, off, dry=True); print('\n'.join(skipped))
         return f'dry {time.time() - t0:.0f} с'
     rt['breaker'] = off
-    alarms = bmsg + R.outcome_alarm(af, rt)
+    alarms = bmsg + R.outcome_alarm(af, rt) + R.daypick_alarms(store.read('day_pick'), rt)
     if alarms:
         notify.send_blocks(alarms)
     nn, nu = save_forecasts(store, items, af, ld)

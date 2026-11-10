@@ -139,6 +139,34 @@ def breaker(ld: pd.DataFrame, state: dict) -> tuple[dict, list[str]]:
     return new, msgs
 
 
+def daypick_alarms(dp: pd.DataFrame, rt: dict) -> list[str]:
+    """ТЗ-004, контроль качества ставки дня: 🚨 ROI «с перевесом» значимо < 0 после ≥ 30 ставок; 🚨 доля «без перевеса» > 80% за 14 дней."""
+    if not len(dp) or 'group' not in dp.columns:
+        return []
+    out, st = [], rt.setdefault('dp_alarm', {})
+    d = dp[(dp.group.astype(str) == 'value') & dp.result.astype(str).isin(['W', 'L']) & dp.k.map(J.num).notna()]
+    if len(d) >= 30:
+        k = d.k.map(J.num).astype(float).values; w = (d.result.astype(str) == 'W').values
+        pp = d.p_pin.map(J.num).astype(float).values if 'p_pin' in d.columns else 1 / k
+        pnl = np.where(w, k - 1, -1.0); exp = pp * k - 1
+        sd = np.sqrt(np.sum(pp * (1 - pp) * k * k)) / len(d)
+        z = (pnl.mean() - 0.0) / sd if sd > 0 else 0.0
+        bad = pnl.mean() < 0 and z <= -2
+        if bad and not st.get('value_bad'):
+            out.append(f'🚨 Ставка дня «с перевесом»: ROI {pnl.mean() * 100:+.1f}% на {len(d)} ставках (ожидалось {exp.mean() * 100:+.1f}%) — '
+                       'значимо ниже нуля, нужен разбор')
+        st['value_bad'] = bool(bad)
+    rec = dp[pd.to_datetime(dp.date, errors='coerce') >= pd.Timestamp.now() - pd.Timedelta(days=14)]
+    rec = rec[rec.group.astype(str).isin(['value', 'fallback'])]
+    if len(rec) >= 7:
+        share = float((rec.group.astype(str) == 'fallback').mean())
+        if share > 0.8 and not st.get('fallback_hi'):
+            out.append(f'🚨 За 14 дней {share * 100:.0f}% ставок дня — «без перевеса»: правило перевеса почти не срабатывает '
+                       '(проверить котировки Pinnacle / скриншоты)')
+        st['fallback_hi'] = share > 0.8
+    return out
+
+
 def outcome_alarm(af: pd.DataFrame, rt: dict) -> list[str]:
     """🚨 исход: на последних 50 матчах угаданных значимо меньше ожидания (z ≤ −2) — один раз до восстановления."""
     M = matches(af).tail(C.ALARM_N)
@@ -349,6 +377,14 @@ def ops_rows(dp: pd.DataFrame) -> list:
             pnl = [(J.num(r.k) - 1) if str(r.result) == 'W' else (0.0 if str(r.result) == 'P' else -1.0) for r in d.itertuples()]
             out.append((f' отдача (кф {RT.num(d.k.map(J.num).mean(), 2)})', str(len(d)), RT.pct(float(np.mean(pnl))),
                         '🟢' if np.mean(pnl) > 0 else '🔴'))
+    if 'group' in dp.columns:                                   # ТЗ-004: группы ставки дня — с перевесом / без перевеса
+        for g, ru in (('value', ' с перевесом'), ('fallback', ' без перевеса')):
+            d = dp[(dp.group.astype(str) == g) & dp.result.astype(str).isin(['W', 'L', 'P']) & dp.k.map(J.num).notna()]
+            if len(d):
+                pnl = [(J.num(r.k) - 1) if str(r.result) == 'W' else (0.0 if str(r.result) == 'P' else -1.0) for r in d.itertuples()]
+                w = int((d.result.astype(str) == 'W').sum())
+                out.append(RT.row(ru, w, len(d)))
+                out.append(('  ROI', str(len(d)), RT.pct(float(np.mean(pnl))), '🟢' if np.mean(pnl) > 0 else '🔴'))
     if 'value_ok' in dp.columns:
         vo = dp.value_ok.map(J.num)
         if vo.notna().any():

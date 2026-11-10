@@ -618,7 +618,7 @@ def run(dry: bool = False) -> str:
         print('\n'.join(log)); publish_list(rt, None, items, off, dry=True); print('\n'.join(skipped))
         return 'dry'
     rt['breaker'] = off
-    alarms = bmsg + R.outcome_alarm(auto, rt)
+    alarms = bmsg + R.outcome_alarm(auto, rt) + R.daypick_alarms(store.read('day_pick'), rt)
     if alarms:
         notify.send_blocks(alarms)
     nn, nu = save_forecasts(store, items, auto, ldf)
@@ -658,24 +658,38 @@ def run(dry: bool = False) -> str:
         except Exception as e:
             log.append(f'новости: сбой {e.__class__.__name__}')
     daypick.TITLE = title
+    hold_list = False                                              # ТЗ-004: прогноз на 24 ч — после скриншотов
     try:
         import dpcore
         import inbox
         import odds as OD
         import shots
         actions = dpcore.read_actions(store)
+        import round4                                              # ТЗ-004: утренний цикл скриншотов
         offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('tennis', today))
         log += slog + ([f'кнопки: {", ".join(actions)}'] if actions else [])
+        r4, m4, offers4 = round4.step(rt, items, C.wday(_local()), offers_s, replies)
         if replies:
             notify.send_blocks(replies)
         for fid, name, _, _ in SHOTS:
             inbox.mark_done(fid, name)
-        log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today,
-                                   shots=offers_s, actions=actions))
+        table4 = m4[-1:] if r4 == 'done_now' and m4 and m4[-1].startswith('📊') else []
+        if m4[:len(m4) - len(table4)]:
+            notify.send_blocks(m4[:len(m4) - len(table4)])
+        if r4 == 'wait':
+            hold_list = True
+            log.append(f"ставка дня: ждём скриншоты ({len((rt.get('r4') or {}).get('got', {}))}"
+                       f"/{len((rt.get('r4') or {}).get('queue', []))})")
+        else:
+            log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today,
+                                       shots=offers_s + offers4, actions=actions))
+            if table4:
+                notify.send_blocks(table4)
     except Exception as e:
         log.append(f'ставка дня: сбой {e.__class__.__name__}: {e}')
         log.append(traceback.format_exc()[-800:])
-    log.append(publish_list(rt, store, items, off, extra=extra_messages(store)))
+    if not hold_list:
+        log.append(publish_list(rt, store, items, off, extra=extra_messages(store)))
     if reminder_due(rt):
         notify.send_blocks([reminder_text(rt)])
         rt['last_reminder'] = today

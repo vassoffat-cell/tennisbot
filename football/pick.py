@@ -27,6 +27,26 @@ P_UNKNOWN_MAX = 0.71  # ступень 3 — кф неизвестен: спра
 SIGMA = {'pinnacle': 0.15, 'blend': 0.25, 'model': 0.45}   # blend — 1xBet без маржи (скриншот, нет Pinnacle)
 R_DEFAULT = 0.98      # кф 1xBet / кф Pinnacle (сверка 08.11.2026: тотал РПЛ, 8 цен, медиана 0,98)
 Z90 = 1.2815515655446004
+# ТЗ-004 (решение пользователя 11.11.2026), СОВМЕЩЁННОЕ правило: сначала ПЕРЕВЕС над Pinnacle — перевес = P_Pinnacle(Шин) × кф 1xBet − 1
+# ≥ 3% при кф 1,70–2,50, рынок П1/П2, кф точный (API / скриншот); история 2023–25 (14 825 матчей, кф закрытия Bet365/Pinnacle):
+# ROI +23,5% ± 9,0 на 134 ставках (реалистично +3…+10%); прежнее «максимум P при кф ≥ 1,35» — ROI −4,6% на 4 839 → только запасное,
+# с пометкой «без перевеса · матожидание −X%». Включается флагом VALUE_ON (теннис — да; футбол — после проверки на истории).
+VALUE_ON = False
+VALUE_EDGE = 0.03
+VALUE_K = (1.70, 2.50)
+VALUE_MARKETS = ('ML',)
+
+
+def edge(o: dict) -> float | None:
+    """Перевес над Pinnacle: P_Pinnacle × кф − 1 (нет цены Pinnacle или кф — None)."""
+    pp, k = o.get('p_pin'), o.get('k')
+    return pp * k - 1 if pp and k else None
+
+
+def is_value(o: dict) -> bool:
+    e = edge(o)
+    return bool(VALUE_ON and e is not None and e >= VALUE_EDGE and o.get('market') in VALUE_MARKETS
+                and o.get('k_src') in ('api', 'screenshot') and VALUE_K[0] <= o['k'] <= VALUE_K[1])
 
 
 def logit(p: float) -> float:
@@ -79,7 +99,11 @@ def finish(o: dict) -> dict:
     o['ev'] = ev(o['p'], o.get('k'), o.get('p_push', 0.0))
     o['value_ok'] = bool(o['conf'] is not None and o['conf'] >= CONF)
     k = o.get('k')
-    if k and k >= MIN_K and o['value_ok'] and o['p'] >= MIN_P_VALUE:
+    o['edge'] = edge(o)
+    o['group'] = 'value' if is_value(o) else 'fallback'
+    if o['group'] == 'value':
+        o['tier'] = 0                                   # ТЗ-004: ставка с перевесом над Pinnacle — первой
+    elif k and k >= MIN_K and o['value_ok'] and o['p'] >= MIN_P_VALUE:
         o['tier'] = 1
     elif k and k >= MIN_K and o['p'] >= MIN_P_VALUE:
         o['tier'] = 2
@@ -96,7 +120,8 @@ def choose(offers: Iterable[dict]) -> list[dict]:
     """Подходящие предложения по порядку выбора: ступень, затем максимум P, затем уверенность, затем раньше матч."""
     ok = [finish(dict(o)) for o in offers]
     ok = [o for o in ok if o['tier'] < 9]
-    ok.sort(key=lambda o: (o['tier'], -o['p'], -(o['conf'] or 0), str(o.get('start_utc', ''))))
+    ok.sort(key=lambda o: (o['tier'], -(o['edge'] or 0) if o['tier'] == 0 else -o['p'], -(o['conf'] or 0),
+                           str(o.get('start_utc', ''))))
     return ok
 
 
@@ -126,6 +151,16 @@ def k_text(o: dict) -> str:
         return 'кф 1xBet неизвестен — пришлите скриншот, если он ниже 1,35'
     s = f'{k:.2f}'.replace('.', ',')
     return {'api': f'кф 1xBet {s}', 'screenshot': f'кф 1xBet {s} (скриншот)'}.get(o.get('k_src'), f'кф 1xBet ≈ {s} (оценка по Pinnacle)')
+
+
+def group_text(o: dict) -> str:
+    """ТЗ-004: «📈 С перевесом +4,1% над Pinnacle (справедливый кф 1,92)» / «⚠️ Без перевеса · матожидание −5,2%»."""
+    e = o.get('edge')
+    if o.get('group') == 'value':
+        return f"📈 С перевесом {e * 100:+.1f}% над Pinnacle (справедливый кф {1 / o['p_pin']:.2f})".replace('.', ',')
+    x = e if e is not None else o.get('ev')
+    return (f'⚠️ Без перевеса · матожидание {x * 100:+.1f}%'.replace('.', ',') if x is not None
+            else '⚠️ Без перевеса · кф 1xBet неизвестен')
 
 
 def conf_text(o: dict) -> str:

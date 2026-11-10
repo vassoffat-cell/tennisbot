@@ -108,7 +108,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             cur['ask'], cur['accepted_shown'] = [], True
         rt['day_pick'] = cur
         return 'ставка дня: принята'
-    if started and not force:
+    if started:                                                # матч ставки начался — не меняется ни ботом, ни скриншотом/отказом
         rt['day_pick'] = cur
         return 'ставка дня: матч начался — замок'
     if cur.get('msgs') and not force and (loc.hour >= C.DAY_PICK_LOCK_HOUR or loc.hour < C.DAY_START_HOUR):

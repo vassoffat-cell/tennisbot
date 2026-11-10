@@ -26,6 +26,8 @@ import odds as OD
 import pick as PK
 from markov import Outcome
 
+PK.VALUE_ON = bool(getattr(C, 'VALUE_RULE', False))      # ТЗ-004: сначала перевес над Pinnacle
+
 DISTS: dict[str, tuple] = {}       # espn_id → (распределение исходов D, игрок 1, игрок 2) — заполняет autorun.forecast_all
 TITLE = None                       # совместимость (раньше — подпись линии из autorun)
 API_MARKETS = ('h2h', 'spreads', 'totals')
@@ -113,7 +115,8 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
             k1x = sides[n].get('onexbet')
             k, ksrc = (k1x, 'api') if k1x else ((round(r * pin[i], 3), 'est') if pin[i] else (None, None))
             out.append(dict(_base(m, row), market=mk, pick=n, line=line, label=label(mk, n, line, p1n, p2n), p=float(p),
-                            p_src=src, p_model=pm, p_push=pp, k=k, k_src=ksrc, source='api'))
+                            p_src=src, p_model=pm, p_push=pp, k=k, k_src=ksrc, source='api',
+                            p_pin=float(fair[i]) if fair else None))
     return out
 
 
@@ -169,7 +172,7 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
     out = [head, f"🏆 {e(c['tour'])} · {e(c['event'])} · 🕒 {e(str(c['start_local'])[6:])}",
            f"<b>{e(c['player1'])} — {e(c['player2'])}</b>",
            f"<b>{e(c['label'])}</b> — вероятность {c['p'] * 100:.0f}% ({src})",
-           e(PK.k_text(c)), e(PK.conf_text(c))]
+           e(PK.k_text(c)), e(PK.group_text(c))]
     if c.get('tier') == 3:
         out.append('<i>Котировок по матчу нет — линия модели с запасом по кф.</i>')
     out += [e(h) for h in hist]
@@ -203,7 +206,8 @@ def _row(c: dict, dstr: str, changes: int, hist: list[str]) -> dict:
                line='' if c['line'] is None else c['line'], k=c.get('k') or '', k_src=c.get('k_src') or '',
                p_src=c['p_src'], conf='' if c.get('conf') is None else round(c['conf'], 4), value_ok=int(c['value_ok']),
                tier=c['tier'], source=c.get('source', ''), p_model='' if c.get('p_model') != c.get('p_model') else
-               round(float(c['p_model']), 4))
+               round(float(c['p_model']), 4), edge='' if c.get('edge') is None else round(c['edge'], 4),
+               group=c.get('group', ''), p_pin='' if not c.get('p_pin') else round(c['p_pin'], 4))
     row['p'] = round(float(row['p']), 4)
     return row
 

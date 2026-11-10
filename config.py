@@ -99,3 +99,5 @@ def window_end_utc(now_utc):
     loc = now_utc + _dt.timedelta(hours=TZ_OFFSET_HOURS)
     end = _dt.datetime.combine(wday(loc) + _dt.timedelta(days=1), _dt.time(DAY_START_HOUR))
     return end - _dt.timedelta(hours=TZ_OFFSET_HOURS)
+
+VALUE_RULE = True          # ТЗ-004: ставка дня — сначала перевес над Pinnacle (pick.VALUE_ON), теннис — включено

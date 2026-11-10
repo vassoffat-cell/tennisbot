@@ -118,7 +118,8 @@ def _offers_for(m, row, p, events: list[dict]) -> tuple[list[dict], list[float]]
                 p_f, src = PK.fair(pm, pin[0], 'pinnacle'), 'pinnacle'
                 rs.append(k / pin[1])
             out.append(dict(DP._base(m, row), market=m2, pick=s, line=ln, label=DP.label(m2, s, ln, row['player1'], row['player2']),
-                            p=float(p_f), p_src=src, p_model=pm, p_push=pp, k=float(k), k_src='screenshot', source='screenshot'))
+                            p=float(p_f), p_src=src, p_model=pm, p_push=pp, k=float(k), k_src='screenshot', source='screenshot',
+                            p_pin=float(pin[0]) if pin else None))
     return out, rs
 
 
