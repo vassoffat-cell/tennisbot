@@ -182,7 +182,7 @@ def _day_items(d: pd.DataFrame, lc: dict) -> list[str]:
         elif st == 'ET':
             mark, tail = ('✅' if k == 1 else '❌'), 'ничья в осн. время'
         elif not _blank(r.settled):
-            mark, tail = '⚪', 'отменён / перенесён — не в счёт'
+            mark, tail = '⚪', ('турнир не отслеживается — не в счёт' if st == 'OFF' else 'отменён / перенесён — не в счёт')
         elif pd.to_datetime(r.start_utc, errors='coerce') > now:
             mark, tail = '🕒', 'не начат (перенос)'
         else:

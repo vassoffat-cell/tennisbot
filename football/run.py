@@ -323,6 +323,13 @@ def settle(store: J.Store, res: dict) -> tuple[int, int]:
         ll = round(-float(np.log(max(p[out], 1e-6))), 4) if out is not None else ''
         af.loc[i, J.AUTO_RESULT_COLS] = [st, hg if st == 'FT' else '', ag if st == 'FT' else '', today, ll]
         upd.append(i)
+    # охват: прогнозы турниров, которые больше не отслеживаются (старые строки «рынок» Бельгии/Шотландии, РПЛ после 10.11.2026),
+    # через 48 ч без итога закрываются статусом OFF — в статистику не входят (её считают только FT/ET модели), «зависшими» не висят
+    old = pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=48)
+    for i, r in af[af.settled.map(_blank).astype(bool)].iterrows():
+        if i not in upd and str(r.comp) not in C.COMPETITIONS and pd.to_datetime(r.start_utc, errors='coerce') < old:
+            af.loc[i, J.AUTO_RESULT_COLS] = ['OFF', '', '', today, '']
+            upd.append(i)
     store.update('auto_forecasts', af.loc[upd], J.AUTO_RESULT_COLS)
     ld = store.read('auto_lines')
     lu = []
