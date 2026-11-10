@@ -719,11 +719,13 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401885395,por.1,league,POR,P1,2026-11-07 20:30,Sporting CP,Moreirense,Sp Lisbon,Moreirense,1,0,FT,2026-27-portuguese-primeira-liga,0
 401888253,tur.1,league,TUR,T1,2026-11-08 10:30,Caykur Rizespor,Erzurum BB,Rizespor,Erzurum BB,2,1,FT,2026-27-turkish-super-lig,0
 401879814,rus.1,league,RUS,RUS,2026-11-08 11:00,Krylia Sovetov,Gazovik Orenburg,Krylya Sovetov,Orenburg,2,0,FT,2026-27-russian-premier-league,0
+401875551,ned.1,league,NED,N1,2026-11-08 11:15,Heerenveen,Feyenoord Rotterdam,Heerenveen,Feyenoord,5,3,FT,regular-season,0
 401874810,ita.1,league,ITA,I1,2026-11-08 11:30,Napoli,Lazio,Napoli,Lazio,1,1,FT,2026-27-italian-serie-a,0
 401931079,eng.fa,cup,ENG,E0,2026-11-08 12:00,Stafford Rangers,Grimsby Town,,Grimsby,3,3,ET,first-round,0
 401882814,esp.1,league,ESP,SP1,2026-11-08 13:00,Elche,Real Betis,Elche,Betis,0,2,FT,2026-27-laliga,0
 401888372,tur.1,league,TUR,T1,2026-11-08 13:00,Çorum FK,Fenerbahce,Corum,Fenerbahce,0,5,FT,2026-27-turkish-super-lig,0
 401879815,rus.1,league,RUS,RUS,2026-11-08 13:15,Spartak Moscow,Akron Tolyatti,Spartak Moscow,Akron Togliatti,2,1,FT,2026-27-russian-premier-league,0
+401875550,ned.1,league,NED,N1,2026-11-08 13:30,FC Twente,Ajax Amsterdam,Twente,Ajax,2,2,FT,regular-season,0
 401874800,ita.1,league,ITA,I1,2026-11-08 14:00,Monza,Atalanta,Monza,Atalanta,0,1,FT,2026-27-italian-serie-a,0
 401875018,ita.1,league,ITA,I1,2026-11-08 14:00,Genoa,AC Milan,Genoa,Milan,1,2,FT,2026-27-italian-serie-a,0
 401876406,fra.1,league,FRA,F1,2026-11-08 14:00,Stade Rennais,Lille,Rennes,Lille,1,2,FT,2026-27-ligue-1,0
@@ -740,6 +742,8 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401885398,por.1,league,POR,P1,2026-11-08 15:30,C.D. Nacional,Académico de Viseu,Nacional,Academico Viseu,1,0,FT,2026-27-portuguese-primeira-liga,0
 401885400,por.1,league,POR,P1,2026-11-08 15:30,Estoril,Maritimo,Estoril,Maritimo,0,0,VOID,2026-27-portuguese-primeira-liga,0
 401888254,tur.1,league,TUR,T1,2026-11-08 15:30,Alanyaspor,Trabzonspor,Alanyaspor,Trabzonspor,0,2,FT,2026-27-turkish-super-lig,0
+401875548,ned.1,league,NED,N1,2026-11-08 15:45,AZ Alkmaar,FC Groningen,AZ Alkmaar,Groningen,4,3,FT,regular-season,0
+401875553,ned.1,league,NED,N1,2026-11-08 15:45,SC Cambuur,PSV Eindhoven,Cambuur,PSV Eindhoven,2,5,FT,regular-season,0
 401876408,fra.1,league,FRA,F1,2026-11-08 16:15,Le Mans,AS Monaco,Le Mans,Monaco,1,1,FT,2026-27-ligue-1,0
 401876409,fra.1,league,FRA,F1,2026-11-08 16:15,Le Havre AC,Lorient,Le Havre,Lorient,0,2,FT,2026-27-ligue-1,0
 401876410,fra.1,league,FRA,F1,2026-11-08 16:15,Brest,Lyon,Brest,Lyon,2,0,FT,2026-27-ligue-1,0
@@ -754,6 +758,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401885394,por.1,league,POR,P1,2026-11-08 18:00,Vitória de Guimaraes,FC Porto,Guimaraes,Porto,1,2,FT,2026-27-portuguese-primeira-liga,0
 401888251,tur.1,league,TUR,T1,2026-11-08 18:00,Besiktas,Genclerbirligi,Besiktas,Genclerbirligi,3,0,FT,2026-27-turkish-super-lig,0
 401884742,ger.1,league,GER,D1,2026-11-08 18:30,TSG Hoffenheim,Schalke 04,Hoffenheim,Schalke 04,2,1,FT,2026-27-german-bundesliga,0
+401875549,ned.1,league,NED,N1,2026-11-08 19:00,FC Utrecht,NEC Nijmegen,Utrecht,Nijmegen,2,3,FT,regular-season,0
 401875003,ita.1,league,ITA,I1,2026-11-08 19:45,Fiorentina,Juventus,Fiorentina,Juventus,2,2,FT,2026-27-italian-serie-a,0
 401876404,fra.1,league,FRA,F1,2026-11-08 19:45,Lens,Marseille,Lens,Marseille,1,2,FT,2026-27-ligue-1,0
 401882816,esp.1,league,ESP,SP1,2026-11-08 20:00,Atlético Madrid,Barcelona,Ath Madrid,Barcelona,1,2,FT,2026-27-laliga,0
