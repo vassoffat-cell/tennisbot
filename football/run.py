@@ -402,9 +402,72 @@ def collect_lineups(store_df: pd.DataFrame) -> str:
 
 def _safe_lineups(comp: str, ev: str):
     try:
-        return fespn.lineups(comp, ev)
+        js = fespn.summary(comp, ev)
+        sot = fespn.shots_on_target(js)
+        if sot is not None:
+            _SOT[ev] = sot
+        return fespn.lineups(comp, ev, js)
     except Exception:
         return None
+
+
+_SOT: dict[str, tuple[float, float]] = {}
+
+
+def verify_shots_sample() -> str:
+    """T30, проверка один раз: удары в створ ESPN по матчам 03.10–02.11.2026 восьми лиг (они же есть в football-data) →
+    data/shots_check.csv.gz (event, date, comp, home, away, hg, ag, hst, ast) для сверки с HST/AST football-data."""
+    f = C.DATA / 'shots_check.csv.gz'
+    if f.exists():
+        return ''
+    comps = ['eng.1', 'esp.1', 'ger.1', 'ita.1', 'fra.1', 'ned.1', 'por.1', 'tur.1']
+    days = [dt.date(2026, 10, 3) + dt.timedelta(days=i) for i in range(31)]
+    ms, _ = fespn.fetch({c: days for c in comps})
+    ms = [m for m in ms if m.result_kind == 'FT'][:400]
+    from concurrent.futures import ThreadPoolExecutor
+    def one(m):
+        try:
+            return m, fespn.shots_on_target(fespn.summary(m.comp, m.id))
+        except Exception:
+            return m, None
+    rows = []
+    with ThreadPoolExecutor(8) as ex:
+        for m, sot in ex.map(one, ms):
+            if sot is not None:
+                rows.append(dict(event=m.id, date=m.start.strftime('%Y-%m-%d'), comp=m.comp, home=m.home, away=m.away,
+                                 hg=m.hg, ag=m.ag, hst=sot[0], ast=sot[1]))
+    pd.DataFrame(rows).to_csv(f, index=False, compression='gzip')
+    return f'удары ESPN (проверка T30): {len(rows)} из {len(ms)} матчей'
+
+
+def collect_shots(store_df: pd.DataFrame) -> str:
+    """T30 (футбол): удары в створ ESPN — к матчам этого запуска (из summary составов) + догрузка истории сезона
+    (лиги, FT, с 01.08.2026), до 300 матчей за запуск. Файл data/shots.csv.gz: event, date, comp, hst, ast."""
+    old = pd.read_csv(C.SHOTS, dtype={'event': str}) if C.SHOTS.exists() else pd.DataFrame(columns=['event', 'date', 'comp', 'hst', 'ast'])
+    have = set(old.event.astype(str)) | set(_SOT)
+    lg = store_df[(store_df.status == 'FT') & (store_df.kind.astype(str) == 'league') & (store_df.date >= pd.Timestamp('2026-08-01'))]
+    todo = [(c, str(e)) for c, e in zip(lg.comp, lg.id) if str(e) not in have][:300]
+    if todo:
+        from concurrent.futures import ThreadPoolExecutor
+        def one(t):
+            try:
+                return t[1], fespn.shots_on_target(fespn.summary(*t))
+            except Exception:
+                return t[1], None
+        with ThreadPoolExecutor(8) as ex:
+            for ev, sot in ex.map(one, todo):
+                if sot is not None:
+                    _SOT[ev] = sot
+    if not _SOT:
+        return 'удары ESPN: новых нет'
+    meta = store_df.assign(id=store_df.id.astype(str)).set_index('id')
+    new = pd.DataFrame([dict(event=e, date=meta.date.get(e, pd.NaT), comp=meta.comp.get(e, ''), hst=h, ast=a)
+                        for e, (h, a) in _SOT.items() if e not in set(old.event.astype(str))])
+    out = pd.concat([old, new], ignore_index=True) if len(new) else old
+    out['date'] = pd.to_datetime(out.date).dt.strftime('%Y-%m-%d')
+    out.to_csv(C.SHOTS, index=False, compression='gzip')
+    n = len(new); _SOT.clear()
+    return f'удары ESPN: +{n} (всего {len(out)}, осталось догрузить {max(len(lg) - len(out), 0)})'
 
 
 # ======================================================================== Telegram: список
@@ -679,6 +742,14 @@ def run(dry: bool = False) -> str:
         log.append(collect_lineups(st))
     except Exception as ex:
         log.append(f'составы: сбой {ex.__class__.__name__}')
+    try:
+        log.append(verify_shots_sample())
+    except Exception as ex:
+        log.append(f'удары ESPN (проверка): сбой {ex.__class__.__name__}: {ex}')
+    try:
+        log.append(collect_shots(st))
+    except Exception as ex:
+        log.append(f'удары ESPN: сбой {ex.__class__.__name__}: {ex}')
     if reminder_due(rt):
         notify.send_blocks([reminder_text(rt)])
         rt['last_reminder'] = today

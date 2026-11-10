@@ -68,6 +68,7 @@ COUNTRY_PRIOR = {'ENG': 0.30, 'ESP': 0.25, 'ITA': 0.22, 'GER': 0.22, 'FRA': 0.12
                  'BEL': 0.0, 'TUR': -0.04, 'SCO': -0.12, 'GRE': -0.06, 'RUS': 0.0}
 UEFA_BACKFILL_FROM = _dt.date(2025, 7, 1)   # еврокубки сезона 2025/26 из ESPN (раньше — openfootball, CC0)
 UEFA_HIST = DATA / 'uefa_hist.csv'          # openfootball/champions-league (CC0), 2019/20–2025/26, счёт 90 минут
+SHOTS = DATA / 'shots.csv.gz'              # T30: удары в створ из ESPN summary (замена football-data)
 LINEUPS = DATA / 'lineups.csv.gz'           # составы ESPN доигранных матчей (этап 2: проверка фактора «основа»)
 
 # ситуационные факторы (research/oos_gain.py, 41 480 матчей 08.2020–01.2026, совместная пуассоновская регрессия)

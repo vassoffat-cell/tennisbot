@@ -177,9 +177,30 @@ def fetch(plan: dict[str, list[dt.date]], workers: int = 8) -> tuple[list[FMatch
     return sorted(seen.values(), key=lambda m: (m.start, m.id)), errors
 
 
-def lineups(comp: str, event_id: str) -> list[dict]:
+def summary(comp: str, event_id: str) -> dict:
+    return _get(BASE.format(comp=comp) + f'summary?event={event_id}')
+
+
+def shots_on_target(js: dict) -> tuple[float, float] | None:
+    """T30: удары в створ хозяев и гостей из ESPN summary (boxscore.teams[].statistics: shotsOnTarget)."""
+    side = {}
+    for c in ((js.get('header') or {}).get('competitions') or [{}])[0].get('competitors', []) or []:
+        side[str((c.get('team') or {}).get('id', ''))] = c.get('homeAway', '')
+    got = {}
+    for t in (js.get('boxscore') or {}).get('teams', []) or []:
+        ha = t.get('homeAway') or side.get(str((t.get('team') or {}).get('id', '')), '')
+        for s in t.get('statistics', []) or []:
+            if s.get('name') == 'shotsOnTarget':
+                try:
+                    got[ha] = float(s.get('displayValue', s.get('value')))
+                except (TypeError, ValueError):
+                    pass
+    return (got['home'], got['away']) if 'home' in got and 'away' in got else None
+
+
+def lineups(comp: str, event_id: str, js: dict | None = None) -> list[dict]:
     """Составы матча из ESPN summary: игрок, команда, в старте ли, позиция. Пусто — составов нет."""
-    js = _get(BASE.format(comp=comp) + f'summary?event={event_id}')
+    js = js if js is not None else summary(comp, event_id)
     out = []
     for r in js.get('rosters', []) or []:
         team = ((r.get('team') or {}).get('displayName') or '').strip()
