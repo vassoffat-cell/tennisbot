@@ -1,4 +1,5 @@
-"""Бэктест хоккея: подгонка раз в 7 дней на прошлом (без утечки), прогноз следующих 7 дней; сезоны 2024–25 и 2025–26."""
+"""Бэктест хоккея: подгонка раз в 7 дней на прошлом (без утечки), прогноз следующих 7 дней.
+Запуск: hk_bt.py <лига NHL|KHL> [ξ] [начало теста ГГГГ-ММ-ДД] [конец теста]. Ворота КХЛ — тот же отчёт по текущему сезону."""
 import sys, numpy as np, pandas as pd
 sys.path.insert(0, '/home/claude/tennisbot/hockey')
 import hmodel as HM, hlines as HL
@@ -7,7 +8,9 @@ xi = float(sys.argv[2]) if len(sys.argv) > 2 else HM.XI
 g = pd.read_csv('/home/claude/tennisbot/hockey/data/games.csv.gz')
 g = g[(g.league == league) & g.end.isin(['REG', 'OT', 'SO'])].copy()
 g['t'] = pd.to_datetime(g.start)
-test = g[g.t >= '2024-10-01'].sort_values('t')
+t0 = sys.argv[3] if len(sys.argv) > 3 else '2024-10-01'
+t1 = sys.argv[4] if len(sys.argv) > 4 else '2100-01-01'
+test = g[(g.t >= t0) & (g.t < t1)].sort_values('t')
 rows = []
 d0 = test.t.min().normalize()
 while d0 <= test.t.max():
@@ -32,7 +35,8 @@ while d0 <= test.t.max():
                     row[f"s{x['slot']}_mk"] = x['market']
                 rows.append(row)
     d0 = d1
-R = pd.DataFrame(rows); R.to_pickle(f'/home/claude/research/hk/{league}_bt_{xi}.pkl')
+import os; os.makedirs('/home/claude/research/hk', exist_ok=True)
+R = pd.DataFrame(rows); R.to_pickle(f'/home/claude/research/hk/{league}_bt_{xi}_{t0}.pkl')
 hw = (R.hg > R.ag).astype(int)
 p = R.mh.clip(1e-6, 1 - 1e-6)
 print(f'{league} ξ={xi} n={len(R)} | победа с ОТ: угадано {((p >= .5) == hw).mean()*100:.1f}% лл {-np.mean(hw*np.log(p)+(1-hw)*np.log(1-p)):.4f} | хозяева всегда {hw.mean()*100:.1f}%')

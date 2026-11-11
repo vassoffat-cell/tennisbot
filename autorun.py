@@ -826,7 +826,7 @@ def run(dry: bool = False) -> str:
         log.append(f'отчёт самообучения: сбой {e.__class__.__name__}: {e}')
     try:                                                               # 🏒 хоккей — отдельными сообщениями в этом же боте
         from hockey import hrun
-        hk = hrun.run(store, rt, log, (daily_due or resend) and not dry)
+        hk = hrun.run(store, rt, log, force=resend and not dry, dry=dry)   # свои сутки 12:00 → 12:00
         if hk:
             reps = pd.concat([reps, pd.DataFrame(hk)], ignore_index=True)
     except Exception as e:
