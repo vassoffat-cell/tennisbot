@@ -185,7 +185,24 @@ def outcome_alarm(af: pd.DataFrame, rt: dict) -> list[str]:
 
 
 # ======================================================================== единый отчёт
-def _day_items(d: pd.DataFrame, lc: dict) -> list[str]:
+LMARK = {'W': '✅', 'L': '❌', 'P': '⚪'}
+
+
+def _line_rows(ld: pd.DataFrame) -> dict:
+    """Показанные линии по матчу: espn_id → [(метка, линия, P)] — для полного списка в суточном отчёте."""
+    out: dict = {}
+    if not len(ld):
+        return out
+    X = ld.copy()
+    X['sid'] = X.espn_id.map(lambda x: str(J.num(x)))
+    X = X[[_shown(r) for r in X.itertuples()]]
+    for r in X.itertuples():
+        res = str(r.result).strip()
+        out.setdefault(r.sid, []).append((LMARK.get(res, '⏳'), str(r.label), J.num(r.p)))
+    return out
+
+
+def _day_items(d: pd.DataFrame, lc: dict, lx: dict | None = None) -> list[str]:
     """Каждый прогноз: ✅/❌ (в счёт), ⚪ снятие/не состоялся (не в счёт), ⏳ ждёт итога, 🕒 не начат; фаворит модели, P, счёт,
     линии угадано/рассчитано (lc: espn_id → (угадано, рассчитано, показано))."""
     e, out = notify.esc, []
@@ -208,7 +225,10 @@ def _day_items(d: pd.DataFrame, lc: dict) -> list[str]:
             mark, tail = '🕒', 'не начат (перенос)'
         else:
             mark, tail = '⏳', 'ждёт итога'
-        out.append(f'{mark} {e(r.tour)} {e(name)} {fmt(pm * 100)}% · {e(tail)}{lt}')
+        item = f'{mark} {e(r.tour)} {e(name)} {fmt(pm * 100)}% · {e(tail)}{lt}'
+        for m_, lab, p_ in (lx or {}).get(str(J.num(r.espn_id)), []):          # каждая предложенная линия и её итог
+            item += f'\n   {m_} {e(lab)} · {fmt(p_ * 100)}%'
+        out.append(item)
     return out
 
 
@@ -229,10 +249,11 @@ def day_lists(af: pd.DataFrame, ld: pd.DataFrame, daily_day, late: set | None = 
         for sid, g in X.groupby('sid'):
             res = g.result.astype(str)
             lc[sid] = (int((res == 'W').sum()), int(res.isin(['W', 'L']).sum()), len(g))
+    lx = _line_rows(ld)
     out = []
     d = A[A.day == daily_day]
     if len(d):
-        it = _day_items(d, lc)
+        it = _day_items(d, lc, lx)
         cnt = {m: sum(x.startswith(m) for x in it) for m in ('✅', '❌', '⏳', '🕒', '⚪')}
         head = ' · '.join(f'{m} {n}' for m, n in cnt.items() if n)
         out += notify.folded(f'▸ Матчи за сутки ({len(d)}: {head})', it)
@@ -240,13 +261,13 @@ def day_lists(af: pd.DataFrame, ld: pd.DataFrame, daily_day, late: set | None = 
         x = A[A.sid.isin(late)]
         if len(x):
             out += notify.folded(f'▸ Дорасчитано за прошлые дни ({len(x)})',
-                                 [f'{r.day:%d.%m} {s}' for r, s in zip(x.itertuples(), _day_items(x, lc))])
+                                 [f'{r.day:%d.%m} {s}' for r, s in zip(x.itertuples(), _day_items(x, lc, lx))])
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     old = A[(A.day < daily_day) & A.settled.map(_blank).astype(bool)
             & (pd.to_datetime(A.start_utc, errors='coerce') < now - pd.Timedelta(hours=36))]
     if len(old):
         out += notify.folded(f'▸ Ждут результата ({len(old)})',
-                             [f'{r.day:%d.%m} {s}' for r, s in zip(old.itertuples(), _day_items(old, lc))])
+                             [f'{r.day:%d.%m} {s}' for r, s in zip(old.itertuples(), _day_items(old, lc, lx))])
     return out
 
 
@@ -403,6 +424,29 @@ def ops_rows(dp: pd.DataFrame) -> list:
             if len(d):
                 out.append(RT.row(ru, int((d.result.astype(str) == 'W').sum()), len(d)))
     out += list(EXTRA_OPS)                                      # 🔁 смены ставки дня (dpcore.changes_rows; задаёт прогон)
+    return out
+
+
+def week_lines(ld: pd.DataFrame, d0, d1) -> list[str]:
+    """Недельный отчёт: все предложенные линии недели, сгруппированные по типу (свёрнутые списки) — дата, матч, линия, P, итог."""
+    if not len(ld):
+        return []
+    X = ld[[_shown(r) for r in ld.itertuples()]].copy()
+    X['day'] = (pd.to_datetime(X.start_utc, errors='coerce') + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - C.DAY_START_HOUR)).dt.date
+    X = X[(X.day >= d0) & (X.day <= d1)].sort_values('start_utc')
+    e, out = notify.esc, []
+    for mk, g in X.groupby('market', sort=False):
+        res = g.result.astype(str)
+        cnt = ' · '.join(f'{m} {n}' for m, n in (('✅', int((res == 'W').sum())), ('❌', int((res == 'L').sum())),
+                                                   ('⚪', int((res == 'P').sum())), ('⏳', int((~res.isin(['W', 'L', 'P'])).sum()))) if n)
+        items = []
+        for day, gd in g.groupby('day', sort=False):                # компактно: по дням, линии подряд
+            rows = []
+            for r in gd.itertuples():
+                who = f"{str(r.player1).split()[-1]}–{str(r.player2).split()[-1]}"
+                rows.append(f"{LMARK.get(str(r.result).strip(), '⏳')} {e(who)} · {e(str(r.label))} · {fmt(J.num(r.p) * 100)}%")
+            items.append(f'<b>{day:%d.%m}</b>\n' + '\n'.join(rows))
+        out += notify.folded(f'▸ {RT.SHORT.get(mk, mk)} ({len(g)}: {cnt})', items)
     return out
 
 

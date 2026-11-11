@@ -752,7 +752,7 @@ def run(dry: bool = False) -> str:
             d0 = yday - dt.timedelta(days=6)
             a_, l_, d_ = R.week(auto, ldf, store.read('day_pick'), d0, yday)
             notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
-                                       period='за неделю'))
+                                       period='за неделю') + R.week_lines(ldf, d0, yday))
             log.append('недельный отчёт отправлен')
         if reminder_due(rt):                                      # запрос файлов — сразу после отчётов
             notify.send_blocks([reminder_text(rt)])
