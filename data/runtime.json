@@ -1,10 +1,5 @@
 {
- "list_messages": [
-  [
-   570704006,
-   343
-  ]
- ],
+ "list_messages": [],
  "list_match_ids": [
   "186544",
   "187378",
@@ -3066,6 +3061,55 @@
       570704006,
       341
      ]
+    ],
+    "tier": 2,
+    "fire": null,
+    "clash": null
+   },
+   {
+    "espn_id": "187378",
+    "tour": "WTA",
+    "event": "FAGE WTA Finals Indian Wells",
+    "start_utc": "2026-11-11 21:30",
+    "start_local": "12.11 02:30",
+    "player1": "Aryna Sabalenka",
+    "player2": "Mirra Andreeva",
+    "market": "TOTAL",
+    "pick": "O",
+    "line": 20.0,
+    "label": "ТБ 20",
+    "p": 0.6833483487873592,
+    "p_src": "blend",
+    "p_model": 0.5767652045981824,
+    "p_push": 0.07744825286996276,
+    "k": 1.39,
+    "k_src": "screenshot",
+    "source": "screenshot",
+    "p_pin": null,
+    "edge": null,
+    "group": "fallback",
+    "slot": 0,
+    "tier": 2,
+    "rank": 3,
+    "key": [
+     "187378",
+     "TOTAL",
+     "O",
+     "20"
+    ],
+    "match": "Aryna Sabalenka — Mirra Andreeva",
+    "why": "сравнение (ступень выше)",
+    "at": "23:54",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 23:54: сравнение (ступень выше) (лучше ⭐1 П2 Rune)"
+    ],
+    "text": "⭐3 <b>Ставка дня · теннис · 11.11</b>\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 02:30\n<b>Aryna Sabalenka — Mirra Andreeva</b>\n<b>ТБ 20</b> — вероятность 68% (1xBet без маржи) · честный кф 1,46\nкф 1xBet 1,39 (скриншот)\n⚠️ Без перевеса · матожидание +2,7%\n➕ новая линия дня в 23:54: сравнение (ступень выше) (лучше ⭐1 П2 Rune)",
+    "msgs": [
+     [
+      570704006,
+      346
+     ]
     ]
    }
   ],
@@ -3119,6 +3163,23 @@
     "k": 1.36,
     "to_label": "—",
     "to_key": "187385|TOTAL|O|19.5",
+    "slot": 0
+   },
+   {
+    "date": "2026-11-11",
+    "time": "23:54",
+    "reason": "новая: сравнение (ступень выше)",
+    "rank": 3,
+    "espn_id": "187378",
+    "market": "TOTAL",
+    "pick": "O",
+    "line": 20.0,
+    "label": "ТБ 20",
+    "match": "Aryna Sabalenka — Mirra Andreeva",
+    "p": 0.6833,
+    "k": 1.39,
+    "to_label": "—",
+    "to_key": "187378|TOTAL|O|20",
     "slot": 0
    }
   ],
@@ -6383,12 +6444,7 @@
    0
   ]
  },
- "hk_list": [
-  [
-   570704006,
-   344
-  ]
- ],
+ "hk_list": [],
  "hk_list_ids": [
   "nhl:401892690",
   "nhl:401892691",
