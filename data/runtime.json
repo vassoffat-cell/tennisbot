@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   325
+   328
   ]
  ],
  "list_match_ids": [
@@ -6321,7 +6321,7 @@
  "hk_list": [
   [
    570704006,
-   326
+   329
   ]
  ],
  "hk_list_ids": [
@@ -6332,5 +6332,71 @@
   "nhl:401892694",
   "nhl:401892695"
  ],
- "hk_last_daily": "2026-11-10"
+ "hk_last_daily": "2026-11-10",
+ "hk_dp": {
+  "date": "2026-11-11",
+  "msgs": [
+   [
+    570704006,
+    330
+   ]
+  ],
+  "picks": [
+   {
+    "id": "nhl:401892690",
+    "league": "NHL",
+    "start_utc": "2026-11-12 00:00",
+    "start_local": "12.11 05:00",
+    "home": "Buffalo Sabres",
+    "away": "Tampa Bay Lightning",
+    "slot": 11,
+    "market": "IT1",
+    "pick": "U",
+    "line": 4.5,
+    "label": "ИТ1 М4.5",
+    "p": 0.7996,
+    "p_low": 0.7583,
+    "tier": 3,
+    "fire": 0,
+    "clash": 0
+   },
+   {
+    "id": "nhl:401892692",
+    "league": "NHL",
+    "start_utc": "2026-11-12 02:00",
+    "start_local": "12.11 07:00",
+    "home": "Edmonton Oilers",
+    "away": "Philadelphia Flyers",
+    "slot": 11,
+    "market": "IT1",
+    "pick": "U",
+    "line": 4.5,
+    "label": "ИТ1 М4.5",
+    "p": 0.797,
+    "p_low": 0.7554,
+    "tier": 3,
+    "fire": 0,
+    "clash": 0
+   },
+   {
+    "id": "nhl:401892695",
+    "league": "NHL",
+    "start_utc": "2026-11-12 03:00",
+    "start_local": "12.11 08:00",
+    "home": "San Jose Sharks",
+    "away": "Pittsburgh Penguins",
+    "slot": 10,
+    "market": "TOT",
+    "pick": "O",
+    "line": 4.5,
+    "label": "ТБ4.5",
+    "p": 0.7861,
+    "p_low": 0.743,
+    "tier": 3,
+    "fire": 0,
+    "clash": 0
+   }
+  ],
+  "log": []
+ }
 }
