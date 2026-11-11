@@ -55,6 +55,7 @@ def fit(games: pd.DataFrame, league: str, asof: pd.Timestamp, xi: float = XI, re
     g = games[(games.league == league) & games.hg_reg.notna() & games.ag_reg.notna()
               & (pd.to_datetime(games.start) < asof) & (games.end.astype(str).isin(['REG', 'OT', 'SO']))]
     g = g[pd.to_datetime(g.start) >= asof - pd.Timedelta(days=900)]
+    g = g[~g.home.astype(str).str.contains('Division') & ~g.away.astype(str).str.contains('Division')]   # матчи звёзд КХЛ
     if len(g) < 200:
         return None
     teams = sorted(set(g.home) | set(g.away))

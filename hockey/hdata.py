@@ -117,6 +117,9 @@ def khl_probe() -> str:
     return '; '.join(out) or f"ответ: {json.dumps(js)[:200]}"
 
 
+RENAME = {'Kunlun': 'Shanghai'}         # «Куньлунь Ред Стар» → «Шанхай Дрэгонс» (2025): один клуб для модели
+
+
 def _rows(resp: list, league: int = KHL_ID) -> list[dict]:
     """Ответ API-Sports /games → строки базы (только лига league). Основное время — сумма 3 периодов."""
     out = []
@@ -137,8 +140,8 @@ def _rows(resp: list, league: int = KHL_ID) -> list[dict]:
         state = 'post' if end else 'pre' if stt in ('NS', 'TBD') else 'void' if stt in ('POST', 'CANC', 'ABD', 'AWD', 'WO', 'INTR') else 'in'
         start = pd.Timestamp(g.get('date')).tz_convert('UTC').tz_localize(None)
         out.append(dict(id=f"khl:{g.get('id')}", league='KHL', start=start.strftime('%Y-%m-%d %H:%M'),
-                        home=(g.get('teams') or {}).get('home', {}).get('name', ''),
-                        away=(g.get('teams') or {}).get('away', {}).get('name', ''),
+                        home=RENAME.get(n := (g.get('teams') or {}).get('home', {}).get('name', ''), n),
+                        away=RENAME.get(n := (g.get('teams') or {}).get('away', {}).get('name', ''), n),
                         hg=_int(sc.get('home')), ag=_int(sc.get('away')), hg_reg=reg('h') if end else None,
                         ag_reg=reg('a') if end else None, end=end, hs=None, as_=None, state=state,
                         season=(g.get('league') or {}).get('season', '')))
@@ -155,6 +158,8 @@ def khl_season(season: int, league: int = KHL_ID) -> list[dict]:
 # --- КХЛ текущего сезона: бесплатный план не даёт «сезон 2026», но отдаёт все матчи ДАТЫ (проверка 11.11.2026:
 # /games?date=… → 68 матчей мира, из них КХЛ). Собственная база КХЛ копится по датам: догрузка сезона с 1 сентября +
 # ежедневно вчера / сегодня / завтра (Москва). Лимит плана — 100 запросов в сутки (UTC) и 10 в минуту.
+# Проверка 11.11.2026: догрузка сезона невозможна — бесплатный план отдаёт только окно ±1 день от сегодня
+# («Free plans do not have access to this date, try from 2026-11-10…»). База КХЛ копится с 10.11.2026 вперёд.
 KHL_SEASON_START = dt.date(2026, 9, 1)
 KSTATE = DATA / 'khl_state.json'
 DAY_CAP = 90                       # запас 10 запросов в сутки на ручные проверки
@@ -216,8 +221,7 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
     st['done'] = sorted(done)
     DATA.mkdir(parents=True, exist_ok=True)
     KSTATE.write_text(json.dumps(st, ensure_ascii=False), encoding='utf-8')
-    left = len(miss) - sum(1 for d in miss[:backfill] if str(d) in done)
-    log.append(f'🏒 КХЛ: запросов {asked} (сутки {st["used"]}/{DAY_CAP}), матчей {len(rows)}, дат сезона без данных {left}'
+    log.append(f'🏒 КХЛ: запросов {asked} (сутки {st["used"]}/{DAY_CAP}), матчей {len(rows)}'
                + (f'; {"; ".join(errs[:3])}' if errs else ''))
     return len(rows)
 

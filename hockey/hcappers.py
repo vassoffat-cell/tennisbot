@@ -31,12 +31,12 @@ SRC_RU = {'stavki_na_sport_betting1': 'Green Line', 'stavki': 'Ставки', 'x
           'kapper_uk': 'Kapper UK'}
 
 # русское название (регэксп по нижнему регистру) → английское в базе (регэксп). Порядок важен: «динамо минск» раньше «динамо».
-KHL = [(r'динамо\s*мн|минск', r'minsk'), (r'динамо', r'(dinamo|dynamo).*mos|moscow'), (r'авангард', r'avangard'),
-       (r'автомобилист', r'avtomobilist'), (r'адмирал', r'admiral'), (r'ак\s*барс', r'ak bars'), (r'\bамур', r'amur'),
-       (r'барыс', r'barys'), (r'\bлада', r'lada'), (r'локомотив', r'lokomotiv'), (r'металлург', r'metallurg'),
-       (r'нефтехимик', r'neftekhimik'), (r'салават', r'salavat'), (r'северсталь', r'severstal'), (r'\bцска', r'cska'),
-       (r'\bска\b', r'^ska|\bska\b'), (r'сибирь', r'sibir'), (r'спартак', r'spartak'), (r'торпедо', r'torpedo'),
-       (r'трактор', r'tra[ck]tor'), (r'шанха|куньлун|дракон|дрэгонс', r'shanghai|kunlun'), (r'\bсочи', r'sochi')]
+KHL = [(r'динамо\s*мн|минск', r'minsk'), (r'динамо', r'(dinamo|dynamo) mos'), (r'авангард', r'avangard'),
+       (r'автомобилист', r'avtomobilist|yekaterinburg|ekaterinburg'), (r'адмирал', r'admiral|vladivostok'), (r'ак\s*барс', r'ak bars|bars kazan|kazan'), (r'\bамур', r'amur|khabarovsk'),
+       (r'барыс', r'barys'), (r'\bлада', r'lada|togliatti'), (r'локомотив', r'lokomotiv|yaroslavl'), (r'металлург', r'metallurg|magnitogorsk'),
+       (r'нефтехимик', r'neftekhimik|nizh?nekamsk|niznekamsk'), (r'салават', r'salavat'), (r'северсталь', r'severstal|cherepovets'), (r'\bцска', r'cska'),
+       (r'\bска\b', r'^ska|\bska\b'), (r'сибирь', r'sibir|novosibirsk'), (r'спартак', r'spartak'), (r'торпедо|\bнн\b', r'torpedo|nizhny novgorod'),
+       (r'трактор', r'tra[ck]tor'), (r'шанха|куньлун|дракон|дрэгонс', r'shanghai|kunlun'), (r'витязь', r'vityaz'), (r'\bсочи', r'sochi')]
 NHL = [(r'анахайм|дакс', 'ducks'), (r'бостон|брюинз', 'bruins'), (r'баффало|сейбрз', 'sabres'), (r'калгари|флэймз|флеймз', 'flames'),
        (r'каролин|харрикейн', 'hurricanes'), (r'чикаго|блэкхокс', 'blackhawks'), (r'колорадо|эвеланш', 'avalanche'),
        (r'коламбус|блю\s*джекетс', 'blue jackets'), (r'даллас|старз', 'stars'), (r'детройт|ред\s*уингз', 'red wings'),

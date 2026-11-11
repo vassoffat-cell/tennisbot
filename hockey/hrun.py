@@ -406,7 +406,7 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     today = dt.date.today()
     n = HD.update_nhl([today + dt.timedelta(days=k) for k in range(-3, 3)], log, pause=0.1)
     try:
-        HD.update_khl(log, backfill=3)                    # вчера/сегодня/завтра + по 3 недостающие даты сезона за прогон
+        HD.update_khl(log)                                # вчера/сегодня/завтра (Москва) — окно бесплатного плана
     except Exception as ex:
         log.append(f'🏒 КХЛ: сбой {ex.__class__.__name__}: {ex}')
     games = HD.load()
