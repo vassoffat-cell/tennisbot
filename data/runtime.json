@@ -2,10 +2,11 @@
  "list_messages": [
   [
    570704006,
-   332
+   343
   ]
  ],
  "list_match_ids": [
+  "186544",
   "187378",
   "187385"
  ],
@@ -3021,7 +3022,53 @@
   },
   "accepted_at": "10:31",
   "accepted_shown": true,
-  "extras": [],
+  "extras": [
+   {
+    "espn_id": "187385",
+    "tour": "WTA",
+    "event": "FAGE WTA Finals Indian Wells",
+    "start_utc": "2026-11-11 20:00",
+    "start_local": "12.11 01:00",
+    "player1": "Elina Svitolina",
+    "player2": "Karolina Muchova",
+    "market": "TOTAL",
+    "pick": "O",
+    "line": 19.5,
+    "label": "ТБ 19.5",
+    "p": 0.6912335031328122,
+    "p_src": "blend",
+    "p_model": 0.6526865709480612,
+    "p_push": 0.0,
+    "k": 1.36,
+    "k_src": "screenshot",
+    "source": "screenshot",
+    "p_pin": null,
+    "edge": null,
+    "group": "fallback",
+    "slot": 0,
+    "rank": 2,
+    "key": [
+     "187385",
+     "TOTAL",
+     "O",
+     "19.5"
+    ],
+    "match": "Elina Svitolina — Karolina Muchova",
+    "why": "сравнение (ступень выше)",
+    "at": "23:41",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 23:41: сравнение (ступень выше) (лучше ⭐1 П2 Rune)"
+    ],
+    "text": "⭐2 <b>Ставка дня · теннис · 11.11</b>\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Elina Svitolina — Karolina Muchova</b>\n<b>ТБ 19.5</b> — вероятность 69% (1xBet без маржи) · честный кф 1,45\nкф 1xBet 1,36 (скриншот)\n⚠️ Без перевеса · матожидание -6,0%\n➕ новая линия дня в 23:41: сравнение (ступень выше) (лучше ⭐1 П2 Rune)",
+    "msgs": [
+     [
+      570704006,
+      341
+     ]
+    ]
+   }
+  ],
   "log": [
    {
     "date": "2026-11-11",
@@ -3056,6 +3103,23 @@
     "to_label": "—",
     "to_key": "",
     "slot": 2
+   },
+   {
+    "date": "2026-11-11",
+    "time": "23:41",
+    "reason": "новая: сравнение (ступень выше)",
+    "rank": 2,
+    "espn_id": "187385",
+    "market": "TOTAL",
+    "pick": "O",
+    "line": 19.5,
+    "label": "ТБ 19.5",
+    "match": "Elina Svitolina — Karolina Muchova",
+    "p": 0.6912,
+    "k": 1.36,
+    "to_label": "—",
+    "to_key": "187385|TOTAL|O|19.5",
+    "slot": 0
    }
   ],
   "nokb": true,
@@ -6322,7 +6386,7 @@
  "hk_list": [
   [
    570704006,
-   333
+   344
   ]
  ],
  "hk_list_ids": [
