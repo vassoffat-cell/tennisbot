@@ -723,7 +723,7 @@ def run(dry: bool = False) -> str:
         notify.send_blocks(alarms)
     nn, nu = save_forecasts(store, items, auto, ldf)
     auto, ldf = store.read('auto_forecasts'), store.read('auto_lines')
-    resend = not dry and not rt.get('resend_1111')                  # разовый повтор отчёта в новом виде (просьба 11.11)
+    resend = not dry and not rt.get('resend_1111b')                  # разовый повтор отчёта в новом виде (просьба 11.11)
     if daily_due or resend:
         notes = []
         for tour in TOURS:
@@ -748,7 +748,7 @@ def run(dry: bool = False) -> str:
         notify.send_blocks(R.build(auto, ldf, store.read('day_pick'), f'📈 Теннис · отчёт · {yday:%d.%m}' + (' · повтор' if resend and not daily_due else ''), kcal=kcal, extra=cov, late=late,
                                    kprev=kprev, off=off, notes=notes, daily_day=yday))
         rt['last_daily'] = today
-        rt['resend_1111'] = 1
+        rt['resend_1111b'] = 1
         log.append('суточный отчёт отправлен')
         if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
             d0 = yday - dt.timedelta(days=6)

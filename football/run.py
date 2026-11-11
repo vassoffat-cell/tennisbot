@@ -819,7 +819,7 @@ def run(dry: bool = False) -> str:
     no = attach_odds(store, base)
     af, ld = store.read('auto_forecasts'), store.read('auto_lines')
     dpk = store.read('day_pick')
-    resend = not dry and not rt.get('resend_1111')                  # разовый повтор отчёта в новом виде (просьба 11.11)
+    resend = not dry and not rt.get('resend_1111b')                  # разовый повтор отчёта в новом виде (просьба 11.11)
     if daily_due or resend:
         notes = []
         if mp.missed:
@@ -850,7 +850,7 @@ def run(dry: bool = False) -> str:
         except Exception as ex:
             log.append(f'👥 карточка каперов: сбой {type(ex).__name__}')
         rt['last_daily'] = today
-        rt['resend_1111'] = 1
+        rt['resend_1111b'] = 1
         log.append('суточный отчёт отправлен')
         if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
             d0 = yday - dt.timedelta(days=6)
