@@ -29,6 +29,7 @@ class Model:
     dfn: dict = field(default_factory=dict)
     q_ot: float = 0.5           # P(хозяева выигрывают ОТ/буллиты) по лиге
     k_ot: float = 0.0           # наклон q_ot по разнице сил (логит)
+    dinf: float = 1.0           # раздувание ничьих основного времени (в хоккее ничьих больше, чем у Пуассона)
     n: int = 0
 
     def lambdas(self, h: str, a: str) -> tuple[float, float] | None:
@@ -41,6 +42,7 @@ class Model:
     def matrix(self, lh: float, la: float) -> np.ndarray:
         g = np.arange(MAXG + 1)
         P = np.outer(poisson.pmf(g, lh), poisson.pmf(g, la))
+        P[np.diag_indices_from(P)] *= self.dinf
         return P / P.sum()
 
     def ot_home(self, lh: float, la: float) -> float:
@@ -80,6 +82,12 @@ def fit(games: pd.DataFrame, league: str, asof: pd.Timestamp, xi: float = XI, re
     x = r.x
     m = Model(league, teams, float(x[0]), float(x[1]), {t: float(x[2 + ix[t]]) for t in teams},
               {t: float(x[2 + T + ix[t]]) for t in teams}, n=len(g))
+    lam_all = np.array([m.lambdas(a, b) for a, b in zip(g.home, g.away)])          # ничьи: факт / Пуассон (взвешено)
+    gg = np.arange(MAXG + 1)
+    pdraw = np.array([float(np.sum(poisson.pmf(gg, x) * poisson.pmf(gg, y))) for x, y in lam_all])
+    fact = (g.hg_reg.values == g.ag_reg.values).astype(float)
+    r_ = np.average(fact, weights=w) / np.average(pdraw, weights=w)            # доля ничьих растёт в r_ раз → множитель диагонали
+    m.dinf = float(np.clip(r_ * (1 - np.average(pdraw, weights=w)) / (1 - r_ * np.average(pdraw, weights=w)), 1.0, 2.5))
     ot = g[g.end.isin(['OT', 'SO'])]                     # ОТ/буллиты: доля побед хозяев и наклон по силе
     if len(ot) >= 50:
         lam = np.array([m.lambdas(a, b) for a, b in zip(ot.home, ot.away)])

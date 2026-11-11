@@ -72,7 +72,7 @@ def build(P: np.ndarray, q_ot: float, league: str, kc: dict[str, float]) -> list
 
 def settle(market: str, pick: str, line, end: str, hg, ag, hg_reg, ag_reg) -> str:
     """'W' / 'L' / 'P'. Все рынки, кроме «Победа с ОТ», — по основному времени (hg_reg, ag_reg)."""
-    if end not in ('REG', 'OT', 'SO') or hg_reg is None or ag_reg is None:
+    if end not in ('REG', 'OT', 'SO') or hg_reg is None or ag_reg is None or hg_reg != hg_reg or ag_reg != ag_reg:
         return 'P'
     h, a = int(hg_reg), int(ag_reg)
     L = None if line in ('', None) or str(line) == 'nan' else float(line)
