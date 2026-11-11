@@ -24,7 +24,7 @@ import fespn
 import tips as T
 
 FILE = T.DIR / 'tips_all.csv'
-VERSION = 2                                         # версия разбора: смена → история каналов пересчитывается
+VERSION = 3                                         # версия разбора: смена → история каналов пересчитывается
 ESPN_DIR = T.DIR / 'espn'
 ALL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={d:%Y%m%d}&limit=1000'
 COLS = ['uid', 'src', 'author', 'post_ts', 'edate', 'espn_id', 'start_utc', 'home', 'away', 'legs', 'label', 'k', 'raw',

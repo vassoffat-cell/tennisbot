@@ -788,6 +788,7 @@ def run(dry: bool = False) -> str:
             log.append(f'👥 все матчи: сбой {ex.__class__.__name__}: {ex}')
         try:                                                           # 👥 книга прогнозов: все виды спорта, отметки ✅/❌
             tipsbook.run(rt, log)
+            tipswide.settle(log)                                       # купоны с картинок — итог сразу
         except Exception as ex:
             log.append(f'👥 книга: сбой {ex.__class__.__name__}: {ex}')
     if dry:
