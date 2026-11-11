@@ -1,0 +1,353 @@
+"""🏒 Хоккей в теннисном боте («Заметки Т») — отдельными сообщениями, по тем же правилам, что теннис и футбол.
+
+Каждый прогон теннисного облака (раз в 2 ч):
+  1. Результаты и расписание НХЛ (ESPN) за −3…+2 суток → hockey/data/games.csv.gz.
+  2. Подгонка модели (hmodel: Пуассон с силой атаки/защиты, раздутие ничьих, ОТ/буллиты) по истории до сейчас.
+  3. Прогноз матчей суток системы (08:00 → 08:00 Ташкента): лист hk_games (исход) и hk_lines (линии, hlines).
+  4. Расчёт итогов прошедших матчей (основное время; «Победа с ОТ» — по итоговому счёту).
+  5. Список «🏒 Хоккей · прогноз до …» — отдельным сообщением (прошлый удаляется, как у тенниса).
+  6. Раз в сутки (вместе с теннисным отчётом, 10:07): «📈 Хоккей · отчёт» — таблица по стандарту engine/REPORT_STYLE.md,
+     сводка-таблица, полный список матчей с линиями; самокалибровка k по рынкам (с 30 линий), ⛔ рынок при z ≤ −2 на 30 линиях.
+     Понедельник — «📅 Хоккей · неделя» (линии по типу). Отчёт «🏒 Хоккей» — в «Аналитике» (лист reports, ключ hk).
+Тотал — одна линия лиги (T32): НХЛ 5,5 (равновесие истории: «больше» 55,6%). КХЛ — когда будет источник текущего сезона.
+"""
+from __future__ import annotations
+
+import datetime as dt
+
+import numpy as np
+import pandas as pd
+
+import config as C
+import journal as J
+import notify
+import rtable as RT
+from hockey import hdata as HD
+from hockey import hlines as HL
+from hockey import hmodel as HM
+
+LEAGUES = ('NHL',)
+GAME_COLS = ['created', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'lam_h', 'lam_a', 'p_h', 'p_d', 'p_a',
+             'p_ml', 'q_ot', 'status', 'hg', 'ag', 'hg_reg', 'ag_reg', 'settled', 'logloss']
+LINE_COLS = ['created', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'slot', 'market', 'pick', 'line', 'label',
+             'p_raw', 'p', 'p_low', 'shown', 'status', 'result', 'settled']
+J.SHEETS.setdefault('hk_games', GAME_COLS)
+J.SHEETS.setdefault('hk_lines', LINE_COLS)
+STEPS_ML = (56.0, 58.0, 60.0, 62.5, 65.0, 70.0)          # ступени «Победа с ОТ» (бэктест 2024–26: 56,0%)
+STEPS_LINES = (65.0, 67.5, 70.0, 72.5, 75.0)
+CALIB_MIN, CALIB_PRIOR = 30, 300
+COLOR = {3: '🟢', 2: '🟡', 1: '🔴'}
+LMARK = {'W': '✅', 'L': '❌', 'P': '⚪'}
+
+
+def _now() -> pd.Timestamp:
+    return pd.Timestamp.now(tz='UTC').tz_localize(None)
+
+
+def _local(ts: pd.Timestamp | None = None) -> pd.Timestamp:
+    return (ts if ts is not None else _now()) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
+
+
+def _day(start_utc) -> dt.date:
+    return C.wday(pd.Timestamp(start_utc) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS))
+
+
+def _blank(x) -> bool:
+    return str(x).strip() in ('', 'nan', 'None')
+
+
+def _num(x):
+    try:
+        return float(str(x).replace(',', '.'))
+    except Exception:
+        return float('nan')
+
+
+# ------------------------------------------------------------------ калибровка и предохранитель
+def calibration(ld: pd.DataFrame) -> dict[str, tuple[float, int]]:
+    out = {}
+    L = _done(ld)
+    for mk in HL.SIGMA:
+        s = L[L.market == mk]
+        if len(s) < CALIB_MIN:
+            out[mk] = (1.0, len(s)); continue
+        x, y = HL.logit(s.p_raw.map(_num).values.astype(float)), s.won.values.astype(float)
+        ks = np.linspace(0.5, 1.6, 221)
+        k_hat = float(ks[int(np.argmin([np.sum(np.logaddexp(0, k * x) - y * k * x) for k in ks]))])
+        w = len(s) / (len(s) + CALIB_PRIOR)
+        out[mk] = (round(1 + w * (k_hat - 1), 4), len(s))
+    return out
+
+
+def breaker(ld: pd.DataFrame) -> dict[str, str]:
+    """⛔ рынок: последние 30 показанных линий значимо ниже обещанного (z ≤ −2); снова ✅ при z > −1."""
+    L = _done(ld)
+    off = {}
+    for mk, g in L.groupby('market'):
+        g = g.tail(30)
+        if len(g) >= 30:
+            p = g.p.values
+            z = (g.won.sum() - p.sum()) / np.sqrt((p * (1 - p)).sum())
+            if z <= -2:
+                off[mk] = f'z {z:.1f}'
+    return off
+
+
+def _done(ld: pd.DataFrame) -> pd.DataFrame:
+    if not len(ld):
+        return pd.DataFrame(columns=LINE_COLS + ['won', 'day'])
+    x = ld[ld.result.astype(str).isin(['W', 'L']) & (ld.shown.astype(str).str.strip().isin(['1', '1.0']))].copy()
+    x['p'] = x.p.map(_num).astype(float)
+    x['won'] = (x.result.astype(str) == 'W').astype(int)
+    x['day'] = x.start_utc.map(_day)
+    return x.sort_values('start_utc')
+
+
+# ------------------------------------------------------------------ прогноз и итоги
+def forecast(games: pd.DataFrame, kc: dict, off: dict) -> list[tuple[dict, list[dict]]]:
+    now = _now()
+    end = C.window_end_utc(now)
+    up = games[(games.state.astype(str) == 'pre') & (pd.to_datetime(games.start) > now)
+               & (pd.to_datetime(games.start) <= end) & games.league.isin(LEAGUES)]
+    out, models = [], {}
+    for r in up.itertuples(index=False):
+        if r.league not in models:
+            models[r.league] = HM.fit(games, r.league, pd.Timestamp(now))
+        m = models[r.league]
+        lam = m.lambdas(r.home, r.away) if m else None
+        if not lam:
+            continue
+        P = m.matrix(*lam); q = m.ot_home(*lam)
+        i, j = np.indices(P.shape)
+        ph, pd_, pa = float(P[i > j].sum()), float(np.trace(P)), float(P[i < j].sum())
+        row = dict(created=J.now_utc(), id=r.id, league=r.league, start_utc=r.start, start_local=J.to_local(pd.Timestamp(r.start)),
+                   home=r.home, away=r.away, lam_h=round(lam[0], 3), lam_a=round(lam[1], 3), p_h=round(ph, 4), p_d=round(pd_, 4),
+                   p_a=round(pa, 4), p_ml=round(ph + pd_ * q, 4), q_ot=round(q, 4), status='', hg='', ag='', hg_reg='', ag_reg='',
+                   settled='', logloss='')
+        lns = []
+        for x in HL.build(P, q, r.league, kc):
+            if x['market'] in off:
+                x['shown'] = 0
+            lns.append(dict(created=row['created'], id=r.id, league=r.league, start_utc=r.start, start_local=row['start_local'],
+                            home=r.home, away=r.away, status='', result='', settled='', **x))
+        out.append((row, lns))
+    return out
+
+
+def save(store: J.Store, items: list[tuple[dict, list[dict]]], gf: pd.DataFrame, ld: pd.DataFrame) -> tuple[int, int]:
+    """Новые матчи — дописать; не начавшиеся — обновить прогноз (линии — по слоту)."""
+    have = {str(x): i for i, x in zip(gf.index, gf.id)} if len(gf) else {}
+    new_g, new_l, upd = [], [], 0
+    lix = {(str(a), int(_num(b))): i for i, a, b in zip(ld.index, ld.id, ld.slot)} if len(ld) else {}
+    for row, lns in items:
+        if row['id'] not in have:
+            new_g.append(row); new_l += lns
+            continue
+        i = have[row['id']]
+        store.update('hk_games', pd.DataFrame([row], index=[i]), GAME_COLS[:15])
+        u = [(lix[(row['id'], x['slot'])], x) for x in lns if (row['id'], x['slot']) in lix]
+        if u:
+            store.update('hk_lines', pd.DataFrame([x for _, x in u], index=[k for k, _ in u]), LINE_COLS[:16])
+        upd += 1
+    if new_g:
+        store.append('hk_games', new_g)
+        store.append('hk_lines', new_l)
+    return len(new_g), upd
+
+
+def settle(store: J.Store, games: pd.DataFrame, gf: pd.DataFrame, ld: pd.DataFrame) -> tuple[int, int]:
+    res = {str(r.id): r for r in games[games.end.astype(str).isin(['REG', 'OT', 'SO'])].itertuples(index=False)}
+    today = dt.date.today().isoformat()
+    ug, ul = [], []
+    for i, r in gf[gf.settled.map(_blank)].iterrows() if len(gf) else []:
+        x = res.get(str(r.id))
+        if x is None:
+            continue
+        pm = _num(r.p_ml)
+        won = 1.0 if x.hg > x.ag else 0.0
+        ll = round(-float(np.log(max(pm if won else 1 - pm, 1e-6))), 4)
+        gf.loc[i, ['status', 'hg', 'ag', 'hg_reg', 'ag_reg', 'settled', 'logloss']] = [x.end, int(x.hg), int(x.ag),
+                                                                                         int(x.hg_reg), int(x.ag_reg), today, ll]
+        ug.append(i)
+    if ug:
+        store.update('hk_games', gf.loc[ug], ['status', 'hg', 'ag', 'hg_reg', 'ag_reg', 'settled', 'logloss'])
+    for i, r in ld[ld.settled.map(_blank)].iterrows() if len(ld) else []:
+        x = res.get(str(r.id))
+        if x is None:
+            continue
+        v = HL.settle(str(r.market), str(r.pick), r.line, x.end, x.hg, x.ag, x.hg_reg, x.ag_reg)
+        ld.loc[i, ['status', 'result', 'settled']] = [x.end, v, today]
+        ul.append(i)
+    if ul:
+        store.update('hk_lines', ld.loc[ul], ['status', 'result', 'settled'])
+    return len(ug), len(ul)
+
+
+# ------------------------------------------------------------------ сообщения
+def _tier(p_low: float) -> int:
+    return 3 if p_low >= 0.70 else 2 if p_low >= 0.65 else 1
+
+
+def list_blocks(items: list[tuple[dict, list[dict]]]) -> list[str]:
+    if not items:
+        return []
+    e = notify.esc
+    today = _local().strftime('%d.%m')
+    blocks = []
+    for row, lns in sorted(items, key=lambda t: t[0]['start_utc']):
+        when = row['start_local'][6:] if row['start_local'][:5] == today else row['start_local']
+        k = 0 if row['p_ml'] >= 0.5 else 1
+        out = [f"🕒 <b>{e(when)}</b> · <b>{e(row['home'])}</b> — <b>{e(row['away'])}</b>",
+               f"🎯 Победа с ОТ: <b>{'П1' if k == 0 else 'П2'} — {max(row['p_ml'], 1 - row['p_ml']) * 100:.0f}%</b>"]
+        for x in sorted([x for x in lns if int(x['shown']) and x['market'] != 'ML'],
+                        key=lambda x: (-_tier(float(x['p_low'])), -float(x['p']), x['slot'])):
+            t = e(f"{x['label']} — {float(x['p']) * 100:.0f}%")
+            out.append({3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[_tier(float(x['p_low']))])
+        blocks.append('\n'.join(out))
+    head = (f"🏒 <b>Хоккей · прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · "
+            f"{_local():%H:%M} · {len(items)} {notify.plural(len(items), 'матч', 'матча', 'матчей')}\n"
+            f"<i>линии — основное время; 🎯 — с ОТ и буллитами; тотал — одна линия лиги</i>")
+    return [head] + notify.folded('🏆 <b>НХЛ</b>', blocks)
+
+
+def publish(rt: dict, items: list[tuple[dict, list[dict]]]) -> str:
+    ids = sorted(r['id'] for r, _ in items)
+    removed = notify.delete([tuple(x) for x in rt.get('hk_list', [])])
+    sent = []
+    if items:
+        silent = set(ids) <= set(rt.get('hk_list_ids', []))
+        sent = notify.send_blocks(list_blocks(items), silent=silent)
+    rt['hk_list'], rt['hk_list_ids'] = [list(x) for x in sent], ids
+    return f'🏒 список: удалено {removed}, отправлено {len(sent)}, матчей {len(ids)}'
+
+
+def _wilson_lo(w: int, n: int, z: float = 1.96) -> float:
+    if not n:
+        return 0.0
+    p = w / n
+    return (p + z * z / (2 * n) - z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n))) / (1 + z * z / n)
+
+
+def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, kc: dict, kprev: dict, off: dict,
+           d0: dt.date | None = None) -> list[str]:
+    """Отчёт: таблица «Линия (цель) | Кол-во | %», сводка-таблица, полный список матчей с линиями (суточный) / по типу (неделя)."""
+    e = notify.esc
+    G = gf[gf.status.astype(str).isin(['REG', 'OT', 'SO'])].copy() if len(gf) else gf
+    L = _done(ld)
+    if len(G):
+        G['day'] = G.start_utc.map(_day)
+        G['hit'] = [int((_num(p) >= 0.5) == (_num(h) > _num(a))) for p, h, a in zip(G.p_ml, G.hg, G.ag)]
+    if d0 is not None:
+        G = G[(G.day >= d0) & (G.day <= day)] if len(G) else G
+        L = L[(L.day >= d0) & (L.day <= day)]
+    T, S, worst = [], [], 3
+    if len(G):
+        tgt = STEPS_ML[0]
+        lo = _wilson_lo(int(G.hit.sum()), len(G)) * 100
+        c = 3 if lo >= tgt else 1 if (G.hit.mean() * 100 < tgt and _wilson_lo(len(G) - int(G.hit.sum()), len(G)) * 100 > 100 - tgt) else 2
+        worst = min(worst, c)
+        T.append(RT.row('Победа с ОТ', G.hit.sum(), len(G), RT.num(tgt, 0) + '%', COLOR[c]))
+        if day is not None and d0 is None:
+            d = G[G.day == day]; w = G[G.day > day - dt.timedelta(days=7)]
+            T += [RT.row(' сутки', d.hit.sum(), len(d)), RT.row(' 7 дней', w.hit.sum(), len(w))]
+        ll = G.logloss.map(_num).astype(float)
+        T.append((' лог-лосс', str(len(G)), RT.num(ll.mean(), 3), ''))
+    else:
+        T.append(('Исход — доигранных пока нет', '', '', ''))
+    fx = L[L.market == 'TOT']
+    rest = L[L.market != 'TOT']
+    if len(rest):
+        T.append(RT.row('Линии', rest.won.sum(), len(rest), RT.num(STEPS_LINES[0], 0) + '%'))
+        for mk in ('ML', 'DC', 'AH', 'IT1', 'IT2'):
+            s = rest[rest.market == mk]
+            if len(s):
+                p = s.p.values
+                z = (s.won.sum() - p.sum()) / np.sqrt((p * (1 - p)).sum())
+                cc = 3 if z >= 0 else 2 if z > -2 else 1
+                T.append(RT.row(' ' + HL.MARKET_RU[mk][:11], s.won.sum(), len(s), RT.pct(p.mean(), 0) + '%',
+                                COLOR[cc] + (' ⛔' if mk in off else '')))
+    if len(fx):
+        p = fx.p.values
+        z = (fx.won.sum() - p.sum()) / np.sqrt((p * (1 - p)).sum())
+        T.append(RT.row('Тотал фикс.', fx.won.sum(), len(fx), RT.pct(p.mean(), 0) + '%', COLOR[3 if z >= 0 else 2 if z > -2 else 1]))
+        for pk, ru in (('O', ' Б'), ('U', ' М')):
+            q = fx[fx.pick.astype(str) == pk]
+            if len(q):
+                T.append(RT.row(ru, q.won.sum(), len(q), RT.pct(q.p.mean(), 0) + '%'))
+    T.append(('До выводов', '', '', ''))
+    T.append(RT.row(' калибровка', min(len(L), CALIB_PRIOR), CALIB_PRIOR))
+    for mk, (k, n) in kc.items():
+        if n >= CALIB_MIN:
+            S.append((f'k {HL.MARKET_RU[mk][:9]}', f'{RT.num((kprev or {}).get(mk, (1.0, 0))[0], 2)}→{RT.num(k, 2)}'))
+    if not any(n >= CALIB_MIN for _, n in kc.values()):
+        S.append(('k', f'1,00 (< {CALIB_MIN} линий)'))
+    S.append(('Данные', '✅ НХЛ · ESPN'))
+    S.append(('КХЛ', '⏳ нет источника сезона'))
+    status = {3: '🟢 цели доказаны', 2: '🟡 цели ещё не доказаны', 1: '🔴 нужен разбор'}[worst]
+    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + '\n' + RT.kv(S)]
+    if day is not None and d0 is None and len(gf):        # суточный: каждый матч и каждая предложенная линия
+        A = gf.copy(); A['day'] = A.start_utc.map(_day)
+        A = A[A.day == day].sort_values('start_utc')
+        items = []
+        for r in A.itertuples(index=False):
+            fav = 'П1' if _num(r.p_ml) >= 0.5 else 'П2'
+            st = str(r.status)
+            if st in ('REG', 'OT', 'SO'):
+                hit = (_num(r.p_ml) >= 0.5) == (_num(r.hg) > _num(r.ag))
+                mark, tail = ('✅' if hit else '❌'), f"{int(_num(r.hg))}:{int(_num(r.ag))}{'' if st == 'REG' else ' ' + st}"
+            else:
+                mark, tail = '⏳', 'ждёт итога'
+            it = f"{mark} {e(r.home)} — {e(r.away)} · {fav} {max(_num(r.p_ml), 1 - _num(r.p_ml)) * 100:.0f}% · {e(tail)}"
+            for x in ld[(ld.id.astype(str) == str(r.id)) & ld.shown.astype(str).str.strip().isin(['1', '1.0'])].itertuples(index=False):
+                it += f"\n   {LMARK.get(str(x.result), '⏳')} {e(x.label)} · {_num(x.p) * 100:.0f}%"
+            items.append(it)
+        if items:
+            cnt = {m: sum(x.startswith(m) for x in items) for m in ('✅', '❌', '⏳')}
+            blocks += notify.folded(f"▸ Матчи за сутки ({len(items)}: " + ' · '.join(f'{m} {n}' for m, n in cnt.items() if n) + ')', items)
+    if d0 is not None and len(L):                          # неделя: линии по типу, по дням
+        for mk, g in L.groupby('market', sort=False):
+            items = []
+            for d, gd in g.groupby('day', sort=False):
+                items.append(f'<b>{d:%d.%m}</b>\n' + '\n'.join(
+                    f"{LMARK.get(str(x.result), '⏳')} {e(str(x.home).split()[-1])}–{e(str(x.away).split()[-1])} · {e(x.label)} · {x.p * 100:.0f}%"
+                    for x in gd.itertuples(index=False)))
+            blocks += notify.folded(f"▸ {HL.MARKET_RU[mk]} ({int(g.won.sum())}/{len(g)})", items)
+    return blocks
+
+
+# ------------------------------------------------------------------ прогон
+def run(store: J.Store, rt: dict, log: list[str], daily_due: bool, dry: bool = False) -> list[dict]:
+    """Вызывается из autorun.py после тенниса. Возвращает строки отчёта для «Аналитики» (лист reports)."""
+    today = dt.date.today()
+    n = HD.update_nhl([today + dt.timedelta(days=k) for k in range(-3, 3)], log, pause=0.1)
+    games = HD.load()
+    gf, ld = store.read('hk_games'), store.read('hk_lines')
+    ng, nl = settle(store, games, gf, ld)
+    gf, ld = store.read('hk_games'), store.read('hk_lines')
+    loc = _local()
+    if daily_due or not rt.get('hk_kcal'):
+        prev = rt.get('hk_kcal') or {}
+        rt['hk_kcal_prev'] = prev
+        rt['hk_kcal'] = {k: list(v) for k, v in calibration(ld).items()}
+    kcal = {k: tuple(v) for k, v in rt['hk_kcal'].items()}
+    kc = {k: v[0] for k, v in kcal.items()}
+    off = breaker(ld)
+    items = forecast(games, kc, off)
+    nn, nu = save(store, items, gf, ld) if not dry else (0, 0)
+    log.append(f'🏒 НХЛ: матчей ESPN {n}, рассчитано {ng}/{nl}, прогнозов новых {nn}, обновлено {nu}; ⛔ {", ".join(off) or "нет"}')
+    if dry:
+        print('\n\n'.join(list_blocks(items)))
+        return []
+    log.append(publish(rt, items))
+    gf, ld = store.read('hk_games'), store.read('hk_lines')
+    yday = C.wday(loc) - dt.timedelta(days=1)
+    kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
+    if daily_due:
+        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}', yday, kcal, kprev, off))
+        log.append('🏒 суточный отчёт отправлен')
+        if C.wday(loc).weekday() == 0:
+            d0 = yday - dt.timedelta(days=6)
+            notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0))
+            log.append('🏒 недельный отчёт отправлен')
+    txt = report(gf, ld, '🏒 Хоккей · всё время', None, kcal, kprev, off)[0]
+    return [dict(key='hk', kind='hk', title='🏒 Хоккей', text=txt, updated=J.now_utc())]

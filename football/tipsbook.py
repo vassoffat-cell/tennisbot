@@ -334,7 +334,7 @@ def _pick_short(pick: str, a: str, b: str) -> str:
     return pick.replace('(', '').replace(')', '').replace('обе забьют да', 'ОЗ да')
 
 
-ROUTE = {'tennis': 'tennis'}                          # вид спорта → бот; остальное — футбольный бот (решение пользователя 11.11)
+ROUTE = {'tennis': 'tennis', 'hockey': 'tennis'}     # хоккей — в теннисный бот (решение 11.11)                          # вид спорта → бот; остальное — футбольный бот (решение пользователя 11.11)
 ICON = {'football': '⚽', 'hockey': '🏒', 'tennis': '🎾', 'basketball': '🏀', 'volleyball': '🏐', 'esports': '🎮', 'other': '•'}
 
 

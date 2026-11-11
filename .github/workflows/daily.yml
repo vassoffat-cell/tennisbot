@@ -38,7 +38,7 @@ jobs:
         run: |
           git config user.name "tennis-bot"
           git config user.email "tennis-bot@users.noreply.github.com"
-          mkdir -p data/espn && git add data state
+          mkdir -p data/espn && git add data state hockey/data
           git diff --cached --quiet && exit 0
           git commit -m "Data update $(date -u +%F)"
           ok=0; for i in 1 2 3; do (git pull --rebase -X theirs --autostash origin main || { git rebase --abort; false; }) && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]

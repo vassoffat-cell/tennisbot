@@ -597,7 +597,8 @@ def _need_text() -> str:
 
 STATS_MENU = [[{'text': '📊 Всё время', 'data': 'r:all'}, {'text': '📅 По месяцу', 'data': 'r:month'},
                {'text': '🏆 По турниру', 'data': 'r:event'}],
-              [{'text': '🔎 Аудит', 'data': 'r:audit'}, {'text': '🧠 Самообучение', 'data': 'r:learn'}]]
+              [{'text': '🔎 Аудит', 'data': 'r:audit'}, {'text': '🧠 Самообучение', 'data': 'r:learn'}],
+              [{'text': '🏒 Хоккей', 'data': 'r:hk'}]]
 SHOTS: list[tuple] = []          # скриншоты 1xBet из входящих этого запуска (id, имя, байты, описание)
 
 
@@ -823,6 +824,14 @@ def run(dry: bool = False) -> str:
                          ignore_index=True)
     except Exception as e:
         log.append(f'отчёт самообучения: сбой {e.__class__.__name__}: {e}')
+    try:                                                               # 🏒 хоккей — отдельными сообщениями в этом же боте
+        from hockey import hrun
+        hk = hrun.run(store, rt, log, (daily_due or resend) and not dry)
+        if hk:
+            reps = pd.concat([reps, pd.DataFrame(hk)], ignore_index=True)
+    except Exception as e:
+        log.append(f'🏒 хоккей: сбой {e.__class__.__name__}: {e}')
+        log.append(traceback.format_exc()[-600:])
     store.write_all('reports', reps)
     try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
         log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json")}')
@@ -848,6 +857,8 @@ HISTORY = [
     ('2026-11-08 14:35', 'внедрено', 'Пакет №3: ставка дня по правилу C',
      'кф 1xBet ≥ 1,35, справедливая P (Pinnacle / 1xBet без маржи), уверенность в выгодности; скриншоты; кнопки ✅/🔄'),    ('2026-11-11 21:40', 'внедрено', 'T32: тотал — одна линия (ATP 22,5 · WTA 20,5)',
      'больше или меньше, всегда показан; история: 54,8% / 54,5% (прежние 66–68% — за счёт далёких линий); строка «Тотал фикс.»'),
+    ('2026-11-11 23:30', 'внедрено', '🏒 Хоккей НХЛ в этом боте',
+     'Пуассон + ничьи + ОТ; бэктест 2024–26: победа с ОТ 56,0% (хозяева 54,1%), тотал 5,5 — 53%; отдельные сообщения'),
 
 ]
 
