@@ -102,10 +102,10 @@ class Store:
         if name not in self.ws:
             cols = SHEETS[name]
             try:
-                ws = self.sh.worksheet(name)
+                ws = _retry(self.sh.worksheet, name)
             except Exception:
                 ws = self.sh.add_worksheet(title=name, rows=1000, cols=len(cols))
-            if ws.row_values(1) != cols:
+            if _retry(ws.row_values, 1) != cols:
                 if ws.col_count < len(cols):
                     ws.add_cols(len(cols) - ws.col_count)
                 ws.update([cols], 'A1', value_input_option='RAW')
@@ -180,9 +180,9 @@ class Store:
         df = df.reindex(columns=cols)
         if self.sh:
             ws = self._sheet(name)
-            ws.clear()
-            ws.update([cols] + [[_clean(v) for v in row] for row in df.astype(object).values.tolist()], 'A1',
-                      value_input_option='RAW')
+            _retry(ws.clear)
+            _retry(ws.update, [cols] + [[_clean(v) for v in row] for row in df.astype(object).values.tolist()], 'A1',
+                   value_input_option='RAW')
             return
         df.map(_clean).to_csv(C.LOGS / f'{name}.csv', sep=';', index=False, encoding='utf-8-sig')
 
