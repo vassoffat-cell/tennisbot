@@ -141,11 +141,15 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-11 14:40",
+ "tips_book": "2026-11-11 14:47",
  "tips_book_v": 4,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
  "ocr_samples": 1,
  "tips_backfill": "2026-11-11 04:41",
- "tips_test_1111": 1
+ "tips_test_1111": 1,
+ "tips_alerted": [
+  "stavki_na_sport_betting1:slip:390986717:0"
+ ],
+ "resend_1111": 1
 }
