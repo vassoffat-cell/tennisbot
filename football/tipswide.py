@@ -180,7 +180,9 @@ def from_post(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict
     out = []
     txt = p['text']
     ps = pairs(txt)
-    evs = _events_around(p['ts'], cache) if ps else []
+    if not ps:                                                     # пары нет («Прогноз: Фора Бари (0)») — одна команда в ставке
+        return _single(src, name, p, cache, have)
+    evs = _events_around(p['ts'], cache)
     for n, (pos, a, b) in enumerate(ps):
         hit = match_pair(a, b, evs)
         if not hit:
@@ -203,6 +205,38 @@ def from_post(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict
         if r:
             out.append(r); have.add(uid)
     return out
+
+
+def _single(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict]:
+    """Ставка с одной командой: единственное событие окна, где эта команда играет (слова ≥ 5 букв или псевдоним)."""
+    sel = next((c for c, nat in T._pick_lines(p['text']) if nat), '')
+    if not sel or T.SKIP.search(sel.lower()):
+        return []
+    ws = [w for w in T._words(sel) if len(w) >= 5 or T._alias(w)]
+    if not ws:
+        return []
+    evs = _events_around(p['ts'], cache)
+    hits = {}
+    for w in ws:
+        ru = _ru_info(w)
+        if not ru[0] and not ru[1]:
+            continue
+        for e in evs:
+            h, a = e.setdefault('_h', _en_info(e['home'])), e.setdefault('_a', _en_info(e['away']))
+            if _same(ru, h) or _same(ru, a):
+                hits[e['id']] = e
+    if len(hits) != 1:
+        return []
+    e = next(iter(hits.values()))
+    uid = f"tg:{src}:{p['id']}:{e['id']}"
+    if uid in have:
+        return []
+    legs = T.parse_legs(sel, None, (e['home'], e['away']), True)
+    r = _row(src, name, p['ts'], e, False, legs, T.odds_in(sel), sel, uid)
+    if r:
+        have.add(uid)
+        return [r]
+    return []
 
 
 def collect(log: list[str]) -> int:
