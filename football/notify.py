@@ -215,3 +215,48 @@ def fair(p: float) -> str:
     except (TypeError, ValueError):
         return ''
     return f'честный кф {1 / p:.2f}'.replace('.', ',') if p > 0 else ''
+
+
+# ------------------------------------------------------------------ сбой прогона (11.11.2026: без трейсбека в чате)
+def _why(tb: str) -> str:
+    """Причина сбоя по-русски (одна строка); трейсбек — только в журнале GitHub."""
+    t = str(tb)
+    if '429' in t or 'Quota exceeded' in t:
+        return 'лимит запросов Google Таблиц (оба бота сразу) — повтор при лимите уже встроен'
+    if 'timed out' in t or 'Timeout' in t or 'URLError' in t or 'Connection' in t:
+        return 'внешний сервис не ответил вовремя'
+    if 'HTTP Error 5' in t or '[500]' in t or '[502]' in t or '[503]' in t:
+        return 'сбой на стороне внешнего сервиса'
+    last = [x for x in t.strip().splitlines() if x.strip()][-1:] or ['']
+    return 'ошибка в коде: ' + last[0].strip()[:140]
+
+
+def crash(name: str, tb: str) -> None:
+    """Короткое уведомление о сбое; номер сообщения — в data/crash.json, после успешного прогона удаляется (crash_clear)."""
+    import datetime as _dt
+    import json as _json
+    now = (_dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(hours=C.TZ_OFFSET_HOURS)).strftime('%H:%M')
+    msgs = send_blocks([f'⚠️ <b>{esc(name)}: прогон {now} не завершён</b>\n{esc(_why(tb))}.\n'
+                        f'Повтор — следующим прогоном (≤ 2 ч), подробности — журнал GitHub.\n'
+                        f'<i>Сообщение удалится само после успешного прогона.</i>'])
+    f = C.DATA / 'crash.json'
+    try:
+        old = _json.loads(f.read_text(encoding='utf-8')) if f.exists() else []
+        f.write_text(_json.dumps(old + [list(m) for m in msgs]), encoding='utf-8')
+    except Exception as e:
+        print(f'crash.json: {e}')
+
+
+def crash_clear() -> int:
+    """Удалить уведомления о сбоях после успешного прогона."""
+    import json as _json
+    f = C.DATA / 'crash.json'
+    if not f.exists():
+        return 0
+    try:
+        msgs = _json.loads(f.read_text(encoding='utf-8'))
+    except Exception:
+        msgs = []
+    n = delete([tuple(m) for m in msgs]) if msgs else 0
+    f.unlink(missing_ok=True)
+    return n

@@ -904,10 +904,15 @@ def main() -> None:
         print(run(a.dry))
     except Exception:
         tb = traceback.format_exc()
-        print(tb)
+        print(tb)                                               # трейсбек — только в журнале GitHub
         if not a.dry:
-            notify.send(f'Сбой авто-режима:\n{tb[-1500:]}')
+            notify.crash('Теннис и хоккей', tb)
         sys.exit(1)
+    if not a.dry:
+        try:
+            notify.crash_clear()                                # успешный прогон — уведомления о сбоях убрать
+        except Exception as e:
+            print(f'crash_clear: {e}')
 
 
 if __name__ == '__main__':
