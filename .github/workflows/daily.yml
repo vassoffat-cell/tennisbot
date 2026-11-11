@@ -32,6 +32,7 @@ jobs:
           SHEET_ID: ${{ secrets.SHEET_ID }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
+          APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
           CLOUD: '1'
       - name: Save data and model
         if: always()
