@@ -117,12 +117,12 @@ def khl_probe() -> str:
     return '; '.join(out) or f"ответ: {json.dumps(js)[:200]}"
 
 
-def khl_season(season: int, league: int = KHL_ID) -> list[dict]:
-    js = _apis(f'/games?league={league}&season={season}')
-    if js.get('errors'):
-        raise RuntimeError(str(js['errors'])[:160])
+def _rows(resp: list, league: int = KHL_ID) -> list[dict]:
+    """Ответ API-Sports /games → строки базы (только лига league). Основное время — сумма 3 периодов."""
     out = []
-    for g in js.get('response', []):
+    for g in resp or []:
+        if (g.get('league') or {}).get('id') != league:
+            continue
         sc = g.get('scores') or {}
         per = g.get('periods') or {}
 
@@ -134,13 +134,92 @@ def khl_season(season: int, league: int = KHL_ID) -> list[dict]:
                 return None
         stt = ((g.get('status') or {}).get('short') or '')
         end = {'FT': 'REG', 'AOT': 'OT', 'AP': 'SO'}.get(stt, '')
+        state = 'post' if end else 'pre' if stt in ('NS', 'TBD') else 'void' if stt in ('POST', 'CANC', 'ABD', 'AWD', 'WO', 'INTR') else 'in'
         start = pd.Timestamp(g.get('date')).tz_convert('UTC').tz_localize(None)
         out.append(dict(id=f"khl:{g.get('id')}", league='KHL', start=start.strftime('%Y-%m-%d %H:%M'),
                         home=(g.get('teams') or {}).get('home', {}).get('name', ''),
                         away=(g.get('teams') or {}).get('away', {}).get('name', ''),
-                        hg=_int(sc.get('home')), ag=_int(sc.get('away')), hg_reg=reg('h'), ag_reg=reg('a'), end=end,
-                        hs=None, as_=None, state='post' if end else ('pre' if stt == 'NS' else 'in'), season=season))
+                        hg=_int(sc.get('home')), ag=_int(sc.get('away')), hg_reg=reg('h') if end else None,
+                        ag_reg=reg('a') if end else None, end=end, hs=None, as_=None, state=state,
+                        season=(g.get('league') or {}).get('season', '')))
     return out
+
+
+def khl_season(season: int, league: int = KHL_ID) -> list[dict]:
+    js = _apis(f'/games?league={league}&season={season}')
+    if js.get('errors'):
+        raise RuntimeError(str(js['errors'])[:160])
+    return _rows(js.get('response', []), league)
+
+
+# --- КХЛ текущего сезона: бесплатный план не даёт «сезон 2026», но отдаёт все матчи ДАТЫ (проверка 11.11.2026:
+# /games?date=… → 68 матчей мира, из них КХЛ). Собственная база КХЛ копится по датам: догрузка сезона с 1 сентября +
+# ежедневно вчера / сегодня / завтра (Москва). Лимит плана — 100 запросов в сутки (UTC) и 10 в минуту.
+KHL_SEASON_START = dt.date(2026, 9, 1)
+KSTATE = DATA / 'khl_state.json'
+DAY_CAP = 90                       # запас 10 запросов в сутки на ручные проверки
+PAUSE = 6.5                        # 10 запросов в минуту
+
+
+def _kstate() -> dict:
+    try:
+        return json.loads(KSTATE.read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+
+
+def khl_date(d: dt.date) -> list[dict]:
+    js = _apis(f'/games?date={d}&timezone=Europe/Moscow')
+    if js.get('errors'):
+        raise RuntimeError(str(js['errors'])[:160])
+    return _rows(js.get('response', []))
+
+
+def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
+    """Вчера (пока не всё доиграно), сегодня и завтра по Москве + до backfill недостающих дат сезона. Возвращает число матчей."""
+    if not os.getenv('APISPORTS_KEY'):
+        return 0
+    st = _kstate()
+    utc_day = str(dt.datetime.now(dt.timezone.utc).date())
+    if st.get('utc_day') != utc_day:
+        st['utc_day'], st['used'] = utc_day, 0
+    done = set(st.get('done', []))
+    today = (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=3)).date()
+    want = [today - dt.timedelta(days=1), today, today + dt.timedelta(days=1)] if fresh else []
+    want = [d for d in want if str(d) not in done]
+    d = KHL_SEASON_START
+    miss = []
+    while d < today - dt.timedelta(days=1):
+        if str(d) not in done:
+            miss.append(d)
+        d += dt.timedelta(days=1)
+    want += miss[:backfill]
+    rows, asked, errs = [], 0, []
+    for d in want:
+        if st['used'] >= DAY_CAP:
+            errs.append('суточный лимит'); break
+        if asked:
+            time.sleep(PAUSE)
+        try:
+            r = khl_date(d); asked += 1; st['used'] += 1
+        except Exception as e:
+            asked += 1; st['used'] += 1
+            errs.append(f'{d}: {str(e)[:80]}')
+            if 'limit' in str(e).lower() or 'requests' in str(e).lower():
+                break
+            continue
+        rows += r
+        if d < today and all(x['state'] in ('post', 'void') for x in r):
+            done.add(str(d))
+    if rows:
+        save(pd.concat([load(), pd.DataFrame(rows)], ignore_index=True))
+    st['done'] = sorted(done)
+    DATA.mkdir(parents=True, exist_ok=True)
+    KSTATE.write_text(json.dumps(st, ensure_ascii=False), encoding='utf-8')
+    left = len(miss) - sum(1 for d in miss[:backfill] if str(d) in done)
+    log.append(f'🏒 КХЛ: запросов {asked} (сутки {st["used"]}/{DAY_CAP}), матчей {len(rows)}, дат сезона без данных {left}'
+               + (f'; {"; ".join(errs[:3])}' if errs else ''))
+    return len(rows)
 
 
 def collect_history(log: list[str], seasons=(2022, 2023, 2024, 2025, 2026)) -> None:
@@ -194,6 +273,8 @@ if __name__ == '__main__':
     lg: list[str] = []
     if len(_s.argv) > 1 and _s.argv[1] == 'probe':
         khl_probe_dates(lg)
+    elif len(_s.argv) > 1 and _s.argv[1] == 'khl':                 # догрузка сезона КХЛ по датам (≈ 80 запросов, ~9 мин)
+        update_khl(lg, backfill=80)
     else:
         collect_history(lg)
     print('\n'.join(lg))
