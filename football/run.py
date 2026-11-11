@@ -819,7 +819,8 @@ def run(dry: bool = False) -> str:
     no = attach_odds(store, base)
     af, ld = store.read('auto_forecasts'), store.read('auto_lines')
     dpk = store.read('day_pick')
-    if daily_due:
+    resend = not dry and not rt.get('resend_1111')                  # разовый повтор отчёта в новом виде (просьба 11.11)
+    if daily_due or resend:
         notes = []
         if mp.missed:
             notes.append(f'ошибка сопоставления (лиги): {", ".join(list(mp.missed)[:8])}')
@@ -843,13 +844,14 @@ def run(dry: bool = False) -> str:
             R.EXTRA_OPS = DPC.changes_rows(store, dpk)
         except Exception as ex:
             log.append(f'🔁 смены: сбой {ex.__class__.__name__}')
-        notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
+        notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + (' · повтор' if resend and not daily_due else ''), kcal=kcal, kprev=kprev, off=off,
                                    notes=notes, daily_day=yday, extra=cov, late=late))
         try:                                                       # 👥 каперы — отдельной карточкой (HTML), сразу после отчёта
             notify.send_blocks([tipsbook.card()])
         except Exception as ex:
             log.append(f'👥 карточка каперов: сбой {type(ex).__name__}')
         rt['last_daily'] = today
+        rt['resend_1111'] = 1
         log.append('суточный отчёт отправлен')
         if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
             d0 = yday - dt.timedelta(days=6)
