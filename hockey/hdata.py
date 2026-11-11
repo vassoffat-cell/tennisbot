@@ -143,7 +143,7 @@ def khl_season(season: int, league: int = KHL_ID) -> list[dict]:
     return out
 
 
-def collect_history(log: list[str], seasons=(2022, 2023, 2024, 2025)) -> None:
+def collect_history(log: list[str], seasons=(2022, 2023, 2024, 2025, 2026)) -> None:
     """Разово: НХЛ — все игровые дни сезонов (окт.–июнь); КХЛ — по сезонам (если есть ключ и доступ)."""
     today = dt.date.today()
     days = []
