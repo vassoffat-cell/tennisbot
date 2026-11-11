@@ -217,6 +217,10 @@ def run(rt: dict, log: list[str]) -> None:
     T.DIR.mkdir(parents=True, exist_ok=True)
     df.to_csv(BOOK, index=False)
     rt['tips_book'] = pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M')
+    try:
+        to_ours(df, log)
+    except Exception as e:
+        log.append(f'👥 купоны → наши матчи: сбой {e.__class__.__name__}: {e}')
     log.append(f"👥 книга ({'история 30 дн' if first else '3 дн'}): " + ', '.join(stat)
                + f'; отметок обновлено {upd}; всего {len(df)}; запросов {req}')
 
@@ -387,6 +391,37 @@ def merge_slips(df: pd.DataFrame, rows: list[dict]) -> tuple[pd.DataFrame, int]:
         if r['pick'] and not re.search(r'ИТ|Т[БМ]|фора|победа|обе|ничья|1X|X2|12', df.at[i, 'pick']):
             df.at[i, 'pick'] = r['pick']
     return df, upd
+
+
+def to_ours(df: pd.DataFrame, log: list[str]) -> int:
+    """Купоны до матча (Green Line) на матчи наших турниров → tips.csv: строка 👥 под матчем с P модели, учёт против модели, вето."""
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
+    fx = T.LAST_FIXTURES
+    if not fx:
+        return 0
+    d = df[df.src.isin(OCR_CH) & (df.seen == 'pre') & (df.slip != '') & (df.a != '')
+           & (pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=48))]
+    tdf = T.load()
+    have = set(tdf.uid)
+    new = []
+    for r in d.itertuples(index=False):
+        for f in fx:
+            m, row = f
+            if len(T.find_teams(f'{r.a} — {r.b}', [row['home'], row['away']])) != 2:
+                continue
+            uid = f'tg:{r.src}:{r.uid.split(":", 1)[1]}:{m.id}'
+            if uid in have:
+                break
+            legs = T.parse_legs(r.pick, None, (row['home'], row['away']), True)
+            k = float(r.k) if r.k else None
+            x = T._row(r.src, T.TG.get(r.src, r.src), r.post_ts, f, legs, k, f'📷 {r.pick}', uid)
+            if x:
+                new.append(x); have.add(uid)
+            break
+    if new:
+        T.save(pd.concat([tdf, pd.DataFrame(new)], ignore_index=True))
+    log.append(f'👥 купоны → наши матчи: +{len(new)}')
+    return len(new)
 
 
 def wide_rows(src: str, rows: list[dict], have_w: set) -> list[dict]:

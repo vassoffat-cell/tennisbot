@@ -59,6 +59,7 @@ def _clean(s: str) -> str:
 
 LAST_POSTS: list[tuple[str, str, dict]] = []      # свежие посты прогона (src, имя, пост) — для tipswide (все матчи)
 LAST_FEED: list[dict] = []                          # лента nb-bet прогона
+LAST_FIXTURES: list[tuple] = []                     # наши матчи окна прогона (m, row) — для купонов Green Line (tipsbook)
 
 
 def tg_posts(channel: str, before: int | None = None) -> list[dict]:
@@ -428,6 +429,7 @@ def collect(items: list[tuple], log: list[str]) -> int:
     fixtures = [(m, row) for m, row, _ in items if m.start > now]
     LAST_POSTS.clear()
     LAST_FEED.clear()
+    LAST_FIXTURES[:] = fixtures
     df = load()
     have = set(df.uid)
     seen = json.loads(SEEN.read_text()) if SEEN.exists() else {}
