@@ -325,7 +325,7 @@ def backfill(rt: dict, log: list[str], days: int = 30, pages: int = 25) -> None:
     log.append(f'👥 история {days} дн (ставок/постов): ' + ', '.join(stat) + f'; дней табло ESPN {len(cache)}')
 
 
-def settle(log: list[str], max_days: int = 6) -> int:
+def settle(log: list[str], max_days: int = 40) -> int:
     """Итоги по табло ESPN: матчи, начавшиеся > 2,5 ч назад; запрос даты — только если в кэше не всё завершено."""
     df = load()
     if df.empty:
