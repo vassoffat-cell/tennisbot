@@ -171,7 +171,29 @@ def collect_history(log: list[str], seasons=(2022, 2023, 2024, 2025, 2026)) -> N
             log.append(f'КХЛ: {e}')
 
 
+def khl_probe_dates(log: list[str]) -> None:
+    """Проверка: отдаёт ли бесплатный ключ матчи КХЛ текущего сезона по дате (без параметра сезона)."""
+    import datetime as _d
+    for q in (f'/games?date={_d.date.today() - _d.timedelta(days=1)}&league={KHL_ID}',
+              f'/games?date={_d.date.today() - _d.timedelta(days=1)}',
+              f'/games?league={KHL_ID}&season=2026&date={_d.date.today() - _d.timedelta(days=1)}',
+              '/status'):
+        try:
+            js = _apis(q)
+            rs = js.get('response')
+            n = len(rs) if isinstance(rs, list) else rs
+            khl = [g for g in (rs if isinstance(rs, list) else []) if (g.get('league') or {}).get('id') == KHL_ID]
+            log.append(f"{q} → ошибки {js.get('errors')} · ответов {n if not isinstance(n, dict) else str(n)[:160]} · КХЛ {len(khl)}"
+                       + (f" · пример {khl[0]['teams']['home']['name']}–{khl[0]['teams']['away']['name']} {khl[0].get('scores')}" if khl else ''))
+        except Exception as e:
+            log.append(f'{q} → {e.__class__.__name__}: {e}')
+
+
 if __name__ == '__main__':
+    import sys as _s
     lg: list[str] = []
-    collect_history(lg)
+    if len(_s.argv) > 1 and _s.argv[1] == 'probe':
+        khl_probe_dates(lg)
+    else:
+        collect_history(lg)
     print('\n'.join(lg))

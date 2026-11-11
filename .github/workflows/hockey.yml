@@ -1,6 +1,10 @@
 name: hockey
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      mode:
+        default: ''
+        required: false
 permissions:
   contents: write
 concurrency:
@@ -20,7 +24,7 @@ jobs:
       - run: pip install -q pandas numpy scipy
       - name: History
         working-directory: hockey
-        run: python hdata.py
+        run: python hdata.py ${{ github.event.inputs.mode }}
         env:
           APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
       - name: Save data
