@@ -185,3 +185,63 @@ def step(rt: dict, items: list[tuple], day, shot_offers: list[dict], replies: li
         x['start'] = pd.Timestamp(x['start_utc'])
         offers.append(x)
     return 'done_now', msgs, offers
+
+
+def repair_flips(rt: dict, log: list[str]) -> int:
+    """Разовый ремонт (11.11.2026): кф скриншота приписаны не тому игроку (порядок на 1xBet обратный).
+    Признак — сторона 1 скриншота по 1xBet без маржи ближе к P игрока 2 по Pinnacle (разница > 0,10).
+    Предложения матча переворачиваются (П1↔П2, Ф1↔Ф2, ИТ1↔ИТ2; тотал без изменений), P пересчитывается; ставка дня — заново."""
+    import daypick as DP
+    import pick as PK
+    r = rt.get('r4') or {}
+    pins = {x['id']: x.get('p1') for x in r.get('queue', []) if x.get('p1')}
+    bad = set()
+    for eid, p1 in pins.items():
+        ml = {str(o['pick']): float(o['k']) for o in r.get('offers', []) if str(o['espn_id']) == eid and o['market'] == 'ML'}
+        if '1' in ml and '2' in ml:
+            q1 = PK.shin([ml['1'], ml['2']])[0]
+            if abs(q1 - (1 - p1)) + 0.10 < abs(q1 - p1):
+                bad.add(eid)
+    if not bad:
+        return 0
+
+    def fix(lst: list[dict]) -> list[dict]:
+        out = []
+        for o in lst:
+            if str(o.get('espn_id')) not in bad:
+                out.append(o)
+                continue
+            mk, s, ln = o['market'], str(o['pick']), o.get('line')
+            partner = next((x for x in lst if str(x['espn_id']) == str(o['espn_id']) and x['market'] == mk and str(x['pick']) != s
+                            and (mk != 'HCP' or (x.get('line') is not None and ln is not None and abs(float(x['line']) + float(ln)) < 1e-9))
+                            and (mk not in ('TOTAL', 'IT1', 'IT2') or x.get('line') == ln)), None)
+            pb = PK.shin([float(o['k']), float(partner['k'])])[0] if partner else None
+            if mk == 'ML':
+                s = '2' if s == '1' else '1'
+            elif mk == 'HCP':
+                s = '2' if s == '1' else '1'
+            elif mk in ('IT1', 'IT2'):
+                mk = 'IT2' if mk == 'IT1' else 'IT1'
+            x = dict(o, market=mk, pick=s)
+            D = (DP.DISTS.get(str(o['espn_id'])) or (None,))[0]
+            if D is not None and pb is not None:
+                pm, pp = DP.model_price(D, mk, s, ln)
+                x.update(p=float(PK.blend(pm, pb)), p_src='blend', p_model=pm, p_push=pp)
+            if mk == 'ML':
+                q = next(y for y in r['queue'] if y['id'] == str(o['espn_id']))
+                x['p_pin'] = q['p1'] if s == '1' else q['p2']
+            x['label'] = DP.label(mk, s, ln, x.get('player1', ''), x.get('player2', '')) if x.get('player1') else x.get('label')
+            out.append(x)
+        return out
+    r['offers'] = fix(r.get('offers', []))
+    for eid in bad:
+        g = r.get('got', {}).get(eid)
+        if g:
+            r['got'][eid] = [g[1], g[0]]
+    dp = rt.get('day_pick') or {}
+    if dp.get('shots'):
+        dp['shots'] = fix(dp['shots'])
+    dp['fix'] = 1
+    dp['accepted'], dp['accepted_shown'] = '', False
+    log.append(f'ремонт ТЗ-004: перевёрнуты кф скриншотов матчей {sorted(bad)}')
+    return len(bad)

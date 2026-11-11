@@ -25,6 +25,27 @@ import odds as OD
 import pick as PK
 
 FLIP = {'IT1': 'IT2', 'IT2': 'IT1'}
+PIN_HINT: dict[str, float] = {}      # espn_id → P игрока 1 по Pinnacle (из списка проверки ТЗ-004) — порядок игроков на скриншоте
+TR = dict(zip('абвгдеёжзийклмнопрстуфхцчшщъыьэюя',
+              ['a', 'b', 'v', 'g', 'd', 'e', 'e', 'zh', 'z', 'i', 'y', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f',
+               'h', 'ts', 'ch', 'sh', 'sch', '', 'y', '', 'e', 'yu', 'ya']))
+
+
+def _order_by_names(header: str, p1: str, p2: str) -> bool | None:
+    """Порядок игроков по шапке скриншота (кириллица → латиница, сходство фамилий): True — на скриншоте первым игрок 2."""
+    import difflib
+    import re
+    words = re.findall(r'[a-zа-яё]+', ''.join(TR.get(c, c) for c in str(header).lower()))
+    words = [w for w in words if len(w) >= 3]
+
+    def pos(name: str) -> int | None:
+        last = DP._last(name).lower()
+        best = max(((difflib.SequenceMatcher(None, w, last).ratio(), i) for i, w in enumerate(words)), default=(0, None))
+        return best[1] if best[0] >= 0.75 else None
+    a, b = pos(p1), pos(p2)
+    if a is None or b is None or a == b:
+        return None
+    return b < a
 
 
 def ensure_ocr() -> str:
@@ -102,7 +123,15 @@ def _offers_for(m, row, p, events: list[dict]) -> tuple[list[dict], list[float]]
             pb = PK.shin([k1, k2])[0]
             e += (PK.logit(pm) - PK.logit(pb)) ** 2
         err[flip] = e
-    flip = err[True] < err[False]
+    flip = err[True] < err[False]                                   # 3) модель — запасной способ
+    ml = [(k1, k2) for mk, _, (k1, k2) in lines if mk == 'ML']
+    hint = PIN_HINT.get(str(m.id))
+    if ml and hint:                                                    # 2) Pinnacle: сторона 1 скриншота ближе к кому
+        q1 = PK.shin(list(ml[0]))[0]
+        flip = abs(q1 - (1 - hint)) < abs(q1 - hint)
+    by_name = _order_by_names(getattr(p, 'header', ''), row['player1'], row['player2'])
+    if by_name is not None:                                            # 1) фамилии в шапке скриншота — главный способ
+        flip = by_name
     ev, _ = OD.find_event(events, row['player1'], row['player2'], row['start_utc']) if events else (None, False)
     q = OD.quotes(ev) if ev else {}
     out, rs = [], []

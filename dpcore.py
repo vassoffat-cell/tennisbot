@@ -33,7 +33,7 @@ KB = {'inline_keyboard': [[{'text': '✅ Принимаем', 'callback_data': '
 PRIORITY = {'screenshot': 0, 'api': 1, 'model': 2}
 MAX_PICKS = 3
 EXTRA_MARK = '\n\n⭐ <b>Ещё уверенные</b>'
-REASON = {'отказ': 'по вашему отказу', 'скриншот': 'по скриншоту', 'лучше': 'найдена лучше',
+REASON = {'исправление': 'исправлена ошибка кф скриншота', 'отказ': 'по вашему отказу', 'скриншот': 'по скриншоту', 'лучше': 'найдена лучше',
           'каперы': 'по каперам (🔥/⚔️)'}
 
 
@@ -124,6 +124,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         cur = dict(date=dstr, msgs=[], ask=[], changes=0, history=[], accepted='', rejected=[], shots=[], screenshots=0,
                    extras=[], log=[])
 
+    if cur.pop('fix', None) and cur.get('espn_id'):              # ремонт данных (ошибка кф) — выбор заново, принятие снято
+        force, reason = True, 'исправление'
     # ---- действия пользователя (кнопки) — только для текущих суток
     for a in (actions or []):
         if not cur.get('espn_id'):
@@ -218,7 +220,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     if not first:
         was = f"было {cur.get('label', '—')} {float(cur.get('p', 0)) * 100:.0f}% ({cur.get('match', '')})" if cur.get('espn_id') \
             else 'было: ставки не было'
-        word = {'отказ': 'отказ', 'скриншот': 'по скриншоту', 'лучше': 'изменено', 'каперы': 'по каперам'}.get(reason, 'изменено')
+        word = {'исправление': 'исправлена ошибка кф', 'отказ': 'отказ', 'скриншот': 'по скриншоту', 'лучше': 'изменено', 'каперы': 'по каперам'}.get(reason, 'изменено')
         hist.append(f"{word} в {loc:%H:%M}: {was}".strip())
         _log_change(store, cur, loc, reason, dict(cur.get('best') or {}, **{k: cur.get(k) for k in ('espn_id', 'label', 'p', 'match', 'slot')}),
                     best)

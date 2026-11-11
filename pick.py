@@ -33,6 +33,7 @@ Z90 = 1.2815515655446004
 # с пометкой «без перевеса · матожидание −X%». Включается флагом VALUE_ON (теннис — да; футбол — после проверки на истории).
 VALUE_ON = False
 VALUE_EDGE = 0.03
+VALUE_EDGE_MAX = 0.20      # перевес > 20% над Pinnacle — почти наверняка ошибка данных (порядок игроков, OCR) → не «с перевесом»
 VALUE_K = (1.70, 2.50)
 VALUE_MARKETS = ('ML',)
 
@@ -45,7 +46,7 @@ def edge(o: dict) -> float | None:
 
 def is_value(o: dict) -> bool:
     e = edge(o)
-    return bool(VALUE_ON and e is not None and e >= VALUE_EDGE and o.get('market') in VALUE_MARKETS
+    return bool(VALUE_ON and e is not None and VALUE_EDGE <= e <= VALUE_EDGE_MAX and o.get('market') in VALUE_MARKETS
                 and o.get('k_src') in ('api', 'screenshot') and VALUE_K[0] <= o['k'] <= VALUE_K[1])
 
 

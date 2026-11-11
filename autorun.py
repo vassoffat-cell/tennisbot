@@ -771,6 +771,10 @@ def run(dry: bool = False) -> str:
         import shots
         actions = dpcore.read_actions(store)
         import round4                                              # ТЗ-004: утренний цикл скриншотов
+        shots.PIN_HINT = {x['id']: x['p1'] for x in (rt.get('r4') or {}).get('queue', []) if x.get('p1')}   # порядок игроков
+        if not rt.get('r4_fix_1111'):                              # разовый ремонт перевёрнутых кф 11.11.2026
+            round4.repair_flips(rt, log)
+            rt['r4_fix_1111'] = 1
         offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('tennis', today))
         log += slog + ([f'кнопки: {", ".join(actions)}'] if actions else [])
         r4, m4, offers4 = round4.step(rt, items, C.wday(_local()), offers_s, replies)
