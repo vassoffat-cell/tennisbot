@@ -50,6 +50,26 @@ class Model:
         return float(1 / (1 + np.exp(-z)))
 
 
+def shift(m: Model, lh: float, la: float, beta: float) -> tuple[float, float]:
+    """λ хозяев × e^c, λ гостей × e^−c — так, чтобы логит «победы с ОТ» хозяев вырос на beta (все рынки сдвигаются согласованно)."""
+    def ml(c: float) -> float:
+        a, b = lh * np.exp(c), la * np.exp(-c)
+        P = m.matrix(a, b)
+        i, j = np.indices(P.shape)
+        return float(P[i > j].sum() + np.trace(P) * m.ot_home(a, b))
+    lg = lambda p: np.log(p / (1 - p))
+    target = lg(ml(0.0)) + beta
+    lo, hi = (0.0, 0.6) if beta >= 0 else (-0.6, 0.0)
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        if lg(ml(mid)) < target:
+            lo = mid
+        else:
+            hi = mid
+    c = (lo + hi) / 2
+    return float(lh * np.exp(c)), float(la * np.exp(-c))
+
+
 def fit(games: pd.DataFrame, league: str, asof: pd.Timestamp, xi: float = XI, reg: float = REG) -> Model | None:
     """Подгонка по завершённым матчам лиги до asof (без утечки)."""
     g = games[(games.league == league) & games.hg_reg.notna() & games.ag_reg.notna()

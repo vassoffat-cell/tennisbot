@@ -142,6 +142,24 @@ def _done(ld: pd.DataFrame) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------------ прогноз и итоги
+# T33 / A11 (12.11.2026, «скрытые факторы»): гости играют второй день подряд, хозяева отдыхали ≥ 2 дней.
+# Бэктест НХЛ 2024–26 (n 493): хозяева побеждают 61,9% при 53,5% у модели (z +3,8; сезоны +2,6 / +2,8).
+# Отложенная проверка: β = 0,367 по сезону 2024/25 → тест 2025/26+ (n 1705): угадано 53,8 → 54,9%, срез 56,8 → 63,5%, лог-лосс лучше.
+# В бою β = 0,30 (сжато). Обратный случай (хозяева второй день подряд) незначим (−2,2 п.п., z −0,7) — без поправки. Откат — 0.
+B2B_BETA = {'NHL': 0.30}
+B2B_LOG: list = []                                      # матчи текущего прогона с поправкой (для журнала)
+
+
+def _rest_days(games: pd.DataFrame, league: str) -> dict:
+    """(команда, начало матча) → дней с прошлого матча команды (по дате Восточного побережья США)."""
+    g = games[games.league == league]
+    t = pd.to_datetime(g.start)
+    lg = pd.concat([pd.DataFrame({'t': t, 'team': g.home.values}), pd.DataFrame({'t': t, 'team': g.away.values})]).sort_values('t')
+    lg['d'] = (lg.t - pd.Timedelta(hours=5)).dt.normalize()
+    lg['rest'] = lg.groupby('team').d.diff().dt.days
+    return {(r.team, r.t): r.rest for r in lg.itertuples(index=False)}
+
+
 def forecast(games: pd.DataFrame, kc: dict, off: dict, models: dict | None = None) -> list[tuple[dict, list[dict]]]:
     now = _now()
     end = window_end(now)
@@ -149,6 +167,8 @@ def forecast(games: pd.DataFrame, kc: dict, off: dict, models: dict | None = Non
                & (pd.to_datetime(games.start) <= end) & games.league.isin(LEAGUES)]
     out = []
     models = models if models is not None else {}
+    rests: dict = {}
+    B2B_LOG.clear()
     for r in up.itertuples(index=False):
         if r.league not in models:
             models[r.league] = HM.fit(games, r.league, pd.Timestamp(now))
@@ -156,6 +176,14 @@ def forecast(games: pd.DataFrame, kc: dict, off: dict, models: dict | None = Non
         lam = m.lambdas(r.home, r.away) if m else None
         if not lam:
             continue
+        beta = B2B_BETA.get(r.league, 0)
+        if beta:                                             # гости второй день подряд, хозяева отдохнули
+            if r.league not in rests:
+                rests[r.league] = _rest_days(games, r.league)
+            rh, ra = rests[r.league].get((r.home, pd.Timestamp(r.start))), rests[r.league].get((r.away, pd.Timestamp(r.start)))
+            if ra == 1 and rh is not None and rh == rh and rh >= 2:
+                lam = HM.shift(m, lam[0], lam[1], beta)
+                B2B_LOG.append(f'{r.away} @ {r.home}')
         P = m.matrix(*lam); q = m.ot_home(*lam)
         i, j = np.indices(P.shape)
         ph, pd_, pa = float(P[i > j].sum()), float(np.trace(P)), float(P[i < j].sum())
@@ -468,7 +496,8 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     by = {lg: sum(r['league'] == lg for r, _ in items) for lg in LEAGUES}
     log.append(f'🏒 матчей ESPN {n}, рассчитано {ng}/{nl}, прогнозов НХЛ {by["NHL"]} · КХЛ {by["KHL"]}'
                f'{"" if "KHL" in public() else " (тень)"}, новых {nn}, обновлено {nu}; ⛔ {", ".join(off) or "нет"}; '
-               f'сутки {cur:%d.%m}, отчёт {"да" if due else "нет"} (ждут итога {pend})')
+               f'сутки {cur:%d.%m}, отчёт {"да" if due else "нет"} (ждут итога {pend})'
+               + (f'; гости 2-й день подряд: {len(B2B_LOG)}' if B2B_LOG else ''))
     if dry:
         print('\n\n'.join(list_blocks(items, tp)))
         return []
