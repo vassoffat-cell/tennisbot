@@ -516,3 +516,34 @@ def report_block() -> str:
         out += ('\n📷 <b>Купоны до матча</b>\n' + rtable.render(r2, ('Канал·вид (б/и)', 'W/до', '%'))
                 + f'\n<i>W — показан выигранным; (б/и) без итога — вероятно проигрыш; постфактум {post} — не в счёт</i>')
     return out
+
+
+def card() -> str:
+    """👥 Одна карточка каперов для суточного отчёта и аудита (стандарт: таблица ≤ 35 знаков, легенда одной строкой).
+    Строки — каналы по табло ESPN (все их футбольные матчи); ниже — купоны Green Line до матча и синтез с моделью."""
+    import notify
+    import rtable
+    import tipswide as W
+    st = W.stats()
+    lines = []
+    if len(st):
+        lines.append(f"{'Канал':<10} {'Угад.':>6} {'%':>3} {'ROI':>4}")
+        lines.append('─' * 26)
+        for r in st.itertuples(index=False):
+            roi = f"{'+' if r.roi > 0 else ''}{r.roi * 100:.0f}" if r.nk >= 10 and r.roi == r.roi else '—'
+            mark = '✔' if (r.nk >= W.TRUST_NK and r.t >= W.TRUST_T) else ''
+            lines.append(f"{(mark + r.name)[:10]:<10} {f'{r.won}/{r.n}':>6} {r.won / r.n * 100:>3.0f} {roi:>4}")
+    out = '👥 <b>Каперы</b>' + (('\n<pre>' + notify.esc('\n'.join(lines)) + '</pre>'
+                                '\n<i>итог по табло ESPN · ROI % по их кф (от 10 ставок) · ✔ доказан плюс</i>') if lines
+                               else '\nрассчитанных ставок пока нет')
+    ss = slip_stats()
+    if len(ss):
+        g = ss[ss.sport == 'football']
+        if len(g) and int(g.pre.iloc[0]):
+            out += f"\n📷 Green Line до матча: {int(g.w.iloc[0])}/{int(g.pre.iloc[0])} показаны W · без итога {int(g.none.iloc[0])}"
+    ts = T.stats()
+    if len(ts):
+        an = int((ts.n - ts.dis_n).sum()); aw = int((ts.won - (ts.dis_n - ts.dis_sys)).sum())
+        dn, ds = int(ts.dis_n.sum()), int(ts.dis_sys.sum())
+        out += f"\n🔥 модель+капер {aw}/{an} · ⚔️ права модель {ds}/{dn}"
+    return out

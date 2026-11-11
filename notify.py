@@ -21,7 +21,7 @@ def esc(s: str) -> str:
 
 BOTS = {'main': lambda: C.BOT_TOKEN, 'tennis': lambda: getattr(C, 'TENNIS_BOT_TOKEN', '')}   # 'tennis' — из футбольного облака
 _SENT: set[str] = set()                         # боты, которым в этом прогоне ушли новые сообщения (для заглушки 🔒)
-COVER = '🔒'
+COVER = '🔒 ·'                                  # не одиночный эмодзи — без крупной анимации
 
 
 def _call(method: str, payload: dict | None = None, timeout: int = 30, bot: str = 'main') -> dict:

@@ -837,10 +837,7 @@ def run(dry: bool = False) -> str:
             cov = coverage.report_rows(R.matches(af), R.lines(ld), af, yday, rt, R.fmt)
         except Exception as ex:
             late, cov = set(), [f'⚠️ контроль охвата: {type(ex).__name__}']
-        try:
-            cov = cov + [tips.report_block(), tipswide.report_block(), tipsbook.report_block()]
-        except Exception as ex:
-            cov = cov + [f'👥 каперы: сбой {type(ex).__name__}']
+
         try:
             import dpcore as DPC
             R.EXTRA_OPS = DPC.changes_rows(store, dpk)
@@ -848,6 +845,10 @@ def run(dry: bool = False) -> str:
             log.append(f'🔁 смены: сбой {ex.__class__.__name__}')
         notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
                                    notes=notes, daily_day=yday, extra=cov, late=late))
+        try:                                                       # 👥 каперы — отдельной карточкой (HTML), сразу после отчёта
+            notify.send_blocks([tipsbook.card()])
+        except Exception as ex:
+            log.append(f'👥 карточка каперов: сбой {type(ex).__name__}')
         rt['last_daily'] = today
         log.append('суточный отчёт отправлен')
         if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
@@ -909,8 +910,7 @@ def run(dry: bool = False) -> str:
                                                    text=learning.report(store, rt, 'Самообучение · футбол'), updated=J.now_utc()),
                                               dict(key='audit', kind='audit', title='🔎 Аудит',
                                                    text=learning.audit_report(store, week_table(store, af, ld))
-                                                   + '\n' + tips.report_block() + '\n' + tipswide.report_block()
-                                                   + '\n' + tipsbook.report_block(),
+                                                   + '\n' + tipsbook.card(),
                                                    updated=J.now_utc())])],
                          ignore_index=True)
     except Exception as ex:
