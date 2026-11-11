@@ -221,6 +221,12 @@ def run(rt: dict, log: list[str]) -> None:
         to_ours(df, log)
     except Exception as e:
         log.append(f'👥 купоны → наши матчи: сбой {e.__class__.__name__}: {e}')
+    try:
+        if first:                                                  # история не рассылается — только новое
+            rt['tips_alerted'] = list(df.uid)[-600:]
+        alert(rt, df, log)
+    except Exception as e:
+        log.append(f'👥 сигнал: сбой {e.__class__.__name__}: {e}')
     log.append(f"👥 книга ({'история 30 дн' if first else '3 дн'}): " + ', '.join(stat)
                + f'; отметок обновлено {upd}; всего {len(df)}; запросов {req}')
 
@@ -300,10 +306,6 @@ def ocr_round(rt: dict, df: pd.DataFrame, log: list[str]) -> pd.DataFrame:
     left = sum(1 for src in OCR_CH for x in _arch(src).values()
                if x.get('photos') and 'ocr' not in x and pd.Timestamp(x['ts']) >= edge)
     log.append(f'👥 OCR: постов {done}, прогнозов +{len(add)}, футбол на табло +{len(wide)}, осталось {left}')
-    try:
-        alert(rt, df, log)
-    except Exception as e:
-        log.append(f'👥 сигнал: сбой {e.__class__.__name__}')
     return df
 
 
@@ -329,27 +331,44 @@ def _pick_short(pick: str, a: str, b: str) -> str:
     return pick.replace('(', '').replace(')', '').replace('обе забьют да', 'ОЗ да')
 
 
+ROUTE = {'tennis': 'tennis'}                          # вид спорта → бот; остальное — футбольный бот (решение пользователя 11.11)
+ICON = {'football': '⚽', 'hockey': '🏒', 'tennis': '🎾', 'basketball': '🏀', 'volleyball': '🏐', 'esports': '🎮', 'other': '•'}
+
+
 def alert(rt: dict, df: pd.DataFrame, log: list[str]) -> None:
-    """📷 Сигнал в футбольный бот: новые купоны Green Line, показанные до матча (за 6 ч), — таблица + ROI канала по табло."""
+    """👥 Новые прогнозы каперов (за 6 ч, ещё не присланные) → бот своего вида спорта: теннис — теннисный, остальное — футбольный.
+    Купоны (Green Line) — только показанные до матча; таблица «канал → матч · ставка · кф» + ROI канала по табло."""
     import notify
     import rtable
     import tipswide as W
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
-    sent = set(rt.get('gl_alerted', []))
-    d = df[df.src.isin(OCR_CH) & (df.seen == 'pre') & (df.self == '')
-           & (pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)) & ~df.uid.isin(sent)]
+    sent = set(rt.get('tips_alerted', [])) | set(rt.get('gl_alerted', []))
+    fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)
+    d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
+    ok = d.apply(lambda r: bool(r['a']) and bool(re.match(r'(П[12]|ИТ[12]?[БМ]|Т[БМ]|Ф[12]|ОЗ|1X|X2|12|ничья|победа)',
+                                                         _pick_short(r['pick'], r['a'], r['b']).replace('Х', 'X')))
+                 and not T.SKIP.search(str(r['pick']).lower()), axis=1) if len(d) else d.index == d.index
+    d = d[ok]
     if d.empty:
         return
-    lines = ['Матч            Ставка    кф']
-    for r in d.itertuples(index=False):
-        lines.append(f"{_short(r.a, 7):>7}–{_short(r.b, 7):<7} {_short(_pick_short(r.pick, r.a, r.b), 9):<9} {r.k or '—':>4}")
     st = W.stats()
-    g = st[st.src.isin(OCR_CH)] if len(st) else st
-    roi = (f"ROI по табло {'+' if g.roi.iloc[0] > 0 else ''}{rtable.pct(g.roi.iloc[0], 0)}±{rtable.pct(g.se.iloc[0], 0)}% "
-           f"· {int(g.won.iloc[0])}/{int(g.n.iloc[0])}") if len(g) and g.nk.iloc[0] else 'ROI копится'
-    notify.send_blocks(['📷 <b>Green Line · новый купон</b>\n<pre>' + notify.esc('\n'.join(lines)) + '</pre>\n<i>' + roi + '</i>'])
-    rt['gl_alerted'] = (list(sent) + list(d.uid))[-300:]
-    log.append(f'👥 сигнал Green Line: {len(d)}')
+    n = 0
+    for bot in sorted({ROUTE.get(x, 'main') for x in d.sport}):
+        g = d[d.sport.map(lambda x: ROUTE.get(x, 'main')) == bot]
+        lines = []
+        for src, h in g.groupby('src', sort=False):
+            r0 = st[st.src == src] if len(st) else st
+            roi = (f" ROI {'+' if r0.roi.iloc[0] > 0 else ''}{rtable.pct(r0.roi.iloc[0], 0)}%" if len(r0) and r0.nk.iloc[0] >= 10 else '')
+            lines.append(f"{T.TG.get(src, src)}{roi}")
+            for r in h.itertuples(index=False):
+                m = f"{_short(r.a, 6)}–{_short(r.b, 6)}" if r.a else '—'
+                lines.append(f"{ICON.get(r.sport, '•')}{m:<13} {_short(_pick_short(r.pick, r.a, r.b), 9):<9} {r.k or '':>4}".rstrip())
+        notify.send_blocks(['👥 <b>Каперы · новые прогнозы</b>\n<pre>' + notify.esc('\n'.join(lines[:40])) + '</pre>'
+                            '\n<i>ROI — по табло ESPN, их кф (если ≥ 10 ставок)</i>'], bot=bot)
+        n += len(g)
+    rt['tips_alerted'] = (list(sent) + list(d.uid))[-600:]
+    rt.pop('gl_alerted', None)
+    log.append(f'👥 сигнал каперов: {n}')
 
 
 def slip_rows(src: str, p: dict) -> list[dict]:

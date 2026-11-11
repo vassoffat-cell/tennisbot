@@ -700,6 +700,10 @@ def run(dry: bool = False) -> str:
         settle_auto(store, by_id)
         nl = settle_lines(store, by_id)
         nd = daypick.settle(store)
+        try:                                                       # 🔁 заменённые ставки дня — тоже с итогом
+            daypick.settle(store, "dp_changes")
+        except Exception as ex_:
+            print(f"dp_changes: {ex_}")
         log.append(f'рассчитано линий {nl}, ставок дня {nd}')
         auto, ldf = store.read('auto_forecasts'), store.read('auto_lines')
     kcal, kprev, knote = daily_k(rt, auto, ldf, daily_due and not dry)
@@ -735,6 +739,11 @@ def run(dry: bool = False) -> str:
             cov = coverage.report_rows(R.matches(auto), R.lines(ldf), auto, yday, rt, R.fmt)
         except Exception as ex:
             late, cov = set(), [f'⚠️ контроль охвата: {type(ex).__name__}']
+        try:
+            import dpcore as DPC
+            R.EXTRA_OPS = DPC.changes_rows(store, store.read('day_pick'))
+        except Exception as e:
+            log.append(f'🔁 смены: сбой {e.__class__.__name__}')
         notify.send_blocks(R.build(auto, ldf, store.read('day_pick'), f'📈 Теннис · отчёт · {yday:%d.%m}', kcal=kcal, extra=cov, late=late,
                                    kprev=kprev, off=off, notes=notes, daily_day=yday))
         rt['last_daily'] = today
@@ -806,6 +815,10 @@ def run(dry: bool = False) -> str:
     except Exception as e:
         log.append(f'отчёт самообучения: сбой {e.__class__.__name__}: {e}')
     store.write_all('reports', reps)
+    try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
+        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json")}')
+    except Exception as e:
+        log.append(f'🔒 заглушка: сбой {e.__class__.__name__}')
     runtime.save(rt)
     log += [f'{knote}: ' + ', '.join(f'{m} {v[0]} (n={v[1]})' for m, v in kcal.items()) + f'; ⛔ {", ".join(off) or "нет"}',
             f'прогнозов: новых {nn}, обновлено {nu}; пропущено {len(skipped)}']

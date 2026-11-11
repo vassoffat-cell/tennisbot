@@ -118,6 +118,7 @@ def _load_env() -> None:
 
 _load_env()
 BOT_TOKEN = os.getenv('FOOT_BOT_TOKEN', '')
+TENNIS_BOT_TOKEN = os.getenv('TENNIS_BOT_TOKEN', '')    # теннисный бот: прогнозы каперов на теннис (маршрут по виду спорта)
 SHEET_ID = os.getenv('FOOT_SHEET_ID', '')
 GOOGLE_CREDENTIALS = os.getenv('GOOGLE_CREDENTIALS', str(ROOT.parent / 'service_account.json'))
 ALLOWED_USERS = {int(x) for x in os.getenv('ALLOWED_USERS', '').replace(' ', '').split(',') if x}

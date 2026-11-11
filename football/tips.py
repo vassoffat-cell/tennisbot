@@ -556,19 +556,22 @@ def match_line(espn_id: str, trust: set[str] | None = None) -> str:
     parts = []
     for lab, g in d.groupby('label', sort=False):
         mark = '✔️' if set(g.src) & trust else ''
-        parts.append(f"{mark}{lab}{' ×' + str(len(g)) if len(g) > 1 else ''} · {float(g.p_model.iloc[0]) * 100:.0f}%")
+        side = '🔥' if (g.agree == '1').all() else '⚔️'                 # модель за их ставку / против
+        parts.append(f"{mark}{lab}{' ×' + str(len(g)) if len(g) > 1 else ''} · мод. {float(g.p_model.iloc[0]) * 100:.0f}% {side}")
     return '👥 ' + ' | '.join(parts[:4])
 
 
-def conflicts(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int]:
-    """(против надёжных, за любых): несовместимость — совместная P < 5%; поддержка — P(наша | их) ≥ P(наша) + 0,10."""
+def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int, int]:
+    """Синтез модели и каперов по линии (market, pick, line) матча: (🔥 поддержка, ⚔️ конфликт, ⚔️ конфликт надёжных).
+    Поддержка — их ставка делает нашу линию вероятнее: P(наша | их) ≥ P(наша) + 0,10 или ≥ 0,95 (ТБ2.5 у них → наш ТБ1.5);
+    конфликт — совместная P по матрице счёта < 5% (их ТМ2.5 против нашего ТБ2.5)."""
     d = for_match(espn_id)
     if d.empty or P is None:
-        return 0, 0
+        return 0, 0, 0
     trust = trusted()
-    ours = masks(P, (market, pick, '' if line in (None, '') else float(line)))[0]
+    ours = masks(P, (market, pick, '' if line in (None, '') or str(line) in ('nan', 'None') else float(line)))[0]
     p0 = float(P[ours].sum())
-    bad = good = 0
+    good = bad = bad_t = 0
     for r in d.itertuples(index=False):
         m = np.ones(P.shape, bool)
         for lg in _dec(r.legs):
@@ -577,11 +580,24 @@ def conflicts(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tupl
         if pt <= 0:
             continue
         joint = float(P[m & ours].sum())
-        if r.src in trust and joint < 0.05:
+        if joint < 0.05:
             bad += 1
-        if joint / pt >= p0 + 0.10 or joint / pt >= 0.95:
+            bad_t += int(r.src in trust)
+        elif joint / pt >= min(0.95, p0 + 0.10):
             good += 1
-    return bad, good
+    return good, bad, bad_t
+
+
+def conflicts(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int]:
+    """(против надёжных — вето, поддержка любых) — для ставки дня."""
+    good, _, bad_t = relation(espn_id, P, market, pick, line)
+    return bad_t, good
+
+
+def mark(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> str:
+    """🔥 — модель и капер за одно (линия уверенная), ⚔️ — конфликт (публикуется, итог покажет, кто прав), '' — каперов нет."""
+    good, bad, _ = relation(espn_id, P, market, pick, line)
+    return '🔥' if good and not bad else '⚔️' if bad else ''
 
 
 def report_block() -> str:
@@ -595,8 +611,11 @@ def report_block() -> str:
         mark = '✔️' if (r.n >= TRUST_N and r.z >= TRUST_Z) else ('🟢' if r.z >= TRUST_Z else '🔴' if r.z <= -TRUST_Z else '🟡')
         rows.append(rtable.row(r.name[:10], r.won, r.n, rtable.pct(r.exp, 0), mark))
     dn, ds = int(st.dis_n.sum()), int(st.dis_sys.sum())
+    an, aw = int((st.n - st.dis_n).sum()), int((st.won - (st.dis_n - st.dis_sys)).sum())
+    if an:
+        rows.append(rtable.row('🔥 модель+капер', aw, an))      # синтез: обе стороны за ставку
     if dn:
-        rows.append(rtable.row('Спор: модель', ds, dn))
+        rows.append(rtable.row('⚔️ права модель', ds, dn))
     k = st[st.nk > 0]
     head = rtable.render(rows, ('Источник (мод.)', 'Кол-во', '%'))
     roi = ' · '.join(f"{r.name[:10]} {'+' if r.roi > 0 else ''}{rtable.pct(r.roi, 0)}%" for r in k.itertuples(index=False)

@@ -237,9 +237,9 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
 
 
 # ------------------------------------------------------------------ итог
-def settle(store: J.Store) -> int:
+def settle(store: J.Store, sheet: str = 'day_pick') -> int:
     """Итог по фактическому счёту (лист auto_forecasts); старые строки без pick — по рассчитанной линии auto_lines."""
-    dp = store.read('day_pick')
+    dp = store.read(sheet)
     todo = dp[dp.result.map(lambda x: str(x).strip() in ('', 'nan'))]
     if todo.empty:
         return 0
@@ -270,5 +270,5 @@ def settle(store: J.Store) -> int:
                 continue
             dp.loc[i, ['status', 'result', 'settled']] = list(x)
         upd.append(i)
-    store.update('day_pick', dp.loc[upd], ['status', 'result', 'settled'])
+    store.update(sheet, dp.loc[upd], ['status', 'result', 'settled'])
     return len(upd)

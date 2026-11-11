@@ -13,9 +13,17 @@ def esc(s: str) -> str:
     return str(s).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
-def _call(method: str, payload: dict | None = None, timeout: int = 30) -> dict:
+BOTS = {'main': lambda: C.BOT_TOKEN, 'tennis': lambda: getattr(C, 'TENNIS_BOT_TOKEN', '')}   # 'tennis' — из футбольного облака
+_SENT: set[str] = set()                         # боты, которым в этом прогоне ушли новые сообщения (для заглушки 🔒)
+COVER = '🔒'
+
+
+def _call(method: str, payload: dict | None = None, timeout: int = 30, bot: str = 'main') -> dict:
+    if method in ('sendMessage', 'sendPhoto', 'sendDocument') and not (payload or {}).get('_cover'):
+        _SENT.add(bot)
+    (payload or {}).pop('_cover', None)
     data = json.dumps(payload or {}).encode()
-    req = urllib.request.Request(API.format(token=C.BOT_TOKEN, method=method), data=data,
+    req = urllib.request.Request(API.format(token=BOTS[bot](), method=method), data=data,
                                  headers={'Content-Type': 'application/json'})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode())
@@ -47,11 +55,13 @@ def _pack(blocks: list[str], limit: int = 3800) -> list[str]:
     return out
 
 
-def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: bool = False) -> list[tuple[int, int]]:
+def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: bool = False,
+                bot: str = 'main') -> list[tuple[int, int]]:
     """Отправить HTML-блоки (каждый блок — законченный кусок с тегами), упаковав их в минимум сообщений.
-    silent — без звука уведомления. Возвращает [(chat_id, message_id)] отправленных сообщений."""
+    silent — без звука уведомления; bot — 'main' (свой бот) или 'tennis' (теннисный — из футбольного облака).
+    Возвращает [(chat_id, message_id)] отправленных сообщений."""
     msgs = _pack([b for b in blocks if b])
-    if not C.BOT_TOKEN or not (chat_ids or C.ALLOWED_USERS):
+    if not BOTS[bot]() or not (chat_ids or C.ALLOWED_USERS):
         print('\n\n'.join(msgs))
         return []
     sent = []
@@ -59,7 +69,7 @@ def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: boo
         for m in msgs:
             try:
                 r = _call('sendMessage', {'chat_id': chat, 'text': m, 'parse_mode': 'HTML',
-                                          'disable_web_page_preview': True, 'disable_notification': silent})
+                                          'disable_web_page_preview': True, 'disable_notification': silent}, bot=bot)
                 sent.append((chat, r['result']['message_id']))
             except Exception as e:
                 print(f'Telegram: не отправлено ({e})')
@@ -161,3 +171,37 @@ def plural(n: int, one: str, few: str, many: str) -> str:
     if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
         return few
     return many
+
+
+def cover(path) -> int:
+    """🔒 Заглушка последним сообщением чата: в списке чатов не видно, что прислал бот, пока чат не открыт.
+    Ставится в конце прогона, только если в прогоне ушли новые сообщения; прошлая заглушка удаляется (файл path)."""
+    import pathlib
+    f = pathlib.Path(path)
+    old = json.loads(f.read_text()) if f.exists() else {}
+    n = 0
+    for bot in sorted(_SENT):
+        if not BOTS[bot]():
+            continue
+        prev = old.get(bot, [])
+        if prev:
+            try:
+                by: dict[int, list[int]] = {}
+                for chat, mid in prev:
+                    by.setdefault(int(chat), []).append(int(mid))
+                for chat, ids in by.items():
+                    _call('deleteMessages', {'chat_id': chat, 'message_ids': ids}, bot=bot)
+            except Exception as e:
+                print(f'Telegram: заглушка не удалена ({e})')
+        cur = []
+        for chat in C.ALLOWED_USERS:
+            try:
+                r = _call('sendMessage', {'chat_id': chat, 'text': COVER, 'disable_notification': True, '_cover': 1}, bot=bot)
+                cur.append([chat, r['result']['message_id']]); n += 1
+            except Exception as e:
+                print(f'Telegram: заглушка не отправлена ({e})')
+        old[bot] = cur
+    _SENT.clear()
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_text(json.dumps(old))
+    return n

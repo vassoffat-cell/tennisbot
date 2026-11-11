@@ -357,6 +357,9 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     return blocks
 
 
+EXTRA_OPS: list = []                                         # строки «🔁 смены» — задаёт прогон перед отчётом
+
+
 def ops_rows(dp: pd.DataFrame) -> list:
     """Пакет №3 в таблицу: замены ставки дня, скриншоты, принятия, отдача по кф 1xBet, выгодные (цель — скриншотов 0)."""
     if not len(dp):
@@ -389,6 +392,17 @@ def ops_rows(dp: pd.DataFrame) -> list:
         vo = dp.value_ok.map(J.num)
         if vo.notna().any():
             out.append(RT.row(' выгодных (90%)', int((vo == 1).sum()), int(vo.notna().sum())))
+    wl = dp.result.astype(str).isin(['W', 'L'])
+    if 'rank' in dp.columns:                                    # 11.11: доп. ставки ⭐2/⭐3 и синтез с каперами
+        ex = dp[wl & dp['rank'].astype(str).isin(['2', '3'])]
+        if len(ex):
+            out.append(RT.row(' ⭐2–3 доп.', int((ex.result.astype(str) == 'W').sum()), len(ex)))
+    for col, ru in (('fire', ' 🔥 с каперами'), ('clash', ' ⚔️ против каперов')):
+        if col in dp.columns:
+            d = dp[wl & (dp[col].map(J.num) == 1)]
+            if len(d):
+                out.append(RT.row(ru, int((d.result.astype(str) == 'W').sum()), len(d)))
+    out += list(EXTRA_OPS)                                      # 🔁 смены ставки дня (dpcore.changes_rows; задаёт прогон)
     return out
 
 

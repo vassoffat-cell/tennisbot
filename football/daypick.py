@@ -205,8 +205,9 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
         import tips
         keep = []
         for o in out:
-            bad, good = tips.conflicts(o['espn_id'], DISTS.get(o['espn_id']), o['market'], o['pick'], o['line'])
+            good, bad_any, bad = tips.relation(o['espn_id'], DISTS.get(o['espn_id']), o['market'], o['pick'], o['line'])
             o['tips_for'] = good
+            o['fire'], o['clash'] = bool(good and not bad_any), bool(bad_any)      # 🔥 синтез / ⚔️ конфликт
             if bad:
                 log.append(f"👥 вето: {o['home']} — {o['away']} {o['label']} (против надёжного капера)")
             else:
@@ -225,7 +226,7 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
         return f'{head}\nСегодня ставки дня нет: {e(reason)}.' + (f'\n{score}' if score else '')
     src = {'pinnacle': 'Pinnacle без маржи', 'blend': '1xBet без маржи', 'model': 'модель'}[c['p_src']]
     out = [head, f"🏆 {e(c['comp_name'])} · 🕒 {e(str(c['start_local'])[6:])}", f"<b>{e(c['home'])} — {e(c['away'])}</b>",
-           f"<b>{e(c['label'])}</b> — вероятность {c['p'] * 100:.0f}% ({src})", e(PK.k_text(c)), e(PK.group_text(c))]
+           f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''} — вероятность {c['p'] * 100:.0f}% ({src})", e(PK.k_text(c)), e(PK.group_text(c))]
     if c.get('tier') == 3:
         out.append('<i>Котировок по матчу нет — линия модели с запасом по кф.</i>')
     try:
@@ -292,9 +293,9 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                           shots=shots, actions=actions, dry=dry)
 
 
-def settle(store: J.Store) -> int:
+def settle(store: J.Store, sheet: str = 'day_pick') -> int:
     """Итог по фактическому счёту (auto_forecasts: status FT/ET, hg, ag); старые строки без pick — по рассчитанной линии."""
-    dp = store.read('day_pick')
+    dp = store.read(sheet)
     todo = dp[dp.result.map(lambda x: str(x).strip() in ('', 'nan'))]
     if todo.empty:
         return 0
@@ -321,5 +322,5 @@ def settle(store: J.Store) -> int:
                 continue
             dp.loc[i, ['status', 'result', 'settled']] = list(x)
         upd.append(i)
-    store.update('day_pick', dp.loc[upd], ['status', 'result', 'settled'])
+    store.update(sheet, dp.loc[upd], ['status', 'result', 'settled'])
     return len(upd)

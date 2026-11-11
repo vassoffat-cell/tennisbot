@@ -52,9 +52,12 @@ DAY_COLS = ['date', 'espn_id', 'slot', 'tour', 'event', 'start_utc', 'start_loca
             'p_low', 'published', 'changes', 'history', 'status', 'result', 'settled',
             # пакет №3 (правило C): линия, кф 1xBet, источник P, уверенность в выгодности, принятие, скриншоты — только в конец
             'pick', 'line', 'k', 'k_src', 'p_src', 'conf', 'value_ok', 'tier', 'source', 'p_model', 'accepted', 'accepted_at',
-            'screenshots', 'edge', 'group', 'p_pin']                 # ТЗ-004 — перевес над Pinnacle, группа, P Pinnacle
+            'screenshots', 'edge', 'group', 'p_pin',                 # ТЗ-004 — перевес над Pinnacle, группа, P Pinnacle
+            'rank', 'fire', 'clash']                                 # 11.11: ⭐2/⭐3 (rank), синтез с каперами 🔥/⚔️
+CHG_COLS = ['date', 'time', 'reason', 'rank', 'espn_id', 'market', 'pick', 'line', 'label', 'match', 'p', 'k', 'to_label',
+            'to_key', 'slot', 'status', 'result', 'settled']   # журнал смен ставки дня (заменённые ставки тоже получают итог)
 SHEETS = {'forecasts': FORECAST_COLS, 'paper_bets': BET_COLS, 'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS,
-          'summary': ['показатель', 'значение'], 'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS, 'dp_actions': ['time', 'action', 'chat_id', 'message_id', 'done'], 'learning': ['when', 'kind', 'title', 'text', 'sent'],
+          'summary': ['показатель', 'значение'], 'tg_messages': ['chat_id', 'message_id'], 'day_pick': DAY_COLS, 'dp_changes': CHG_COLS, 'dp_actions': ['time', 'action', 'chat_id', 'message_id', 'done'], 'learning': ['when', 'kind', 'title', 'text', 'sent'],
           'reports': ['key', 'kind', 'title', 'text', 'updated'],     # готовые отчёты для кнопки «Аналитика» (бот только читает)
           'tg_cache': ['key', 'text', 'updated']}                     # последний список прогноза для кнопки «Прогноз 24 ч»
 

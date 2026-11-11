@@ -575,9 +575,20 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
     out = [f"🕒 <b>{e(when)}</b> · <b>{e(row['home'])}</b> — <b>{e(row['away'])}</b>",
            f"🎯 Исход: <b>{['П1', 'X', 'П2'][k]} — {p3[k] * 100:.0f}%</b>"]
     tier = lambda x: FL.tier(float(x.get('p_low') or x['p']))
-    for x in sorted([x for x in lns if visible(x, off)], key=lambda x: (-tier(x), -float(x['p']), x['slot'])):
+    P = daypick.DISTS.get(str(row['espn_id']))
+    syn = {}
+    for x in lns:                                                     # 👥 синтез: 🔥 модель + капер за линию, ⚔️ конфликт
+        try:
+            syn[x['slot']] = tips.mark(str(row['espn_id']), P, x['market'], x['pick'], x['line']) if P is not None else ''
+        except Exception:
+            syn[x['slot']] = ''
+    for x in sorted([x for x in lns if visible(x, off)], key=lambda x: (syn.get(x['slot']) != '🔥', -tier(x), -float(x['p']), x['slot'])):
         t = e(f"{x['label']} — {float(x['p']) * 100:.0f}%")
         s = {3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[FL.tier(float(x.get('p_low') or x['p']))]
+        if syn.get(x['slot']) == '🔥':
+            s = f'🔥 <b>{t}</b>'
+        elif syn.get(x['slot']) == '⚔️':
+            s += ' ⚔️'
         if star and (str(row['espn_id']), int(x['slot'])) == star[:2]:
             s = '⭐ ' + s
         out.append(s)
@@ -601,7 +612,8 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
         return []
     n = sum(len(v) for v in groups.values())
     blocks = [f"⚽ <b>Прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · {_local().strftime('%H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
-              + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')]
+              + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')
+              + '\n<i>🔥 модель + капер · ⚔️ конфликт с капером · 👥 их ставки</i>']
     for comp, ms in groups.items():
         blocks += notify.folded(f'🏆 <b>{notify.esc(comp)}</b>', ms)
     return blocks
@@ -767,6 +779,10 @@ def run(dry: bool = False) -> str:
     if not dry:                                                        # итоги прошедших матчей — до пересчёта k
         ns, nl = settle(store, results_index(st))
         nd = daypick.settle(store)
+        try:                                                       # 🔁 заменённые ставки дня — тоже с итогом
+            daypick.settle(store, "dp_changes")
+        except Exception as ex_:
+            print(f"dp_changes: {ex_}")
         log.append(f'рассчитано матчей {ns}, линий {nl}, ставок дня {nd}')
         af, ld = store.read('auto_forecasts'), store.read('auto_lines')
     kcal, kprev, knote = daily_k(rt, ld, daily_due and not dry)
@@ -825,6 +841,11 @@ def run(dry: bool = False) -> str:
             cov = cov + [tips.report_block(), tipswide.report_block(), tipsbook.report_block()]
         except Exception as ex:
             cov = cov + [f'👥 каперы: сбой {type(ex).__name__}']
+        try:
+            import dpcore as DPC
+            R.EXTRA_OPS = DPC.changes_rows(store, dpk)
+        except Exception as ex:
+            log.append(f'🔁 смены: сбой {ex.__class__.__name__}')
         notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
                                    notes=notes, daily_day=yday, extra=cov, late=late))
         rt['last_daily'] = today
@@ -895,6 +916,10 @@ def run(dry: bool = False) -> str:
     except Exception as ex:
         log.append(f'отчёт самообучения: сбой {ex.__class__.__name__}: {ex}')
     store.write_all('reports', reps)
+    try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
+        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json")}')
+    except Exception as ex:
+        log.append(f'🔒 заглушка: сбой {ex.__class__.__name__}')
     runtime.save(rt)
     log += [f'{knote}; ⛔ {", ".join(off) or "нет"}; прогнозов: новых {nn}, обновлено {nu}; кф football-data (данные) {no}',
             f'пропущено {len(skipped)}; ошибка сопоставления {len(mp.missed)}, вне базы {mp.out_base}; '

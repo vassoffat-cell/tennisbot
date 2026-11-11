@@ -120,8 +120,8 @@ def choose(offers: Iterable[dict]) -> list[dict]:
     """Подходящие предложения по порядку выбора: ступень, затем максимум P, затем уверенность, затем раньше матч."""
     ok = [finish(dict(o)) for o in offers]
     ok = [o for o in ok if o['tier'] < 9]
-    ok.sort(key=lambda o: (o['tier'], -(o['edge'] or 0) if o['tier'] == 0 else -o['p'], -(o['conf'] or 0),
-                           str(o.get('start_utc', ''))))
+    ok.sort(key=lambda o: (o['tier'], 0 if o.get('fire') else 1, 1 if o.get('clash') else 0,   # 🔥 синтез с каперами — выше
+                           -(o['edge'] or 0) if o['tier'] == 0 else -o['p'], -(o['conf'] or 0), str(o.get('start_utc', ''))))
     return ok
 
 
