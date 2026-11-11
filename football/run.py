@@ -575,7 +575,7 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
     p3 = [row['p_h'], row['p_d'], row['p_a']]
     k = int(np.argmax(p3))
     out = [f"🕒 <b>{e(when)}</b> · <b>{e(row['home'])}</b> — <b>{e(row['away'])}</b>",
-           f"🎯 Исход: <b>{['П1', 'X', 'П2'][k]} — {p3[k] * 100:.0f}%</b>"]
+           f"🎯 Исход: <b>{['П1', 'X', 'П2'][k]} — {p3[k] * 100:.0f}%</b> · {notify.fair(p3[k])}"]
     tier = lambda x: FL.tier(float(x.get('p_low') or x['p']))
     P = daypick.DISTS.get(str(row['espn_id']))
     syn = {}
@@ -585,7 +585,7 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
         except Exception:
             syn[x['slot']] = ''
     for x in sorted([x for x in lns if visible(x, off)], key=lambda x: (syn.get(x['slot']) != '🔥', -tier(x), -float(x['p']), x['slot'])):
-        t = e(f"{x['label']} — {float(x['p']) * 100:.0f}%")
+        t = e(f"{x['label']} — {float(x['p']) * 100:.0f}% · {notify.fair(x['p'])}")
         s = {3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[FL.tier(float(x.get('p_low') or x['p']))]
         if syn.get(x['slot']) == '🔥':
             s = f'🔥 <b>{t}</b>'
@@ -601,7 +601,7 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
     except Exception:
         pass
     if star and str(row['espn_id']) == star[0] and not star[1]:          # ставка дня вне линий списка
-        out.append(f'⭐ <b>{e(star[2])}</b> — {star[3] * 100:.0f}%')
+        out.append(f'⭐ <b>{e(star[2])}</b> — {star[3] * 100:.0f}% · {notify.fair(star[3])}')
     return '\n'.join(out)
 
 
@@ -615,7 +615,8 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
     n = sum(len(v) for v in groups.values())
     blocks = [f"⚽ <b>Прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · {_local().strftime('%H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
               + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')
-              + '\n<i>🔥 модель + капер · ⚔️ конфликт с капером · 👥 их ставки</i>']
+              + '\n<i>🔥 модель + капер · ⚔️ конфликт с капером · 👥 их ставки</i>'
+              + '\n<i>честный кф = 1 / вероятность: ставка в плюс, если кф букмекера выше</i>']
     for comp, ms in groups.items():
         blocks += notify.folded(f'🏆 <b>{notify.esc(comp)}</b>', ms)
     return blocks

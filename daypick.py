@@ -171,7 +171,7 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
     src = {'pinnacle': 'Pinnacle без маржи', 'blend': '1xBet без маржи', 'model': 'модель'}[c['p_src']]
     out = [head, f"🏆 {e(c['tour'])} · {e(c['event'])} · 🕒 {e(str(c['start_local'])[6:])}",
            f"<b>{e(c['player1'])} — {e(c['player2'])}</b>",
-           f"<b>{e(c['label'])}</b> — вероятность {c['p'] * 100:.0f}% ({src})",
+           f"<b>{e(c['label'])}</b> — вероятность {c['p'] * 100:.0f}% ({src}) · {notify.fair(c['p'])}",
            e(PK.k_text(c)), e(PK.group_text(c))]
     if c.get('tier') == 3:
         out.append('<i>Котировок по матчу нет — линия модели с запасом по кф.</i>')

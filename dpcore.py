@@ -116,7 +116,7 @@ def _pick_view(x: dict) -> dict:
 
 
 def _short(c: dict, match_fn: Callable) -> str:
-    return (f"<b>{notify.esc(c['label'])}</b>{_syn(c)} · {notify.esc(match_fn(c))} — {float(c['p']) * 100:.0f}%"
+    return (f"<b>{notify.esc(c['label'])}</b>{_syn(c)} · {notify.esc(match_fn(c))} — {float(c['p']) * 100:.0f}% · {notify.fair(c['p'])}"
             + (f", {notify.esc(PK.k_text(c))}" if c.get('k') else ''))
 
 

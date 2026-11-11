@@ -89,9 +89,8 @@ def better(a: dict, b: dict | None) -> str:
 
 def _line(c: dict, e) -> str:
     syn = (' 🔥' if c['fire'] else '') + (' ⚔️' if c['clash'] else '')
-    k = f"{1 / c['p']:.2f}".replace('.', ',')
     return (f"🕒 {e(c['start_local'])} · {e(c['home'])} — {e(c['away'])}\n"
-            f"<b>{e(c['label'])} — {c['p'] * 100:.0f}%</b> · честный кф {k}{syn}")
+            f"<b>{e(c['label'])} — {c['p'] * 100:.0f}%</b> · {notify.fair(c['p'])}{syn}")
 
 
 def _text(day, c: dict, rank: int, hist: list[str]) -> str:

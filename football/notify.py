@@ -205,3 +205,13 @@ def cover(path) -> int:
     f.parent.mkdir(parents=True, exist_ok=True)
     f.write_text(json.dumps(old))
     return n
+
+
+def fair(p: float) -> str:
+    """Честный кф = 1 / P модели (решение пользователя 11.11.2026: на каждой линии, во всех видах спорта).
+    Ставка в плюс, только если кф букмекера выше честного."""
+    try:
+        p = float(p)
+    except (TypeError, ValueError):
+        return ''
+    return f'честный кф {1 / p:.2f}'.replace('.', ',') if p > 0 else ''

@@ -350,15 +350,15 @@ def match_block(row: dict, lns: list[dict], today: str, off: dict, star: tuple |
     p1 = float(row['p1'])
     fav, pf = (row['player1'], p1) if p1 >= 0.5 else (row['player2'], 1 - p1)
     out = [f"🕒 <b>{e(when)}</b> · {e(_round_ru(str(row['round'])))} · <b>{e(row['player1'])}</b> — <b>{e(row['player2'])}</b>",
-           f"🎯 Исход: <b>{e(_last(fav))} — {pf * 100:.0f}%</b>"]
+           f"🎯 Исход: <b>{e(_last(fav))} — {pf * 100:.0f}%</b> · {notify.fair(pf)}"]
     tier = lambda x: LN.tier(float(x.get('p_low') or x['p']))
     for x in sorted([x for x in lns if visible(x, off)], key=lambda x: (-tier(x), -float(x['p']), x['slot'])):
-        t = conf_line(f"{title(row, x)} — {float(x['p']) * 100:.0f}%", float(x.get('p_low') or x['p']))
+        t = conf_line(f"{title(row, x)} — {float(x['p']) * 100:.0f}% · {notify.fair(x['p'])}", float(x.get('p_low') or x['p']))
         if star and (str(row['espn_id']), int(x['slot'])) == star[:2]:
             t = '⭐ ' + t
         out.append(t)
     if star and str(row['espn_id']) == star[0] and not star[1]:          # ставка дня вне 7 линий списка
-        out.append(f'⭐ <b>{notify.esc(star[2])}</b> — {star[3] * 100:.0f}%')
+        out.append(f'⭐ <b>{notify.esc(star[2])}</b> — {star[3] * 100:.0f}% · {notify.fair(star[3])}')
     if xb:                                                             # ТЗ-004: лучшая линия матча по кф 1xBet со скриншота
         x = xb['best']
         ev = x.get('edge') if x.get('edge') is not None else x.get('ev')
@@ -405,6 +405,7 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None, xb: dict | No
     n = sum(len(v) for v in groups.values())
     blocks = [f"📋 <b>Прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · {_local().strftime('%H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
               + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')
+              + '\n<i>честный кф = 1 / вероятность: ставка в плюс, если кф букмекера выше</i>'
               + ('\n💡 — лучшая линия по кф 1xBet со скриншота: кф · вероятность · МО (матожидание) или 📈 перевес' if xb else '')]
     for (tour, event, level, surface), ms in groups.items():
         head = (f"🏆 <b>{notify.esc(tour)} {LEVEL_RU.get(str(level), str(level or ''))} · {notify.esc(event)}</b> · "

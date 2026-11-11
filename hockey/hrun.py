@@ -249,20 +249,19 @@ def list_blocks(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame | None = 
         when = row['start_local'][6:] if row['start_local'][:5] == today else row['start_local']
         k = 0 if row['p_ml'] >= 0.5 else 1
         out = [f"🕒 <b>{e(when)}</b> · <b>{e(row['home'])}</b> — <b>{e(row['away'])}</b>",
-               f"🎯 Победа с ОТ: <b>{'П1' if k == 0 else 'П2'} — {max(row['p_ml'], 1 - row['p_ml']) * 100:.0f}%</b>"]
+               f"🎯 Победа с ОТ: <b>{'П1' if k == 0 else 'П2'} — {max(row['p_ml'], 1 - row['p_ml']) * 100:.0f}%</b>"
+               f" · {notify.fair(max(row['p_ml'], 1 - row['p_ml']))}"]
         for x in sorted([x for x in lns if int(x['shown']) and x['market'] != 'ML'],
                         key=lambda x: (-_ltier(x, row['league']), -float(x['p']), x['slot'])):
-            t = f"{x['label']} — {float(x['p']) * 100:.0f}%"
-            if x['market'] == 'TOT':                       # честный кф: ставка в плюс, только если букмекер даёт больше
-                t += f" · честный кф {1 / max(float(x['p']), 1e-6):.2f}".replace('.', ',')
-            t = e(t)
+            t = e(f"{x['label']} — {float(x['p']) * 100:.0f}% · {notify.fair(x['p'])}")   # честный кф — на каждой линии
             out.append({3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[_ltier(x, row['league'])])
         out += [e(x) for x in HC.for_game(tp if tp is not None else pd.DataFrame(), row['id'])]
         blocks.setdefault(row['league'], []).append('\n'.join(out))
     wend = window_end(_now()) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
     head = (f"🏒 <b>Хоккей · прогноз до {wend:%d.%m %H:%M}</b> · "
             f"{_local():%H:%M} · {len(items)} {notify.plural(len(items), 'матч', 'матча', 'матчей')}\n"
-            f"<i>линии — основное время; 🎯 — с ОТ и буллитами; тотал — одна линия лиги; 🔥/⚔️ — капер согласен/спорит</i>")
+            f"<i>линии — основное время; 🎯 — с ОТ и буллитами; тотал — одна линия лиги; 🔥/⚔️ — капер согласен/спорит</i>\n"
+            f"<i>честный кф = 1 / вероятность: ставка в плюс, если кф букмекера выше</i>")
     out = [head]
     for lg in LEAGUES:
         if blocks.get(lg):
