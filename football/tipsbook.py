@@ -341,6 +341,11 @@ ICON = {'football': '⚽', 'hockey': '🏒', 'tennis': '🎾', 'basketball': '�
 def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> None:
     """👥 Новые прогнозы каперов (за 6 ч, ещё не присланные) → бот своего вида спорта: теннис — теннисный, остальное — футбольный.
     Купоны (Green Line) — только показанные до матча; таблица «канал → матч · ставка · кф» + ROI канала по табло."""
+    import config as _C
+    if not getattr(_C, 'CAPPER_ALERTS', True) and not test:      # 11.11.2026: карточки каперов — в фоне (учёт и итоги — в отчётах)
+        rt['tips_alerted'] = (list(rt.get('tips_alerted', [])) + list(df.uid))[-600:]
+        log.append('👥 сигнал: в фоне (CAPPER_ALERTS = False)')
+        return
     import notify
     import rtable
     import tipswide as W

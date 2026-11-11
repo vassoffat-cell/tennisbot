@@ -274,7 +274,7 @@ def publish(rt: dict, items: list[tuple[dict, list[dict]]], tp: pd.DataFrame | N
     ids = sorted(r['id'] for r, _ in items)
     removed = notify.delete([tuple(x) for x in rt.get('hk_list', [])])
     sent = []
-    if items:
+    if items and getattr(C, 'PUBLISH_LISTS', True):           # 11.11: список хоккея — только в фоне
         silent = set(ids) <= set(rt.get('hk_list_ids', []))
         sent = notify.send_blocks(list_blocks(items, tp), silent=silent)
     rt['hk_list'], rt['hk_list_ids'] = [list(x) for x in sent], ids

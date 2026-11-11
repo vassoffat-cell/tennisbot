@@ -429,24 +429,28 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     if dry:
         print('\n\n'.join(blocks))
         return 'dry'
-    cache = list(blocks)
+    show = bool(getattr(C, 'PUBLISH_LISTS', True))             # 11.11.2026: списки не публикуются — всё в фоне
+    cache = list(blocks) if show else ['📋 Списки прогнозов не публикуются (решение 11.11.2026): анализ идёт в фоне. Смотрите ⭐ Ставка дня и 📊 Аналитика.']
     while cache and len(json.dumps(cache, ensure_ascii=False)) > 45000:   # ячейка Google Таблицы — до 50 000 символов
         cache.pop()
-    dpt = (rt.get('day_pick') or {}).get('text', '') if (rt.get('day_pick') or {}).get('date') == C.wday(_local()).isoformat() else ''
+    cur_dp = rt.get('day_pick') or {}
+    dpt = ('\n\n'.join([cur_dp.get('text', '')] + [x.get('text', '') for x in (cur_dp.get('extras') or []) if x.get('text')])
+           if cur_dp.get('date') == C.wday(_local()).isoformat() else '')
     store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
                                               dict(key='daypick', text=dpt, updated=J.now_utc()),
-                                              dict(key='daypick_accepted', text=(rt.get('day_pick') or {}).get('accepted', ''),
+                                              dict(key='daypick_accepted', text='yes',   # кнопок ✅/🔄 больше нет (11.11)
                                                    updated=J.now_utc()),
                                               dict(key='stats_menu', text=json.dumps(STATS_MENU, ensure_ascii=False),
                                                    updated=J.now_utc())]))
     removed = notify.delete([tuple(x) for x in rt.get('list_messages', [])] + list(extra or []))
     sent = []
-    if items:
+    if items and show:
         silent = set(ids) <= set(rt.get('list_match_ids', []))
         sent = notify.send_blocks(blocks, silent=silent)
     rt['list_messages'] = [list(x) for x in sent]
     rt['list_match_ids'] = ids
-    return f'список: удалено {removed}, отправлено {len(sent)} сообщ., матчей {len(ids)}'
+    return (f'список: удалено {removed}, отправлено {len(sent)} сообщ., матчей {len(ids)}'
+            + ('' if show else ' (в фоне — не публикуется)'))
 
 
 def extra_messages(store: J.Store) -> list[tuple[int, int]]:
