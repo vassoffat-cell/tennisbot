@@ -126,3 +126,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186525,2026-11-10,Stockholm,Bybit Stockholm Open,Round 1,1,0,208029,200267,Holger Rune,Zizou Bergs,6-3 6-4,STATUS_FINAL
 186541,2026-11-10,Stockholm,Bybit Stockholm Open,Round 2,2,0,210506,207678,Alex Michelsen,Juan Manuel Cerundolo,6-3 6-2,STATUS_FINAL
 186543,2026-11-10,Stockholm,Bybit Stockholm Open,Round 2,2,0,207518,210389,Lorenzo Musetti,Toby Samuel,6-1 6-4,STATUS_FINAL
+186540,2026-11-11,Stockholm,Bybit Stockholm Open,Round 2,2,0,126214,132283,Alejandro Tabilo,Lorenzo Sonego,7-6 6-7 7-5,STATUS_FINAL
