@@ -21,6 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
+VERSION = 2                                         # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -142,6 +143,18 @@ def run(rt: dict, log: list[str]) -> None:
     first = not rt.get('tips_book')
     days, pages = (30, 30) if first else (3, 4)
     df = load()
+    if rt.get('tips_book_v') != VERSION and not df.empty:          # правила разбора изменились — пересборка из архива
+        rows = []
+        for src in T.TG:
+            for x in _arch(src).values():
+                rows += tips_of(src, dict(id=x['id'], ts=pd.Timestamp(x['ts']), text=x['text']))
+        old = {r.uid: (r.self, r.self_ts) for r in df.itertuples(index=False)}
+        df = pd.DataFrame(rows, columns=COLS)
+        for i, u in enumerate(df.uid):
+            if u in old and old[u][0] and not df.at[i, 'self']:
+                df.loc[i, ['self', 'self_ts']] = list(old[u])
+        log.append(f'👥 книга: пересборка v{VERSION} — {len(df)} прогнозов')
+    rt['tips_book_v'] = VERSION
     idx = {u: i for i, u in enumerate(df.uid)}
     add, upd, stat, req = [], 0, [], 0
     for src, name in T.TG.items():
