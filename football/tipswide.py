@@ -24,6 +24,7 @@ import fespn
 import tips as T
 
 FILE = T.DIR / 'tips_all.csv'
+VERSION = 2                                         # версия разбора: смена → история каналов пересчитывается
 ESPN_DIR = T.DIR / 'espn'
 ALL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={d:%Y%m%d}&limit=1000'
 COLS = ['uid', 'src', 'author', 'post_ts', 'edate', 'espn_id', 'start_utc', 'home', 'away', 'legs', 'label', 'k', 'raw',
@@ -282,9 +283,14 @@ def collect(log: list[str]) -> int:
 
 def backfill(rt: dict, log: list[str], days: int = 30, pages: int = 25) -> None:
     """Разово: история каналов за days дней (веб-лента, страницы по 20 постов) → прогнозы → итоги."""
+    df = load()
+    if rt.get('tips_wide_v') != VERSION:                           # правила разбора изменились — история каналов заново
+        df = df[~df.uid.str.startswith('tg:')]
+        save(df)
+        rt.pop('tips_backfill', None)
+        rt['tips_wide_v'] = VERSION
     if rt.get('tips_backfill'):
         return
-    df = load()
     have = set(df.uid)
     cache: dict = {}
     new, stat = [], []

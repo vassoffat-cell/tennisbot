@@ -266,6 +266,9 @@ def parse_legs(sel: str, home_first: bool | None = None, teams: tuple[str, str] 
         if m:
             legs.append(('1X2', 'H' if m.group(1) == '1' else 'A', ''))
             continue
+        if side and re.search(r'не\s+проигра', p):                 # «Брага не проиграет» — двойной шанс
+            legs.append(('DC', '1X' if side == '1' else 'X2', ''))
+            continue
         if not natural:                                           # строка без пометки «Ставка:» — только краткая запись
             continue
         if re.search(r'\bничь|^x$', p):

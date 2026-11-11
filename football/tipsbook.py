@@ -185,6 +185,11 @@ def run(rt: dict, log: list[str]) -> None:
 
 
 # ------------------------------------------------------------------ учёт
+def _key(s: str) -> str:
+    """Ключ строки ставки для сверки книги с итогами tipswide: только буквы и цифры, первые 20."""
+    return re.sub(r'[^0-9a-zа-яё]', '', str(s).lower())[:20]
+
+
 def stats() -> pd.DataFrame:
     """Канал × вид: прогнозов, с отметкой, угадано по отметкам; честность — совпадение отметок с нашим итогом (футбол)."""
     import tipswide as W
@@ -193,11 +198,12 @@ def stats() -> pd.DataFrame:
         return pd.DataFrame()
     w = W.load()
     w = w[w.result.isin(['W', 'L', 'P']) & w.uid.str.startswith('tg:')]
-    fact = {(r.uid.split(':')[1], r.uid.split(':')[2]): r.result for r in w.itertuples(index=False)}
+    fact = {(r.uid.split(':')[1], r.uid.split(':')[2], _key(r.raw)): r.result for r in w.itertuples(index=False)}
     rows = []
     for (src, sp), g in d.groupby(['src', 'sport']):
         m = g[g.self.isin(['W', 'L'])]
-        chk = [(r.self, fact[(src, r.post_id)]) for r in m.itertuples(index=False) if (src, r.post_id) in fact]
+        chk = [(r.self, fact[(src, r.post_id, _key(r.pick))]) for r in m.itertuples(index=False)
+               if (src, r.post_id, _key(r.pick)) in fact]
         rows.append(dict(src=src, sport=sp, name=T.TG.get(src, src), n=len(g), nm=len(m), won=int((m.self == 'W').sum()),
                          chk=len(chk), ok=sum(a == b for a, b in chk)))
     return pd.DataFrame(rows).sort_values(['n'], ascending=False)
