@@ -423,16 +423,9 @@ def ops_rows(dp: pd.DataFrame) -> list:
     """Пакет №3 в таблицу: замены ставки дня, скриншоты, принятия, отдача по кф 1xBet, выгодные (цель — скриншотов 0)."""
     if not len(dp):
         return []
-    days = dp.date.astype(str).nunique()
-    ch = dp.changes.map(J.num).fillna(0)
-    out = [RT.row(' дни с заменой', int((ch > 0).sum()), days)]
+    out = []                                                    # дни с правкой ⭐1 — в EXTRA_OPS (dpcore.changes_rows)
     if 'screenshots' in dp.columns:
         out.append((' скриншотов', str(int(dp.screenshots.map(J.num).fillna(0).sum())), '', ''))
-    if 'accepted' in dp.columns:
-        acc = dp.accepted.astype(str)
-        asked = int(acc.isin(['yes', 'no']).sum())
-        if asked:
-            out.append(RT.row(' принято', int((acc == 'yes').sum()), asked))
     if 'k' in dp.columns:
         d = dp[dp.k.map(J.num).notna() & dp.result.astype(str).isin(['W', 'L', 'P'])]
         if len(d):
@@ -455,7 +448,7 @@ def ops_rows(dp: pd.DataFrame) -> list:
     if 'rank' in dp.columns:                                    # 11.11: доп. ставки ⭐2/⭐3 и синтез с каперами
         ex = dp[wl & dp['rank'].astype(str).isin(['2', '3'])]
         if len(ex):
-            out.append(RT.row(' ⭐2–3 доп.', int((ex.result.astype(str) == 'W').sum()), len(ex)))
+            out.append(RT.row(' ➕ новые линии', int((ex.result.astype(str) == 'W').sum()), len(ex)))
     for col, ru in (('fire', ' 🔥 с каперами'), ('clash', ' ⚔️ против каперов')):
         if col in dp.columns:
             d = dp[wl & (dp[col].map(J.num) == 1)]

@@ -360,12 +360,19 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
             q = fx[fx.pick.astype(str) == pk]
             if len(q):
                 T.append(RT.row(ru, q.won.sum(), len(q), RT.pct(q.p.mean(), 0) + '%'))
-    if dp is not None and len(dp):                         # ⭐ ставка дня: итоговая, доп., заменённые
+    if dp is not None and len(dp):                         # ⭐ ставка дня: итоговая, новые линии, правки первого приговора
         rr = HP.rows(dp, (d0 or day) if day is not None else None, day)
-        for k, lab in (('main', '⭐ Ставка дня'), ('extra', ' ⭐2–3'), ('replaced', ' 🔁 заменённые')):
+        for k, lab in (('main', '⭐ Ставка дня'), ('extra', ' ➕ новые линии')):
             w, n, pm = rr.get(k, (0, 0, 0.0))
             if n:
                 T.append(RT.row(lab, w, n, RT.pct(pm, 0) + '%'))
+        ed, nd = rr.get('days', (0, 0))
+        if nd:
+            sh = ed / nd
+            T.append(RT.row(' ✏️ дни с правкой', ed, nd, mark='🟢' if sh <= 0.2 else '🟡' if sh <= 0.4 else '🔴'))
+        g, b = rr.get('who', (0, 0))
+        if g + b:
+            T.append(RT.row(' права итоговая', g, g + b))
     T.append(('До выводов', '', '', ''))
     T.append(RT.row(' калибровка', min(len(L), CALIB_PRIOR), CALIB_PRIOR))
     for mk, (k, n) in kc.items():

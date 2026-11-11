@@ -1,13 +1,16 @@
-"""⭐ Хоккей · ставка дня — по правилам тенниса и футбола (dpcore), отдельным сообщением в «Заметки Т».
+"""⭐ Хоккей · ставка дня — те же правила, что у тенниса и футбола (dpcore.py, решение пользователя 11.11.2026 23:27).
 
-Хоккейные сутки 12:00 → 12:00 Ташкента (hrun.hday). Публикация — первым прогоном суток (12:07, вместе с отчётом).
-Кандидат: показываемая линия публичной лиги, матч суток ещё не начался, P 0,65–0,80 (уверенно, кф ≥ 1,25 — правило проекта).
-Порядок: 🔥 (капер ставит то же) → без ⚔️ (капер против) → ступень (🟢/🟡) → нижняя граница P.
-До 3 ставок в сутки (⭐1 + ⭐2/⭐3 — другие матчи, только 🟢 или 🔥, без ⚔️).
-Замена ⭐1 — только до начала её матча и только по каперам (как в теннисе — «в любое время суток»):
-  у текущей ⚔️ и есть кандидат без ⚔️; или кандидат 🔥 при текущей без 🔥 и P ниже не более чем на 3 п.п.
-Заменённая ставка остаётся в листе (status «замена») и тоже получает итог → в отчёте видно, помогла ли замена.
-Кнопок ✅/🔄 нет: их разбирает Apps Script теннисного бота (dp:yes/dp:no) — общие кнопки сбили бы теннисную ставку.
+Хоккейные сутки 12:00 → 12:00 Ташкента (hrun.hday).
+  1. Утро суток (первый прогон, 12:07): ⭐1 — лучшая уверенная линия, отдельное закреплённое сообщение («первый приговор»).
+  2. В течение суток, до начала матча ставки, по каперам (🔥/⚔️) или сравнению (пересчёт модели):
+     • лучшая линия ТОГО ЖЕ матча → правка: сообщение ставки обновляется «мнение изменилось: было → стало (причина)»,
+       короткое уведомление; прежняя версия остаётся в листе (status «правка») и тоже получает итог;
+     • лучший кандидат ДРУГОГО матча (другой игры, лиги) → новая ставка ⭐2 / ⭐3 — отдельное закреплённое сообщение.
+     «Лучше»: у текущей ⚔️, у новой нет; у новой 🔥, у текущей нет, P ниже не более чем на 3 п.п.; ступень выше;
+     та же ступень и нижняя граница P выше на ≥ 2 п.п.
+  3. После начала матча ставка — замок. Новые сутки — закрепы прошлых ставок сняты, уведомления удалены.
+Кандидат: показываемая линия публичной лиги, P 0,65–0,80 (кф ≥ 1,25 — правило проекта), матч суток не начался.
+Отчёт: ⭐1 итоговая, ➕ новые линии, ✏️ дни с правкой ⭐1 (чем реже, тем лучше), права итоговая / первая. Кнопок нет.
 Лист hk_day_pick таблицы Tennis.
 """
 from __future__ import annotations
@@ -67,18 +70,21 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
     return sorted(out, key=lambda c: (-c['fire'], c['clash'], -c['tier'], -c['p_low'], -c['p']))
 
 
-def _choose(cands: list[dict]) -> list[dict]:
-    if not cands:
-        return []
-    first = next((c for c in cands if not c['clash']), cands[0])
-    picks, games = [first], {first['id']}
-    for c in cands:
-        if len(picks) >= MAX_PICKS:
-            break
-        if c['id'] in games or c['clash'] or not (c['tier'] >= 3 or c['fire']):
-            continue
-        picks.append(c); games.add(c['id'])
-    return picks
+def better(a: dict, b: dict | None) -> str:
+    """Причина, по которой кандидат a лучше текущей ставки b ('' — не лучше)."""
+    if not b:
+        return 'сравнение'
+    if b.get('clash') and not a.get('clash'):
+        return 'каперы против (⚔️)'
+    if a.get('clash'):
+        return ''
+    if a.get('fire') and not b.get('fire') and a['p'] >= b['p'] - 0.03:
+        return 'каперы за (🔥)'
+    if a['tier'] > b['tier']:
+        return 'сравнение (ступень выше)'
+    if a['tier'] == b['tier'] and a['p_low'] >= b['p_low'] + 0.02:
+        return f"сравнение (P +{(a['p_low'] - b['p_low']) * 100:.0f} п.п.)"
+    return ''
 
 
 def _line(c: dict, e) -> str:
@@ -88,16 +94,11 @@ def _line(c: dict, e) -> str:
             f"<b>{e(c['label'])} — {c['p'] * 100:.0f}%</b> · честный кф {k}{syn}")
 
 
-def _text(day, picks: list[dict], note: str = '') -> str:
+def _text(day, c: dict, rank: int, hist: list[str]) -> str:
     e = notify.esc
-    out = [f"⭐ <b>Хоккей · ставка дня {day:%d.%m}</b>",
-           _line(picks[0], e)]
-    if len(picks) > 1:
-        out.append('\n⭐ <b>Ещё уверенные</b>')
-        out += [f"⭐{i + 2} " + _line(c, e) for i, c in enumerate(picks[1:])]
+    out = [f"⭐{rank} <b>Хоккей · ставка дня {day:%d.%m}</b>", _line(c, e)]
+    out += [e(h) for h in hist]
     out.append('<i>линия — основное время; ставка в плюс, если кф букмекера выше честного; 🔥/⚔️ — капер за/против</i>')
-    if note:
-        out.append(f'🔁 {e(note)}')
     return '\n'.join(out)
 
 
@@ -108,55 +109,90 @@ def _row(day, rank: int, c: dict, status: str = '', reason: str = '') -> dict:
                 reason=reason, result='', settled='', created=J.now_utc())
 
 
+def _publish(day, c: dict, rank: int, hist: list[str]) -> dict:
+    x = dict(c, rank=rank, hist=list(hist))
+    x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, rank, x['hist'])])]
+    notify.pin([tuple(m) for m in x['msgs']])
+    return x
+
+
 def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, now, tier_fn, log: list[str]) -> None:
+    """Каждая ставка — отдельное закреплённое сообщение; rt['hk_dp'] = {date, picks: [...], notes: [...]}."""
     st = rt.get('hk_dp') or {}
+    loc = now + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
     cands = candidates(items, tp, leagues, lo, hi, now, tier_fn)
-    if st.get('date') != str(day):
-        picks = _choose(cands)
-        if not picks:
-            log.append(f'⭐🏒 {day:%d.%m}: нет уверенных кандидатов ({len(cands)})')
+    if st.get('date') != str(day):                           # новые сутки: снять закрепы прошлых, убрать уведомления
+        old = [tuple(m) for x in st.get('picks', []) for m in x.get('msgs', [])] + [tuple(m) for m in st.get('msgs', [])]
+        if old:
+            notify.pin(old, on=False)
+        notify.delete([tuple(m) for m in st.get('notes', [])])
+        st = dict(date=str(day), picks=[], notes=[])
+        rt['hk_dp'] = st
+        first = next((c for c in cands if not c['clash']), cands[0] if cands else None)
+        if not first:
+            log.append(f'⭐🏒 {day:%d.%m}: нет уверенных кандидатов')
             return
-        msgs = notify.send_blocks([_text(day, picks)])
-        store.append('hk_day_pick', [_row(day, i + 1, c) for i, c in enumerate(picks)])
-        rt['hk_dp'] = dict(date=str(day), msgs=[list(m) for m in msgs], picks=picks, log=[])
-        log.append(f"⭐🏒 {day:%d.%m}: {picks[0]['label']} {picks[0]['home']}–{picks[0]['away']} "
-                   f"P {picks[0]['p']:.2f}, всего {len(picks)}")
+        st['picks'] = [_publish(day, first, 1, [])]
+        store.append('hk_day_pick', [_row(day, 1, first)])
+        log.append(f"⭐🏒 {day:%d.%m}: ⭐1 {first['label']} {first['home']}–{first['away']} P {first['p']:.2f}")
         return
     picks = st.get('picks') or []
-    if not picks or pd.Timestamp(picks[0]['start_utc']) <= now:
-        return                                                    # матч начался — замок
-    cur = picks[0]
-    cur['fire'], cur['clash'] = _syn(cur, tp)
-    alt = [c for c in cands if (c['id'], c['slot']) != (cur['id'], cur['slot'])]
-    new, reason = None, ''
-    if cur['clash']:
-        new = next((c for c in alt if not c['clash']), None); reason = 'каперы против (⚔️)'
-    elif not cur['fire']:
-        new = next((c for c in alt if c['fire'] and not c['clash'] and c['p'] >= cur['p'] - 0.03), None); reason = 'каперы за (🔥)'
-    if new is None:
+    if st.get('msgs'):                                       # переход 11.11: общее сообщение → каждая ставка отдельным закрепом
+        notify.delete([tuple(m) for m in st.pop('msgs')])
+        picks = [_publish(day, x, i + 1, x.get('hist', [])) for i, x in enumerate(picks)]
+        st['picks'] = picks
+    if not picks:                                            # утром кандидатов не было — первая появившаяся = ⭐1
+        first = next((c for c in cands if not c['clash']), None)
+        if first:
+            st['picks'] = [_publish(day, first, 1, [f'➕ появилась в {loc:%H:%M}'])]
+            store.append('hk_day_pick', [_row(day, 1, first, reason='новая: появилась линия')])
+            log.append(f"⭐🏒 ⭐1 появилась: {first['label']}")
+        rt['hk_dp'] = st
         return
     dp = store.read('hk_day_pick')
-    ix = [i for i, r in dp.iterrows() if str(r.date) == str(day) and str(r.id) == str(cur['id'])
-          and int(_num(r.slot)) == int(cur['slot']) and _blank(r.status)] if len(dp) else []
-    if ix:
-        dp.loc[ix, ['status', 'reason']] = ['замена', reason]
-        store.update('hk_day_pick', dp.loc[ix], ['status', 'reason'])
-    picks = [new] + [c for c in picks[1:] if c['id'] != new['id']]
-    dp = store.read('hk_day_pick')
-    jx = [i for i, r in dp.iterrows() if str(r.date) == str(day) and str(r.id) == str(new['id'])
-          and int(_num(r.slot)) == int(new['slot']) and _blank(r.status)] if len(dp) else []
-    if jx:                                                        # новая ⭐1 была ⭐2/⭐3 — повышение, без дубля
-        dp.loc[jx, ['rank', 'reason']] = [1, reason]
-        store.update('hk_day_pick', dp.loc[jx], ['rank', 'reason'])
-    else:
-        store.append('hk_day_pick', [_row(day, 1, new, reason=reason)])
-    notify.delete([tuple(m) for m in st.get('msgs', [])])
-    note = f"замена {now + pd.Timedelta(hours=C.TZ_OFFSET_HOURS):%H:%M}: было {cur['label']} {cur['home']}–{cur['away']} — {reason}"
-    msgs = notify.send_blocks([_text(day, picks, note)])
-    st.update(msgs=[list(m) for m in msgs], picks=picks)
-    st.setdefault('log', []).append(note)
+    for x in picks:                                          # правки: лучшая линия того же матча, до начала матча
+        if pd.Timestamp(x['start_utc']) <= now:
+            continue
+        same = [c for c in cands if str(c['id']) == str(x['id'])]
+        if not same:
+            continue
+        mine = next((c for c in same if int(c['slot']) == int(x['slot'])), None)
+        if mine:
+            x['fire'], x['clash'] = mine['fire'], mine['clash']
+        top = same[0]
+        why = better(top, mine or x) if int(top['slot']) != int(x['slot']) else ''
+        if not why:
+            continue
+        r = int(x['rank'])
+        ix = [i for i, q in dp.iterrows() if str(q.date) == str(day) and str(q.id) == str(x['id'])
+              and int(_num(q.slot)) == int(x['slot']) and _blank(q.status)] if len(dp) else []
+        if ix:
+            dp.loc[ix, ['status', 'reason']] = ['правка', why]
+            store.update('hk_day_pick', dp.loc[ix], ['status', 'reason'])
+        store.append('hk_day_pick', [_row(day, r, top, reason=f'правка: {why}')])
+        h = f"✏️ мнение изменилось в {loc:%H:%M}: было {x['label']} {x['p'] * 100:.0f}% → {top['label']} ({why})"
+        msgs, hist = x.get('msgs', []), list(x.get('hist', [])) + [h]
+        x.clear(); x.update(dict(top, rank=r, hist=hist, msgs=msgs, edits=int(len([q for q in hist if q.startswith('✏️')]))))
+        notify.edit([tuple(m) for m in msgs], _text(day, x, r, hist), None)
+        st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_blocks(
+            [f"✏️ <b>Хоккей · ставка дня ⭐{r}: мнение изменилось</b> ({notify.esc(why)})\n"
+             f"{notify.esc(h)}\n<i>сообщение ⭐{r} в закрепе обновлено</i>"])]
+        log.append(f'⭐🏒 ⭐{r} правка: {why}')
+    if len(picks) < MAX_PICKS:                               # новая ставка: другой матч лучше ⭐1 (одна за прогон)
+        used = {str(x['id']) for x in picks}
+        main = picks[0]
+        for c in cands:
+            if str(c['id']) in used:
+                continue
+            why = better(c, main)
+            if why:
+                r = len(picks) + 1
+                picks.append(_publish(day, c, r, [f'➕ новая линия дня в {loc:%H:%M}: {why} (лучше ⭐1 {main["label"]})']))
+                store.append('hk_day_pick', [_row(day, r, c, reason=f'новая: {why}')])
+                log.append(f"⭐🏒 ⭐{r} новая: {c['label']} ({why})")
+                break
+    st['picks'] = picks
     rt['hk_dp'] = st
-    log.append(f'⭐🏒 {note} → {new["label"]}')
 
 
 def settle(store: J.Store, games: pd.DataFrame) -> int:
@@ -178,19 +214,31 @@ def settle(store: J.Store, games: pd.DataFrame) -> int:
 
 
 def rows(dp: pd.DataFrame, d0, d1) -> dict:
-    """Итоги за хоккейные сутки d0…d1: ⭐1 (итоговая), ⭐2–3, заменённые."""
+    """Итоги за хоккейные сутки d0…d1: ⭐1 итоговая, ➕ новые линии, ✏️ дни с правкой ⭐1, права итоговая / первая."""
     if not len(dp):
         return {}
     x = dp.copy()
     x['d'] = pd.to_datetime(x.date, errors='coerce').dt.date
     if d0 is not None:
         x = x[(x.d >= d0) & (x.d <= d1)]
-    x = x[x.result.astype(str).isin(['W', 'L'])].copy()
     if not len(x):
         return {}
+    rk = x['rank'].map(_num)
+    st = x.status.astype(str)
+    days = x[rk == 1].date.astype(str).nunique()
+    edays = x[(rk == 1) & (st == 'правка')].date.astype(str).nunique()
+    out = {'days': (edays, days)}
+    wl = x.result.astype(str).isin(['W', 'L'])
     x['won'] = (x.result.astype(str) == 'W').astype(int)
     x['p'] = x.p.map(_num)
-    act = x[x.status.map(_blank)]
-    r1, r23, rep = act[act['rank'].map(_num) == 1], act[act['rank'].map(_num) > 1], x[x.status.astype(str) == 'замена']
-    return {k: (int(v.won.sum()), len(v), float(v.p.mean()) if len(v) else 0.0) for k, v in
-            (('main', r1), ('extra', r23), ('replaced', rep))}
+    act = x[wl & x.status.map(_blank)]
+    for k, v in (('main', act[act['rank'].map(_num) == 1]), ('extra', act[act['rank'].map(_num) > 1])):
+        out[k] = (int(v.won.sum()), len(v), float(v.p.mean()) if len(v) else 0.0)
+    good = bad = 0                                           # первая версия против итоговой (где исходы разные)
+    fin = {(str(d), int(_num(r))): str(q) for d, r, q, s_ in zip(x.date, x['rank'], x.result, x.status) if _blank(s_)}
+    for q in x[(st == 'правка') & wl].itertuples(index=False):
+        b = fin.get((str(q.date), int(_num(q.rank))))
+        if b in ('W', 'L') and b != str(q.result):
+            good += b == 'W'; bad += str(q.result) == 'W'
+    out['who'] = (good, bad)
+    return out
