@@ -35,6 +35,7 @@ from hockey import hcappers as HC
 from hockey import hdata as HD
 from hockey import hlines as HL
 from hockey import hmodel as HM
+from hockey import hpick as HP
 
 LEAGUES = ('NHL', 'KHL')
 LEAGUE_RU = {'NHL': 'НХЛ', 'KHL': 'КХЛ'}
@@ -311,7 +312,7 @@ def _shadow(gf: pd.DataFrame, ld: pd.DataFrame, lg: str, day, d0) -> str:
 
 
 def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, kc: dict, kprev: dict, off: dict,
-           d0: dt.date | None = None, tp: pd.DataFrame | None = None) -> list[str]:
+           d0: dt.date | None = None, tp: pd.DataFrame | None = None, dp: pd.DataFrame | None = None) -> list[str]:
     """Отчёт: таблица «Линия (цель) | Кол-во | %», сводка-таблица, полный список матчей с линиями (суточный) / по типу (неделя)."""
     e = notify.esc
     gf_all, ld_all = gf, ld
@@ -359,6 +360,12 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
             q = fx[fx.pick.astype(str) == pk]
             if len(q):
                 T.append(RT.row(ru, q.won.sum(), len(q), RT.pct(q.p.mean(), 0) + '%'))
+    if dp is not None and len(dp):                         # ⭐ ставка дня: итоговая, доп., заменённые
+        rr = HP.rows(dp, (d0 or day) if day is not None else None, day)
+        for k, lab in (('main', '⭐ Ставка дня'), ('extra', ' ⭐2–3'), ('replaced', ' 🔁 заменённые')):
+            w, n, pm = rr.get(k, (0, 0, 0.0))
+            if n:
+                T.append(RT.row(lab, w, n, RT.pct(pm, 0) + '%'))
     T.append(('До выводов', '', '', ''))
     T.append(RT.row(' калибровка', min(len(L), CALIB_PRIOR), CALIB_PRIOR))
     for mk, (k, n) in kc.items():
@@ -460,15 +467,22 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
         print('\n\n'.join(list_blocks(items, tp)))
         return []
     log.append(publish(rt, items, tp))
+    dp = None
+    try:                                                  # ⭐ ставка дня хоккея (hpick.py)
+        HP.settle(store, games)
+        HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log)
+        dp = store.read('hk_day_pick')
+    except Exception as ex:
+        log.append(f'⭐🏒 сбой {ex.__class__.__name__}: {ex}')
     gf, ld = store.read('hk_games'), store.read('hk_lines')
     kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
     if due:
-        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}', yday, kcal, kprev, off, tp=tp))
+        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}', yday, kcal, kprev, off, tp=tp, dp=dp))
         rt['hk_last_daily'] = str(yday)
         log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен')
         if yday.weekday() == 6:                           # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
             d0 = yday - dt.timedelta(days=6)
-            notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp))
+            notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp))
             log.append('🏒 недельный отчёт отправлен')
-    txt = report(gf, ld, '🏒 Хоккей · всё время', None, kcal, kprev, off, tp=tp)[0]
+    txt = report(gf, ld, '🏒 Хоккей · всё время', None, kcal, kprev, off, tp=tp, dp=dp)[0]
     return [dict(key='hk', kind='hk', title='🏒 Хоккей', text=txt, updated=J.now_utc())]
