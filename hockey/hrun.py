@@ -226,6 +226,17 @@ def _tier(p_low: float) -> int:
     return 3 if p_low >= 0.70 else 2 if p_low >= 0.65 else 1
 
 
+# Тотал фикс. КХЛ 3,5 (решение 11.11 23:15): модель различает голевые матчи — бэктест 2024/25 (n 869) по четвертям P:
+# 70% / 76% / 77% / 85% факт «больше» → 🟢 только при P ≥ 0,75, иначе ⚪. НХЛ 4,5: четверти 69–73% — без отбора (по p_low).
+KHL_TOT_GREEN = 0.75
+
+
+def _ltier(x: dict, league: str) -> int:
+    if x['market'] == 'TOT' and league == 'KHL':
+        return 3 if float(x['p']) >= KHL_TOT_GREEN else 1
+    return _tier(float(x['p_low']))
+
+
 def list_blocks(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame | None = None) -> list[str]:
     items = [t for t in items if t[0]['league'] in public()]
     if not items:
@@ -239,9 +250,12 @@ def list_blocks(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame | None = 
         out = [f"🕒 <b>{e(when)}</b> · <b>{e(row['home'])}</b> — <b>{e(row['away'])}</b>",
                f"🎯 Победа с ОТ: <b>{'П1' if k == 0 else 'П2'} — {max(row['p_ml'], 1 - row['p_ml']) * 100:.0f}%</b>"]
         for x in sorted([x for x in lns if int(x['shown']) and x['market'] != 'ML'],
-                        key=lambda x: (-_tier(float(x['p_low'])), -float(x['p']), x['slot'])):
-            t = e(f"{x['label']} — {float(x['p']) * 100:.0f}%")
-            out.append({3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[_tier(float(x['p_low']))])
+                        key=lambda x: (-_ltier(x, row['league']), -float(x['p']), x['slot'])):
+            t = f"{x['label']} — {float(x['p']) * 100:.0f}%"
+            if x['market'] == 'TOT':                       # честный кф: ставка в плюс, только если букмекер даёт больше
+                t += f" · честный кф {1 / max(float(x['p']), 1e-6):.2f}".replace('.', ',')
+            t = e(t)
+            out.append({3: f'🟢 <b>{t}</b>', 2: f'🟡 {t}', 1: f'⚪ <i>{t}</i>'}[_ltier(x, row['league'])])
         out += [e(x) for x in HC.for_game(tp if tp is not None else pd.DataFrame(), row['id'])]
         blocks.setdefault(row['league'], []).append('\n'.join(out))
     wend = window_end(_now()) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
