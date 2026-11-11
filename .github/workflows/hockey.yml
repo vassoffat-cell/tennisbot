@@ -1,0 +1,34 @@
+name: hockey
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: hockey
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: hockey
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - run: pip install -q pandas numpy scipy
+      - name: History
+        working-directory: hockey
+        run: python hdata.py
+        env:
+          APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
+      - name: Save data
+        if: always()
+        run: |
+          git config user.name "hockey-bot"
+          git config user.email "hockey-bot@users.noreply.github.com"
+          git add hockey/data
+          git diff --cached --quiet && exit 0
+          git commit -m "Hockey data $(date -u +%F)"
+          ok=0; for i in 1 2 3; do (git pull --rebase -X theirs --autostash origin main || { git rebase --abort; false; }) && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]
