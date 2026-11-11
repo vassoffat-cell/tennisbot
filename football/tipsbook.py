@@ -296,7 +296,56 @@ def ocr_round(rt: dict, df: pd.DataFrame, log: list[str]) -> pd.DataFrame:
     left = sum(1 for src in OCR_CH for x in _arch(src).values()
                if x.get('photos') and 'ocr' not in x and pd.Timestamp(x['ts']) >= edge)
     log.append(f'👥 OCR: постов {done}, прогнозов +{len(add)}, футбол на табло +{len(wide)}, осталось {left}')
+    try:
+        alert(rt, df, log)
+    except Exception as e:
+        log.append(f'👥 сигнал: сбой {e.__class__.__name__}')
     return df
+
+
+def _short(s: str, n: int) -> str:
+    s = re.sub(r'\s*\((ж|w)\)', ' Ж', str(s)).strip()
+    return s if len(s) <= n else s[:n - 1].rstrip() + '.'
+
+
+def _pick_short(pick: str, a: str, b: str) -> str:
+    """«авангард ИТБ(2.0)» → «ИТ2Б2», «барселона фора (0)» → «Ф2(0)», «победа ланс» → «П1»."""
+    def side(team: str) -> str:
+        t = team.lower().strip()[:4]
+        return '1' if t and t in a.lower() else '2' if t and t in b.lower() else ''
+    m = re.match(r'(.+?) ИТ([БМ])\(?([\d.]+)\)?', pick)
+    if m and side(m.group(1)):
+        return f"ИТ{side(m.group(1))}{m.group(2)}{float(m.group(3)):g}"
+    m = re.match(r'(.+?) фора \(?([+-]?[\d.]+)\)?', pick)
+    if m and side(m.group(1)):
+        return f"Ф{side(m.group(1))}({float(m.group(2)):+g})"
+    m = re.match(r'победа (.+)', pick)
+    if m and side(m.group(1)):
+        return f"П{side(m.group(1))}"
+    return pick.replace('(', '').replace(')', '').replace('обе забьют да', 'ОЗ да')
+
+
+def alert(rt: dict, df: pd.DataFrame, log: list[str]) -> None:
+    """📷 Сигнал в футбольный бот: новые купоны Green Line, показанные до матча (за 6 ч), — таблица + ROI канала по табло."""
+    import notify
+    import rtable
+    import tipswide as W
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
+    sent = set(rt.get('gl_alerted', []))
+    d = df[df.src.isin(OCR_CH) & (df.seen == 'pre') & (df.self == '')
+           & (pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)) & ~df.uid.isin(sent)]
+    if d.empty:
+        return
+    lines = ['Матч            Ставка    кф']
+    for r in d.itertuples(index=False):
+        lines.append(f"{_short(r.a, 7):>7}–{_short(r.b, 7):<7} {_short(_pick_short(r.pick, r.a, r.b), 9):<9} {r.k or '—':>4}")
+    st = W.stats()
+    g = st[st.src.isin(OCR_CH)] if len(st) else st
+    roi = (f"ROI по табло {'+' if g.roi.iloc[0] > 0 else ''}{rtable.pct(g.roi.iloc[0], 0)}±{rtable.pct(g.se.iloc[0], 0)}% "
+           f"· {int(g.won.iloc[0])}/{int(g.n.iloc[0])}") if len(g) and g.nk.iloc[0] else 'ROI копится'
+    notify.send_blocks(['📷 <b>Green Line · новый купон</b>\n<pre>' + notify.esc('\n'.join(lines)) + '</pre>\n<i>' + roi + '</i>'])
+    rt['gl_alerted'] = (list(sent) + list(d.uid))[-300:]
+    log.append(f'👥 сигнал Green Line: {len(d)}')
 
 
 def slip_rows(src: str, p: dict) -> list[dict]:
