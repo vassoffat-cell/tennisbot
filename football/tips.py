@@ -120,7 +120,7 @@ ALIAS = {
     'айнтрахт': 'frankfurt', 'вольфсбург': 'wolfsburg', 'фрайбург': 'freiburg', 'хоффенхайм': 'hoffenheim',
     'штутгарт': 'stuttgart', 'унион': 'union berlin', 'вердер': 'werder', 'гамбург': 'hamburg', 'санкт-паули': 'pauli',
     'хайденхайм': 'heidenheim', 'аугсбург': 'augsburg', 'майнц': 'mainz', 'кельн': 'koln',
-    'псж': 'paris saint-germain', 'пари сен-жермен': 'paris saint-germain', 'марсель': 'marseille', 'лион': 'lyon',
+    'псж': 'paris saint', 'пари сен-жермен': 'paris saint', 'марсель': 'marseille', 'лион': 'lyon',
     'монако': 'monaco', 'лилль': 'lille', 'ренн': 'rennes', 'ланс': 'lens', 'нант': 'nantes', 'страсбур': 'strasbourg',
     'страсбург': 'strasbourg', 'тулуза': 'toulouse', 'брест': 'brest', 'лорьян': 'lorient', 'мец': 'metz', 'ницца': 'nice',
     'осер': 'auxerre', 'анже': 'angers', 'гавр': 'havre', 'париж': 'paris fc',
@@ -227,6 +227,14 @@ def parse_legs(sel: str, home_first: bool | None = None, teams: tuple[str, str] 
             pos = find_teams(part, list(teams))
             if len(pos) == 1:
                 side = '1' if teams[0] in pos else '2'
+        m = re.search(r'индивидуальн\w*\s+тотал\w*\s*([12])-?\w*\s*\(?\s*' + NUM + r'\s*\)?\s*(больше|меньше|б|м)(?![а-я])', p)
+        if m:
+            legs.append((f'IT{m.group(1)}', 'O' if m.group(3)[0] == 'б' else 'U', _num(m.group(2))))
+            continue
+        m = re.search(r'инд\w*\.?\s*тотал\w*\s*(больше|меньше)\s*\(?\s*' + NUM, p)
+        if m and side:
+            legs.append((f'IT{side}', 'O' if m.group(1)[0] == 'б' else 'U', _num(m.group(2))))
+            continue
         m = re.search(r'\bи\s*т\s*([12])?\s*([бм])[а-я]*\s*([12])?\s*\(?\s*' + NUM, p)
         if m:
             d = m.group(1) or m.group(3) or side

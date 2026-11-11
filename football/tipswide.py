@@ -96,8 +96,15 @@ def _same(ru, en) -> bool:
     return any(T._like(w, x) for w in ws for x in toks)
 
 
-def match_pair(a: str, b: str, events: list[dict]) -> tuple[dict, bool] | None:
-    """Единственное событие с обеими командами: (событие, перевёрнуто ли)."""
+def msk_time(text: str) -> int | None:
+    """Время начала из поста «19:30 МСК» → минуты от полуночи UTC."""
+    m = re.search(r'(\d{1,2})[:.](\d{2})\s*\(?мск', text.lower())
+    return ((int(m.group(1)) - 3) * 60 + int(m.group(2))) % 1440 if m else None
+
+
+def match_pair(a: str, b: str, events: list[dict], when: int | None = None) -> tuple[dict, bool] | None:
+    """Единственное событие с обеими командами: (событие, перевёрнуто ли). Несколько (мужчины/женщины с одинаковым
+    названием у ESPN) — выбирается по времени начала из поста (±20 мин)."""
     ra, rb = _ru_info(a), _ru_info(b)
     hits = {}
     for e in events:
@@ -106,6 +113,11 @@ def match_pair(a: str, b: str, events: list[dict]) -> tuple[dict, bool] | None:
             hits[e['id']] = (e, False)
         elif _same(ra, w) and _same(rb, h):
             hits.setdefault(e['id'], (e, True))
+    if len(hits) > 1 and when is not None:
+        def mins(e):
+            t = pd.Timestamp(e['start'])
+            return t.hour * 60 + t.minute
+        hits = {k: v for k, v in hits.items() if min(abs(mins(v[0]) - when), 1440 - abs(mins(v[0]) - when)) <= 20}
     return next(iter(hits.values())) if len(hits) == 1 else None
 
 
@@ -184,7 +196,8 @@ def from_post(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict
         return _single(src, name, p, cache, have)
     evs = _events_around(p['ts'], cache)
     for n, (pos, a, b) in enumerate(ps):
-        hit = match_pair(a, b, evs)
+        frag0 = txt[pos:ps[n + 1][0] if n + 1 < len(ps) else len(txt)]
+        hit = match_pair(a, b, evs, msk_time(frag0))
         if not hit:
             continue
         e, flip = hit
