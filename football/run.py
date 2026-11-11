@@ -823,10 +823,9 @@ def run(dry: bool = False) -> str:
     if daily_due or resend:
         notes = []
         if mp.missed:
-            notes.append(f'ошибка сопоставления (лиги): {", ".join(list(mp.missed)[:8])}')
+            notes.append(f'не опознаны: {len(mp.missed)} {notify.plural(len(mp.missed), "команда", "команды", "команд")} (лог)')
         if mp.out_base:
-            notes.append(f'вне базы (кубки, еврокубки — пропуск штатно): {mp.out_base} '
-                         f'{notify.plural(mp.out_base, "команда", "команды", "команд")}')
+            notes.append(f'вне базы: {mp.out_base} {notify.plural(mp.out_base, "команда", "команды", "команд")} (штатно)')
         last = base.date.max()
         if (loc.normalize() - last).days > 9:
             notes.append(f'football-data по {last:%d.%m}; дальше — результаты и удары ESPN') if not C.FD_FILES_REQUIRED \

@@ -188,6 +188,14 @@ def outcome_alarm(af: pd.DataFrame, rt: dict) -> list[str]:
 LMARK = {'W': '✅', 'L': '❌', 'P': '⚪'}
 
 
+def lab(market: str, label: str) -> str:
+    """Полная запись линии: у тенниса в листе «Б 6.5» / «М 14.5» без рынка → «ИТ1 Б 6.5», «ТМ 14.5»."""
+    t = str(label).strip()
+    if t[:1] in ('Б', 'М'):
+        return {'TOTAL': 'Т', 'TOT': 'Т', 'IT1': 'ИТ1 ', 'IT2': 'ИТ2 '}.get(str(market), '') + t
+    return t
+
+
 def _line_rows(ld: pd.DataFrame) -> dict:
     """Показанные линии по матчу: espn_id → [(метка, линия, P)] — для полного списка в суточном отчёте."""
     out: dict = {}
@@ -198,7 +206,7 @@ def _line_rows(ld: pd.DataFrame) -> dict:
     X = X[[_shown(r) for r in X.itertuples()]]
     for r in X.itertuples():
         res = str(r.result).strip()
-        out.setdefault(r.sid, []).append((LMARK.get(res, '⏳'), str(r.label), J.num(r.p)))
+        out.setdefault(r.sid, []).append((LMARK.get(res, '⏳'), lab(r.market, r.label), J.num(r.p)))
     return out
 
 
@@ -281,7 +289,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     M, L = matches(af), lines(ld)
     today = daily_day or C.wday(pd.Timestamp.now(tz='UTC').tz_localize(None) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS))
     off = off or {}
-    T, tail, worst = [], [], 3
+    T, tail, worst, S = [], [], 3, []
     d7 = (daily_day - pd.Timedelta(days=7).to_pytimedelta()) if daily_day is not None else None
 
     # исход
@@ -352,7 +360,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         if daily_day is not None:
             yy, w = D[D.day == daily_day], D[D.day > d7]
             if len(yy):
-                tail.append(f'⭐ Вчера: {"✅" if yy.won.iloc[-1] else "❌"} {e(yy.label.iloc[-1])}')
+                S.append(('⭐ Вчера', f'{"✅" if yy.won.iloc[-1] else "❌"} {yy.label.iloc[-1]}'))
             T.append(RT.row(' 7 дней', w.won.sum(), len(w)))
     ops = ops_rows(dp)
     if ops and not len(D):
@@ -366,13 +374,17 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     if kcal is not None:
         act = [(mk, v) for mk, v in kcal.items() if v[1] >= C.CALIB_MIN]
         kr = [f'{RT.SHORT.get(mk, mk)} {RT.num((kprev or {}).get(mk, (1.0, 0))[0], 2)}→{RT.num(k, 2)}' for mk, (k, n) in act]
-        tail.append('🧠 k: ' + (' · '.join(kr) if kr else f'1,00 (меньше {C.CALIB_MIN} линий)'))
-    tail += [e(x) for x in (extra or [])]                       # охват: дорасчитано за прошлые дни, ждут результата
+        for mk, (k, n) in act:                                     # k самокалибровки — строкой на рынок
+            S.append((f'k {RT.SHORT.get(mk, mk)}', f'{RT.num((kprev or {}).get(mk, (1.0, 0))[0], 2)}→{RT.num(k, 2)}'))
+        if not act:
+            S.append(('k', f'1,00 (< {C.CALIB_MIN} линий)'))
+    S += [RT.note_row(x) for x in (extra or [])]                # охват: дорасчитано за прошлые дни, ждут результата
     if notes is not None:
-        tail.append('⚠️ Данные: ' + ('; '.join(e(x) for x in notes) if notes else 'ок'))
+        S += [RT.note_row(x) for x in notes] if notes else [('Данные', '✅ ок')]
 
     status = {3: '🟢 цели доказаны', 2: '🟡 цели ещё не доказаны', 1: '🔴 нужен разбор'}[worst]
-    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + '\n'.join(tail) if tail else '')]
+    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + RT.kv(S) if S else '')
+              + ('\n' + '\n'.join(tail) if tail else '')]
     if daily_day is not None:
         blocks += day_lists(af, ld, daily_day, late)
     return blocks
@@ -444,7 +456,7 @@ def week_lines(ld: pd.DataFrame, d0, d1) -> list[str]:
             rows = []
             for r in gd.itertuples():
                 who = f"{str(r.player1).split()[-1]}–{str(r.player2).split()[-1]}"
-                rows.append(f"{LMARK.get(str(r.result).strip(), '⏳')} {e(who)} · {e(str(r.label))} · {fmt(J.num(r.p) * 100)}%")
+                rows.append(f"{LMARK.get(str(r.result).strip(), '⏳')} {e(who)} · {e(lab(r.market, r.label))} · {fmt(J.num(r.p) * 100)}%")
             items.append(f'<b>{day:%d.%m}</b>\n' + '\n'.join(rows))
         out += notify.folded(f'▸ {RT.SHORT.get(mk, mk)} ({len(g)}: {cnt})', items)
     return out

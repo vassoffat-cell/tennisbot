@@ -43,3 +43,32 @@ def render(rows: list[Row], head: tuple[str, str, str] = ('Линия (цель)
 
 SHORT = {'ML': 'Победа', 'HCP': 'Фора', 'AH': 'Фора', 'IT1': 'ИТ1', 'IT2': 'ИТ2', 'TOTAL': 'Тотал', 'TOT': 'Тотал',
          'DC': 'Дв. шанс', 'BTTS': 'Обе забьют'}
+
+
+def kv(rows: list[tuple[str, str]], head: str = 'Сводка', width: int = 35) -> str:
+    """Сводка под таблицей отчёта — тоже таблица (стандарт 11.11): «пункт | значение», ширина ≤ 35, длинное значение — с «…»."""
+    rows = [(str(a), str(b)) for a, b in rows if a or b]
+    if not rows:
+        return ''
+    w1 = min(max(len(a) for a, _ in rows), 15)
+    out = [head, '─' * min(width, w1 + 1 + max(len(b) for _, b in rows))]
+    for a, b in rows:
+        a = a if len(a) <= w1 else a[:w1 - 1] + '…'
+        room = width - w1 - 1
+        b = b if len(b) <= room else b[:room - 1] + '…'
+        out.append(f'{a:<{w1}} {b}')
+    return '<pre>' + notify.esc('\n'.join(out)) + '</pre>'
+
+
+def note_row(x: str) -> tuple[str, str]:
+    """Примечание «название: подробности» → строка сводки (первая буква заглавная, подробности — коротко)."""
+    x = str(x).strip()
+    if ':' in x:
+        a, b = x.split(':', 1)
+    else:
+        a, b = x, ''
+    a = a.strip(' ⏱⏳⚠️🧮').split(' (')[0]
+    w = a.split()
+    a = ' '.join(w[:2]) if len(' '.join(w[:2])) <= 15 else w[0]          # первые два слова, если влезают
+    a = {'Дорасчитано за': 'Дорасчитано'}.get(a, a)
+    return a[:1].upper() + a[1:], b.strip()
