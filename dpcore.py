@@ -92,7 +92,8 @@ def better(a: dict, b: dict | None) -> str:
     if not b:
         return 'сравнение'
     pa, pb = float(a.get('p', 0)), float(b.get('p', 0) or 0)
-    ta, tb = int(a.get('tier', 9)), int(b.get('tier', 9))
+    ta = int(a.get('tier', 9))
+    tb = int(b['tier']) if b.get('tier') not in (None, '') else ta     # ступень неизвестна — по ступени не сравнивать
     if b.get('clash') and not a.get('clash'):
         return 'каперы против (⚔️)'
     if a.get('clash'):
@@ -220,6 +221,10 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         if pd.Timestamp(pk['start_utc']) <= now or not same:
             continue
         mine = next((c for c in same if key(c) == list(pk['key'])), None)
+        if mine and r > 1:                                      # ступень и синтез ⭐2/⭐3 — по свежему расчёту
+            for x in cur.get('extras') or []:
+                if int(x['rank']) == r:
+                    x.update(tier=mine['tier'], fire=mine.get('fire'), clash=mine.get('clash'))
         top = same[0]
         why = 'исправление' if (fix and r == 1) else better(top, mine or _pick_view(pk)) if key(top) != list(pk['key']) else ''
         if not why:
@@ -244,7 +249,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         else:
             for x in cur['extras']:
                 if int(x['rank']) == r:
-                    x.update(_plain(top), key=key(top), match=match_fn(top), edits=int(x.get('edits', 0)) + 1,
+                    x.update(_plain(top), tier=top['tier'], key=key(top), match=match_fn(top), edits=int(x.get('edits', 0)) + 1,
                              hist=list(x.get('hist', [])) + [hist_line])
                     _sheet_row(store, dp, dstr, row_fn(top, dstr, x['edits'], x['hist']), cur, top, rank=r)
                     x['text'] = extra_text(x)
@@ -265,7 +270,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             if not why:
                 continue
             r = len(picks) + 1
-            x = dict(_plain(c), rank=r, key=key(c), match=match_fn(c), why=why, at=f'{loc:%H:%M}', edits=0,
+            x = dict(_plain(c), tier=c['tier'], rank=r, key=key(c), match=match_fn(c), why=why, at=f'{loc:%H:%M}', edits=0,
                      hist=[f'➕ новая линия дня в {loc:%H:%M}: {why} (лучше ⭐1 {cur.get("label", "")})'])
             x['text'] = extra_text(x)
             x['msgs'] = [list(m) for m in notify.send_markup(x['text'], None)]
