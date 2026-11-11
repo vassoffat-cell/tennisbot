@@ -112,7 +112,16 @@ def _publish(day, c: dict, rank: int, hist: list[str]) -> dict:
     x = dict(c, rank=rank, hist=list(hist))
     x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, rank, x['hist'])])]
     notify.pin([tuple(m) for m in x['msgs']])
+    CHANGED[0] = True
     return x
+
+
+CHANGED = [False]                 # ставки хоккея изменились в этом прогоне → autorun обновит кэш кнопки «⭐ Ставка дня»
+
+
+def texts(rt: dict) -> list[str]:
+    """Тексты текущих ставок дня хоккея (🏒1–🏒3) — для кнопки «⭐ Ставка дня» теннисного бота."""
+    return [_text(None, x, int(x['rank']), x.get('hist', [])) for x in (rt.get('hk_dp') or {}).get('picks', [])]
 
 
 def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, now, tier_fn, log: list[str]) -> None:
@@ -177,6 +186,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         msgs, hist = x.get('msgs', []), list(x.get('hist', [])) + [h]
         x.clear(); x.update(dict(top, rank=r, hist=hist, msgs=msgs, edits=int(len([q for q in hist if q.startswith('✏️')]))))
         notify.edit([tuple(m) for m in msgs], _text(day, x, r, hist), None)
+        CHANGED[0] = True
         st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_blocks(
             [f"🏒{r} <b>Хоккей · ставка дня: мнение изменилось</b> ✏️ ({notify.esc(why)})\n"
              f"{notify.esc(h)}\n<i>сообщение 🏒{r} в закрепе обновлено</i>"])]

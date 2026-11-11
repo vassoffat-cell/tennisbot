@@ -414,6 +414,19 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None, xb: dict | No
     return blocks
 
 
+def _daypick_cache(rt: dict) -> str:
+    """Ответ кнопки «⭐ Ставка дня»: ставки тенниса (🎾1–3) и хоккея (🏒1–3), каждая отдельным абзацем."""
+    cur = rt.get('day_pick') or {}
+    out = ([cur.get('text', '')] + [x.get('text', '') for x in (cur.get('extras') or []) if x.get('text')]
+           if cur.get('date') == C.wday(_local()).isoformat() else [])
+    try:
+        from hockey import hpick
+        out += hpick.texts(rt)
+    except Exception as e:
+        print(f'кэш ставки дня хоккея: {e}')
+    return '\n\n'.join(x for x in out if x)
+
+
 def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict, dry: bool = False,
                  extra: list | None = None) -> str:
     """Удалить прошлый список и отправить свежий. Нет матчей — тишина. Звук — только если появились новые матчи."""
@@ -434,8 +447,7 @@ def publish_list(rt: dict, store: J.Store | None, items: list[tuple], off: dict,
     while cache and len(json.dumps(cache, ensure_ascii=False)) > 45000:   # ячейка Google Таблицы — до 50 000 символов
         cache.pop()
     cur_dp = rt.get('day_pick') or {}
-    dpt = ('\n\n'.join([cur_dp.get('text', '')] + [x.get('text', '') for x in (cur_dp.get('extras') or []) if x.get('text')])
-           if cur_dp.get('date') == C.wday(_local()).isoformat() else '')
+    dpt = _daypick_cache(rt)
     store.write_all('tg_cache', pd.DataFrame([dict(key='list', text=json.dumps(cache, ensure_ascii=False), updated=J.now_utc()),
                                               dict(key='daypick', text=dpt, updated=J.now_utc()),
                                               dict(key='daypick_accepted', text='yes',   # кнопок ✅/🔄 больше нет (11.11)
@@ -832,6 +844,11 @@ def run(dry: bool = False) -> str:
     try:                                                               # 🏒 хоккей — отдельными сообщениями в этом же боте
         from hockey import hrun
         hk = hrun.run(store, rt, log, force=resend and not dry, dry=dry)   # свои сутки 12:00 → 12:00
+        from hockey import hpick
+        if hpick.CHANGED[0] and not dry:                          # кнопка «⭐ Ставка дня» — сразу с новой ставкой хоккея
+            tc = store.read('tg_cache')
+            tc.loc[tc.key.astype(str) == 'daypick', 'text'] = _daypick_cache(rt)
+            store.write_all('tg_cache', tc)
         if hk:
             reps = pd.concat([reps, pd.DataFrame(hk)], ignore_index=True)
     except Exception as e:
