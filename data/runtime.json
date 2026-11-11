@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   292
+   295
   ]
  ],
  "list_match_ids": [
@@ -78,17 +78,12 @@
     282
    ]
   ],
-  "ask": [
-   [
-    570704006,
-    291
-   ]
-  ],
+  "ask": [],
   "changes": 1,
   "history": [
    "исправлена ошибка кф в 10:30: было П1 Sonego 41% (Lorenzo Sonego — Alejandro Tabilo)"
   ],
-  "accepted": "",
+  "accepted": "yes",
   "rejected": [],
   "shots": [
    {
@@ -2991,7 +2986,7 @@
    }
   ],
   "screenshots": 1,
-  "text": "⭐ <b>Ставка дня · теннис · 11.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 23:30\n<b>Miomir Kecmanovic — Holger Rune</b>\n<b>П2 Rune</b> — вероятность 70% (1xBet без маржи)\nкф 1xBet 1,39 (скриншот)\n⚠️ Без перевеса · матожидание -3,0%\nисправлена ошибка кф в 10:30: было П1 Sonego 41% (Lorenzo Sonego — Alejandro Tabilo)\n📈 Ставки дня: 2/3 (67%) · с кф: 2, отдача -29.0%",
+  "text": "⭐ <b>Ставка дня · теннис · 11.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 23:30\n<b>Miomir Kecmanovic — Holger Rune</b>\n<b>П2 Rune</b> — вероятность 70% (1xBet без маржи)\nкф 1xBet 1,39 (скриншот)\n⚠️ Без перевеса · матожидание -3,0%\nисправлена ошибка кф в 10:30: было П1 Sonego 41% (Lorenzo Sonego — Alejandro Tabilo)\n📈 Ставки дня: 2/3 (67%) · с кф: 2, отдача -29.0%\n✅ Принята в 10:31",
   "espn_id": "186544",
   "slot": 2,
   "key": [
@@ -3029,8 +3024,8 @@
    "group": "fallback",
    "slot": 2
   },
-  "accepted_at": "09:11",
-  "accepted_shown": false,
+  "accepted_at": "10:31",
+  "accepted_shown": true,
   "extras": [],
   "log": [
    {
