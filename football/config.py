@@ -144,7 +144,9 @@ def window_end_utc(now_utc):
     end = _dt.datetime.combine(wday(loc) + _dt.timedelta(days=1), _dt.time(DAY_START_HOUR))
     return end - _dt.timedelta(hours=TZ_OFFSET_HOURS)
 
-# T32 (11.11.2026, решение пользователя): тотал — одна линия 2,5 («больше или меньше»), всегда показана. Включается после проверки.
-T32_FIXED_TOTAL = False
+# T32 (11.11.2026, решение пользователя): тотал — одна линия 2,5 («больше или меньше»), всегда показана (и при P < 0,55).
+# История (лиги бота, 07.2024–11.2026, n 3999): модель 57,3%, с Pinnacle (A2) 59,8%. Прежняя плавающая линия — 76,9% за счёт
+# далёких значений с низким кф.
+T32_FIXED_TOTAL = True
 FIXED_TOTAL = 2.5
-FIXED_TOTAL_FROM = '2026-11-11 16:00'                                    # UTC
+FIXED_TOTAL_FROM = '2026-11-11 16:40'                                    # UTC
