@@ -2,11 +2,10 @@
  "list_messages": [
   [
    570704006,
-   328
+   332
   ]
  ],
  "list_match_ids": [
-  "186544",
   "187378",
   "187385"
  ],
@@ -2982,7 +2981,7 @@
    }
   ],
   "screenshots": 1,
-  "text": "⭐ <b>Ставка дня · теннис · 11.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 23:30\n<b>Miomir Kecmanovic — Holger Rune</b>\n<b>П2 Rune</b> — вероятность 70% (1xBet без маржи)\nкф 1xBet 1,39 (скриншот)\n⚠️ Без перевеса · матожидание -3,0%\nисправлена ошибка кф в 10:30: было П1 Sonego 41% (Lorenzo Sonego — Alejandro Tabilo)\n📈 Ставки дня: 2/3 (67%) · с кф: 2, отдача -29.0%\n✅ Принята в 10:31",
+  "text": "⭐1 <b>Ставка дня · теннис · 11.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 23:30\n<b>Miomir Kecmanovic — Holger Rune</b>\n<b>П2 Rune</b> — вероятность 70% (1xBet без маржи)\nкф 1xBet 1,39 (скриншот)\n⚠️ Без перевеса · кф 1xBet неизвестен\nисправлена ошибка кф в 10:30: было П1 Sonego 41% (Lorenzo Sonego — Alejandro Tabilo)\n📈 Ставки дня: 2/3 (67%) · с кф: 2, отдача -29.0%",
   "espn_id": "186544",
   "slot": 2,
   "key": [
@@ -3058,7 +3057,9 @@
     "to_key": "",
     "slot": 2
    }
-  ]
+  ],
+  "nokb": true,
+  "sep": true
  },
  "model_version": 4,
  "reported": [
@@ -6321,7 +6322,7 @@
  "hk_list": [
   [
    570704006,
-   329
+   333
   ]
  ],
  "hk_list_ids": [
@@ -6335,12 +6336,6 @@
  "hk_last_daily": "2026-11-10",
  "hk_dp": {
   "date": "2026-11-11",
-  "msgs": [
-   [
-    570704006,
-    330
-   ]
-  ],
   "picks": [
    {
     "id": "nhl:401892690",
@@ -6358,7 +6353,15 @@
     "p_low": 0.7583,
     "tier": 3,
     "fire": 0,
-    "clash": 0
+    "clash": 0,
+    "rank": 1,
+    "hist": [],
+    "msgs": [
+     [
+      570704006,
+      334
+     ]
+    ]
    },
    {
     "id": "nhl:401892692",
@@ -6376,7 +6379,15 @@
     "p_low": 0.7554,
     "tier": 3,
     "fire": 0,
-    "clash": 0
+    "clash": 0,
+    "rank": 2,
+    "hist": [],
+    "msgs": [
+     [
+      570704006,
+      336
+     ]
+    ]
    },
    {
     "id": "nhl:401892695",
@@ -6394,7 +6405,15 @@
     "p_low": 0.743,
     "tier": 3,
     "fire": 0,
-    "clash": 0
+    "clash": 0,
+    "rank": 3,
+    "hist": [],
+    "msgs": [
+     [
+      570704006,
+      338
+     ]
+    ]
    }
   ],
   "log": []
