@@ -27,7 +27,7 @@ while d0 <= test.t.max():
                 ph, pd_, pa = P[i > j].sum(), np.trace(P), P[i < j].sum()
                 row = dict(t=r.t, home=r.home, away=r.away, hg=r.hg, ag=r.ag, hr=r.hg_reg, ar=r.ag_reg, end=r.end,
                            lh=lam[0], la=lam[1], ph=ph, pd=pd_, pa=pa, mh=ph + pd_ * q)
-                for L in (4.5, 5.5, 6.5):
+                for L in (3.5, 4.5, 5.5, 6.5):
                     row[f'po{L}'] = P[(i + j) > L].sum()
                 for x in HL.build(P, q, league, {}):
                     row[f"s{x['slot']}_p"] = x['p']; row[f"s{x['slot']}_sh"] = x['shown']
@@ -43,7 +43,7 @@ print(f'{league} ξ={xi} n={len(R)} | победа с ОТ: угадано {((p 
 reg = np.where(R.hr > R.ar, 0, np.where(R.hr == R.ar, 1, 2)); P3 = R[['ph', 'pd', 'pa']].values
 print(f'  1X2 осн.: угадано {(P3.argmax(1) == reg).mean()*100:.1f}% лл {-np.mean(np.log(P3[np.arange(len(R)), reg])):.4f}; ничьих факт {(reg == 1).mean()*100:.1f}% мод {R.pd.mean()*100:.1f}%')
 tot = R.hr + R.ar
-for L in (4.5, 5.5, 6.5):
+for L in (3.5, 4.5, 5.5, 6.5):
     po = R[f'po{L}']; ov = tot > L; side = po >= .5; pp = np.where(side, po, 1 - po)
     print(f'  тотал {L}: факт Б {ov.mean()*100:.1f}% мод Б {side.mean()*100:.1f}% угадано {(side == ov).mean()*100:.1f}% при {pp.mean()*100:.1f}%')
 for s in range(4, 13):
