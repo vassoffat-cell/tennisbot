@@ -95,7 +95,7 @@ def _line(c: dict, e) -> str:
 
 def _text(day, c: dict, rank: int, hist: list[str]) -> str:
     e = notify.esc
-    out = [f"⭐{rank} <b>Хоккей · ставка дня {day:%d.%m}</b>", _line(c, e)]
+    out = [f"🏒{rank} <b>Хоккей · ставка дня</b>", _line(c, e)]                  # 11.11: единое начало, без даты
     out += [e(h) for h in hist]
     out.append('<i>линия — основное время; ставка в плюс, если кф букмекера выше честного; 🔥/⚔️ — капер за/против</i>')
     return '\n'.join(out)
@@ -125,7 +125,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         if old:
             notify.pin(old, on=False)
         notify.delete([tuple(m) for m in st.get('notes', [])])
-        st = dict(date=str(day), picks=[], notes=[])
+        st = dict(date=str(day), picks=[], notes=[], hdr=True)
         rt['hk_dp'] = st
         first = next((c for c in cands if not c['clash']), cands[0] if cands else None)
         if not first:
@@ -140,6 +140,10 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         notify.delete([tuple(m) for m in st.pop('msgs')])
         picks = [_publish(day, x, i + 1, x.get('hist', [])) for i, x in enumerate(picks)]
         st['picks'] = picks
+    if not st.get('hdr'):                                    # 11.11: единое начало «🏒1 Хоккей · ставка дня» — обновить закрепы
+        for x in picks:
+            notify.edit([tuple(m) for m in x.get('msgs', [])], _text(day, x, int(x['rank']), x.get('hist', [])), None)
+        st['hdr'] = True
     if not picks:                                            # утром кандидатов не было — первая появившаяся = ⭐1
         first = next((c for c in cands if not c['clash']), None)
         if first:
@@ -174,8 +178,8 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         x.clear(); x.update(dict(top, rank=r, hist=hist, msgs=msgs, edits=int(len([q for q in hist if q.startswith('✏️')]))))
         notify.edit([tuple(m) for m in msgs], _text(day, x, r, hist), None)
         st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_blocks(
-            [f"✏️ <b>Хоккей · ставка дня ⭐{r}: мнение изменилось</b> ({notify.esc(why)})\n"
-             f"{notify.esc(h)}\n<i>сообщение ⭐{r} в закрепе обновлено</i>"])]
+            [f"🏒{r} <b>Хоккей · ставка дня: мнение изменилось</b> ✏️ ({notify.esc(why)})\n"
+             f"{notify.esc(h)}\n<i>сообщение 🏒{r} в закрепе обновлено</i>"])]
         log.append(f'⭐🏒 ⭐{r} правка: {why}')
     if len(picks) < MAX_PICKS:                               # новая ставка: другой матч лучше ⭐1 (одна за прогон)
         used = {str(x['id']) for x in picks}

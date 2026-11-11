@@ -22,6 +22,8 @@ import notify
 import odds as OD
 import pick as PK
 
+dpcore.ICON, dpcore.SPORT = '⚽', 'Футбол'          # начало сообщений ставки дня: «⚽1 Футбол · ставка дня»
+
 DISTS: dict[str, np.ndarray] = {}      # espn_id → матрица счёта (строки — голы хозяев); заполняет run.forecast_all
 SPORT_KEYS = {'eng.1': 'soccer_epl', 'eng.fa': 'soccer_fa_cup', 'esp.1': 'soccer_spain_la_liga',
               'esp.copa_del_rey': 'soccer_spain_copa_del_rey', 'fra.1': 'soccer_france_ligue_one',
@@ -221,7 +223,7 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
 # ------------------------------------------------------------------ текст и публикация
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:
     e = notify.esc
-    head = f'⭐ <b>Ставка дня · футбол · {day:%d.%m}</b>'
+    head = f'{dpcore.ICON} <b>{dpcore.SPORT} · ставка дня</b>'          # 11.11: единое начало, без даты
     if c is None:
         return f'{head}\nСегодня ставки дня нет: {e(reason)}.' + (f'\n{score}' if score else '')
     src = {'pinnacle': 'Pinnacle без маржи', 'blend': '1xBet без маржи', 'model': 'модель'}[c['p_src']]

@@ -30,6 +30,7 @@ PK.VALUE_ON = bool(getattr(C, 'VALUE_RULE', False))      # ТЗ-004: снача�
 
 DISTS: dict[str, tuple] = {}       # espn_id → (распределение исходов D, игрок 1, игрок 2) — заполняет autorun.forecast_all
 TITLE = None                       # совместимость (раньше — подпись линии из autorun)
+dpcore.ICON, dpcore.SPORT = '🎾', 'Теннис'          # начало сообщений ставки дня: «🎾1 Теннис · ставка дня»
 API_MARKETS = ('h2h', 'spreads', 'totals')
 
 
@@ -165,7 +166,7 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
 # ------------------------------------------------------------------ текст и публикация
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:
     e = notify.esc
-    head = f'⭐ <b>Ставка дня · теннис · {day:%d.%m}</b>'
+    head = f'{dpcore.ICON} <b>{dpcore.SPORT} · ставка дня</b>'          # 11.11: единое начало, без даты
     if c is None:
         return f'{head}\nСегодня ставки дня нет: {e(reason)}.' + (f'\n{score}' if score else '')
     src = {'pinnacle': 'Pinnacle без маржи', 'blend': '1xBet без маржи', 'model': 'модель'}[c['p_src']]

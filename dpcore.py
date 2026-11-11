@@ -121,9 +121,14 @@ def _short(c: dict, match_fn: Callable) -> str:
             + (f", {notify.esc(PK.k_text(c))}" if c.get('k') else ''))
 
 
+ICON, SPORT = '⭐', 'Ставка'      # задаёт daypick вида спорта: 🎾 Теннис / ⚽ Футбол (хоккей — hockey/hpick.py, 🏒)
+
+
 def _titled(text: str, rank: int) -> str:
-    """Номер ставки в заголовке: «⭐ <b>Ставка дня…» → «⭐2 <b>Ставка дня…»."""
-    return str(text).replace('⭐ <b>', f'⭐{rank} <b>', 1)
+    """Номер ставки после значка вида спорта: «🎾 <b>Теннис · ставка дня</b>» → «🎾2 <b>Теннис · ставка дня</b>»."""
+    t = str(text)
+    i = t.find(' <b>')
+    return t[:i] + str(rank) + t[i:] if 0 <= i <= 4 else t
 
 
 def _set_main(cur: dict, c: dict, match_fn: Callable) -> None:
@@ -149,7 +154,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             if pins:
                 notify.pin(pins, on=False)
             notify.delete([tuple(x) for x in old.get('ask', [])] + [tuple(x) for x in old.get('notes', [])])
-        cur = dict(date=dstr, msgs=[], changes=0, history=[], shots=[], screenshots=0, extras=[], log=[], notes=[], nokb=True, sep=True)
+        cur = dict(date=dstr, msgs=[], changes=0, history=[], shots=[], screenshots=0, extras=[], log=[], notes=[], nokb=True, sep=True,
+                   hdr=True)
     fix = bool(cur.pop('fix', None)) and bool(cur.get('espn_id'))
     if shots:                                                   # скриншоты дня — точные кф (сравнение)
         known = {tuple(key(o)): o for o in cur.get('shots', [])}
@@ -203,6 +209,15 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         notify.edit(cur['msgs'], cur['text'], None)
         cur['sep'] = True
 
+    if not cur.get('hdr'):                                      # 11.11: единое начало «🎾1 Теннис · ставка дня» — обновить закрепы
+        cur['text'] = main_text()
+        notify.edit(cur['msgs'], cur['text'], None)
+        for x in cur.get('extras') or []:
+            if x.get('msgs'):
+                x['text'] = extra_text(x)
+                notify.edit(x['msgs'], x['text'], None)
+        cur['hdr'] = True
+
     events = []
     if not cur.get('espn_id') and cands:                       # утром ставки не было — первая появившаяся = ⭐1 (не правка)
         best = cands[0]
@@ -255,9 +270,9 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                     x['text'] = extra_text(x)
                     notify.edit(x.get('msgs', []), x['text'], None)
         cur['notes'] = list(cur.get('notes', [])) + [list(m) for m in notify.send_blocks(
-            [f"✏️ <b>Ставка дня ⭐{r}: мнение изменилось</b> ({notify.esc(why)})\n"
-             f"было {notify.esc(pk['label'])} → стало {_short(top, match_fn)}\n<i>сообщение ⭐{r} в закрепе обновлено</i>"])]
-        events.append(f'⭐{r} правка ({why})')
+            [f"{ICON}{r} <b>{SPORT} · ставка дня: мнение изменилось</b> ✏️ ({notify.esc(why)})\n"
+             f"было {notify.esc(pk['label'])} → стало {_short(top, match_fn)}\n<i>сообщение {ICON}{r} в закрепе обновлено</i>"])]
+        events.append(f'{ICON}{r} правка ({why})')
     # 2b. новая ставка: другой матч лучше ⭐1 → ⭐2 / ⭐3 — отдельное закреплённое сообщение (одна за прогон)
     picks = ([dict(cur, rank=1)] if cur.get('espn_id') else []) + [dict(x) for x in (cur.get('extras') or [])]
     if picks and len(picks) < MAX_PICKS:
@@ -278,7 +293,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             cur.setdefault('extras', []).append(x)
             _sheet_row(store, dp, dstr, row_fn(c, dstr, 0, x['hist']), cur, c, rank=r)
             _log_new(store, cur, loc, why, c, r, match_fn)
-            events.append(f'⭐{r} новая ({why})')
+            events.append(f'{ICON}{r} новая ({why})')
             break
     rt['day_pick'] = cur
     return 'ставка дня: ' + ('; '.join(events) if events else 'без изменений') + note
