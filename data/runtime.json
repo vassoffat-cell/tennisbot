@@ -2,7 +2,7 @@
  "list_messages": [
   [
    570704006,
-   285
+   287
   ]
  ],
  "list_match_ids": [
@@ -81,7 +81,7 @@
   "ask": [],
   "changes": 0,
   "history": [],
-  "accepted": "",
+  "accepted": "yes",
   "rejected": [],
   "shots": [
    {
@@ -2984,7 +2984,7 @@
    }
   ],
   "screenshots": 1,
-  "text": "⭐ <b>Ставка дня · теннис · 11.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 17:00\n<b>Lorenzo Sonego — Alejandro Tabilo</b>\n<b>П1 Sonego</b> — вероятность 41% (1xBet без маржи)\nкф 1xBet 2,28 (скриншот)\n📈 С перевесом +34,6% над Pinnacle (справедливый кф 1,69)\n📈 Ставки дня: 2/3 (67%) · с кф: 2, отдача -29.0%",
+  "text": "⭐ <b>Ставка дня · теннис · 11.11</b>\n🏆 ATP · Bybit Stockholm Open · 🕒 17:00\n<b>Lorenzo Sonego — Alejandro Tabilo</b>\n<b>П1 Sonego</b> — вероятность 41% (1xBet без маржи)\nкф 1xBet 2,28 (скриншот)\n📈 С перевесом +34,6% над Pinnacle (справедливый кф 1,69)\n📈 Ставки дня: 2/3 (67%) · с кф: 2, отдача -29.0%\n✅ Принята в 09:11",
   "espn_id": "186540",
   "slot": 1,
   "key": [
@@ -3021,7 +3021,9 @@
    "edge": 0.3455379939209724,
    "group": "value",
    "slot": 1
-  }
+  },
+  "accepted_at": "09:11",
+  "accepted_shown": true
  },
  "model_version": 4,
  "reported": [
