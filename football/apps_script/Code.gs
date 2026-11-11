@@ -18,7 +18,7 @@ const PROPS = PropertiesService.getScriptProperties();
 const BOT = { name: 'FootBot', folder: 'footbot_inbox', workflow: 'football.yml', repo: 'vassoffat-cell/tennisbot' };
 
 const B = { list: '⚽ Прогноз 24 ч', stats: '📊 Аналитика', pick: '⭐ Ставка дня', clear: '🧹 Очистить чат' };
-const MENU = { keyboard: [[{ text: B.pick }, { text: B.stats }], [{ text: B.clear }]],   // 11.11.2026: «Прогноз 24 ч» убран
+const MENU = { keyboard: [[{ text: B.pick }, { text: B.stats }]],   // 12.11.2026: убраны «Прогноз 24 ч» и «Очистить чат»
                resize_keyboard: true, is_persistent: true };
 const STATS_KB = { inline_keyboard: [[{ text: '📊 Всё время', callback_data: 'r:all' }, { text: '📅 По месяцу', callback_data: 'r:month' },
                                       { text: '🏆 По турниру', callback_data: 'r:event' }]] };
