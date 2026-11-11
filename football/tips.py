@@ -57,9 +57,13 @@ def _clean(s: str) -> str:
     return html.unescape(re.sub(r'<[^>]+>', '', s)).strip()
 
 
-def tg_posts(channel: str) -> list[dict]:
-    """Посты веб-ленты канала: id, время (UTC), текст. Медиа без текста пропускаются."""
-    s = _get(f'https://t.me/s/{channel}')
+LAST_POSTS: list[tuple[str, str, dict]] = []      # свежие посты прогона (src, имя, пост) — для tipswide (все матчи)
+LAST_FEED: list[dict] = []                          # лента nb-bet прогона
+
+
+def tg_posts(channel: str, before: int | None = None) -> list[dict]:
+    """Посты веб-ленты канала: id, время (UTC), текст. Медиа без текста пропускаются. before — страница старше id."""
+    s = _get(f'https://t.me/s/{channel}' + (f'?before={before}' if before else ''))
     out = []
     for b in s.split('<div class="tgme_widget_message_wrap')[1:]:
         pid = re.search(r'data-post="[^"/]+/(\d+)"', b)
@@ -410,6 +414,8 @@ def collect(items: list[tuple], log: list[str]) -> int:
     """Новые посты всех источников → прогнозы на наши матчи (окно прогноза: матчи items, не начавшиеся)."""
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     fixtures = [(m, row) for m, row, _ in items if m.start > now]
+    LAST_POSTS.clear()
+    LAST_FEED.clear()
     df = load()
     have = set(df.uid)
     seen = json.loads(SEEN.read_text()) if SEEN.exists() else {}
@@ -426,6 +432,7 @@ def collect(items: list[tuple], log: list[str]) -> int:
         for p in fresh:
             if p['ts'] < now - pd.Timedelta(hours=36):
                 continue
+            LAST_POSTS.append((ch, name, p))
             for fx, frag, pos in _segments(p['text'], fixtures):
                 side, tm = _side_before(frag, fx[1]), (fx[1]['home'], fx[1]['away'])
                 sel, legs = '', []
@@ -443,6 +450,7 @@ def collect(items: list[tuple], log: list[str]) -> int:
         stat.append(f'{name}: постов {len(fresh)}, наших {got}')
     try:
         feed = nb_feed()
+        LAST_FEED[:] = feed
         got = 0
         for t in feed:
             uid = f"nb:{t['id']}"
@@ -509,8 +517,15 @@ def stats(df: pd.DataFrame | None = None) -> pd.DataFrame:
 
 
 def trusted(st: pd.DataFrame | None = None) -> set[str]:
+    """Надёжные: на наших матчах выше модели (n ≥ 30, z ≥ 1,64) ИЛИ на всех матчах обыгрывают рынок (tipswide, ≥ 50 с кф)."""
     st = stats() if st is None else st
-    return set(st[(st.n >= TRUST_N) & (st.z >= TRUST_Z)].src) if len(st) else set()
+    out = set(st[(st.n >= TRUST_N) & (st.z >= TRUST_Z)].src) if len(st) else set()
+    try:
+        import tipswide
+        out |= tipswide.trusted()
+    except Exception:
+        pass
+    return out
 
 
 def for_match(espn_id: str) -> pd.DataFrame:

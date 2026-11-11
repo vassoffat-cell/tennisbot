@@ -40,6 +40,7 @@ import notify
 import report as R
 import runtime
 import tips
+import tipswide
 
 LEAGUE_KINDS = ('league',)
 SRC_RU = {'market': 'рынок', 'model': 'модель'}
@@ -778,6 +779,12 @@ def run(dry: bool = False) -> str:
             log[-1] += f'; рассчитано {nt}'
         except Exception as ex:
             log.append(f'👥 каперы: сбой {ex.__class__.__name__}: {ex}')
+        try:                                                           # 👥 все матчи каперов: история (разово), новые, итоги
+            tipswide.backfill(rt, log)
+            tipswide.collect(log)
+            tipswide.settle(log)
+        except Exception as ex:
+            log.append(f'👥 все матчи: сбой {ex.__class__.__name__}: {ex}')
     if dry:
         print('\n'.join(log)); publish_list(rt, None, items, off, dry=True); print('\n'.join(skipped))
         return f'dry {time.time() - t0:.0f} с'
@@ -809,7 +816,7 @@ def run(dry: bool = False) -> str:
         except Exception as ex:
             late, cov = set(), [f'⚠️ контроль охвата: {type(ex).__name__}']
         try:
-            cov = cov + [tips.report_block()]
+            cov = cov + [tips.report_block(), tipswide.report_block()]
         except Exception as ex:
             cov = cov + [f'👥 каперы: сбой {type(ex).__name__}']
         notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}', kcal=kcal, kprev=kprev, off=off,
@@ -875,7 +882,7 @@ def run(dry: bool = False) -> str:
                                                    text=learning.report(store, rt, 'Самообучение · футбол'), updated=J.now_utc()),
                                               dict(key='audit', kind='audit', title='🔎 Аудит',
                                                    text=learning.audit_report(store, week_table(store, af, ld))
-                                                   + '\n' + tips.report_block(),
+                                                   + '\n' + tips.report_block() + '\n' + tipswide.report_block(),
                                                    updated=J.now_utc())])],
                          ignore_index=True)
     except Exception as ex:
