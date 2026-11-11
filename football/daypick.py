@@ -225,22 +225,11 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
     e = notify.esc
     head = f'{dpcore.ICON} <b>{dpcore.SPORT} · ставка дня</b>'          # 11.11: единое начало, без даты
     if c is None:
-        return f'{head}\nСегодня ставки дня нет: {e(reason)}.' + (f'\n{score}' if score else '')
-    src = {'pinnacle': 'Pinnacle без маржи', 'blend': '1xBet без маржи', 'model': 'модель'}[c['p_src']]
+        return f'{head}\nСегодня ставки дня нет: {e(reason)}.'
+    # 12.11 (решение пользователя): после «честный кф» — ничего лишнего; только отметки правок (✏️) и новой линии (➕)
     out = [head, f"🏆 {e(c['comp_name'])} · 🕒 {e(str(c['start_local'])[6:])}", f"<b>{e(c['home'])} — {e(c['away'])}</b>",
-           f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''} — вероятность {c['p'] * 100:.0f}% ({src}) · {notify.fair(c['p'])}", e(PK.k_text(c)), e(PK.group_text(c))]
-    if c.get('tier') == 3:
-        out.append('<i>Котировок по матчу нет — линия модели с запасом по кф.</i>')
-    try:
-        import tips
-        tl = tips.match_line(str(c['espn_id']))
-        if tl:
-            out.append(e(tl))
-    except Exception:
-        pass
+           f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''} — {c['p'] * 100:.0f}% · {notify.fair(c['p'])}"]
     out += [e(h) for h in hist]
-    if score:
-        out.append(score)
     return '\n'.join(out)
 
 

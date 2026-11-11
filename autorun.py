@@ -800,7 +800,10 @@ def run(dry: bool = False) -> str:
             rt['r4_fix_1111'] = 1
         offers_s, replies, slog = shots.process(SHOTS, items, OD.cached_events('tennis', today))
         log += slog + ([f'кнопки: {", ".join(actions)}'] if actions else [])
-        r4, m4, offers4 = round4.step(rt, items, C.wday(_local()), offers_s, replies)
+        if getattr(C, 'R4_SHOT_CYCLE', True):
+            r4, m4, offers4 = round4.step(rt, items, C.wday(_local()), offers_s, replies)
+        else:                                  # 12.11: утренний запрос скриншотов отключён — ставка дня объявляется сразу
+            r4, m4, offers4 = 'off', [], []
         if replies:
             notify.send_blocks(replies)
         for fid, name, _, _ in SHOTS:

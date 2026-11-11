@@ -155,7 +155,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 notify.pin(pins, on=False)
             notify.delete([tuple(x) for x in old.get('ask', [])] + [tuple(x) for x in old.get('notes', [])])
         cur = dict(date=dstr, msgs=[], changes=0, history=[], shots=[], screenshots=0, extras=[], log=[], notes=[], nokb=True, sep=True,
-                   hdr=True)
+                   hdr2=True)
     fix = bool(cur.pop('fix', None)) and bool(cur.get('espn_id'))
     if shots:                                                   # скриншоты дня — точные кф (сравнение)
         known = {tuple(key(o)): o for o in cur.get('shots', [])}
@@ -178,7 +178,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         best = next((c for c in cands if key(c) == list(cur.get('key', []))), None) or \
             (_revive(cur['best']) if cur.get('best') else None)
         return _titled(text_fn(best, day, cur.get('history', []), score_fn(dp),
-                               'нет линий с кф 1xBet ≥ 1,35 и вероятностью ≥ 60% — пришлите скриншот 1xBet любого матча из списка'), 1)
+                               'подходящей линии пока нет (кф ≥ 1,35 и вероятность ≥ 60%) — появится, объявлю'), 1)
 
     def extra_text(x: dict) -> str:
         c = next((o for o in cands if key(o) == list(x['key'])), None) or _revive(x)
@@ -209,14 +209,24 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         notify.edit(cur['msgs'], cur['text'], None)
         cur['sep'] = True
 
-    if not cur.get('hdr'):                                      # 11.11: единое начало «🎾1 Теннис · ставка дня» — обновить закрепы
+    if not cur.get('hdr2'):                                      # 11–12.11: единое начало и текст без «хвоста» — обновить закрепы
         cur['text'] = main_text()
         notify.edit(cur['msgs'], cur['text'], None)
         for x in cur.get('extras') or []:
             if x.get('msgs'):
                 x['text'] = extra_text(x)
                 notify.edit(x['msgs'], x['text'], None)
-        cur['hdr'] = True
+        cur['hdr2'] = True
+
+    back = 0                                                    # 12.11: удалённые пользователем ставки — заново, с закрепом
+    for h in [cur] + list(cur.get('extras') or []):
+        if h.get('msgs') and h.get('text') and not notify.alive(h['msgs']):
+            h['msgs'] = [list(m) for m in notify.send_markup(h['text'], None, silent=True)]
+            notify.pin(h['msgs'])
+            back += 1
+    if back:
+        log.append(f'возвращено удалённых ставок: {back}')
+        note = '; ' + '; '.join(log)
 
     events = []
     if not cur.get('espn_id') and cands:                       # утром ставки не было — первая появившаяся = ⭐1 (не правка)

@@ -225,6 +225,7 @@ def cover(path) -> int:
     f = pathlib.Path(path)
     old = json.loads(f.read_text()) if f.exists() else {}
     n = 0
+    _SENT.add('main')            # 12.11: заглушка — после КАЖДОГО прогона (списков нет → иначе ответ на кнопку остаётся на виду)
     for bot in sorted(_SENT):
         if not BOTS[bot]():
             continue
@@ -305,3 +306,23 @@ def crash_clear() -> int:
     n = delete([tuple(m) for m in msgs]) if msgs else 0
     f.unlink(missing_ok=True)
     return n
+
+
+def alive(messages: list) -> bool:
+    """Сообщения бота ещё существуют? Пользователь мог удалить их или очистить чат (12.11: удалённые ставки дня — заново).
+    Пустая правка кнопок: «not modified» — живо; «not found» / «can't be edited» — удалено. Сеть / прочее — считаем живым."""
+    if not C.BOT_TOKEN or not messages:
+        return True
+    for chat, mid in messages:
+        try:
+            _call('editMessageReplyMarkup', {'chat_id': int(chat), 'message_id': int(mid), 'reply_markup': {'inline_keyboard': []}})
+        except urllib.error.HTTPError as e:
+            try:
+                body = e.read().decode('utf-8', 'replace')
+            except Exception:
+                body = ''
+            if 'not found' in body or "can't be edited" in body or 'MESSAGE_ID_INVALID' in body:
+                return False
+        except Exception:
+            pass
+    return True

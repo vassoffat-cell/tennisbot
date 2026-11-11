@@ -186,15 +186,10 @@ function cachedList_() {
 
 // ============================================================ ⭐ ставка дня
 function showPick_(chat) {
-  const rows = table_('tg_cache');
-  const t = rows.filter(function (r) { return r.key === 'daypick'; })[0];
-  const acc = rows.filter(function (r) { return r.key === 'daypick_accepted'; })[0];
-  if (!t || !String(t.text).trim()) {
-    return send_(chat, '⭐ Ставка дня на сегодня ещё не опубликована (публикуется после суточного отчёта, не позднее 08:00).');
-  }
-  const accepted = acc && String(acc.text) === 'yes';
-  tg_('sendMessage', { chat_id: chat, text: String(t.text), parse_mode: 'HTML', disable_web_page_preview: true,
-                       reply_markup: accepted ? MENU : DP_KB });
+  // 12.11.2026: ставки дня живут в закреплённых сообщениях (каждая — отдельным). Кнопка запускает облако:
+  // оно проверяет закрепы и заново присылает удалённые. Кнопок ✅/🔄 больше нет.
+  const ok = dispatch_();
+  send_(chat, '📌 Ставки дня — в закреплённых сообщениях вверху чата. Удалённые пришлю заново через ' + waitText_(ok) + '.');
 }
 
 function dpAction_(chat, messageId, action) {

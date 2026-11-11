@@ -96,8 +96,7 @@ def _line(c: dict, e) -> str:
 def _text(day, c: dict, rank: int, hist: list[str]) -> str:
     e = notify.esc
     out = [f"🏒{rank} <b>Хоккей · ставка дня</b>", _line(c, e)]                  # 11.11: единое начало, без даты
-    out += [e(h) for h in hist]
-    out.append('<i>линия — основное время; ставка в плюс, если кф букмекера выше честного; 🔥/⚔️ — капер за/против</i>')
+    out += [e(h) for h in hist]                           # 12.11: после «честный кф» — только отметки правок / новой линии
     return '\n'.join(out)
 
 
@@ -134,7 +133,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         if old:
             notify.pin(old, on=False)
         notify.delete([tuple(m) for m in st.get('notes', [])])
-        st = dict(date=str(day), picks=[], notes=[], hdr=True)
+        st = dict(date=str(day), picks=[], notes=[], hdr2=True)
         rt['hk_dp'] = st
         first = next((c for c in cands if not c['clash']), cands[0] if cands else None)
         if not first:
@@ -149,10 +148,16 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         notify.delete([tuple(m) for m in st.pop('msgs')])
         picks = [_publish(day, x, i + 1, x.get('hist', [])) for i, x in enumerate(picks)]
         st['picks'] = picks
-    if not st.get('hdr'):                                    # 11.11: единое начало «🏒1 Хоккей · ставка дня» — обновить закрепы
+    if not st.get('hdr2'):                                    # 11.11: единое начало «🏒1 Хоккей · ставка дня» — обновить закрепы
         for x in picks:
             notify.edit([tuple(m) for m in x.get('msgs', [])], _text(day, x, int(x['rank']), x.get('hist', [])), None)
-        st['hdr'] = True
+        st['hdr2'] = True
+    for x in picks:                                          # 12.11: удалённые пользователем ставки — заново, с закрепом
+        if x.get('msgs') and not notify.alive([tuple(m) for m in x['msgs']]):
+            x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True)]
+            notify.pin([tuple(m) for m in x['msgs']])
+            CHANGED[0] = True
+            log.append(f"⭐🏒 🏒{x['rank']} возвращена (была удалена)")
     if not picks:                                            # утром кандидатов не было — первая появившаяся = ⭐1
         first = next((c for c in cands if not c['clash']), None)
         if first:
