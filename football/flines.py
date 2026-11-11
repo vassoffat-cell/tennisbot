@@ -64,7 +64,11 @@ def build(P: np.ndarray, kc: dict[str, float]) -> list[dict]:
                     best = ((abs(p - C.TARGET_P), L), s, L, p)
         _, s, L, p = best
         add(slot, market, s, float(L), f'{prefix}{"Б" if s == "O" else "М"}{L:g}', p)
-    ou(8, 'TOT', i + j, np.arange(0.5, 6.6, 1.0), 'Т')
+    if C.T32_FIXED_TOTAL:                           # T32: тотал — одна линия 2,5 («больше или меньше»), всегда показана
+        ou(8, 'TOT', i + j, [C.FIXED_TOTAL], 'Т')
+        out[-1]['shown'] = 1
+    else:
+        ou(8, 'TOT', i + j, np.arange(0.5, 6.6, 1.0), 'Т')
     ou(9, 'IT1', i, np.arange(0.5, 4.6, 1.0), 'ИТ1 ')
     ou(10, 'IT2', j, np.arange(0.5, 4.6, 1.0), 'ИТ2 ')
     yes = float(P[(i >= 1) & (j >= 1)].sum())

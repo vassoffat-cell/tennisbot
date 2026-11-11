@@ -333,6 +333,10 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         T.append(('Исход — доигранных пока нет', '', '', ''))
 
     # линии
+    FX = L.iloc[0:0]
+    if len(L) and getattr(C, 'T32_FIXED_TOTAL', False):          # T32: тотал с фиксированной линией — отдельной строкой,
+        fx = L.market.astype(str).isin(['TOTAL', 'TOT']) & (L.start_utc.astype(str) >= C.FIXED_TOTAL_FROM)
+        FX, L = L[fx], L[~fx]                                     # в общую цель «Линии» не входит (P ≈ 50–65%, не 65–75%)
     if len(L):
         tgt, _ = step_target(L.won.values, C.STEPS['lines'])
         c = color_vs(L.won.mean(), len(L), tgt); worst = min(worst, c)
@@ -353,8 +357,23 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
                     q = s[s.pick.astype(str) == pk]
                     if len(q):
                         T.append(RT.row(f'  {ru}', q.won.sum(), len(q), RT.pct(q.p.mean(), 0) + '%'))
-    else:
+    elif not len(FX):
         T.append(('Линии — рассчитанных пока нет', '', '', ''))
+    if len(FX):                                                   # цель — среднее обещанное P; цвет — против Σp
+        z = zscore(FX.won.values, FX.p.values)
+        cc = 3 if z >= 0 else 2 if z > -2 else 1
+        worst = min(worst, cc) if len(FX) >= 30 else worst
+        T.append(RT.row('Тотал фикс.', FX.won.sum(), len(FX), RT.pct(FX.p.mean(), 0) + '%', COLOR[cc]))
+        if daily_day is not None:
+            d = FX[FX.day == daily_day]
+            T.append(RT.row(' сутки', d.won.sum(), len(d)))
+        for pk, ru in (('O', ' Б'), ('U', ' М')):
+            q = FX[FX.pick.astype(str) == pk]
+            if len(q):
+                T.append(RT.row(ru, q.won.sum(), len(q), RT.pct(q.p.mean(), 0) + '%'))
+        hi = FX[FX.p >= 0.60]
+        if len(hi):
+            T.append(RT.row(' P ≥ 60%', hi.won.sum(), len(hi), RT.pct(hi.p.mean(), 0) + '%'))
 
     # ставка дня
     D = dp[dp.result.astype(str).isin(['W', 'L'])].copy() if len(dp) else dp

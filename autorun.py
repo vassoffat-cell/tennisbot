@@ -110,6 +110,8 @@ def market_calibration(lines_df: pd.DataFrame) -> dict[str, tuple[float, int]]:
     done = R.lines(lines_df)
     for m in ('HCP', 'IT1', 'IT2', 'TOTAL'):
         sub = done[done.market.astype(str) == m]
+        if m == 'TOTAL' and C.T32_FIXED_TOTAL:      # T32: k тотала — только по линиям нового режима (до 30 линий k = 1)
+            sub = sub[sub.start_utc.astype(str) >= C.FIXED_TOTAL_FROM]
         out[m] = LN.calibrate(sub.p_raw.map(J.num).values.astype(float), sub.won.values.astype(bool))
     return out
 
@@ -270,7 +272,8 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
                    level=level, p1_raw=round(p_raw, 4), calib_k=k_ml, confidence=confidence(p1, min(n1, n2), auto))
         for k in J.EXACT_COLS:
             row[k] = round(f[k], 4) if k in f else ''
-        lns = LN.build(D, p_lines, kc, LN.sigma_for(min(n1, n2)))
+        lns = LN.build(D, p_lines, kc, LN.sigma_for(min(n1, n2)),
+                       fixed_total=C.FIXED_TOTAL.get((tour, int(best_of))) if C.T32_FIXED_TOTAL else None)
         if pin_used and best_of == 3 and C.A1B_PIN_HCP.get(tour):     # A1b: фора — из распределения со смесью Pinnacle+модель
             try:
                 import markets as MK

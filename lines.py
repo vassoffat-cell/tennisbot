@@ -65,7 +65,7 @@ def _pick_ou(pr, make, grid) -> tuple[float, str, float]:
     return best[1], best[2], best[3]
 
 
-def build(D: dict, p1: float, kc: dict[str, float], sigma: float) -> list[dict]:
+def build(D: dict, p1: float, kc: dict[str, float], sigma: float, fixed_total: float | None = None) -> list[dict]:
     """7 линий матча. D — распределение исходов (с позиции игрока 1), p1 — P(П1) после самокалибровки,
     kc — коэффициенты самокалибровки по рынкам, sigma — неопределённость модели для этого матча."""
     pr = lambda s: MK.price(D, s)[0]
@@ -91,8 +91,14 @@ def build(D: dict, p1: float, kc: dict[str, float], sigma: float) -> list[dict]:
     for slot, market, a in ((5, 'IT1', True), (6, 'IT2', False)):
         L, side, p = _pick_ou(pr, lambda L, o: MK.mk_ind_total(a, L, o), [x + 0.5 for x in range(1, 26)])
         add(slot, market, 'O' if side == 'Б' else 'U', L, f'{side} {L:g}', p, kc.get(market, 1.0))
-    L, side, p = _pick_ou(pr, MK.mk_total, [x + 0.5 for x in range(10, 50)])
-    add(7, 'TOTAL', 'O' if side == 'Б' else 'U', L, f'{side} {L:g}', p, kc.get('TOTAL', 1.0))
+    if fixed_total:                                 # T32: одна линия тотала на тур и формат — «больше или меньше», всегда показана
+        po = pr(MK.mk_total(fixed_total, True))
+        side, p = ('Б', po) if po >= 0.5 else ('М', 1 - po)
+        add(7, 'TOTAL', 'O' if side == 'Б' else 'U', fixed_total, f'{side} {fixed_total:g}', p, kc.get('TOTAL', 1.0))
+        out[-1]['shown'] = 1
+    else:
+        L, side, p = _pick_ou(pr, MK.mk_total, [x + 0.5 for x in range(10, 50)])
+        add(7, 'TOTAL', 'O' if side == 'Б' else 'U', L, f'{side} {L:g}', p, kc.get('TOTAL', 1.0))
     for x in out:                                   # уверенность: вероятность с поправкой на типичную ошибку модели
         x['p_low'] = round(scale_shift(x['p'], -C.SIGMA_Z * sigma), 4)
     return out

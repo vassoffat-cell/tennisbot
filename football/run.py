@@ -216,6 +216,8 @@ def calibration(ldf: pd.DataFrame) -> dict[str, tuple[float, int]]:
     out = {}
     for mk in FL.MARKET_RU:
         sub = L[L.market.astype(str) == mk]
+        if mk == 'TOT' and C.T32_FIXED_TOTAL:       # T32: k тотала — только по линиям нового режима
+            sub = sub[sub.start_utc.astype(str) >= C.FIXED_TOTAL_FROM]
         out[mk] = FL.calibrate(sub.p_raw.map(J.num).values.astype(float), sub.won.values.astype(bool))
     return out
 
@@ -287,7 +289,7 @@ def _set_p(x: dict, p: float) -> None:
     """P линии из смеси с рынком: p_raw (модель) не трогаем — по нему учится k."""
     x.update(p=round(float(p), 4), k_lo=round(1 / max(p, 1e-6), 2),
              p_low=round(float(1 / (1 + np.exp(-(FL.logit(p) - C.SIGMA[x['market']])))), 4),
-             shown=int(FL.visible(p, x['market'])))
+             shown=1 if (C.T32_FIXED_TOTAL and x['market'] == 'TOT') else int(FL.visible(p, x['market'])))
 
 
 def apply_pinnacle(m, row: dict, lns: list[dict], P: np.ndarray) -> int:

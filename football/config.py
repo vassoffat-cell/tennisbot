@@ -143,3 +143,8 @@ def window_end_utc(now_utc):
     loc = now_utc + _dt.timedelta(hours=TZ_OFFSET_HOURS)
     end = _dt.datetime.combine(wday(loc) + _dt.timedelta(days=1), _dt.time(DAY_START_HOUR))
     return end - _dt.timedelta(hours=TZ_OFFSET_HOURS)
+
+# T32 (11.11.2026, решение пользователя): тотал — одна линия 2,5 («больше или меньше»), всегда показана. Включается после проверки.
+T32_FIXED_TOTAL = False
+FIXED_TOTAL = 2.5
+FIXED_TOTAL_FROM = '2026-11-11 16:00'                                    # UTC
