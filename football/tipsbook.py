@@ -89,10 +89,11 @@ def scan(src: str, days: float, pages: int) -> tuple[list[dict], int]:
             break
         for p in posts:
             old = a.get(p['id'])
-            if old is None or old['text'] != p['text']:
-                a[p['id']] = dict(id=p['id'], ts=str(p['ts'])[:16], text=p['text'],
-                                  first=old['first'] if old else pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M'))
-                changed.append(p)
+            if old is None or old['text'] != p['text'] or (p.get('photos') and not old.get('photos')):
+                a[p['id']] = dict(id=p['id'], ts=str(p['ts'])[:16], text=p['text'], photos=p.get('photos', []),
+                                  first=old['first'] if old else pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M'),
+                                  **({'ocr': old['ocr']} if old and 'ocr' in old else {}))
+                changed.append(dict(p, ocr=(old or {}).get('ocr', '')))
         before = min(p['id'] for p in posts)
         if min(p['ts'] for p in posts) < edge:
             break
@@ -105,7 +106,7 @@ def scan(src: str, days: float, pages: int) -> tuple[list[dict], int]:
 def tips_of(src: str, p: dict) -> list[dict]:
     """Все прогнозы поста: по парам «A — B» (фрагмент до следующей пары) или одна ставка без пары."""
     import tipswide as W
-    txt = p['text']
+    txt = (p['text'] + ('\n' + p['ocr'] if p.get('ocr') else '')).strip()
     sport = sport_of(txt)
     ps = W.pairs(txt)
     out = []
@@ -147,7 +148,7 @@ def run(rt: dict, log: list[str]) -> None:
         rows = []
         for src in T.TG:
             for x in _arch(src).values():
-                rows += tips_of(src, dict(id=x['id'], ts=pd.Timestamp(x['ts']), text=x['text']))
+                rows += tips_of(src, dict(id=x['id'], ts=pd.Timestamp(x['ts']), text=x['text'], ocr=x.get('ocr', '')))
         old = {r.uid: (r.self, r.self_ts) for r in df.itertuples(index=False)}
         df = pd.DataFrame(rows, columns=COLS)
         for i, u in enumerate(df.uid):
@@ -155,6 +156,10 @@ def run(rt: dict, log: list[str]) -> None:
                 df.loc[i, ['self', 'self_ts']] = list(old[u])
         log.append(f'👥 книга: пересборка v{VERSION} — {len(df)} прогнозов')
     rt['tips_book_v'] = VERSION
+    try:                                                           # 📷 Green Line и др.: прогноз на картинке → OCR
+        df = ocr_round(rt, df, log)
+    except Exception as e:
+        log.append(f'👥 OCR: сбой {e.__class__.__name__}: {e}')
     idx = {u: i for i, u in enumerate(df.uid)}
     add, upd, stat, req = [], 0, [], 0
     for src, name in T.TG.items():
@@ -182,6 +187,81 @@ def run(rt: dict, log: list[str]) -> None:
     rt['tips_book'] = pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M')
     log.append(f"👥 книга ({'история 30 дн' if first else '3 дн'}): " + ', '.join(stat)
                + f'; отметок обновлено {upd}; всего {len(df)}; запросов {req}')
+
+
+# ------------------------------------------------------------------ 📷 картинки постов (OCR)
+OCR_CH = {'stavki_na_sport_betting1'}                  # каналы, где прогноз — на картинке (Green Line)
+OCR_MAX = 60                                           # картинок за прогон (≈ 1–2 с каждая; история догоняется за несколько прогонов)
+
+
+def _ocr_image(url: str) -> str:
+    import io
+    import urllib.request
+    from PIL import Image, ImageOps
+    import ocr
+    req = urllib.request.Request(url, headers={'User-Agent': T.UA})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        img = Image.open(io.BytesIO(r.read())).convert('L')
+    if img.width < 1000:
+        img = img.resize((img.width * 2, img.height * 2))
+    txt = ocr._tesseract(img, psm=6)
+    if sum(c.isalpha() for c in txt) < 15:                     # светлый текст на тёмном фоне — инверсия
+        txt = ocr._tesseract(ImageOps.invert(img), psm=6)
+    return re.sub(r'[ \t]+', ' ', txt).strip()
+
+
+def ocr_round(rt: dict, df: pd.DataFrame, log: list[str]) -> pd.DataFrame:
+    """Картинки постов каналов OCR_CH без распознанного текста (30 суток): текст → архив → прогнозы (книга и все матчи)."""
+    import shots
+    import tipswide as W
+    if not rt.get('ocr_photos_v1'):                                  # разово: история 30 дн заново — ссылки на картинки
+        for src in OCR_CH:
+            scan(src, 30, 30)
+        rt['ocr_photos_v1'] = 1
+    err = shots.ensure_ocr()
+    if err:
+        log.append(f'👥 OCR: {err}')
+        return df
+    edge = pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(days=30)
+    done, add, wide, budget = 0, [], [], OCR_MAX
+    sample = T.DIR / 'img_sample'
+    wdf = W.load()
+    have_w = set(wdf.uid)
+    have_b = set(df.uid)
+    for src in OCR_CH:
+        a = _arch(src)
+        for pid in sorted(a, reverse=True):
+            x = a[pid]
+            if budget <= 0 or 'ocr' in x or not x.get('photos') or pd.Timestamp(x['ts']) < edge:
+                continue
+            parts = []
+            for u in x['photos'][:3]:
+                try:
+                    parts.append(_ocr_image(u))
+                    if not rt.get('ocr_samples') and len(list(sample.glob('*.jpg'))) < 6:   # образцы для настройки разбора
+                        import urllib.request
+                        sample.mkdir(parents=True, exist_ok=True)
+                        req = urllib.request.Request(u, headers={'User-Agent': T.UA})
+                        (sample / f'{src}_{pid}_{len(parts)}.jpg').write_bytes(urllib.request.urlopen(req, timeout=20).read())
+                except Exception:
+                    parts.append('')
+                budget -= 1
+            x['ocr'] = '\n'.join(t for t in parts if t)
+            done += 1
+            p = dict(id=pid, ts=pd.Timestamp(x['ts']), text=x['text'], ocr=x['ocr'])
+            add += [t for t in tips_of(src, p) if t['uid'] not in have_b]
+            wide += W.from_post(src, T.TG.get(src, src), dict(p, text=(x['text'] + '\n' + x['ocr']).strip()), {}, have_w)
+        _save_arch(src, a)
+    if len(list(sample.glob('*.jpg'))) >= 6:
+        rt['ocr_samples'] = 1
+    if add:
+        df = pd.concat([df, pd.DataFrame(add)], ignore_index=True)
+    if wide:
+        W.save(pd.concat([wdf, pd.DataFrame(wide)], ignore_index=True))
+    left = sum(1 for src in OCR_CH for x in _arch(src).values()
+               if x.get('photos') and 'ocr' not in x and pd.Timestamp(x['ts']) >= edge)
+    log.append(f'👥 OCR: постов {done}, прогнозов +{len(add)}, футбол на табло +{len(wide)}, осталось {left}')
+    return df
 
 
 # ------------------------------------------------------------------ учёт

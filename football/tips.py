@@ -62,16 +62,17 @@ LAST_FEED: list[dict] = []                          # лента nb-bet прог
 
 
 def tg_posts(channel: str, before: int | None = None) -> list[dict]:
-    """Посты веб-ленты канала: id, время (UTC), текст. Медиа без текста пропускаются. before — страница старше id."""
+    """Посты веб-ленты канала: id, время (UTC), текст, ссылки на фото (до 4). before — страница старше id."""
     s = _get(f'https://t.me/s/{channel}' + (f'?before={before}' if before else ''))
     out = []
     for b in s.split('<div class="tgme_widget_message_wrap')[1:]:
         pid = re.search(r'data-post="[^"/]+/(\d+)"', b)
         ts = re.search(r'<time datetime="([^"]+)"', b)
         tx = re.search(r'<div class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', b, re.S)
-        if pid and ts and tx:
+        photos = re.findall(r"tgme_widget_message_photo_wrap[^>]*background-image:url\('([^']+)'\)", b)
+        if pid and ts and (tx or photos):
             out.append(dict(id=int(pid.group(1)), ts=pd.Timestamp(ts.group(1)).tz_convert('UTC').tz_localize(None),
-                            text=_clean(tx.group(1))))
+                            text=_clean(tx.group(1)) if tx else '', photos=photos[:4]))
     return out
 
 
