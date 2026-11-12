@@ -272,11 +272,37 @@ def khl_probe_dates(log: list[str]) -> None:
             log.append(f'{q} → {e.__class__.__name__}: {e}')
 
 
+SUMMARY = 'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/summary?event={id}'
+
+
+def summary_probe(log: list[str]) -> None:
+    """Проба протокола матча ESPN: какие поля есть для бросков и вратарей (структура — в журнал)."""
+    df = load()
+    g = df[(df.league == 'NHL') & df.end.astype(str).isin(['REG', 'OT', 'SO'])].sort_values('start').tail(1).iloc[0]
+    js = _get(SUMMARY.format(id=str(g.id).split(':')[1]))
+    log.append(f"матч {g.home} — {g.away} {g.start}; ключи: {sorted(js.keys())}")
+    box = js.get('boxscore') or {}
+    log.append(f"boxscore ключи: {sorted(box.keys())}")
+    for t in box.get('teams') or []:
+        log.append(f"команда {(t.get('team') or {}).get('displayName')} {t.get('homeAway')}: "
+                   + '; '.join(f"{x.get('name')}={x.get('displayValue')}" for x in (t.get('statistics') or [])))
+    for t in box.get('players') or []:
+        for grp in t.get('statistics') or []:
+            log.append(f"игроки {(t.get('team') or {}).get('abbreviation')} · группа {grp.get('name')}: поля {grp.get('names') or grp.get('labels')} · "
+                       f"{len(grp.get('athletes') or [])} чел.")
+            if str(grp.get('name', '')).lower().startswith('goal'):
+                for a in grp.get('athletes') or []:
+                    log.append(f"   вратарь {(a.get('athlete') or {}).get('displayName')} starter={a.get('starter')} stats={a.get('stats')}")
+    log.append(f"размер ответа {len(json.dumps(js))} байт")
+
+
 if __name__ == '__main__':
     import sys as _s
     lg: list[str] = []
     if len(_s.argv) > 1 and _s.argv[1] == 'probe':
         khl_probe_dates(lg)
+    elif len(_s.argv) > 1 and _s.argv[1] == 'box_probe':
+        summary_probe(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'khl':                 # догрузка сезона КХЛ по датам (≈ 80 запросов, ~9 мин)
         update_khl(lg, backfill=80)
     else:
