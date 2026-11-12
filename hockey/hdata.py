@@ -353,6 +353,55 @@ def box_of(gid: str) -> dict:
     return out
 
 
+def _american(x) -> float | None:
+    try:
+        x = float(x)
+    except (TypeError, ValueError):
+        return None
+    if x == 0:
+        return None
+    return 100 / (x + 100) if x > 0 else -x / (-x + 100)
+
+
+ODDS_LIVE = DATA / 'odds_live.json'
+
+
+def pregame_odds(ids: list[str], log: list[str]) -> dict:
+    """Рынок перед матчем (ESPN pickcenter): {id: {p_ml — P победы хозяев с ОТ без маржи, line, p_over, src}}.
+    Последняя увиденная цена хранится в odds_live.json (матч мог начаться, цена нужна для учёта)."""
+    try:
+        keep = json.loads(ODDS_LIVE.read_text(encoding='utf-8')) if ODDS_LIVE.exists() else {}
+    except Exception:
+        keep = {}
+    got = 0
+    for gid in ids:
+        try:
+            js = _get(SUMMARY.format(id=str(gid).split(':')[1]))
+            pc = js.get('pickcenter') or []
+            if not pc:
+                continue
+            x = pc[0]
+            qh, qa = _american((x.get('homeTeamOdds') or {}).get('moneyLine')), _american((x.get('awayTeamOdds') or {}).get('moneyLine'))
+            if not qh or not qa:
+                continue
+            qo, qu = _american(x.get('overOdds')), _american(x.get('underOdds'))
+            ou = x.get('overUnder')
+            keep[str(gid)] = dict(p_ml=round(qh / (qh + qa), 4), marg=round(qh + qa - 1, 4),
+                                  line=float(ou) if ou and qo and qu else None,
+                                  p_over=round(qo / (qo + qu), 4) if ou and qo and qu else None,
+                                  src=(x.get('provider') or {}).get('name', ''), seen=dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d %H:%M'))
+            got += 1
+        except Exception as e:
+            log.append(f'🏒 кф {gid}: {e.__class__.__name__}')
+        time.sleep(0.1)
+    if len(keep) > 600:                                          # хранить последние ~600 матчей
+        keep = dict(sorted(keep.items(), key=lambda kv: kv[1].get('seen', ''))[-600:])
+    DATA.mkdir(parents=True, exist_ok=True)
+    ODDS_LIVE.write_text(json.dumps(keep, ensure_ascii=False), encoding='utf-8')
+    log.append(f'🏒 рынок ESPN: цена есть у {got} из {len(ids)} матчей')
+    return keep
+
+
 def load_box() -> pd.DataFrame:
     return pd.read_csv(BOX, dtype={'id': str}).reindex(columns=BOX_COLS) if BOX.exists() else pd.DataFrame(columns=BOX_COLS)
 

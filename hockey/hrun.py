@@ -160,7 +160,16 @@ def _rest_days(games: pd.DataFrame, league: str) -> dict:
     return {(r.team, r.t): r.rest for r in lg.itertuples(index=False)}
 
 
-def forecast(games: pd.DataFrame, kc: dict, off: dict, models: dict | None = None) -> list[tuple[dict, list[dict]]]:
+# A21 (12.11.2026): НХЛ — линии от рынка. Кф ESPN pickcenter (DraftKings) без маржи: победа с ОТ и тотал → двумерная инверсия
+# (hmodel.invert) → λ → все линии. История 2025-11 → 2026-11 (n 1299, engine/research/hk_market.py, hk_invert.py):
+#   победа с ОТ: рынок 57,3% / лл 0,6711 против модели 54,7% / 0,6816; смесь рынок не улучшает (вес модели ≈ 0);
+#   линии после инверсии, Δ лог-лосс (z): ТБ4,5 −0,0071 (−3,0); ТБ5,5 −0,0083 (−3,1; угадано 55,4 → 58,1%); ИТ1 −0,0096 (−3,4);
+#   исход осн. времени −0,0082 (−2,5; 60,0 → 62,6%); Ф(+1,5) −0,0098 (−3,1). Нет цены — модель + поправка A11. Откат — False.
+MARKET_ON = {'NHL': True}
+MARKET_LOG: list = []
+
+
+def forecast(games: pd.DataFrame, kc: dict, off: dict, models: dict | None = None, market: dict | None = None) -> list[tuple[dict, list[dict]]]:
     now = _now()
     end = window_end(now)
     up = games[(games.state.astype(str) == 'pre') & (pd.to_datetime(games.start) > now)
@@ -168,7 +177,7 @@ def forecast(games: pd.DataFrame, kc: dict, off: dict, models: dict | None = Non
     out = []
     models = models if models is not None else {}
     rests: dict = {}
-    B2B_LOG.clear()
+    B2B_LOG.clear(); MARKET_LOG.clear()
     for r in up.itertuples(index=False):
         if r.league not in models:
             models[r.league] = HM.fit(games, r.league, pd.Timestamp(now))
@@ -176,8 +185,12 @@ def forecast(games: pd.DataFrame, kc: dict, off: dict, models: dict | None = Non
         lam = m.lambdas(r.home, r.away) if m else None
         if not lam:
             continue
+        mk = (market or {}).get(str(r.id)) if MARKET_ON.get(r.league) else None
         beta = B2B_BETA.get(r.league, 0)
-        if beta:                                             # гости второй день подряд, хозяева отдохнули
+        if mk and mk.get('p_ml') and 0.05 < float(mk['p_ml']) < 0.95:   # A21: рынок есть — λ из инверсии (A11 рынок уже учёл)
+            lam = HM.invert(m, float(mk['p_ml']), mk.get('line'), mk.get('p_over'), total0=lam[0] + lam[1])
+            MARKET_LOG.append(str(r.id))
+        elif beta:                                           # гости второй день подряд, хозяева отдохнули
             if r.league not in rests:
                 rests[r.league] = _rest_days(games, r.league)
             rh, ra = rests[r.league].get((r.home, pd.Timestamp(r.start))), rests[r.league].get((r.away, pd.Timestamp(r.start)))
@@ -486,7 +499,14 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     kc = {k: v[0] for k, v in kcal.items()}
     off = breaker(ld)
     models: dict = {}
-    items = forecast(games, kc, off, models)
+    market = {}
+    try:                                                  # A21: цены ESPN для матчей окна прогноза (НХЛ)
+        up = games[(games.league == 'NHL') & (games.state.astype(str) == 'pre') & (pd.to_datetime(games.start) > now)
+                   & (pd.to_datetime(games.start) <= window_end(now))]
+        market = HD.pregame_odds(list(up.id.astype(str)), log) if len(up) and not dry else {}
+    except Exception as ex:
+        log.append(f'🏒 рынок: сбой {ex.__class__.__name__}: {ex}')
+    items = forecast(games, kc, off, models, market)
     try:
         tp = HC.run(games, log)
     except Exception as ex:
@@ -497,7 +517,7 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     log.append(f'🏒 матчей ESPN {n}, рассчитано {ng}/{nl}, прогнозов НХЛ {by["NHL"]} · КХЛ {by["KHL"]}'
                f'{"" if "KHL" in public() else " (тень)"}, новых {nn}, обновлено {nu}; ⛔ {", ".join(off) or "нет"}; '
                f'сутки {cur:%d.%m}, отчёт {"да" if due else "нет"} (ждут итога {pend})'
-               + (f'; гости 2-й день подряд: {len(B2B_LOG)}' if B2B_LOG else ''))
+               + (f'; гости 2-й день подряд: {len(B2B_LOG)}' if B2B_LOG else '') + f'; от рынка: {len(MARKET_LOG)}')
     if dry:
         print('\n\n'.join(list_blocks(items, tp)))
         return []

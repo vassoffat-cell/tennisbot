@@ -70,6 +70,48 @@ def shift(m: Model, lh: float, la: float, beta: float) -> tuple[float, float]:
     return float(lh * np.exp(c)), float(la * np.exp(-c))
 
 
+def _ml(m: Model, lh: float, la: float) -> tuple[np.ndarray, float]:
+    P = m.matrix(lh, la)
+    i, j = np.indices(P.shape)
+    return P, float(P[i > j].sum() + np.trace(P) * m.ot_home(lh, la))
+
+
+def over_final(P: np.ndarray, line: float) -> float:
+    """P(итоговый тотал с ОТ/буллитами > line): основное время > line, либо ничья и (сумма + 1) > line."""
+    i, j = np.indices(P.shape)
+    return float(P[(i + j) > line].sum() + P[(i == j) & ((i + j) <= line) & ((i + j + 1) > line)].sum())
+
+
+def invert(m: Model, p_ml: float, line: float | None = None, p_over: float | None = None,
+           total0: float | None = None) -> tuple[float, float]:
+    """Двумерная инверсия рынка (A21, 12.11.2026): λ хозяев и гостей, при которых модель даёт рыночную вероятность победы
+    с ОТ (p_ml) и рыночную вероятность «больше line» (p_over, тотал рынка — с ОТ). Нет тотала рынка — сумма λ = total0."""
+    def split(s: float) -> float:
+        lo, hi = 0.15, 0.85
+        for _ in range(28):
+            mid = (lo + hi) / 2
+            if _ml(m, s * mid, s * (1 - mid))[1] < p_ml:
+                lo = mid
+            else:
+                hi = mid
+        return (lo + hi) / 2
+    if line is None or p_over is None or not (0.02 < p_over < 0.98):
+        s = float(total0 or 6.0)
+        r = split(s)
+        return s * r, s * (1 - r)
+    lo, hi = 3.0, 9.5
+    for _ in range(28):
+        s = (lo + hi) / 2
+        r = split(s)
+        if over_final(_ml(m, s * r, s * (1 - r))[0], line) < p_over:
+            lo = s
+        else:
+            hi = s
+    s = (lo + hi) / 2
+    r = split(s)
+    return float(s * r), float(s * (1 - r))
+
+
 def fit(games: pd.DataFrame, league: str, asof: pd.Timestamp, xi: float = XI, reg: float = REG) -> Model | None:
     """Подгонка по завершённым матчам лиги до asof (без утечки)."""
     g = games[(games.league == league) & games.hg_reg.notna() & games.ag_reg.notna()
