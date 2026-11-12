@@ -296,11 +296,103 @@ def summary_probe(log: list[str]) -> None:
     log.append(f"размер ответа {len(json.dumps(js))} байт")
 
 
+BOX = DATA / 'box.csv.gz'
+BOX_COLS = ['id', 'h_shots', 'a_shots', 'h_ppg', 'h_ppo', 'a_ppg', 'a_ppo', 'h_fo', 'h_hits', 'a_hits', 'h_give', 'a_give',
+            'h_goalie', 'h_g_sa', 'h_g_sv', 'h_g_toi', 'h_goalies', 'a_goalie', 'a_g_sa', 'a_g_sv', 'a_g_toi', 'a_goalies', 'odds']
+
+
+def _toi(x: str) -> float:
+    try:
+        m, sec = str(x).split(':')
+        return int(m) + int(sec) / 60
+    except Exception:
+        return 0.0
+
+
+def box_of(gid: str) -> dict:
+    """Протокол матча ESPN: броски в створ, большинство, вбрасывания, вратари (основной — с наибольшим временем), кф (pickcenter)."""
+    js = _get(SUMMARY.format(id=str(gid).split(':')[1]))
+    box = js.get('boxscore') or {}
+    out = {'id': gid}
+    for t in box.get('teams') or []:
+        k = 'h' if t.get('homeAway') == 'home' else 'a'
+        st = {x.get('name'): x.get('displayValue') for x in (t.get('statistics') or [])}
+        out[f'{k}_shots'] = _int(st.get('shotsTotal')); out[f'{k}_ppg'] = _int(st.get('powerPlayGoals'))
+        out[f'{k}_ppo'] = _int(st.get('powerPlayOpportunities')); out[f'{k}_hits'] = _int(st.get('hits'))
+        out[f'{k}_give'] = _int(st.get('giveaways'))
+        if k == 'h':
+            out['h_fo'] = st.get('faceoffPercent')
+    side = {}
+    for t in box.get('teams') or []:
+        side[(t.get('team') or {}).get('id')] = 'h' if t.get('homeAway') == 'home' else 'a'
+    for t in box.get('players') or []:
+        k = side.get((t.get('team') or {}).get('id'))
+        if not k:
+            continue
+        for grp in t.get('statistics') or []:
+            if not str(grp.get('name', '')).lower().startswith('goal'):
+                continue
+            names = grp.get('names') or grp.get('labels') or []
+            gl = []
+            for a in grp.get('athletes') or []:
+                stt = dict(zip(names, a.get('stats') or []))
+                gl.append(((a.get('athlete') or {}).get('displayName', ''), _int(stt.get('SA')), _int(stt.get('SV')), _toi(stt.get('TOI'))))
+            gl.sort(key=lambda x: -x[3])
+            if gl:
+                out[f'{k}_goalie'], out[f'{k}_g_sa'], out[f'{k}_g_sv'], out[f'{k}_g_toi'] = gl[0][0], gl[0][1], gl[0][2], round(gl[0][3], 1)
+                out[f'{k}_goalies'] = len(gl)
+    pc = (js.get('pickcenter') or [])
+    if pc:
+        x = pc[0]
+        keep = {k: v for k, v in x.items() if isinstance(v, (int, float, str))}
+        for k in ('homeTeamOdds', 'awayTeamOdds'):
+            if isinstance(x.get(k), dict):
+                keep[k] = {a: b for a, b in x[k].items() if isinstance(b, (int, float, str))}
+        keep['provider'] = (x.get('provider') or {}).get('name')
+        out['odds'] = json.dumps(keep, ensure_ascii=False)[:900]
+    return out
+
+
+def load_box() -> pd.DataFrame:
+    return pd.read_csv(BOX, dtype={'id': str}).reindex(columns=BOX_COLS) if BOX.exists() else pd.DataFrame(columns=BOX_COLS)
+
+
+def collect_box(log: list[str], limit: int = 1500, threads: int = 4) -> int:
+    """Протоколы доигранных матчей НХЛ, которых ещё нет в box.csv.gz (свежие — первыми). Возвращает число собранных."""
+    from concurrent.futures import ThreadPoolExecutor
+    df, bx = load(), load_box()
+    todo = df[(df.league == 'NHL') & df.end.astype(str).isin(['REG', 'OT', 'SO']) & ~df.id.isin(set(bx.id))]
+    ids = list(todo.sort_values('start', ascending=False).id)[:limit]
+    rows, err = [], 0
+
+    def one(gid):
+        for k in range(2):
+            try:
+                return box_of(gid)
+            except Exception:
+                time.sleep(1.5)
+        return None
+    with ThreadPoolExecutor(threads) as ex:
+        for r in ex.map(one, ids):
+            if r is None:
+                err += 1
+            else:
+                rows.append(r)
+    if rows:
+        DATA.mkdir(parents=True, exist_ok=True)
+        pd.concat([bx, pd.DataFrame(rows)], ignore_index=True).reindex(columns=BOX_COLS).drop_duplicates('id', keep='last') \
+            .to_csv(BOX, index=False, compression='gzip')
+    log.append(f'🏒 протоколы: собрано {len(rows)}, ошибок {err}, осталось {len(todo) - len(rows)}')
+    return len(rows)
+
+
 if __name__ == '__main__':
     import sys as _s
     lg: list[str] = []
     if len(_s.argv) > 1 and _s.argv[1] == 'probe':
         khl_probe_dates(lg)
+    elif len(_s.argv) > 1 and _s.argv[1] == 'box':                  # протоколы НХЛ порциями (≈ 1500 за запуск)
+        collect_box(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'box_probe':
         summary_probe(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'khl':                 # догрузка сезона КХЛ по датам (≈ 80 запросов, ~9 мин)
