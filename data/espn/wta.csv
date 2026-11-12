@@ -132,3 +132,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 187375,2026-11-10,Indian Wells,FAGE WTA Finals Indian Wells,Group Stage,1,0,222328,221103,Linda Noskova,Coco Gauff,6-3 6-3,STATUS_FINAL
 187385,2026-11-11,Indian Wells,FAGE WTA Finals Indian Wells,Group Stage,1,0,202494,214096,Elina Svitolina,Karolina Muchova,3-6 6-2 6-2,STATUS_FINAL
 187378,2026-11-11,Indian Wells,FAGE WTA Finals Indian Wells,Group Stage,1,0,259799,214544,Mirra Andreeva,Aryna Sabalenka,6-4 6-0,STATUS_FINAL
+187371,2026-11-12,Indian Wells,FAGE WTA Finals Indian Wells,Group Stage,1,0,221103,216146,Coco Gauff,Marta Kostyuk,6-4 7-5,STATUS_FINAL
