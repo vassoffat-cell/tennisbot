@@ -132,3 +132,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 186538,2026-11-11,Stockholm,Bybit Stockholm Open,Round 2,2,0,207686,134770,Alexander Shevchenko,Casper Ruud,6-7 6-4 6-3,STATUS_FINAL
 186544,2026-11-11,Stockholm,Bybit Stockholm Open,Round 2,2,0,208029,200175,Holger Rune,Miomir Kecmanovic,2-6 6-1 6-4,STATUS_FINAL
 186549,2026-11-12,Stockholm,Bybit Stockholm Open,Quarterfinal,5,0,126214,210506,Alejandro Tabilo,Alex Michelsen,7-5 7-6,STATUS_FINAL
+186548,2026-11-12,Stockholm,Bybit Stockholm Open,Quarterfinal,5,0,202058,207686,Thiago Agustin Tirante,Alexander Shevchenko,7-6 6-7 6-3,STATUS_FINAL
