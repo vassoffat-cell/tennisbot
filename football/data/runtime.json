@@ -144,7 +144,7 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-12 18:28",
+ "tips_book": "2026-11-12 19:17",
  "tips_book_v": 4,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -152,9 +152,6 @@
  "tips_backfill": "2026-11-11 04:41",
  "tips_test_1111": 1,
  "tips_alerted": [
-  "groznyi_ruslan:13074:0",
-  "groznyi_ruslan:13076:0",
-  "kapper_uk:21907:0",
   "kapper_uk:21908:0",
   "kapper_uk:21912:0",
   "kapper_uk:21936:0",
@@ -373,6 +370,8 @@
   "groznyi_ruslan:13084:0",
   "kapper_uk:22566:0",
   "stavki_na_sport_betting1:19649:0",
+  "stavki_na_sport_betting1:19649:s0",
+  "stavki_na_sport_betting1:19648:0",
   "stavki:5665:1",
   "stavki:5667:1",
   "stavki:5668:0",
@@ -751,7 +750,8 @@
   "kapper_uk:22566:0",
   "stavki_na_sport_betting1:19649:0",
   "stavki_na_sport_betting1:19649:s0",
-  "stavki_na_sport_betting1:19648:0"
+  "stavki_na_sport_betting1:19648:0",
+  "stavki_na_sport_betting1:19651:0"
  ],
  "resend_1111": 1,
  "resend_1111b": 1,
