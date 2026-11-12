@@ -772,4 +772,6 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401928550,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 19:00,Trival Valderas,Leganés,,Leganes,0,1,FT,first-round,0
 401928504,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 20:00,Tavernes de la Valldigna,Valencia,,Valencia,0,6,FT,first-round,0
 401928506,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 17:30,CS Puertollano,Albacete,,Albacete,0,3,FT,first-round,0
-401932846,fra.coupe_de_france,cup,FRA,F1,2026-11-12 18:00,Chambéry Savoie,Grenoble,,Grenoble,0,0,FT,seventh-round,0
+401928527,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 18:00,CD Tarancon,Levante,,Levante,1,2,ET,first-round,0
+401928551,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 18:00,CD Artistico Navalcarnero,Real Betis,,Betis,2,3,ET,first-round,0
+401932846,fra.coupe_de_france,cup,FRA,F1,2026-11-12 18:00,Chambéry Savoie,Grenoble,,Grenoble,0,2,FT,seventh-round,0
