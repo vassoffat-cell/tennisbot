@@ -39,7 +39,18 @@ def folded(head: str, items: list[str], limit: int = 3500) -> list[str]:
     """Турнир: заголовок + матчи в сворачиваемой цитате Telegram (<blockquote expandable>, разворачивается касанием).
     Длинный турнир делится на несколько цитат, заголовок повторяется с пометкой «продолжение»."""
     out, cur, h = [], [], head
-    for it in items:
+    parts = []
+    for it in items:                                          # 14.11: пункт длиннее лимита (неделя «Дв. шанс» — 240 линий) — по строкам
+        if len(it) <= limit:
+            parts.append(it); continue
+        buf = ''
+        for line in it.split('\n'):
+            if buf and len(buf) + len(line) + 1 > limit:
+                parts.append(buf); buf = ''
+            buf = f'{buf}\n{line}' if buf else line
+        if buf:
+            parts.append(buf)
+    for it in parts:
         if cur and sum(len(x) + 2 for x in cur) + len(it) > limit:
             out.append(f'{h}\n<blockquote expandable>' + '\n\n'.join(cur) + '</blockquote>')
             cur, h = [], head + ' (продолжение)'
