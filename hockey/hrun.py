@@ -43,9 +43,32 @@ HK_DAY_START = 12                                       # хоккейные с�
 REPORT_GRACE_H = 2                                      # отчёт ждёт нерассчитанные матчи до 14:00
 
 
+KHL_LIVE = [True]                 # 14.11: живая страховка КХЛ (khl_guard) — False → лига снова «в тени»
+KHL_GUARD_N = 40                  # после 40 рассчитанных живых матчей: лог-лосс модели хуже постоянного → «тень» и 🚨
+
+
 def public() -> tuple[str, ...]:
-    """Лиги в списке и отчёте; КХЛ — после ворот бэктеста (флаг), до того — «тень»."""
-    return ('NHL',) + (('KHL',) if getattr(C, 'HK_KHL_PUBLIC', False) else ())
+    """Лиги в списке и отчёте; КХЛ — после ворот бэктеста (флаг) и пока живая страховка не сработала, иначе «тень»."""
+    return ('NHL',) + (('KHL',) if getattr(C, 'HK_KHL_PUBLIC', False) and KHL_LIVE[0] else ())
+
+
+def khl_guard(gf: pd.DataFrame) -> str:
+    """A10 (14.11): КХЛ выпущена по бэктесту сезона 2024/25 с пропуском сезона (63,6% против 52,3% «хозяева всегда»,
+    лл 0,645 против 0,692). Живой контроль: n ≥ 40 рассчитанных матчей и лог-лосс модели ≥ лог-лосса постоянной P
+    (доля побед хозяев этих же матчей) → лига уходит в «тень» до разбора аудитом."""
+    if not len(gf):
+        return ''
+    k = gf[(gf.league == 'KHL') & gf.status.astype(str).isin(['REG', 'OT', 'SO'])]
+    p = k.p_ml.map(_num).clip(0.01, 0.99)
+    y = (k.hg.map(_num) > k.ag.map(_num)).astype(float)
+    ok = p.notna() & y.notna()
+    p, y = p[ok], y[ok]
+    if len(p) < KHL_GUARD_N:
+        return f'КХЛ живых {len(p)}/{KHL_GUARD_N} до проверки'
+    ll = float(-(y * np.log(p) + (1 - y) * np.log(1 - p)).mean())
+    h = float(y.mean()); llc = float(-(h * np.log(h) + (1 - h) * np.log(1 - h))) if 0 < h < 1 else 0.0
+    KHL_LIVE[0] = ll < llc
+    return f"КХЛ живых {len(p)}: лл {ll:.3f} против {llc:.3f}" + ('' if KHL_LIVE[0] else ' → 🚨 «тень» (страховка)')
 GAME_COLS = ['created', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'lam_h', 'lam_a', 'p_h', 'p_d', 'p_a',
              'p_ml', 'q_ot', 'status', 'hg', 'ag', 'hg_reg', 'ag_reg', 'settled', 'logloss']
 LINE_COLS = ['created', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'slot', 'market', 'pick', 'line', 'label',
@@ -549,6 +572,12 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     gf, ld = store.read('hk_games'), store.read('hk_lines')
     ng, nl = settle(store, games, gf, ld)
     gf, ld = store.read('hk_games'), store.read('hk_lines')
+    try:                                                  # A10: живая страховка КХЛ
+        g_ = khl_guard(gf)
+        if g_:
+            log.append(f'🏒 {g_}')
+    except Exception as ex:
+        log.append(f'🏒 страховка КХЛ: сбой {ex.__class__.__name__}')
     loc, now = _local(), _now()
     cur = hday(loc)
     yday = cur - dt.timedelta(days=1)
