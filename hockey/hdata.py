@@ -460,7 +460,7 @@ def espn_odds_probe(log: list[str]) -> None:
                       ('soccer', 'por.1'), ('soccer', 'ned.1'), ('soccer', 'tur.1'), ('soccer', 'eng.2'), ('soccer', 'uefa.champions'),
                       ('tennis', 'atp'), ('tennis', 'wta')):
         try:
-            sb = _get(f'{base}/{sport}/{lg}/scoreboard' + ('?dates=20261121-20261124' if sport == 'soccer' else ''))
+            sb = _get(f'{base}/{sport}/{lg}/scoreboard' + ('?dates=20261122' if sport == 'soccer' else ''))
             evs = sb.get('events') or []
             n_odds = sum(1 for e in evs if ((e.get('competitions') or [{}])[0].get('odds')))
             msg = f'{sport}/{lg}: событий {len(evs)}, с кф в табло {n_odds}'
