@@ -338,9 +338,39 @@ ROUTE = {'tennis': 'tennis', 'hockey': 'tennis'}     # хоккей — в те�
 ICON = {'football': '⚽', 'hockey': '🏒', 'tennis': '🎾', 'basketball': '🏀', 'volleyball': '🏐', 'esports': '🎮', 'other': '•'}
 
 
+def _relations() -> dict:
+    """uid прогноза → строка «согласна ли система» (14.11): футбол — tips.csv (наши матчи), хоккей — hockey/data/tips.csv."""
+    out = {}
+    try:
+        t = T.load()
+        for r in t.itertuples(index=False):
+            p = r.p_model
+            try:
+                p = float(p)
+            except (TypeError, ValueError):
+                continue
+            out[r.uid] = (f'🔥 система согласна (P {p * 100:.0f}%)' if p >= 0.55 else f'⚔️ система против (P {p * 100:.0f}%)' if p <= 0.45
+                          else f'· система нейтральна (P {p * 100:.0f}%)')
+    except Exception:
+        pass
+    try:
+        from pathlib import Path
+        h = pd.read_csv(Path(__file__).resolve().parent.parent / 'hockey' / 'data' / 'tips.csv', dtype=str, keep_default_na=False)
+        for r in h.itertuples(index=False):
+            try:
+                p = float(r.p_model)
+            except (TypeError, ValueError):
+                continue
+            out[r.uid] = {'1': '🔥 система согласна', '-1': '⚔️ система против'}.get(str(r.rel), '· система нейтральна') + f' (P {p * 100:.0f}%)'
+    except Exception:
+        pass
+    return out
+
+
 def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> None:
-    """👥 Новые прогнозы каперов (за 6 ч, ещё не присланные) → бот своего вида спорта: теннис — теннисный, остальное — футбольный.
-    Купоны (Green Line) — только показанные до матча; таблица «канал → матч · ставка · кф» + ROI канала по табло."""
+    """👥 Новые прогнозы каперов (за 6 ч, ещё не присланные) → бот своего вида спорта: теннис и хоккей — «Заметки Т», остальное — «Заметки Ф».
+    14.11 (решение пользователя): каждый прогноз — канал, матч, ставка, кф и согласна ли система (🔥 / ⚔️); матчи вне нашей базы тоже.
+    Купоны (Green Line) — только показанные до матча."""
     import config as _C
     if not getattr(_C, 'CAPPER_ALERTS', True) and not test:      # 11.11.2026: карточки каперов — в фоне (учёт и итоги — в отчётах)
         rt['tips_alerted'] = (list(rt.get('tips_alerted', [])) + list(df.uid))[-600:]
@@ -353,10 +383,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     sent = set(rt.get('tips_alerted', [])) | set(rt.get('gl_alerted', []))
     fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)
     d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
-    ok = d.apply(lambda r: bool(r['a']) and bool(re.match(r'(П[12]|ИТ[12]?[БМ]|Т[БМ]|Ф[12]|ОЗ|1X|X2|12|ничья|победа)',
-                                                         _pick_short(r['pick'], r['a'], r['b']).replace('Х', 'X')))
-                 and not T.SKIP.search(str(r['pick']).lower()), axis=1) if len(d) else d.index == d.index
-    d = d[ok]
+    d = d[(d.a != '') & ~d.pick.astype(str).str.lower().str.contains('|'.join(['реклам', 'промокод', 'подписат']), regex=True)]   # 14.11: все прогнозы, кроме рекламы
     if test:                                                      # 🧪 разовая проверка доставки: последние прогнозы, в оба бота
         d = df[(df.a != '') & ((df.slip == '') | (df.seen == 'pre'))].copy()
         okt = d.apply(lambda r: bool(re.match(r'(П[12]|ИТ[12]?[БМ]|Т[БМ]|Ф[12]|ОЗ|1X|X2|12|победа)',
@@ -365,20 +392,27 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     if d.empty:
         return
     st = W.stats()
+    rel = _relations()
     n = 0
     for bot in (['main', 'tennis'] if test else sorted({ROUTE.get(x, 'main') for x in d.sport})):
-        g = d if test else d[d.sport.map(lambda x: ROUTE.get(x, 'main')) == bot]
-        lines = []
+        g = d[d.sport.map(lambda x: ROUTE.get(x, 'main')) == bot]
+        if test:                                                  # тест: последние прогнозы СВОЕГО бота (хоккей/теннис → «Заметки Т»)
+            g = df[(df.a != '') & (df.sport.map(lambda x: ROUTE.get(x, 'main')) == bot)].tail(4)
+        if g.empty:
+            continue
+        blocks = []
         for src, h in g.groupby('src', sort=False):
             r0 = st[st.src == src] if len(st) else st
-            roi = (f" ROI {'+' if r0.roi.iloc[0] > 0 else ''}{rtable.pct(r0.roi.iloc[0], 0)}%" if len(r0) and r0.nk.iloc[0] >= 10 else '')
-            lines.append(f"{T.TG.get(src, src)}{roi}")
+            roi = (f" · ROI {'+' if r0.roi.iloc[0] > 0 else ''}{rtable.pct(r0.roi.iloc[0], 0)}%" if len(r0) and r0.nk.iloc[0] >= 10 else '')
+            lines = [f"<b>{notify.esc(T.TG.get(src, src))}</b>{roi}"]
             for r in h.itertuples(index=False):
-                m = f"{_short(r.a, 6)}–{_short(r.b, 6)}" if r.a else '—'
-                lines.append(f"{ICON.get(r.sport, '•')}{m:<13} {_short(_pick_short(r.pick, r.a, r.b), 9):<9} {r.k or '':>4}".rstrip())
+                k = str(r.k or '').replace('.', ',')
+                lines.append(f"{ICON.get(r.sport, '•')} {notify.esc(r.a)} — {notify.esc(r.b)} · <b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>"
+                             + (f' @{k}' if k else '') + f"\n   {rel.get(r.uid, '— система: матч вне нашей базы или оценка в ближайшем прогоне')}")
+            blocks.append('\n'.join(lines))
         notify.send_blocks([('🧪 <b>ТЕСТ доставки</b> · прошлые прогнозы, не новые\n' if test else '')
-                            + '👥 <b>Каперы · новые прогнозы</b>\n<pre>' + notify.esc('\n'.join(lines[:40])) + '</pre>'
-                            '\n<i>ROI — по табло ESPN, их кф (если ≥ 10 ставок)</i>'], bot=bot)
+                            + '👥 <b>Каперы · новые прогнозы</b>\n\n' + '\n\n'.join(blocks)
+                            + '\n<i>🔥 система согласна · ⚔️ система против · ROI канала — по табло ESPN, их кф (от 10 ставок)</i>'], bot=bot)
         n += len(g)
     if test:
         log.append(f'👥 тест доставки: {n} строк в оба бота')

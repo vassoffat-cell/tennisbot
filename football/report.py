@@ -290,7 +290,7 @@ def day_lists(af: pd.DataFrame, ld: pd.DataFrame, daily_day, late: set | None = 
 def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal: dict | None = None,
           kprev: dict | None = None, off: dict | None = None, notes: list[str] | None = None,
           daily_day=None, period: str = 'всего', extra: list[str] | None = None,
-          late: set | None = None) -> list[str]:
+          late: set | None = None, split: bool = False) -> list[str]:
     """Блоки отчёта (HTML): заголовок со статусом, таблица «Линия (цель) | Кол-во | %» (rtable), короткие примечания;
     у суточного (daily_day) — строки «сутки / 7 дней / всего» и свёрнутый список матчей суток."""
     e = notify.esc
@@ -299,6 +299,10 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     off = off or {}
     T, tail, worst, S = [], [], 3, []
     d7 = (daily_day - pd.Timedelta(days=7).to_pytimedelta()) if daily_day is not None else None
+    W7 = ' 7 дней'
+    if split and daily_day is not None:                        # 14.11: «за эту неделю» — с понедельника, а не скользящие 7 дней
+        d7 = daily_day - pd.Timedelta(days=daily_day.weekday() + 1).to_pytimedelta()
+        W7 = ' эта неделя'
 
     # исход
     if len(M):
@@ -309,7 +313,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         if daily_day is not None:
             T.append((f'Исход ({g})', '', '', ''))
             d = M[M.day == daily_day]; w = M[M.day > d7]
-            T += [RT.row(' сутки', d.hit.sum(), len(d)), RT.row(' 7 дней', w.hit.sum(), len(w)),
+            T += [RT.row(' сутки', d.hit.sum(), len(d)), RT.row(W7, w.hit.sum(), len(w)),
                   RT.row(' всего', M.hit.sum(), n, mark=COLOR[c] + trend(M, 'hit', today))]
         else:
             T.append(RT.row('Исход', M.hit.sum(), n, g, COLOR[c] + trend(M, 'hit', today)))
@@ -344,7 +348,7 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         T.append(RT.row('Линии', L.won.sum(), len(L), RT.num(tgt) + '%', COLOR[c] + trend(L, 'won', today)))
         if daily_day is not None:
             d = L[L.day == daily_day]; w = L[L.day > d7]
-            T += [RT.row(' сутки', d.won.sum(), len(d)), RT.row(' 7 дней', w.won.sum(), len(w))]
+            T += [RT.row(' сутки', d.won.sum(), len(d)), RT.row(W7, w.won.sum(), len(w))]
         for mk in MARKETS:
             s = L[L.market.astype(str) == mk]
             if s.empty:
@@ -376,8 +380,10 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         if len(hi):
             T.append(RT.row(' P ≥ 60%', hi.won.sum(), len(hi), RT.pct(hi.p.mean(), 0) + '%'))
 
-    # ставка дня
+    # ставка дня (split — отдельным сообщением: dp_report)
     D = dp[dp.result.astype(str).isin(['W', 'L'])].copy() if len(dp) else dp
+    if split:
+        D = D.iloc[0:0]
     if len(D) and 'rank' in D.columns:                           # 14.11: строка «Ставка дня» — только ⭐1 (первый приговор и его правки);
         D = D[D['rank'].astype(str).str.strip().isin(['', 'nan', '1', '1.0'])]   # ⭐2/⭐3 — строкой «➕ новые линии»
     if len(D):
@@ -388,8 +394,8 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         T.append(RT.row('Ставка дня ⭐1', D.won.sum(), len(D), RT.num(tgt, 0) + '%', COLOR[c]))
         if daily_day is not None:
             w = D[D.day > d7]
-            T.append(RT.row(' 7 дней', w.won.sum(), len(w)))
-    ops = ops_rows(dp)
+            T.append(RT.row(W7, w.won.sum(), len(w)))
+    ops = ops_rows(dp) if not split else []
     if ops and not len(D):
         T.append(('Ставка дня — итогов пока нет', '', '', ''))
     T += ops
@@ -410,13 +416,46 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
         S += [RT.note_row(x) for x in notes] if notes else [('Данные', '✅ ок')]
 
     status = {3: '🟢 цели доказаны', 2: '🟡 цели ещё не доказаны', 1: '🔴 нужен разбор'}[worst]
-    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + RT.kv(S) if S else '')
+    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + RT.kv(S) if S and not split else '')
               + ('\n' + '\n'.join(tail) if tail else '')]
     if daily_day is not None:
-        lst = DP_LIST(dp, daily_day)
+        lst = DP_LIST(dp, daily_day) if not split else ''
         if lst:
             blocks.append(lst)
         blocks += day_lists(af, ld, daily_day, late)
+    return blocks
+
+
+def dp_report(dp: pd.DataFrame, title: str, daily_day=None, d0=None) -> list[str]:
+    """14.11: «другим сообщением — отчёт по ставкам дня». Таблица: ⭐1 сутки / эта неделя (с пн) / всего, ➕ новые линии, ✏️ правки
+    первого приговора, отдача по кф, 🔥/⚔️; ниже — каждая ставка дня суток (или каждого дня недели) отдельной строкой."""
+    e = notify.esc
+    T = []
+    wl = dp[dp.result.astype(str).isin(['W', 'L'])].copy() if len(dp) else dp
+    rk = (wl['rank'].astype(str).str.strip() if 'rank' in wl.columns else pd.Series('1', index=wl.index)) if len(wl) else pd.Series(dtype=str)
+    D = wl[rk.isin(['', 'nan', '1', '1.0'])].copy() if len(wl) else wl
+    if len(D):
+        D['won'] = (D.result.astype(str) == 'W').astype(int)
+        D['day'] = pd.to_datetime(D.date, errors='coerce').dt.date
+        tgt, _ = step_target(D.won.values, C.STEPS['daypick'])
+        c = color_vs(D.won.mean(), len(D), tgt)
+        if daily_day is not None and d0 is None:
+            mon = daily_day - pd.Timedelta(days=daily_day.weekday()).to_pytimedelta()
+            d1, w = D[D.day == daily_day], D[D.day >= mon]
+            T += [(f'⭐1 Ставка дня ({RT.num(tgt, 0)}%)', '', '', ''), RT.row(' сутки', d1.won.sum(), len(d1)),
+                  RT.row(' эта неделя', w.won.sum(), len(w)), RT.row(' всего', D.won.sum(), len(D), mark=COLOR[c])]
+        else:
+            T.append(RT.row('⭐1 Ставка дня', D.won.sum(), len(D), RT.num(tgt, 0) + '%', COLOR[c]))
+    else:
+        T.append(('⭐1 — итогов пока нет', '', '', ''))
+    T += ops_rows(dp)
+    blocks = [f'<b>{e(title)}</b>\n' + RT.render(T)]
+    days = [daily_day] if (daily_day is not None and d0 is None) else \
+        ([d0 + pd.Timedelta(days=k).to_pytimedelta() for k in range((daily_day - d0).days + 1)] if d0 is not None else [])
+    for d in days:
+        lst = DP_LIST(dp, d)
+        if lst:
+            blocks.append(lst)
     return blocks
 
 
@@ -457,7 +496,7 @@ def ops_rows(dp: pd.DataFrame) -> list:
     if not len(dp):
         return []
     out = []                                                    # дни с правкой ⭐1 — в EXTRA_OPS (dpcore.changes_rows)
-    if 'screenshots' in dp.columns:
+    if 'screenshots' in dp.columns and getattr(C, 'R4_SHOT_CYCLE', True):    # 14.11: без цикла скриншотов строка не нужна
         out.append((' скриншотов', str(int(dp.screenshots.map(J.num).fillna(0).sum())), '', ''))
     if 'k' in dp.columns:
         d = dp[dp.k.map(J.num).notna() & dp.result.astype(str).isin(['W', 'L', 'P'])]

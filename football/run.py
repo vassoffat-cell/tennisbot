@@ -44,6 +44,9 @@ import tips
 import tipsbook
 import tipswide
 
+sys.path.append(str(__import__('pathlib').Path(__file__).resolve().parent.parent))   # общий модуль отчёта каперов
+import caprep  # noqa: E402
+
 LEAGUE_KINDS = ('league',)
 SRC_RU = {'market': 'рынок', 'model': 'модель'}
 STORE_COLS = ['id', 'comp', 'kind', 'country', 'div', 'date', 'home', 'away', 'home_fd', 'away_fd', 'hg', 'ag', 'status',
@@ -854,23 +857,33 @@ def run(dry: bool = False) -> str:
             R.EXTRA_OPS = DPC.changes_rows(store, dpk)
         except Exception as ex:
             log.append(f'🔁 смены: сбой {ex.__class__.__name__}')
-        notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + (' · повтор' if resend and not daily_due else ''), kcal=kcal, kprev=kprev, off=off,
-                                   notes=notes, daily_day=yday, extra=cov, late=late))
-        try:                                                       # 👥 каперы — отдельной карточкой (HTML), сразу после отчёта
-            notify.send_blocks([tipsbook.card()])
+        rep_tag = ' · повтор' if resend and not daily_due else ''      # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
+        notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, kprev=kprev, off=off,
+                                   notes=notes, daily_day=yday, extra=cov, late=late, split=True))
+        try:
+            notify.send_blocks([caprep.report('football', yday, yday, f'{yday:%d.%m}' + rep_tag), tipsbook.card()])
         except Exception as ex:
-            log.append(f'👥 карточка каперов: сбой {type(ex).__name__}')
+            log.append(f'👥 отчёт каперов: сбой {type(ex).__name__}')
+        notify.send_blocks(R.dp_report(dpk, f'⚽ Футбол · ставки дня · {yday:%d.%m}' + rep_tag, yday))
         if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
             rt['last_daily'] = today
         rt['resend_1111b'] = 1
         if rday:
             rt['resend_done'] = rday
         log.append('суточный отчёт отправлен')
-        if daily_due and C.wday(loc).weekday() == 0:             # понедельник: отдельно — отчёт за прошедшую неделю
+        wk = os.getenv('RESEND_WEEK', '').strip()                 # тест / повтор недельного: неделя, оканчивающаяся этой датой
+        if (daily_due and C.wday(loc).weekday() == 0) or (wk and rt.get('resend_week_done') != wk):
+            if wk and rt.get('resend_week_done') != wk:
+                yday = dt.date.fromisoformat(wk); rt['resend_week_done'] = wk
             d0 = yday - dt.timedelta(days=6)
             a_, l_, d_ = R.week(af, ld, dpk, d0, yday)
             notify.send_blocks(R.build(a_, l_, d_, f'📅 Футбол · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
-                                       period='за неделю') + R.week_lines(ld, d0, yday))
+                                       period='за неделю', split=True) + R.week_lines(ld, d0, yday))
+            try:
+                notify.send_blocks([caprep.report('football', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
+            except Exception as ex:
+                log.append(f'👥 недельный отчёт каперов: сбой {type(ex).__name__}')
+            notify.send_blocks(R.dp_report(d_, f'⚽ Футбол · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0))
             log.append('недельный отчёт отправлен')
         if reminder_due(rt):                                      # запрос файла — сразу после отчётов
             notify.send_blocks([reminder_text(rt)])

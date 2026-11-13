@@ -769,19 +769,36 @@ def run(dry: bool = False) -> str:
             R.EXTRA_OPS = DPC.changes_rows(store, store.read('day_pick'))
         except Exception as e:
             log.append(f'🔁 смены: сбой {e.__class__.__name__}')
-        notify.send_blocks(R.build(auto, ldf, store.read('day_pick'), f'📈 Теннис · отчёт · {yday:%d.%m}' + (' · повтор' if resend and not daily_due else ''), kcal=kcal, extra=cov, late=late,
-                                   kprev=kprev, off=off, notes=notes, daily_day=yday))
+        rep_tag = ' · повтор' if resend and not daily_due else ''
+        dpk = store.read('day_pick')                              # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
+        notify.send_blocks(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,
+                                   kprev=kprev, off=off, notes=notes, daily_day=yday, split=True))
+        try:
+            import caprep
+            notify.send_blocks([caprep.report('tennis', yday, yday, f'{yday:%d.%m}' + rep_tag)])
+        except Exception as ex:
+            log.append(f'👥 отчёт каперов: сбой {ex.__class__.__name__}')
+        notify.send_blocks(R.dp_report(dpk, f'🎾 Теннис · ставки дня · {yday:%d.%m}' + rep_tag, yday))
         if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
             rt['last_daily'] = today
         rt['resend_1111b'] = 1
         if rday:
             rt['resend_done'] = rday
         log.append('суточный отчёт отправлен')
-        if daily_due and C.wday(loc).weekday() == 0:             # понедельник: отдельно — отчёт за прошедшую неделю
+        wk = os.getenv('RESEND_WEEK', '').strip()                 # тест / повтор недельного: неделя, оканчивающаяся этой датой
+        if (daily_due and C.wday(loc).weekday() == 0) or (wk and rt.get('resend_week_done') != wk):
+            if wk and rt.get('resend_week_done') != wk:
+                yday = dt.date.fromisoformat(wk); rt['resend_week_done'] = wk
             d0 = yday - dt.timedelta(days=6)
             a_, l_, d_ = R.week(auto, ldf, store.read('day_pick'), d0, yday)
             notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
-                                       period='за неделю') + R.week_lines(ldf, d0, yday))
+                                       period='за неделю', split=True) + R.week_lines(ldf, d0, yday))
+            try:
+                import caprep
+                notify.send_blocks([caprep.report('tennis', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
+            except Exception as ex:
+                log.append(f'👥 недельный отчёт каперов: сбой {ex.__class__.__name__}')
+            notify.send_blocks(R.dp_report(d_, f'🎾 Теннис · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0))
             log.append('недельный отчёт отправлен')
         if reminder_due(rt):                                      # запрос файлов — сразу после отчётов
             notify.send_blocks([reminder_text(rt)])
@@ -853,8 +870,12 @@ def run(dry: bool = False) -> str:
     try:                                                               # 🏒 хоккей — отдельными сообщениями в этом же боте
         from hockey import hrun
         rd = os.getenv('RESEND_DAY', '').strip()
+        hw = os.getenv('RESEND_WEEK', '').strip()
         hk = hrun.run(store, rt, log, force=resend and not dry, dry=dry,     # свои сутки 12:00 → 12:00
-                      day_override=dt.date.fromisoformat(rd) if rd and not dry and rt.get('hk_resend_done') != rd else None)
+                      day_override=dt.date.fromisoformat(rd) if rd and not dry and rt.get('hk_resend_done') != rd else None,
+                      week_override=dt.date.fromisoformat(hw) if hw and not dry and rt.get('hk_resend_week_done') != hw else None)
+        if hw:
+            rt['hk_resend_week_done'] = hw
         if rd:
             rt['hk_resend_done'] = rd
         from hockey import hpick

@@ -352,7 +352,8 @@ def _shadow(gf: pd.DataFrame, ld: pd.DataFrame, lg: str, day, d0) -> str:
 
 
 def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, kc: dict, kprev: dict, off: dict,
-           d0: dt.date | None = None, tp: pd.DataFrame | None = None, dp: pd.DataFrame | None = None) -> list[str]:
+           d0: dt.date | None = None, tp: pd.DataFrame | None = None, dp: pd.DataFrame | None = None,
+           split: bool = False) -> list[str]:
     """Отчёт: таблица «Линия (цель) | Кол-во | %», сводка-таблица, полный список матчей с линиями (суточный) / по типу (неделя)."""
     e = notify.esc
     gf_all, ld_all = gf, ld
@@ -374,8 +375,9 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
         worst = min(worst, c)
         T.append(RT.row('Победа с ОТ', G.hit.sum(), len(G), RT.num(tgt, 0) + '%', COLOR[c]))
         if day is not None and d0 is None:
-            d = G[G.day == day]; w = G[G.day > day - dt.timedelta(days=7)]
-            T += [RT.row(' сутки', d.hit.sum(), len(d)), RT.row(' 7 дней', w.hit.sum(), len(w))]
+            mon = day - dt.timedelta(days=day.weekday())               # 14.11: «эта неделя» — с понедельника
+            d = G[G.day == day]; w = G[G.day >= mon] if split else G[G.day > day - dt.timedelta(days=7)]
+            T += [RT.row(' сутки', d.hit.sum(), len(d)), RT.row(' эта неделя' if split else ' 7 дней', w.hit.sum(), len(w))]
         ll = G.logloss.map(_num).astype(float)
         T.append((' лог-лосс', str(len(G)), RT.num(ll.mean(), 3), ''))
     else:
@@ -400,7 +402,7 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
             q = fx[fx.pick.astype(str) == pk]
             if len(q):
                 T.append(RT.row(ru, q.won.sum(), len(q), RT.pct(q.p.mean(), 0) + '%'))
-    if dp is not None and len(dp):                         # ⭐ ставка дня: итоговая, новые линии, правки первого приговора
+    if dp is not None and len(dp) and not split:           # ⭐ ставка дня (split — отдельным сообщением: dp_report)
         rr = HP.rows(dp, (d0 or day) if day is not None else None, day)
         for k, lab in (('main', '⭐ Ставка дня'), ('extra', ' ➕ новые линии')):
             w, n, pm = rr.get(k, (0, 0, 0.0))
@@ -432,21 +434,11 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
             if f[1] or c[1]:
                 S.append(('🔥 / ⚔️', f'{f[0]}/{f[1]} · {c[0]}/{c[1]}'))
     status = {3: '🟢 цели доказаны', 2: '🟡 цели ещё не доказаны', 1: '🔴 нужен разбор'}[worst]
-    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + '\n' + RT.kv(S)]
-    if day is not None and d0 is None and dp is not None and len(dp):   # 14.11: каждая ставка дня суток — отдельной строкой
-        x = dp[pd.to_datetime(dp.date, errors='coerce').dt.date == day].copy()
-        if len(x):
-            x['rk'] = x['rank'].map(_num)
-            x = x.sort_values(['rk', 'created'])
-            fin = x[x.status.map(_blank)]
-            w = int((fin.result.astype(str) == 'W').sum()); n = int(fin.result.astype(str).isin(['W', 'L']).sum())
-            out = [f'<b>🏒 Ставки дня · {day:%d.%m}</b>' + (f' — угадано {w}/{n}' if n else '')]
-            for r in x.itertuples(index=False):
-                old = str(r.status) == 'правка'
-                out.append(f"{LMARK.get(str(r.result), '⏳')} 🏒{int(r.rk)} {'<s>' if old else '<b>'}{e(str(r.label))}{'</s>' if old else '</b>'} · "
-                           f"{e(str(r.home))} — {e(str(r.away))} · {_num(r.p) * 100:.0f}%"
-                           + (f" · <i>{'заменена' if old else e(str(r.reason))}</i>" if old or not _blank(r.reason) else ''))
-            blocks.append('\n'.join(out))
+    blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('' if split else '\n' + RT.kv(S))]
+    if day is not None and d0 is None and dp is not None and len(dp) and not split:
+        lst = _dp_list(dp, day)
+        if lst:
+            blocks.append(lst)
     if day is not None and d0 is None and len(gf):        # суточный: каждый матч и каждая предложенная линия
         A = gf.copy(); A['day'] = A.start_utc.map(_day)
         A = A[A.day == day].sort_values('start_utc')
@@ -481,9 +473,60 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
     return blocks
 
 
+def _dp_list(dp: pd.DataFrame, day: dt.date) -> str:
+    """Каждая ставка дня хоккейных суток — отдельной строкой (14.11): номер, линия, матч, P, итог; заменённая — зачёркнута."""
+    e = notify.esc
+    x = dp[pd.to_datetime(dp.date, errors='coerce').dt.date == day].copy()
+    if not len(x):
+        return ''
+    x['rk'] = x['rank'].map(_num)
+    x = x.sort_values(['rk', 'created'])
+    fin = x[x.status.map(_blank)]
+    w = int((fin.result.astype(str) == 'W').sum()); n = int(fin.result.astype(str).isin(['W', 'L']).sum())
+    out = [f'<b>🏒 Ставки дня · {day:%d.%m}</b>' + (f' — угадано {w}/{n}' if n else '')]
+    for r in x.itertuples(index=False):
+        old = str(r.status) == 'правка'
+        out.append(f"{LMARK.get(str(r.result), '⏳')} 🏒{int(r.rk)} {'<s>' if old else '<b>'}{e(str(r.label))}{'</s>' if old else '</b>'} · "
+                   f"{e(str(r.home))} — {e(str(r.away))} · {_num(r.p) * 100:.0f}% · {notify.fair(_num(r.p))}"
+                   + (f" · <i>{'заменена' if old else e(str(r.reason))}</i>" if old or not _blank(r.reason) else ''))
+    return '\n'.join(out)
+
+
+def dp_report(dp: pd.DataFrame, title: str, day: dt.date, d0: dt.date | None = None) -> list[str]:
+    """14.11: «другим сообщением — отчёт по ставкам дня» (хоккей): ⭐1 сутки / эта неделя (с пн) / всего, ➕ новые линии,
+    ✏️ дни с правкой, права итоговая; ниже — ставки каждого дня периода."""
+    e = notify.esc
+    T = []
+    if dp is None or not len(dp):
+        return [f'<b>{e(title)}</b>\nСтавок дня за период нет.']
+    mon = day - dt.timedelta(days=day.weekday())
+    per = [(' сутки', day, day), (' эта неделя', mon, day), (' всего', None, None)] if d0 is None else [(' неделя', d0, day), (' всего', None, None)]
+    T.append(('⭐1 Ставка дня', '', '', ''))
+    for lab, a, b in per:
+        w, n, pm = HP.rows(dp, a, b).get('main', (0, 0, 0.0))
+        T.append(RT.row(lab, w, n, RT.pct(pm, 0) + '%' if n else ''))
+    rr = HP.rows(dp, d0 or mon, day) if d0 is not None else HP.rows(dp, None, None)
+    w, n, pm = rr.get('extra', (0, 0, 0.0))
+    if n:
+        T.append(RT.row('➕ новые линии', w, n, RT.pct(pm, 0) + '%'))
+    ed, nd = rr.get('days', (0, 0))
+    if nd:
+        sh = ed / nd
+        T.append(RT.row('✏️ дни с правкой ⭐1', ed, nd, mark='🟢' if sh <= 0.2 else '🟡' if sh <= 0.4 else '🔴'))
+    g, b = rr.get('who', (0, 0))
+    if g + b:
+        T.append(RT.row(' права итоговая', g, g + b))
+    blocks = [f'<b>{e(title)}</b>\n' + RT.render(T)]
+    for k in range(((day - d0).days + 1) if d0 is not None else 1):
+        lst = _dp_list(dp, (d0 or day) + dt.timedelta(days=k))
+        if lst:
+            blocks.append(lst)
+    return blocks
+
+
 # ------------------------------------------------------------------ прогон
 def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool = False,
-        day_override: dt.date | None = None) -> list[dict]:
+        day_override: dt.date | None = None, week_override: dt.date | None = None) -> list[dict]:
     """Вызывается из autorun.py после тенниса (каждые 2 ч). Расписание — свои хоккейные сутки (12:00 → 12:00).
     Возвращает строки отчёта для «Аналитики» (лист reports)."""
     today = dt.date.today()
@@ -518,9 +561,9 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
         pend = int(Y.settled.map(_blank).sum())
     since = (now - _bound_utc(cur)).total_seconds() / 3600
     due = force or (rt['hk_last_daily'] != str(yday) and (pend == 0 or since >= REPORT_GRACE_H))
-    replay = day_override is not None                     # повтор отчёта за выбранные хоккейные сутки (не сдвигает плановый)
+    replay = day_override is not None or week_override is not None   # повтор / тест (не сдвигает плановый отчёт)
     if replay:
-        yday, due = day_override, True
+        yday, due = (day_override or week_override), True
     if due or not rt.get('hk_kcal'):
         prev = rt.get('hk_kcal') or {}
         rt['hk_kcal_prev'] = prev
@@ -562,14 +605,29 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     gf, ld = store.read('hk_games'), store.read('hk_lines')
     kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
     if due:
-        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + (' · повтор' if replay else ''), yday, kcal, kprev,
-                                  off, tp=tp, dp=dp))
+        tag = ' · повтор' if replay else ''                    # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
+        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
+        try:
+            import caprep
+            notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START)])
+        except Exception as ex:
+            log.append(f'🏒 отчёт каперов: сбой {ex.__class__.__name__}')
+        notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday))
         if not replay:
             rt['hk_last_daily'] = str(yday)
         log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен' + (' (повтор)' if replay else ''))
-        if yday.weekday() == 6 and not replay:                           # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
+        if (yday.weekday() == 6 and not replay) or week_override:        # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
+            if week_override:
+                yday = week_override
             d0 = yday - dt.timedelta(days=6)
-            notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp))
+            notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp,
+                                      split=True))
+            try:
+                import caprep
+                notify.send_blocks([caprep.report('hockey', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}', day_start=HK_DAY_START)])
+            except Exception as ex:
+                log.append(f'🏒 недельный отчёт каперов: сбой {ex.__class__.__name__}')
+            notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0))
             log.append('🏒 недельный отчёт отправлен')
     txt = report(gf, ld, '🏒 Хоккей · всё время', None, kcal, kprev, off, tp=tp, dp=dp)[0]
     return [dict(key='hk', kind='hk', title='🏒 Хоккей', text=txt, updated=J.now_utc())]

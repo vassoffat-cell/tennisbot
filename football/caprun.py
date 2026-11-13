@@ -59,6 +59,17 @@ def main() -> None:
             dispatch.append(wf)
             cnt[wf] = int(cnt.get(wf, 0)) + 1
     rt['cap_extra'] = cnt
+    if os.getenv('CAP_TEST'):                                   # 14.11: тест вида уведомления (последние прогнозы, в оба бота)
+        try:
+            tipsbook.alert(rt, tipsbook.load(), log, test=True)
+        except Exception as e:
+            log.append(f'👥 тест: сбой {e.__class__.__name__}: {e}')
+    try:                                                         # уведомления ушли → заглушка 🔒 (превью скрыто)
+        import notify
+        import config as C
+        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json")}')
+    except Exception as e:
+        log.append(f'🔒 заглушка: сбой {e.__class__.__name__}')
     runtime.save(rt)
     log.append(f'👥 новых ставок {len(new)} (свежих {len(fresh)}: '
                + ', '.join(f'{s} {n}' for s, n in fresh.sport.value_counts().items()) + f'); запуск: {" ".join(dispatch) or "нет"}')
