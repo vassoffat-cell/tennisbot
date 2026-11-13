@@ -144,7 +144,7 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-13 00:21",
+ "tips_book": "2026-11-13 01:29",
  "tips_book_v": 4,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -756,7 +756,6 @@
  "resend_1111": 1,
  "resend_1111b": 1,
  "cap_extra": {
-  "day": "2026-11-12",
-  "football.yml": 3
+  "day": "2026-11-13"
  }
 }
