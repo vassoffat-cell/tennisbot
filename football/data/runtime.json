@@ -144,7 +144,7 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-13 20:31",
+ "tips_book": "2026-11-13 21:04",
  "tips_book_v": 4,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -152,8 +152,6 @@
  "tips_backfill": "2026-11-11 04:41",
  "tips_test_1111": 1,
  "tips_alerted": [
-  "kapper_uk:22405:0",
-  "kapper_uk:22424:0",
   "kapper_uk:22496:0",
   "kapper_uk:22520:0",
   "stavki_na_sport_betting1:18996:0",
@@ -751,12 +749,15 @@
   "stavki_na_sport_betting1:19678:0",
   "stavki_na_sport_betting1:slip:394015366:0",
   "stavki_na_sport_betting1:19679:0",
-  "stavki_na_sport_betting1:slip:394069870:0"
+  "stavki_na_sport_betting1:slip:394069870:0",
+  "stavki:5812:0",
+  "stavki:5813:0"
  ],
  "resend_1111": 1,
  "resend_1111b": 1,
  "cap_extra": {
   "day": "2026-11-13",
   "football.yml": 2
- }
+ },
+ "resend_done": "2026-11-12"
 }
