@@ -61,6 +61,16 @@ def _pack(blocks: list[str], limit: int = 3800) -> list[str]:
     return out
 
 
+def _why_tg(e: Exception, text: str = '') -> str:
+    """Текст ошибки Telegram (описание из ответа) + начало сообщения — чтобы причина 400 была видна в журнале."""
+    body = ''
+    try:
+        body = e.read().decode('utf-8', 'replace')[:200]                  # urllib.error.HTTPError
+    except Exception:
+        pass
+    return f'{e} {body} · начало: {text[:80]!r}'
+
+
 def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: bool = False,
                 bot: str = 'main') -> list[tuple[int, int]]:
     """Отправить HTML-блоки (каждый блок — законченный кусок с тегами), упаковав их в минимум сообщений.
@@ -78,7 +88,7 @@ def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: boo
                                           'disable_web_page_preview': True, 'disable_notification': silent}, bot=bot)
                 sent.append((chat, r['result']['message_id']))
             except Exception as e:
-                print(f'Telegram: не отправлено ({e})')
+                print(f'Telegram: не отправлено ({_why_tg(e, m)})')
     return sent
 
 
