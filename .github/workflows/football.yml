@@ -5,7 +5,12 @@ on:
     - cron: '17 3 * * *'      # 08:17 Ташкента — прогноз на сутки и ставка дня до 09:00
     - cron: '47 2 * * *'      # резерв 07:47: 10.11 GitHub потерял 08:17, прогноз ушёл в 09:25 (автопилот 11.11)
     - cron: '7 5 * * *'       # резерв 10:07: 10.11 отчёт 10:37 ушёл в 11:26 (автопилот 11.11)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      resend_day:
+        description: 'Повтор отчёта за сутки ГГГГ-ММ-ДД'
+        default: ''
+        required: false
 permissions:
   contents: write
 concurrency:
@@ -39,6 +44,7 @@ jobs:
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           CLOUD: '1'
+          RESEND_DAY: ${{ github.event.inputs.resend_day }}
       - name: Save data
         if: always()
         run: |

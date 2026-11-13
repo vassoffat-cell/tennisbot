@@ -744,7 +744,8 @@ def run(dry: bool = False) -> str:
         notify.send_blocks(alarms)
     nn, nu = save_forecasts(store, items, auto, ldf)
     auto, ldf = store.read('auto_forecasts'), store.read('auto_lines')
-    resend = not dry and not rt.get('resend_1111b')                  # разовый повтор отчёта в новом виде (просьба 11.11)
+    rday = os.getenv('RESEND_DAY', '').strip()                         # повтор отчёта за выбранные сутки (запуск с RESEND_DAY=ГГГГ-ММ-ДД)
+    resend = not dry and (not rt.get('resend_1111b') or bool(rday and rt.get('resend_done') != rday))
     if daily_due or resend:
         notes = []
         for tour in TOURS:
@@ -755,6 +756,8 @@ def run(dry: bool = False) -> str:
             notes.append('переобучено: ' + '; '.join(x.split(':')[0] + ' ' + x.split('точность')[-1].split(';')[0].strip()
                                                   for x in retrain_log if 'точность' in x))
         yday = C.wday(loc) - dt.timedelta(days=1)                     # прошлые сутки 08:00 → 08:00
+        if rday and resend and not daily_due:
+            yday = dt.date.fromisoformat(rday)
         import coverage
         try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
             late = coverage.late_ids(R.matches(auto), yday, rt)
@@ -768,10 +771,13 @@ def run(dry: bool = False) -> str:
             log.append(f'🔁 смены: сбой {e.__class__.__name__}')
         notify.send_blocks(R.build(auto, ldf, store.read('day_pick'), f'📈 Теннис · отчёт · {yday:%d.%m}' + (' · повтор' if resend and not daily_due else ''), kcal=kcal, extra=cov, late=late,
                                    kprev=kprev, off=off, notes=notes, daily_day=yday))
-        rt['last_daily'] = today
+        if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
+            rt['last_daily'] = today
         rt['resend_1111b'] = 1
+        if rday:
+            rt['resend_done'] = rday
         log.append('суточный отчёт отправлен')
-        if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
+        if daily_due and C.wday(loc).weekday() == 0:             # понедельник: отдельно — отчёт за прошедшую неделю
             d0 = yday - dt.timedelta(days=6)
             a_, l_, d_ = R.week(auto, ldf, store.read('day_pick'), d0, yday)
             notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
@@ -846,7 +852,11 @@ def run(dry: bool = False) -> str:
         log.append(f'отчёт самообучения: сбой {e.__class__.__name__}: {e}')
     try:                                                               # 🏒 хоккей — отдельными сообщениями в этом же боте
         from hockey import hrun
-        hk = hrun.run(store, rt, log, force=resend and not dry, dry=dry)   # свои сутки 12:00 → 12:00
+        rd = os.getenv('RESEND_DAY', '').strip()
+        hk = hrun.run(store, rt, log, force=resend and not dry, dry=dry,     # свои сутки 12:00 → 12:00
+                      day_override=dt.date.fromisoformat(rd) if rd and not dry and rt.get('hk_resend_done') != rd else None)
+        if rd:
+            rt['hk_resend_done'] = rd
         from hockey import hpick
         if hpick.CHANGED[0] and not dry:                          # кнопка «⭐ Ставка дня» — сразу с новой ставкой хоккея
             tc = store.read('tg_cache')

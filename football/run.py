@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import sys
 import time
 import traceback
@@ -826,7 +827,8 @@ def run(dry: bool = False) -> str:
     no = attach_odds(store, base)
     af, ld = store.read('auto_forecasts'), store.read('auto_lines')
     dpk = store.read('day_pick')
-    resend = not dry and not rt.get('resend_1111b')                  # разовый повтор отчёта в новом виде (просьба 11.11)
+    rday = os.getenv('RESEND_DAY', '').strip()                         # повтор отчёта за выбранные сутки (запуск с RESEND_DAY=ГГГГ-ММ-ДД)
+    resend = not dry and (not rt.get('resend_1111b') or bool(rday and rt.get('resend_done') != rday))
     if daily_due or resend:
         notes = []
         if mp.missed:
@@ -838,6 +840,8 @@ def run(dry: bool = False) -> str:
             notes.append(f'football-data по {last:%d.%m}; дальше — результаты и удары ESPN') if not C.FD_FILES_REQUIRED \
                 else notes.append(f'файлы football-data по {last:%d.%m} — ждём файлы недели')
         yday = C.wday(loc) - dt.timedelta(days=1)                     # прошлые сутки 08:00 → 08:00
+        if rday and resend and not daily_due:
+            yday = dt.date.fromisoformat(rday)
         import coverage
         try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
             late = coverage.late_ids(R.matches(af), yday, rt)
@@ -856,10 +860,13 @@ def run(dry: bool = False) -> str:
             notify.send_blocks([tipsbook.card()])
         except Exception as ex:
             log.append(f'👥 карточка каперов: сбой {type(ex).__name__}')
-        rt['last_daily'] = today
+        if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
+            rt['last_daily'] = today
         rt['resend_1111b'] = 1
+        if rday:
+            rt['resend_done'] = rday
         log.append('суточный отчёт отправлен')
-        if C.wday(loc).weekday() == 0:                           # понедельник: отдельно — отчёт за прошедшую неделю
+        if daily_due and C.wday(loc).weekday() == 0:             # понедельник: отдельно — отчёт за прошедшую неделю
             d0 = yday - dt.timedelta(days=6)
             a_, l_, d_ = R.week(af, ld, dpk, d0, yday)
             notify.send_blocks(R.build(a_, l_, d_, f'📅 Футбол · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,

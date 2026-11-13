@@ -482,7 +482,8 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
 
 
 # ------------------------------------------------------------------ прогон
-def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool = False) -> list[dict]:
+def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool = False,
+        day_override: dt.date | None = None) -> list[dict]:
     """Вызывается из autorun.py после тенниса (каждые 2 ч). Расписание — свои хоккейные сутки (12:00 → 12:00).
     Возвращает строки отчёта для «Аналитики» (лист reports)."""
     today = dt.date.today()
@@ -517,6 +518,9 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
         pend = int(Y.settled.map(_blank).sum())
     since = (now - _bound_utc(cur)).total_seconds() / 3600
     due = force or (rt['hk_last_daily'] != str(yday) and (pend == 0 or since >= REPORT_GRACE_H))
+    replay = day_override is not None                     # повтор отчёта за выбранные хоккейные сутки (не сдвигает плановый)
+    if replay:
+        yday, due = day_override, True
     if due or not rt.get('hk_kcal'):
         prev = rt.get('hk_kcal') or {}
         rt['hk_kcal_prev'] = prev
@@ -558,10 +562,12 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     gf, ld = store.read('hk_games'), store.read('hk_lines')
     kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
     if due:
-        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}', yday, kcal, kprev, off, tp=tp, dp=dp))
-        rt['hk_last_daily'] = str(yday)
-        log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен')
-        if yday.weekday() == 6:                           # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
+        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + (' · повтор' if replay else ''), yday, kcal, kprev,
+                                  off, tp=tp, dp=dp))
+        if not replay:
+            rt['hk_last_daily'] = str(yday)
+        log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен' + (' (повтор)' if replay else ''))
+        if yday.weekday() == 6 and not replay:                           # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
             d0 = yday - dt.timedelta(days=6)
             notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp))
             log.append('🏒 недельный отчёт отправлен')
