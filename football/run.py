@@ -831,7 +831,10 @@ def run(dry: bool = False) -> str:
     af, ld = store.read('auto_forecasts'), store.read('auto_lines')
     dpk = store.read('day_pick')
     rday = os.getenv('RESEND_DAY', '').strip()                         # повтор отчёта за выбранные сутки (запуск с RESEND_DAY=ГГГГ-ММ-ДД)
-    resend = not dry and (not rt.get('resend_1111b') or bool(rday and rt.get('resend_done') != rday))
+    wk0 = os.getenv('RESEND_WEEK', '').strip()
+    resend = not dry and (not rt.get('resend_1111b') or bool(rday and rt.get('resend_done') != rday)
+                          or bool(wk0 and rt.get('resend_week_done') != wk0))
+    only_week = resend and bool(wk0) and not (rday and rt.get('resend_done') != rday) and not daily_due
     if daily_due or resend:
         notes = []
         if mp.missed:
@@ -858,19 +861,20 @@ def run(dry: bool = False) -> str:
         except Exception as ex:
             log.append(f'🔁 смены: сбой {ex.__class__.__name__}')
         rep_tag = ' · повтор' if resend and not daily_due else ''      # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
-        notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, kprev=kprev, off=off,
-                                   notes=notes, daily_day=yday, extra=cov, late=late, split=True))
-        try:
-            notify.send_blocks([caprep.report('football', yday, yday, f'{yday:%d.%m}' + rep_tag), tipsbook.card()])
-        except Exception as ex:
-            log.append(f'👥 отчёт каперов: сбой {type(ex).__name__}')
-        notify.send_blocks(R.dp_report(dpk, f'⚽ Футбол · ставки дня · {yday:%d.%m}' + rep_tag, yday))
+        if not only_week:
+            notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, kprev=kprev, off=off,
+                                       notes=notes, daily_day=yday, extra=cov, late=late, split=True))
+            try:
+                notify.send_blocks([caprep.report('football', yday, yday, f'{yday:%d.%m}' + rep_tag), tipsbook.card()])
+            except Exception as ex:
+                log.append(f'👥 отчёт каперов: сбой {type(ex).__name__}')
+            notify.send_blocks(R.dp_report(dpk, f'⚽ Футбол · ставки дня · {yday:%d.%m}' + rep_tag, yday))
         if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
             rt['last_daily'] = today
         rt['resend_1111b'] = 1
         if rday:
             rt['resend_done'] = rday
-        log.append('суточный отчёт отправлен')
+        log.append('суточный отчёт отправлен' if not only_week else 'суточный — пропущен (только недельный)')
         wk = os.getenv('RESEND_WEEK', '').strip()                 # тест / повтор недельного: неделя, оканчивающаяся этой датой
         if (daily_due and C.wday(loc).weekday() == 0) or (wk and rt.get('resend_week_done') != wk):
             if wk and rt.get('resend_week_done') != wk:
