@@ -114,7 +114,8 @@
   },
   "first_label": "П1 Andreeva",
   "first_match": "Mirra Andreeva — Karolina Muchova",
-  "text": "🎾1 <b>Теннис · ставка дня</b>\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Mirra Andreeva — Karolina Muchova</b>\n<b>П1 Andreeva</b> — 69% · честный кф 1,45"
+  "text": "🎾1 <b>Теннис · ставка дня</b>\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Mirra Andreeva — Karolina Muchova</b>\n<b>П1 Andreeva</b> — 69% · честный кф 1,45",
+  "vol": 0
  },
  "model_version": 4,
  "reported": [
@@ -3455,7 +3456,8 @@
    }
   ],
   "notes": [],
-  "hdr2": true
+  "hdr2": true,
+  "vol": 2
  },
  "resend_done": "2026-11-13",
  "hk_resend_done": "2026-11-13",
