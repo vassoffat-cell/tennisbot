@@ -1,0 +1,80 @@
+{
+ "segments": {
+  "market:IT1": {
+   "w": 2,
+   "n": 2,
+   "e": 1.6,
+   "z": 0.71,
+   "zd": 0.0,
+   "n_out": 2
+  },
+  "market:IT2": {
+   "w": 1,
+   "n": 1,
+   "e": 0.79,
+   "z": 0.51,
+   "zd": 0.0,
+   "n_out": 3
+  },
+  "market:TOT": {
+   "w": 0,
+   "n": 1,
+   "e": 0.79,
+   "z": -1.92,
+   "zd": 0.0,
+   "n_out": 3
+  },
+  "p:0.70-0.80": {
+   "w": 3,
+   "n": 4,
+   "e": 3.17,
+   "z": -0.21,
+   "zd": 0.0,
+   "n_out": 0
+  },
+  "rank:extra": {
+   "w": 1,
+   "n": 2,
+   "e": 1.58,
+   "z": -1.02,
+   "zd": 0.0,
+   "n_out": 2
+  },
+  "syn:none": {
+   "w": 3,
+   "n": 4,
+   "e": 3.17,
+   "z": -0.21,
+   "zd": 0.0,
+   "n_out": 0
+  }
+ },
+ "demoted": [],
+ "strong": [],
+ "overconf": false,
+ "max_picks": 3,
+ "blocked": {},
+ "edits": {},
+ "switch_extra": 0.0,
+ "cappers": {
+  "stavki_na_sport_betting1": {
+   "n": 3,
+   "w": 2,
+   "e": 1.8,
+   "z": 0.2,
+   "roi": 0.093,
+   "status": "",
+   "fire": [
+    1,
+    2
+   ],
+   "clash": [
+    0,
+    0
+   ]
+  }
+ },
+ "updated": "2026-11-13",
+ "sport": "hockey",
+ "history": []
+}
