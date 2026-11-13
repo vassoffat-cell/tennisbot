@@ -118,7 +118,7 @@ def _row(day, rank: int, c: dict, status: str = '', reason: str = '') -> dict:
 
 def _publish(day, c: dict, rank: int, hist: list[str]) -> dict:
     x = dict(c, rank=rank, hist=list(hist))
-    x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, rank, x['hist'])])]
+    x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, rank, x['hist'])], queue=False)]
     notify.pin([tuple(m) for m in x['msgs']])
     CHANGED[0] = True
     return x
@@ -162,8 +162,8 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
             notify.edit([tuple(m) for m in x.get('msgs', [])], _text(day, x, int(x['rank']), x.get('hist', [])), None)
         st['hdr2'] = True
     for x in picks:                                          # 12.11: удалённые пользователем ставки — заново, с закрепом
-        if x.get('msgs') and not notify.alive([tuple(m) for m in x['msgs']]):
-            x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True)]
+        if not x.get('msgs') or not notify.alive([tuple(m) for m in x['msgs']]):    # 14.11: и не доставленные вовсе
+            x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True, queue=False)]
             notify.pin([tuple(m) for m in x['msgs']])
             CHANGED[0] = True
             log.append(f"⭐🏒 🏒{x['rank']} возвращена (была удалена)")

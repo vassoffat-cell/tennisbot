@@ -239,7 +239,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
 
     back = 0                                                    # 12.11: удалённые пользователем ставки — заново, с закрепом
     for h in [cur] + list(cur.get('extras') or []):
-        if h.get('msgs') and h.get('text') and not notify.alive(h['msgs']):
+        if h.get('text') and (not h.get('msgs') or not notify.alive(h['msgs'])):   # 14.11: и не доставленные вовсе
             h['msgs'] = [list(m) for m in notify.send_markup(h['text'], None, silent=True)]
             notify.pin(h['msgs'])
             back += 1

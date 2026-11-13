@@ -55,6 +55,8 @@ def main(hours: int = 26) -> None:
               ('daily.yml', (10, 12), r'🧠 tennis: правил', 'теннис: цикл самообучения'),
               ('football.yml', (10, 12), r'🧠 football: правил', 'футбол: цикл самообучения'),
               ('daily.yml', (12, 14), r'🧠 hockey: правил', 'хоккей: цикл самообучения'),
+              ('daily.yml', (0, 24), r'НЕ ДОСТАВЛЕНО|потеряно', 'теннис/хоккей: потерянные сообщения (последний прогон)'),
+              ('football.yml', (0, 24), r'НЕ ДОСТАВЛЕНО|потеряно', 'футбол: потерянные сообщения (последний прогон)'),
               ('daily.yml', (0, 24), r'Traceback|сбой', 'теннис/хоккей: сбои внутри прогонов (последний прогон)'),
               ('football.yml', (0, 24), r'Traceback|сбой', 'футбол: сбои внутри прогонов (последний прогон)')]
     cache: dict[int, str] = {}
@@ -68,7 +70,7 @@ def main(hours: int = 26) -> None:
         for r in rs:
             cache.setdefault(r['id'], log(r['id']))
             hit += grep(cache[r['id']], pat)
-        bad = 'сбо' in name
+        bad = 'сбо' in name or 'потерян' in name
         ok = (not hit) if bad else bool(hit)
         rows.append((name, 'нет' if bad else 'есть', (hit[0] if hit else '—') + (f' (+{len(hit) - 1})' if len(hit) > 1 else ''), '✅' if ok else '❌'))
     w = max(len(r[0]) for r in rows)
