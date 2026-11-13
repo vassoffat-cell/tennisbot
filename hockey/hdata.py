@@ -479,6 +479,9 @@ def espn_odds_probe(log: list[str]) -> None:
                 except Exception as ex:
                     msg += f' · summary {ex.__class__.__name__}'
             log.append(msg)
+            if sport == 'soccer' and evs and (evs[0].get('competitions') or [{}])[0].get('odds') and lg == 'eng.1':
+                o = evs[0]['competitions'][0]['odds'][0]
+                log.append('СТРУКТУРА ' + json.dumps({k: o.get(k) for k in ('moneyline', 'total', 'pointSpread', 'drawOdds', 'overUnder')}, ensure_ascii=False)[:1500])
         except Exception as ex:
             log.append(f'{sport}/{lg}: {ex.__class__.__name__}: {str(ex)[:80]}')
         time.sleep(0.2)
