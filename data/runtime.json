@@ -1,8 +1,13 @@
 {
  "list_messages": [],
- "list_match_ids": [],
+ "list_match_ids": [
+  "186546",
+  "186547",
+  "187379",
+  "187384"
+ ],
  "last_daily": "2026-11-12",
- "last_retrain": "2026-11-12",
+ "last_retrain": "2026-11-13",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -58,11 +63,11 @@
   "IT1": "2026-11-10"
  },
  "day_pick": {
-  "date": "2026-11-12",
+  "date": "2026-11-13",
   "msgs": [
    [
     570704006,
-    367
+    390
    ]
   ],
   "changes": 0,
@@ -75,46 +80,46 @@
   "nokb": true,
   "sep": true,
   "hdr2": true,
-  "espn_id": "187371",
-  "slot": 2,
+  "espn_id": "187384",
+  "slot": 1,
   "key": [
-   "187371",
+   "187384",
    "ML",
-   "2",
+   "1",
    ""
   ],
-  "p": 0.7267675706549215,
+  "p": 0.6874820330036489,
   "tier": 2,
-  "label": "П2 Gauff",
-  "start_utc": "2026-11-12 20:00",
-  "match": "Marta Kostyuk — Coco Gauff",
+  "label": "П1 Andreeva",
+  "start_utc": "2026-11-13 20:00",
+  "match": "Mirra Andreeva — Karolina Muchova",
   "best": {
-   "espn_id": "187371",
+   "espn_id": "187384",
    "tour": "WTA",
    "event": "FAGE WTA Finals Indian Wells",
-   "start_utc": "2026-11-12 20:00",
-   "start_local": "13.11 01:00",
-   "player1": "Marta Kostyuk",
-   "player2": "Coco Gauff",
+   "start_utc": "2026-11-13 20:00",
+   "start_local": "14.11 01:00",
+   "player1": "Mirra Andreeva",
+   "player2": "Karolina Muchova",
    "market": "ML",
-   "pick": "2",
+   "pick": "1",
    "line": null,
-   "label": "П2 Gauff",
-   "p": 0.7267675706549215,
+   "label": "П1 Andreeva",
+   "p": 0.6874820330036489,
    "p_src": "blend",
-   "p_model": 0.5910360196176566,
+   "p_model": 0.7532238207616354,
    "p_push": 0.0,
-   "k": 1.36,
+   "k": 1.41,
    "k_src": "api",
    "source": "api",
    "p_pin": null,
    "edge": null,
    "group": "fallback",
-   "slot": 2
+   "slot": 1
   },
-  "first_label": "П2 Gauff",
-  "first_match": "Marta Kostyuk — Coco Gauff",
-  "text": "🎾1 <b>Теннис · ставка дня</b>\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Marta Kostyuk — Coco Gauff</b>\n<b>П2 Gauff</b> — 73% · честный кф 1,38"
+  "first_label": "П1 Andreeva",
+  "first_match": "Mirra Andreeva — Karolina Muchova",
+  "text": "🎾1 <b>Теннис · ставка дня</b>\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Mirra Andreeva — Karolina Muchova</b>\n<b>П1 Andreeva</b> — 69% · честный кф 1,45"
  },
  "model_version": 4,
  "reported": [
@@ -3412,7 +3417,6 @@
  },
  "hk_list": [],
  "hk_list_ids": [
-  "nhl:401892705",
   "nhl:401892706",
   "nhl:401892707"
  ],
