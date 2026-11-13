@@ -79,8 +79,10 @@ def load() -> pd.DataFrame:
 
 
 def save(df: pd.DataFrame) -> None:
+    """Свежая запись матча (добавлена последней) заменяет старую. 14.11.2026: раньше сортировка шла до удаления дублей и была
+    нестабильной — при одинаковом времени начала иногда оставалась СТАРАЯ запись («pre»), матч не получал итога сутками."""
     DATA.mkdir(parents=True, exist_ok=True)
-    df.sort_values('start').drop_duplicates('id', keep='last').to_csv(GAMES, index=False, compression='gzip')
+    df.drop_duplicates('id', keep='last').sort_values('start', kind='stable').to_csv(GAMES, index=False, compression='gzip')
 
 
 def update_nhl(days: list[dt.date], log: list[str], pause: float = 0.25) -> int:
@@ -200,6 +202,22 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
         d += dt.timedelta(days=1)
     want += miss[:backfill]
     rows, asked, errs = [], 0, []
+    # 14.11: самопроверка — матчи КХЛ старше 4 ч без итога (застряли) → запрос по номеру матча, не по дате (до 8 за прогон)
+    db = load()
+    k = db[(db.league == 'KHL') & ~db.end.astype(str).isin(['REG', 'OT', 'SO']) & (db.state.astype(str) != 'void')
+           & (pd.to_datetime(db.start) < pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=4))]
+    for gid in list(k.sort_values('start', ascending=False).id)[:8]:
+        if st['used'] >= DAY_CAP:
+            break
+        if asked:
+            time.sleep(PAUSE)
+        try:
+            js = _apis(f"/games?id={str(gid).split(':')[1]}&timezone=Europe/Moscow"); asked += 1; st['used'] += 1
+            if js.get('errors'):
+                errs.append(f'{gid}: {str(js["errors"])[:80]}'); continue
+            rows += _rows(js.get('response', []))
+        except Exception as e:
+            asked += 1; st['used'] += 1; errs.append(f'{gid}: {str(e)[:80]}')
     for d in want:
         if st['used'] >= DAY_CAP:
             errs.append('суточный лимит'); break
@@ -214,7 +232,7 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
                 break
             continue
         rows += r
-        if d < today and all(x['state'] in ('post', 'void') for x in r):
+        if d < today and r and all(x['state'] in ('post', 'void') for x in r):
             done.add(str(d))
     if rows:
         save(pd.concat([load(), pd.DataFrame(rows)], ignore_index=True))
@@ -444,8 +462,8 @@ if __name__ == '__main__':
         collect_box(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'box_probe':
         summary_probe(lg)
-    elif len(_s.argv) > 1 and _s.argv[1] == 'khl':                 # догрузка сезона КХЛ по датам (≈ 80 запросов, ~9 мин)
-        update_khl(lg, backfill=80)
+    elif len(_s.argv) > 1 and _s.argv[1] == 'khl':                 # КХЛ: окно ±1 день + застрявшие по номеру (догрузка дат закрыта планом)
+        update_khl(lg)
     else:
         collect_history(lg)
     print('\n'.join(lg))

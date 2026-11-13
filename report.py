@@ -16,6 +16,7 @@ import pandas as pd
 import config as C
 import lines as FL
 import journal as J
+import dpcore
 import notify
 import rtable as RT
 
@@ -370,16 +371,16 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
 
     # ставка дня
     D = dp[dp.result.astype(str).isin(['W', 'L'])].copy() if len(dp) else dp
+    if len(D) and 'rank' in D.columns:                           # 14.11: строка «Ставка дня» — только ⭐1 (первый приговор и его правки);
+        D = D[D['rank'].astype(str).str.strip().isin(['', 'nan', '1', '1.0'])]   # ⭐2/⭐3 — строкой «➕ новые линии»
     if len(D):
         D['won'] = (D.result.astype(str) == 'W').astype(int); D['p'] = D.p.map(J.num).astype(float)
         D['day'] = pd.to_datetime(D.date).dt.date
         tgt, _ = step_target(D.won.values, C.STEPS['daypick'])
         c = color_vs(D.won.mean(), len(D), tgt)
-        T.append(RT.row('Ставка дня', D.won.sum(), len(D), RT.num(tgt, 0) + '%', COLOR[c]))
+        T.append(RT.row('Ставка дня ⭐1', D.won.sum(), len(D), RT.num(tgt, 0) + '%', COLOR[c]))
         if daily_day is not None:
-            yy, w = D[D.day == daily_day], D[D.day > d7]
-            if len(yy):
-                S.append(('⭐ Вчера', f'{"✅" if yy.won.iloc[-1] else "❌"} {yy.label.iloc[-1]}'))
+            w = D[D.day > d7]
             T.append(RT.row(' 7 дней', w.won.sum(), len(w)))
     ops = ops_rows(dp)
     if ops and not len(D):
@@ -405,8 +406,40 @@ def build(af: pd.DataFrame, ld: pd.DataFrame, dp: pd.DataFrame, title: str, kcal
     blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + ('\n' + RT.kv(S) if S else '')
               + ('\n' + '\n'.join(tail) if tail else '')]
     if daily_day is not None:
+        lst = DP_LIST(dp, daily_day)
+        if lst:
+            blocks.append(lst)
         blocks += day_lists(af, ld, daily_day, late)
     return blocks
+
+
+def DP_LIST(dp: pd.DataFrame, day) -> str:
+    """14.11 (замечание пользователя: «вчера было три ставки дня — в отчёте не увидел ни одной»): каждая ставка дня суток
+    отдельной строкой — номер, линия, матч, P, кф, итог; правки первого приговора — под ней. Стоит сразу под таблицей отчёта."""
+    if not len(dp):
+        return ''
+    x = dp[pd.to_datetime(dp.date, errors='coerce').dt.date == day].copy()
+    if not len(x):
+        return ''
+    if 'status' in x.columns:
+        x = x[x.status.astype(str) != 'OFF']
+    rk = x['rank'].astype(str).str.strip().replace({'': '1', 'nan': '1', '1.0': '1', '2.0': '2', '3.0': '3'}) if 'rank' in x.columns \
+        else pd.Series('1', index=x.index)
+    x = x.assign(rk=rk).sort_values('rk')
+    e = notify.esc
+    mark = {'W': '✅', 'L': '❌', 'P': '⚪'}
+    w = int((x.result.astype(str) == 'W').sum()); n = int(x.result.astype(str).isin(['W', 'L']).sum())
+    out = [f'<b>{dpcore.ICON} Ставки дня · {day:%d.%m}</b> — угадано {w}/{n}' if n else f'<b>{dpcore.ICON} Ставки дня · {day:%d.%m}</b>']
+    for r in x.itertuples(index=False):
+        p = J.num(r.p); k = J.num(getattr(r, 'k', ''))
+        a, b = (getattr(r, 'player1', '') or getattr(r, 'home', ''), getattr(r, 'player2', '') or getattr(r, 'away', ''))
+        line = (f"{mark.get(str(r.result), '⏳')} {dpcore.ICON}{r.rk} <b>{e(str(r.label))}</b> · {e(str(a))} — {e(str(b))}"
+                + (f" · {p * 100:.0f}%" if p == p else '') + (f" · кф {k:.2f}".replace('.', ',') if k == k else ''))
+        out.append(line)
+        h = str(getattr(r, 'history', '') or '')
+        if h and h != 'nan':
+            out += [f'   <i>{e(s.strip())}</i>' for s in h.split(' | ') if s.strip()]
+    return '\n'.join(out)
 
 
 EXTRA_OPS: list = []                                         # строки «🔁 смены» — задаёт прогон перед отчётом

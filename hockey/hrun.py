@@ -433,6 +433,20 @@ def report(gf: pd.DataFrame, ld: pd.DataFrame, title: str, day: dt.date | None, 
                 S.append(('🔥 / ⚔️', f'{f[0]}/{f[1]} · {c[0]}/{c[1]}'))
     status = {3: '🟢 цели доказаны', 2: '🟡 цели ещё не доказаны', 1: '🔴 нужен разбор'}[worst]
     blocks = [f'<b>{e(title)}</b> · {status}\n' + RT.render(T) + '\n' + RT.kv(S)]
+    if day is not None and d0 is None and dp is not None and len(dp):   # 14.11: каждая ставка дня суток — отдельной строкой
+        x = dp[pd.to_datetime(dp.date, errors='coerce').dt.date == day].copy()
+        if len(x):
+            x['rk'] = x['rank'].map(_num)
+            x = x.sort_values(['rk', 'created'])
+            fin = x[x.status.map(_blank)]
+            w = int((fin.result.astype(str) == 'W').sum()); n = int(fin.result.astype(str).isin(['W', 'L']).sum())
+            out = [f'<b>🏒 Ставки дня · {day:%d.%m}</b>' + (f' — угадано {w}/{n}' if n else '')]
+            for r in x.itertuples(index=False):
+                old = str(r.status) == 'правка'
+                out.append(f"{LMARK.get(str(r.result), '⏳')} 🏒{int(r.rk)} {'<s>' if old else '<b>'}{e(str(r.label))}{'</s>' if old else '</b>'} · "
+                           f"{e(str(r.home))} — {e(str(r.away))} · {_num(r.p) * 100:.0f}%"
+                           + (f" · <i>{'заменена' if old else e(str(r.reason))}</i>" if old or not _blank(r.reason) else ''))
+            blocks.append('\n'.join(out))
     if day is not None and d0 is None and len(gf):        # суточный: каждый матч и каждая предложенная линия
         A = gf.copy(); A['day'] = A.start_utc.map(_day)
         A = A[A.day == day].sort_values('start_utc')
@@ -472,7 +486,19 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     """Вызывается из autorun.py после тенниса (каждые 2 ч). Расписание — свои хоккейные сутки (12:00 → 12:00).
     Возвращает строки отчёта для «Аналитики» (лист reports)."""
     today = dt.date.today()
-    n = HD.update_nhl([today + dt.timedelta(days=k) for k in range(-3, 3)], log, pause=0.1)
+    days = {today + dt.timedelta(days=k) for k in range(-3, 3)}
+    try:                                                  # 14.11: самопроверка — матчи НХЛ старше 6 ч без итога → их даты заново
+        g0 = HD.load()
+        st0 = pd.to_datetime(g0.start)
+        stuck = g0[(g0.league == 'NHL') & ~g0.end.astype(str).isin(['REG', 'OT', 'SO']) & (st0 < pd.Timestamp(_now()) - pd.Timedelta(hours=6))
+                   & (st0 > pd.Timestamp(_now()) - pd.Timedelta(days=30))]
+        for t in pd.to_datetime(stuck.start):
+            days |= {(t - pd.Timedelta(hours=5)).date(), t.date()}
+        if len(stuck):
+            log.append(f'🏒 НХЛ: без итога старше 6 ч — {len(stuck)}, перезапрос дат')
+    except Exception as ex:
+        log.append(f'🏒 самопроверка НХЛ: {ex.__class__.__name__}')
+    n = HD.update_nhl(sorted(days), log, pause=0.1)
     try:
         HD.update_khl(log)                                # вчера/сегодня/завтра (Москва) — окно бесплатного плана
     except Exception as ex:
