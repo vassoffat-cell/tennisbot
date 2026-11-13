@@ -32,6 +32,7 @@ import json
 import math
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent
@@ -44,6 +45,8 @@ N_PROVEN, Z_PROVEN, Z_PROVEN_KEEP = 20, 1.64, 0.5
 N_WEAK, Z_WEAK, Z_WEAK_KEEP = 15, -1.64, -0.5
 MARGIN = 0.96                       # кф капера → вероятность без ~4% маржи
 BLOCK_DAYS = 30
+N_CLV, T_CLV = 10, 2.0               # CLV: n ≥ 10 и t ≥ 2 (доказан / слабый по цене закрытия)
+N_SEG_CLV = 15                       # сегмент: CLV ≥ 15 ставок, t ≤ −2 → понижен по цене закрытия
 MKT = {'ML': 'победа', 'HCP': 'фора', 'AH': 'фора', 'IT1': 'инд. тотал 1', 'IT2': 'инд. тотал 2', 'TOTAL': 'тотал', 'TOT': 'тотал',
        '1X2': 'исход', 'DC': 'двойной шанс', 'BTTS': 'обе забьют', 'EXACT': 'точный счёт'}
 REASONS = ('сравнение', 'каперы за', 'каперы против', 'скриншот')
@@ -82,6 +85,9 @@ def seg_keys(c: dict) -> list[str]:
     r = _num(c.get('rank'))
     if r == r and r >= 2:
         out.append('rank:extra')
+    g = str(c.get('group', '') or '').strip()
+    if g in ('value', 'fallback'):
+        out.append(f'grp:{g}')                                    # 14.11: 💰 выгодная / 🎯 уверенная
     return out
 
 
@@ -194,7 +200,8 @@ def frame_dp(dp: pd.DataFrame, ch: pd.DataFrame | None) -> tuple[pd.DataFrame, p
                 continue
             P.append(dict(date=str(r.date)[:10], rank=_rank(getattr(r, 'rank', 1)), market=str(r.market), label=str(r.label),
                           p=_num(r.p), tier=_num(getattr(r, 'tier', '')), fire=_flag(getattr(r, 'fire', 0)),
-                          clash=_flag(getattr(r, 'clash', 0)), result=res, final=True))
+                          clash=_flag(getattr(r, 'clash', 0)), result=res, final=True,
+                          group=str(getattr(r, 'group', '') or 'fallback').strip() or 'fallback', clv=_num(getattr(r, 'clv', ''))))
     fin = {(x['date'], x['rank']): x['result'] for x in P}
     if ch is not None and len(ch):
         for r in ch.itertuples(index=False):
@@ -216,7 +223,8 @@ def frame_hk(dp: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         if res not in ('W', 'L') or sts not in ('', 'nan', 'None'):
             continue
         P.append(dict(date=str(r.date)[:10], rank=_rank(r.rank), market=str(r.market), label=str(r.label), p=_num(r.p),
-                      tier=_num(getattr(r, 'tier', '')), fire=_flag(r.fire), clash=_flag(r.clash), result=res, final=True))
+                      tier=_num(getattr(r, 'tier', '')), fire=_flag(r.fire), clash=_flag(r.clash), result=res, final=True,
+                      group='fallback', clv=_num(getattr(r, 'clv', ''))))
     fin = {(x['date'], x['rank']): x['result'] for x in P}
     for r in dp.itertuples(index=False):
         if str(r.status).strip() == 'правка' and str(r.result) in ('W', 'L'):
@@ -245,9 +253,19 @@ def _test(won, p) -> tuple[int, int, float, float]:
 def _segments(P: pd.DataFrame) -> dict[str, dict]:
     """Сегмент: (W, n, E, z против ожидания модели, zd — против остальных ставок по остатку W − P, n_out)."""
     recs = [(int(r['result'] == 'W'), float(r['p']), set(seg_keys(r))) for r in P.to_dict('records') if r['p'] == r['p']]
+    cvr = [(_num(r.get('clv')), set(seg_keys(r))) for r in P.to_dict('records') if r['p'] == r['p']]
     keys = sorted({k for _, _, ks in recs for k in ks})
     res = {}
     for k in keys:
+        cv = [c for c, ks in cvr if k in ks and c == c]
+        co = [c for c, ks in cvr if k not in ks and c == c]
+        sd = float(np.std(cv, ddof=1)) if len(cv) > 2 else 0.0
+        td = 0.0                                                   # CLV сегмента против остальных ставок
+        if len(cv) > 2 and len(co) >= 5:
+            se = math.sqrt(np.var(cv, ddof=1) / len(cv) + np.var(co, ddof=1) / len(co))
+            td = (float(np.mean(cv)) - float(np.mean(co))) / se if se > 0 else 0.0
+        clv_s = dict(n_clv=len(cv), clv=round(float(np.mean(cv)), 4) if cv else 0.0,
+                     t_clv=round(float(np.mean(cv)) / (sd / math.sqrt(len(cv))), 2) if sd > 0 else 0.0, td_clv=round(td, 2))
         a = [(w, p) for w, p, ks in recs if k in ks]
         o = [(w, p) for w, p, ks in recs if k not in ks]
         w, n, e, z = _test([x for x, _ in a], [y for _, y in a])
@@ -258,7 +276,7 @@ def _segments(P: pd.DataFrame) -> dict[str, dict]:
             ra = sum(x - y for x, y in a) / n
             ro = sum(x - y for x, y in o) / len(o)
             zd = (ra - ro) / math.sqrt(va + vo) if va + vo > 0 else 0.0
-        res[k] = dict(w=w, n=n, e=round(e, 2), z=round(z, 2), zd=round(zd, 2), n_out=len(o))
+        res[k] = dict(w=w, n=n, e=round(e, 2), z=round(z, 2), zd=round(zd, 2), n_out=len(o), **clv_s)
     return res
 
 
@@ -270,9 +288,15 @@ def seg_name(k: str) -> str:
         return f'ступень {v}'
     if kind == 'syn':
         return {'fire': '🔥 вместе с каперами', 'clash': '⚔️ против каперов', 'none': 'без каперов'}[v]
+    if kind == 'grp':
+        return '💰 выгодные' if v == 'value' else '🎯 уверенные'
     if kind == 'p':
         return f"P {v.replace('0.', '').replace('-', '–')}%".replace('80+%', '80%+').replace('<60%', '<60%')
     return '➕ новые линии дня'
+
+
+def _pc(x: float) -> str:
+    return f'{x * 100:+.1f}%'.replace('.', ',')
 
 
 def _fmt(x: float, d: int = 1) -> str:
@@ -295,18 +319,27 @@ def learn(sport: str, P: pd.DataFrame, E: pd.DataFrame, today: dt.date, max_defa
     # 1. сегменты
     segs = _segments(P) if len(P) else {}
     dem, strong = set(old.get('demoted', [])), set(old.get('strong', []))
-    for k, s in segs.items():                                    # хуже ожидания И хуже остальных ставок (не общий сдвиг)
-        if k not in dem and s['n'] >= N_SEG and s['z'] <= Z_DEMOTE and s['n_out'] >= 5 and s['zd'] <= -Z_DIFF:
+    for k, s in segs.items():                     # итоги хуже ожидания И хуже остальных ставок; ИЛИ цена закрытия против нас (CLV)
+        bad_res = s['n'] >= N_SEG and s['z'] <= Z_DEMOTE and s['n_out'] >= 5 and s['zd'] <= -Z_DIFF
+        bad_clv = s.get('n_clv', 0) >= N_SEG_CLV and s.get('t_clv', 0) <= -T_CLV and s.get('td_clv', 0) <= -Z_DIFF
+        ok = (s['z'] >= Z_RESTORE or s['zd'] > -0.5) and (s.get('n_clv', 0) < N_SEG_CLV or s.get('t_clv', 0) > -0.5 or s.get('td_clv', 0) > -0.5)
+        if k not in dem and (bad_res or bad_clv):
             dem.add(k)
-            note('+', f"{seg_name(k)}: {s['w']}/{s['n']} при ожидании {_fmt(s['e'])} (z {_fmt(s['z'])}), хуже остальных ставок"
-                      ' → понижен в выборе ставки дня')
-        elif k in dem and (s['z'] >= Z_RESTORE or s['zd'] > -0.5):
+            note('+', f"{seg_name(k)}: " + (f"{s['w']}/{s['n']} при ожидании {_fmt(s['e'])} (z {_fmt(s['z'])}), хуже остальных ставок"
+                                            if bad_res else f"CLV {_pc(s['clv'])} на {s['n_clv']} (t {_fmt(s['t_clv'])}) — цена закрытия против нас")
+                 + ' → понижен в выборе ставки дня')
+        elif k in dem and ok:
             dem.discard(k)
             note('−', f"{seg_name(k)}: {s['w']}/{s['n']} (z {_fmt(s['z'])}) — вернулся к норме, понижение снято")
-        if k not in strong and s['n'] >= N_STRONG and s['z'] >= Z_STRONG and s['n_out'] >= 5 and s['zd'] >= Z_DIFF:
+        good_res = s['n'] >= N_STRONG and s['z'] >= Z_STRONG and s['n_out'] >= 5 and s['zd'] >= Z_DIFF
+        good_clv = s.get('n_clv', 0) >= N_SEG_CLV and s.get('t_clv', 0) >= T_CLV and s.get('td_clv', 0) >= Z_DIFF
+        if k not in strong and (good_res or good_clv):
             strong.add(k)
-            note('+', f"{seg_name(k)}: {s['w']}/{s['n']} при ожидании {_fmt(s['e'])} (z +{_fmt(s['z'])}) → сильный, закреплён")
-        elif k in strong and (s['z'] < 1.0 or s['zd'] < 0.5):
+            note('+', f"{seg_name(k)}: " + (f"{s['w']}/{s['n']} при ожидании {_fmt(s['e'])} (z +{_fmt(s['z'])})" if good_res
+                                            else f"CLV {_pc(s['clv'])} на {s['n_clv']} (t +{_fmt(s['t_clv'])}) — цена на нашей стороне")
+                 + ' → сильный, закреплён')
+        elif k in strong and not good_res and not good_clv and (s['z'] < 1.0 or s['zd'] < 0.5) and \
+                (s.get('n_clv', 0) < N_SEG_CLV or s.get('t_clv', 0) < 0.5):
             strong.discard(k)
             note('−', f"{seg_name(k)}: z {_fmt(s['z'])} — преимущество не подтвердилось, отметка «сильный» снята")
     st['segments'], st['demoted'], st['strong'] = segs, sorted(dem), sorted(strong)
@@ -318,6 +351,16 @@ def learn(sport: str, P: pd.DataFrame, E: pd.DataFrame, today: dt.date, max_defa
             note('+' if over else '−', f'ставки дня в целом: {w}/{n} при ожидании {_fmt(ex)} (z {_fmt(z)}) — '
                  + ('модель завышает P ставки дня → вопрос аудиту: калибровка P' if over else 'общий сдвиг ушёл'))
     st['overconf'] = over
+    allc = [c for c in (P.clv.map(_num) if len(P) and 'clv' in P.columns else []) if c == c]   # общий CLV ставок дня
+    neg = False
+    if len(allc) >= N_SEG_CLV:
+        m_, s_ = float(np.mean(allc)), float(np.std(allc, ddof=1))
+        tt = m_ / (s_ / math.sqrt(len(allc))) if s_ > 0 else 0.0
+        neg = tt <= -T_CLV
+        if neg != bool(old.get('clv_neg')):
+            note('+' if neg else '−', f'ставки дня в целом: CLV {_pc(m_)} на {len(allc)} (t {_fmt(tt)}) — '
+                 + ('цена закрытия против нас: кф берём хуже рынка → вопрос аудиту (время ставки, источник кф)' if neg else 'цена закрытия больше не против нас'))
+    st['clv_neg'] = neg
     adj = -1 if 'rank:extra' in dem else 1 if 'rank:extra' in strong else 0      # второй план: опыт новых линий
     if adj != int(old.get('extra_adj', 0)):
         note('+' if adj else '−', {-1: 'новые линии дня хуже ⭐1 → динамический лимит ставок −1',
@@ -349,42 +392,62 @@ def learn(sport: str, P: pd.DataFrame, E: pd.DataFrame, today: dt.date, max_defa
              f'запас для правки: +{extra * 100:.0f} п.п. к базовому (ошибочных правок больше верных на {max(0, net)})')
     st['switch_extra'] = extra
 
-    # 3. каперы
+    # 3. каперы: итог по независимому табло + CLV (их кф против цены закрытия — вдвое-вдесятеро быстрее итогов)
     cap = dict(old.get('cappers') or {})
     df = capper_rows(sport, today)
     new_cap = {}
-    if len(df):
-        d = df[df.ind.isin(['W', 'L'])].copy() if 'ind' in df.columns else df.iloc[:0]   # честно: только независимый итог
+    try:
+        import clv as CLV
+        cvs = CLV.capper_values(sport)
+    except Exception:
+        cvs = {}
+    if len(df) or cvs:
+        d = df[df.ind.isin(['W', 'L'])].copy() if len(df) and 'ind' in df.columns else pd.DataFrame(columns=['src', 'res', 'k', 'rel'])
         d['res'] = d['ind'] if len(d) else d.get('res')
-        d['kk'] = d.k.map(_num)
-        d = d[d.kk > 1.0]
-        for src, g in d.groupby('src'):
-            won = (g.res == 'W').astype(int).tolist()
-            p = [min(0.99, MARGIN / k) for k in g.kk]
-            w, n, e, z = _test(won, p)
-            roi = float(sum((k - 1) if r == 'W' else -1.0 for r, k in zip(g.res, g.kk)) / n)
+        d['kk'] = d.k.map(_num) if len(d) else pd.Series(dtype=float)
+        d = d[d.kk > 1.0] if len(d) else d
+        for src in sorted(set(d.src) | set(cvs)):
+            g = d[d.src == src]
+            if len(g):
+                won = (g.res == 'W').astype(int).tolist()
+                p = [min(0.99, MARGIN / k) for k in g.kk]
+                w, n, e, z = _test(won, p)
+                roi = float(sum((k - 1) if r == 'W' else -1.0 for r, k in zip(g.res, g.kk)) / n)
+            else:
+                w, n, e, z, roi = 0, 0, 0.0, 0.0, 0.0
+            cv = cvs.get(src, [])
+            nc = len(cv); mc = float(np.mean(cv)) if nc else 0.0
+            tc = mc / (float(np.std(cv, ddof=1)) / math.sqrt(nc)) if nc > 2 and float(np.std(cv, ddof=1)) > 0 else 0.0
             prev = str((cap.get(src) or {}).get('status', ''))
+            by_res_p = n >= N_PROVEN and z >= Z_PROVEN and roi > 0
+            by_clv_p = nc >= N_CLV and tc >= T_CLV and mc > 0
+            by_res_w = n >= N_WEAK and z <= Z_WEAK
+            by_clv_w = nc >= N_CLV and tc <= -T_CLV
             stt = prev
-            if prev != 'proven' and n >= N_PROVEN and z >= Z_PROVEN and roi > 0:
+            if prev != 'proven' and (by_res_p or by_clv_p) and not by_clv_w:
                 stt = 'proven'
-            elif prev == 'proven' and z < Z_PROVEN_KEEP:
+            elif prev == 'proven' and (z < Z_PROVEN_KEEP and n >= N_PROVEN or nc >= N_CLV and tc < 0.5) and not (by_res_p or by_clv_p):
                 stt = ''
             if stt != 'proven':
-                if prev != 'weak' and n >= N_WEAK and z <= Z_WEAK:
+                if prev != 'weak' and (by_res_w or by_clv_w) and not by_clv_p:
                     stt = 'weak'
-                elif prev == 'weak' and z > Z_WEAK_KEEP:
+                elif prev == 'weak' and not (by_res_w or by_clv_w) and (z > Z_WEAK_KEEP or nc >= N_CLV and tc > -0.5):
                     stt = ''
-            fire = g[g.rel == '1']; clash = g[g.rel == '-1']
+            fire = g[g.rel == '1'] if len(g) else g; clash = g[g.rel == '-1'] if len(g) else g
             new_cap[src] = dict(n=n, w=w, e=round(e, 1), z=round(z, 2), roi=round(roi, 3), status=stt,
-                                fire=[int((fire.res == 'W').sum()), len(fire)], clash=[int((clash.res == 'L').sum()), len(clash)])
+                                n_clv=nc, clv=round(mc, 4), t_clv=round(tc, 2),
+                                fire=[int((fire.res == 'W').sum()) if len(fire) else 0, len(fire)],
+                                clash=[int((clash.res == 'L').sum()) if len(clash) else 0, len(clash)])
             nm = SRC.get(src, src)
+            why = (f'{w}/{n}, ROI {roi * 100:+.0f}% (z {_fmt(z)})' if n else '') + \
+                  ((' · ' if n else '') + f'CLV {_pc(mc)} на {nc} (t {_fmt(tc)})' if nc else '')
             if stt != prev:
                 if stt == 'proven':
-                    note('+', f'капер {nm}: {w}/{n}, ROI {roi * 100:+.0f}% (z +{_fmt(z)}) → ✔ доказан: его ⚔️ — вето, 🔥 — в силе')
+                    note('+', f'капер {nm}: {why} → ✔ доказан: его ⚔️ — вето, 🔥 — в силе')
                 elif stt == 'weak':
-                    note('+', f'капер {nm}: {w}/{n}, ROI {roi * 100:+.0f}% (z {_fmt(z)}) → ⛔ слабый: его 🔥 и ⚔️ не учитываются')
+                    note('+', f'капер {nm}: {why} → ⛔ слабый: его 🔥 и ⚔️ не учитываются')
                 else:
-                    note('−', f"капер {nm}: статус «{'доказан' if prev == 'proven' else 'слабый'}» снят (z {_fmt(z)})")
+                    note('−', f"капер {nm}: статус «{'доказан' if prev == 'proven' else 'слабый'}» снят ({why})")
     st['cappers'] = new_cap or cap
     st['updated'], st['sport'] = today_s, sport
     st['history'] = hist[-300:]
@@ -410,6 +473,9 @@ def day_block(sport: str, P: pd.DataFrame, E: pd.DataFrame, day: dt.date, res: d
                           else ' — ниже ожидания, под наблюдением' if s['z'] <= -1.0 else ' — в норме, ожидаемый риск'))
         else:
             verdict = 'данных по рынку мало — копим'
+        cv = _num(r.get('clv'))
+        if cv == cv:                                              # цена закрытия: была ли ставка верной по цене
+            verdict += f"; CLV {_pc(cv)} — " + ('по цене ставка верная, проигрыш — разброс' if cv > 0 else 'рынок закрылся против нас')
         out.append(f"❌ {e(r['label'])} (P {p * 100:.0f}%): {e(verdict)}")
     if len(E):
         for r in E[(E.date == ds) & E.new.isin(['W', 'L']) & (E.new != E.old)].to_dict('records'):
@@ -419,6 +485,13 @@ def day_block(sport: str, P: pd.DataFrame, E: pd.DataFrame, day: dt.date, res: d
     if not out:
         won = P[(P.date == ds)] if len(P) else P
         out.append('ошибок за сутки нет' if len(won) else 'рассчитанных ставок за сутки нет')
+    dd = P[(P.date == ds)] if len(P) else P
+    cvd = [c for c in (dd.clv.map(_num) if len(dd) and 'clv' in dd.columns else []) if c == c]
+    if cvd:
+        out.append(f'📈 CLV ставок суток: {_pc(np.mean(cvd))} ({len(cvd)})')
+    allc = [c for c in (P.clv.map(_num) if len(P) and 'clv' in P.columns else []) if c == c]
+    if len(allc) >= 5:
+        out.append(f'📈 CLV всего: {_pc(np.mean(allc))} на {len(allc)} — ' + ('цена на нашей стороне' if np.mean(allc) > 0 else 'цена против нас'))
     out += [f'📘 {e(t)}' for t in res.get('added', []) if not t.startswith('капер ')]
     out += [f'↩️ {e(t)}' for t in res.get('removed', []) if not t.startswith('капер ')]
     act = rules_line(sport)
@@ -444,6 +517,9 @@ def cap_block(sport: str, res: dict) -> str:
     fw = sum(v.get('fire', [0, 0])[0] for v in cap.values()); fn = sum(v.get('fire', [0, 0])[1] for v in cap.values())
     cw = sum(v.get('clash', [0, 0])[0] for v in cap.values()); cn = sum(v.get('clash', [0, 0])[1] for v in cap.values())
     syn = (f'\nвсего: 🔥 угадано {fw}/{fn}' if fn else '') + (f' · ⚔️ права система {cw}/{cn}' if cn else '')
+    cl = [f"{SRC.get(s, s)} {_pc(v['clv'])} ({v['n_clv']})" for s, v in cap.items() if v.get('n_clv', 0) >= 3]
+    if cl:
+        syn += '\n📈 CLV: ' + e(' · '.join(cl))
     return '🧠 <b>Обучение на каперах</b>\n' + '\n'.join(ch + [f'Доверие: {e(line)}' if line else '']).strip() + syn
 
 
@@ -456,6 +532,8 @@ def rules_line(sport: str) -> str:
         parts.append(f"запас правки +{st['switch_extra'] * 100:.0f} п.п.")
     if st.get('overconf'):
         parts.append('общая переоценка P — на калибровке')
+    if st.get('clv_neg'):
+        parts.append('CLV ставок дня отрицательный — на разборе')
     if st.get('extra_adj'):
         parts.append(f"лимит ставок {int(st['extra_adj']):+d} (опыт новых линий)")
     return '; '.join(parts)
@@ -484,6 +562,9 @@ def week_block(sport: str, P: pd.DataFrame, E: pd.DataFrame, d0: dt.date, d1: dt
         we = E[(E.date >= a) & (E.date <= b)]
         if len(we):
             q.append(f"правок {len(we)}: верных {int(((we.new == 'W') & (we.old == 'L')).sum())}, ошибочных {int(((we.new == 'L') & (we.old == 'W')).sum())}")
+    cw = [c for c in (W.clv.map(_num) if len(W) and 'clv' in W.columns else []) if c == c]
+    if cw:
+        q.append(f'CLV недели {_pc(np.mean(cw))} на {len(cw)}')
     if q:
         out.append('Контроль качества: ' + e('; '.join(q)))
     hist = [h for h in st.get('history', []) if a <= h['date'] <= (d1 + dt.timedelta(days=1)).isoformat()]

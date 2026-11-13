@@ -154,7 +154,7 @@ def daypick_alarms(dp: pd.DataFrame, rt: dict) -> list[str]:
         z = (pnl.mean() - 0.0) / sd if sd > 0 else 0.0
         bad = pnl.mean() < 0 and z <= -2
         if bad and not st.get('value_bad'):
-            out.append(f'🚨 Ставка дня «с перевесом»: ROI {pnl.mean() * 100:+.1f}% на {len(d)} ставках (ожидалось {exp.mean() * 100:+.1f}%) — '
+            out.append(f'🚨 Ставка дня 💰 выгодная: ROI {pnl.mean() * 100:+.1f}% на {len(d)} ставках (ожидалось {exp.mean() * 100:+.1f}%) — '
                        'значимо ниже нуля, нужен разбор')
         st['value_bad'] = bool(bad)
     rec = dp[pd.to_datetime(dp.date, errors='coerce') >= pd.Timestamp.now() - pd.Timedelta(days=14)]
@@ -162,7 +162,7 @@ def daypick_alarms(dp: pd.DataFrame, rt: dict) -> list[str]:
     if len(rec) >= 7:
         share = float((rec.group.astype(str) == 'fallback').mean())
         if share > 0.8 and not st.get('fallback_hi'):
-            out.append(f'🚨 За 14 дней {share * 100:.0f}% ставок дня — «без перевеса»: правило перевеса почти не срабатывает '
+            out.append(f'🚨 За 14 дней {share * 100:.0f}% ставок дня — 🎯 уверенные: перевес над Pinnacle почти не находится '
                        '(проверить котировки Pinnacle / скриншоты)')
         st['fallback_hi'] = share > 0.8
     return out
@@ -497,14 +497,21 @@ def ops_rows(dp: pd.DataFrame) -> list:
             pnl = [(J.num(r.k) - 1) if str(r.result) == 'W' else (0.0 if str(r.result) == 'P' else -1.0) for r in d.itertuples()]
             out.append((f' отдача (кф {RT.num(d.k.map(J.num).mean(), 2)})', str(len(d)), RT.pct(float(np.mean(pnl))),
                         '🟢' if np.mean(pnl) > 0 else '🔴'))
-    if 'group' in dp.columns:                                   # ТЗ-004: группы ставки дня — с перевесом / без перевеса
-        for g, ru in (('value', ' с перевесом'), ('fallback', ' без перевеса')):
-            d = dp[(dp.group.astype(str) == g) & dp.result.astype(str).isin(['W', 'L', 'P']) & dp.k.map(J.num).notna()]
-            if len(d):
-                pnl = [(J.num(r.k) - 1) if str(r.result) == 'W' else (0.0 if str(r.result) == 'P' else -1.0) for r in d.itertuples()]
-                w = int((d.result.astype(str) == 'W').sum())
-                out.append(RT.row(ru, w, len(d)))
-                out.append(('  ROI', str(len(d)), RT.pct(float(np.mean(pnl))), '🟢' if np.mean(pnl) > 0 else '🔴'))
+    # 14.11 (решение пользователя): две категории — 💰 выгодная (перевес над Pinnacle) и 🎯 уверенная (без перевеса), не путать;
+    # у каждой — угадано, ROI по кф и CLV (цена закрытия: кф × P_закр − 1, лучший ранний показатель плюса)
+    grp = (dp.group.astype(str).str.strip() if 'group' in dp.columns else pd.Series('', index=dp.index)).replace({'': 'fallback', 'nan': 'fallback'})
+    for g, ru in (('value', ' 💰 выгодные'), ('fallback', ' 🎯 уверенные')):
+        d = dp[(grp == g) & dp.result.astype(str).isin(['W', 'L', 'P'])]
+        if not len(d):
+            continue
+        out.append(RT.row(ru, int((d.result.astype(str) == 'W').sum()), int(d.result.astype(str).isin(['W', 'L']).sum())))
+        dk = d[d.k.map(J.num).notna()] if 'k' in d.columns else d.iloc[:0]
+        if len(dk):
+            pnl = [(J.num(r.k) - 1) if str(r.result) == 'W' else (0.0 if str(r.result) == 'P' else -1.0) for r in dk.itertuples()]
+            out.append(('  ROI', str(len(dk)), RT.pct(float(np.mean(pnl))), '🟢' if np.mean(pnl) > 0 else '🔴'))
+        cv = dp.loc[d.index, 'clv'].map(J.num).dropna() if 'clv' in dp.columns else pd.Series(dtype=float)
+        if len(cv):
+            out.append(('  CLV', str(len(cv)), RT.pct(float(cv.mean())), '🟢' if cv.mean() > 0 else '🔴'))
     if 'value_ok' in dp.columns:
         vo = dp.value_ok.map(J.num)
         if vo.notna().any():

@@ -24,7 +24,8 @@ import selflearn as SL
 from hockey import hlines as HL
 
 DP_COLS = ['date', 'rank', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'slot', 'market', 'pick', 'line',
-           'label', 'p', 'fair_k', 'fire', 'clash', 'status', 'reason', 'result', 'settled', 'created']
+           'label', 'p', 'fair_k', 'fire', 'clash', 'status', 'reason', 'result', 'settled', 'created',
+           'k', 'p_close', 'clv']          # 14.11: кф DraftKings на момент ставки, цена закрытия (DK без маржи перед матчем), CLV
 J.SHEETS.setdefault('hk_day_pick', DP_COLS)
 P_MIN, P_MAX = 0.65, 0.80
 MAX_PICKS = 3                   # 14.11: запасное значение — лимит динамический (selflearn.max_picks)
@@ -104,7 +105,7 @@ def _line(c: dict, e) -> str:
 
 def _text(day, c: dict, rank: int, hist: list[str]) -> str:
     e = notify.esc
-    out = [f"🏒{rank} <b>Хоккей · ставка дня</b>", _line(c, e)]                  # 11.11: единое начало, без даты
+    out = [f"🏒{rank} <b>Хоккей · ставка дня</b> · 🎯 уверенная", _line(c, e)]  # 11.11: единое начало; 14.11: категория (второй цены нет)
     out += [e(h) for h in hist]                           # 12.11: после «честный кф» — только отметки правок / новой линии
     return '\n'.join(out)
 
@@ -122,6 +123,15 @@ def _publish(day, c: dict, rank: int, hist: list[str]) -> dict:
     notify.pin([tuple(m) for m in x['msgs']])
     CHANGED[0] = True
     return x
+
+
+SEGMENT_H = 2.0                   # 14.11 (решение пользователя): одна ставка дня на игровой отрезок — начала ставок не ближе 2 ч
+
+
+def busy(start, starts: list) -> bool:
+    """Игровой отрезок занят: уже есть ставка дня, чей матч начинается ближе SEGMENT_H часов (риск одной волны событий)."""
+    s = pd.Timestamp(start)
+    return any(abs((s - pd.Timestamp(x)).total_seconds()) < SEGMENT_H * 3600 for x in starts if x not in (None, ''))
 
 
 CHANGED = [False]                 # ставки хоккея изменились в этом прогоне → autorun обновит кэш кнопки «⭐ Ставка дня»
@@ -142,7 +152,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         if old:
             notify.pin(old, on=False)
         notify.delete([tuple(m) for m in st.get('notes', [])])
-        st = dict(date=str(day), picks=[], notes=[], hdr2=True)
+        st = dict(date=str(day), picks=[], notes=[], hdr2=True, hdr3=True)
         rt['hk_dp'] = st
         first = next((c for c in cands if not c['clash']), cands[0] if cands else None)
         if not first:
@@ -157,10 +167,10 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         notify.delete([tuple(m) for m in st.pop('msgs')])
         picks = [_publish(day, x, i + 1, x.get('hist', [])) for i, x in enumerate(picks)]
         st['picks'] = picks
-    if not st.get('hdr2'):                                    # 11.11: единое начало «🏒1 Хоккей · ставка дня» — обновить закрепы
+    if not st.get('hdr2') or not st.get('hdr3'):                                    # 11.11: единое начало «🏒1 Хоккей · ставка дня» — обновить закрепы
         for x in picks:
             notify.edit([tuple(m) for m in x.get('msgs', [])], _text(day, x, int(x['rank']), x.get('hist', [])), None)
-        st['hdr2'] = True
+        st['hdr2'] = st['hdr3'] = True
     for x in picks:                                          # 12.11: удалённые пользователем ставки — заново, с закрепом
         if not x.get('msgs') or not notify.alive([tuple(m) for m in x['msgs']]):    # 14.11: и не доставленные вовсе
             x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True, queue=False)]
@@ -211,7 +221,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         used = {str(x['id']) for x in picks}
         main = picks[0]
         for c in cands:
-            if str(c['id']) in used:
+            if str(c['id']) in used or busy(c['start_utc'], [x['start_utc'] for x in picks]):
                 continue
             why = better(c, main)
             if why:

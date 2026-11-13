@@ -35,6 +35,7 @@ except ImportError:                                             # футбол: 
     import selflearn as SL
 
 PRIORITY = {'screenshot': 0, 'api': 1, 'model': 2}
+SEGMENT_H = 2.0                 # 14.11 (решение пользователя): одна ставка дня на игровой отрезок — начала не ближе 2 ч
 MAX_PICKS = 3                   # 14.11: только запасное значение — лимит динамический (selflearn.max_picks)
 REASON = {'исправление': 'исправлена ошибка кф скриншота', 'отказ': 'по вашему отказу', 'скриншот': 'по скриншоту', 'лучше': 'найдена лучше',
           'каперы': 'по каперам (🔥/⚔️)'}
@@ -75,8 +76,31 @@ def confident(c: dict) -> bool:
     return (int(c.get('tier', 9)) <= 1 or bool(c.get('fire'))) and not c.get('clash')
 
 
+def category(c: dict | None) -> str:
+    """14.11 (решение пользователя): категория ставки дня — «💰 выгодная» (перевес над Pinnacle, ТЗ-004) или «🎯 уверенная»
+    (максимум вероятности без перевеса над рынком) — не путать: у выгодной плюс в цене, у уверенной — в вероятности."""
+    return '💰 выгодная' if (c or {}).get('group') == 'value' else '🎯 уверенная'
+
+
 def _syn(c: dict) -> str:
     return ' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''
+
+
+def snap_prices(rt: dict, cur: dict, cands: list[dict], now) -> None:
+    """14.11 (CLV): последняя увиденная цена рынка без маржи (Pinnacle, иначе 1xBet) для каждой ставки дня до начала матча —
+    «почти закрытие» (прогон каждые 2 ч; без лишних запросов к API). rt['dp_last']['дата|номер'] = {p, src, at}."""
+    last = rt.setdefault('dp_last', {})
+    picks = ([dict(cur, rank=1)] if cur.get('espn_id') else []) + [dict(x) for x in (cur.get('extras') or [])]
+    for pk in picks:
+        if not pk.get('start_utc') or pd.Timestamp(pk['start_utc']) <= now:
+            continue
+        c = next((o for o in cands if key(o) == list(pk.get('key') or [])), None)
+        if c is not None and c.get('p_mkt'):
+            last[f"{cur.get('date')}|{int(pk['rank'])}"] = dict(p=round(float(c['p_mkt']), 4), src=c.get('mkt_src', ''),
+                                                                 at=f'{now:%Y-%m-%d %H:%M}', key='|'.join(map(str, key(c))))
+    if len(last) > 120:
+        for k in sorted(last)[:len(last) - 120]:
+            last.pop(k, None)
 
 
 def _log_change(store: J.Store, cur: dict, loc, reason: str, old: dict, new: dict | None, rank: int = 1) -> None:
@@ -173,7 +197,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 notify.pin(pins, on=False)
             notify.delete([tuple(x) for x in old.get('ask', [])] + [tuple(x) for x in old.get('notes', [])])
         cur = dict(date=dstr, msgs=[], changes=0, history=[], shots=[], screenshots=0, extras=[], log=[], notes=[], nokb=True, sep=True,
-                   hdr2=True)
+                   hdr2=True, hdr3=True)
     fix = bool(cur.pop('fix', None)) and bool(cur.get('espn_id'))
     if shots:                                                   # скриншоты дня — точные кф (сравнение)
         known = {tuple(key(o)): o for o in cur.get('shots', [])}
@@ -186,6 +210,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     cands = offers_fn(items, off, day, log) + [_revive(o) for o in cur.get('shots', []) if pd.Timestamp(o['start_utc']) > now]
     cands = [o for o in PK.choose(_dedupe(cands)) if o['market'] not in off]
     cands = SL.reorder(_sk(), cands)                            # 🧠 пониженные сегменты — в конец очереди
+    snap_prices(rt, cur, cands, now)                            # 📈 последняя цена рынка до начала — для CLV
     for c in cands:
         c['slot'] = slot_fn(c, items)
     note = ('; ' + '; '.join(log)) if log else ''
@@ -228,14 +253,14 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         notify.edit(cur['msgs'], cur['text'], None)
         cur['sep'] = True
 
-    if not cur.get('hdr2'):                                      # 11–12.11: единое начало и текст без «хвоста» — обновить закрепы
+    if not cur.get('hdr2') or not cur.get('hdr3'):               # 11–12.11 начало без «хвоста»; 14.11 категория — обновить закрепы
         cur['text'] = main_text()
         notify.edit(cur['msgs'], cur['text'], None)
         for x in cur.get('extras') or []:
             if x.get('msgs'):
                 x['text'] = extra_text(x)
                 notify.edit(x['msgs'], x['text'], None)
-        cur['hdr2'] = True
+        cur['hdr2'] = cur['hdr3'] = True
 
     back = 0                                                    # 12.11: удалённые пользователем ставки — заново, с закрепом
     for h in [cur] + list(cur.get('extras') or []):
@@ -309,8 +334,12 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     if picks and len(picks) < SL.max_picks(_sk(), MAX_PICKS, cur['vol'], loc):
         used = {str(x['espn_id']) for x in picks}
         main = next((c for c in cands if key(c) == list(cur.get('key', []))), None) or _pick_view(cur)
+        starts = [x.get('start_utc') for x in picks]
         for c in cands:
             if str(c['espn_id']) in used or pd.Timestamp(c['start_utc']) <= now:
+                continue
+            if any(abs((pd.Timestamp(c['start_utc']) - pd.Timestamp(s)).total_seconds()) < SEGMENT_H * 3600
+                   for s in starts if s not in (None, '')):     # 14.11: игровой отрезок уже занят ставкой дня
                 continue
             why = better(c, main)
             if not why:

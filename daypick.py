@@ -117,7 +117,9 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
             k, ksrc = (k1x, 'api') if k1x else ((round(r * pin[i], 3), 'est') if pin[i] else (None, None))
             out.append(dict(_base(m, row), market=mk, pick=n, line=line, label=label(mk, n, line, p1n, p2n), p=float(p),
                             p_src=src, p_model=pm, p_push=pp, k=k, k_src=ksrc, source='api',
-                            p_pin=float(fair[i]) if fair else None))
+                            p_pin=float(fair[i]) if fair else None,
+                            p_mkt=float(fair[i]) if fair else (float(fair_x[i]) if fair_x else None),   # 14.11: снимок цены → CLV
+                            mkt_src='pinnacle' if fair else ('blend' if fair_x else '')))
     return out
 
 
@@ -167,6 +169,8 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:
     e = notify.esc
     head = f'{dpcore.ICON} <b>{dpcore.SPORT} · ставка дня</b>'          # 11.11: единое начало, без даты
+    if c is not None:
+        head += f' · {dpcore.category(c)}'                       # 14.11: 💰 выгодная / 🎯 уверенная
     if c is None:
         return f'{head}\nСегодня ставки дня нет: {e(reason)}.'
     # 12.11 (решение пользователя): после «честный кф» — ничего лишнего; только отметки правок (✏️) и новой линии (➕)

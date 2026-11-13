@@ -537,6 +537,14 @@ def dp_report(dp: pd.DataFrame, title: str, day: dt.date, d0: dt.date | None = N
     g, b = rr.get('who', (0, 0))
     if g + b:
         T.append(RT.row(' права итоговая', g, g + b))
+    try:                                                  # 14.11: цена закрытия — рынок пошёл к нам (+) или от нас (−)
+        import clv as CLV
+        fin = dp[dp.status.map(_blank)] if 'status' in dp.columns else dp
+        s = CLV.summary(fin)
+        if s['n_dp']:
+            T.append(('📈 P закр. − P', str(s['n_dp']), f"{s['dp'] * 100:+.1f}".replace('.', ','), '🟢' if s['dp'] > 0 else '🔴'))
+    except Exception:
+        pass
     blocks = [f'<b>{e(title)}</b>\n' + RT.render(T)]
     for k in range(((day - d0).days + 1) if d0 is not None else 1):
         lst = _dp_list(dp, (d0 or day) + dt.timedelta(days=k))
@@ -634,6 +642,12 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     if due:
         tag = ' · повтор' if replay else ''                    # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
         import selflearn as SL                                # 🧠 14.11: обучение по каждому суточному отчёту
+        try:                                              # 📈 цена закрытия (CLV) рассчитанных ставок дня — до обучения
+            import clv as CLV
+            log.append(CLV.update(store, 'hockey', {m_: float(v_[0]) for m_, v_ in kcal.items()}))
+            dp = store.read('hk_day_pick')
+        except Exception as ex:
+            log.append(f'📈 CLV hockey: сбой {ex.__class__.__name__}: {ex}')
         slP, slE, slR = SL.cycle('hockey', 'Хоккей', store, dp if dp is not None else store.read('hk_day_pick'), None, cur, log)
         notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
         try:

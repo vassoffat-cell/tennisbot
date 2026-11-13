@@ -860,6 +860,12 @@ def run(dry: bool = False) -> str:
             log.append(f'🔁 смены: сбой {ex.__class__.__name__}')
         rep_tag = ' · повтор' if resend and not daily_due else ''      # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
         import selflearn as SL                                    # 🧠 14.11: обучение по каждому суточному отчёту
+        try:                                                      # 📈 цена закрытия (CLV) рассчитанных ставок дня — до обучения
+            import clv as CLV
+            log.append(CLV.update(store, 'football', last=rt.get('dp_last')))
+            dpk = store.read('day_pick')
+        except Exception as ex:
+            log.append(f'📈 CLV football: сбой {ex.__class__.__name__}: {ex}')
         slP, slE, slR = SL.cycle('football', 'Футбол', store, dpk, store.read('dp_changes'), loc.date(), log)
         if not only_week:
             notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, kprev=kprev, off=off,

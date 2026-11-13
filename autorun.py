@@ -773,6 +773,12 @@ def run(dry: bool = False) -> str:
         rep_tag = ' · повтор' if resend and not daily_due else ''
         dpk = store.read('day_pick')                              # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
         import selflearn as SL                                    # 🧠 14.11: обучение по каждому суточному отчёту
+        try:                                                      # 📈 цена закрытия (CLV) рассчитанных ставок дня — до обучения
+            import clv as CLV
+            log.append(CLV.update(store, 'tennis', last=rt.get('dp_last')))
+            dpk = store.read('day_pick')
+        except Exception as ex:
+            log.append(f'📈 CLV tennis: сбой {ex.__class__.__name__}: {ex}')
         slP, slE, slR = SL.cycle('tennis', 'Теннис', store, dpk, store.read('dp_changes'), loc.date(), log)
         if not only_week:
             notify.send_blocks(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,

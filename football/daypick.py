@@ -78,6 +78,7 @@ def _base(m, row) -> dict:
 def _offer(m, row, market, pick, line, p, p_src, k, k_src, source) -> dict | None:
     P = DISTS.get(str(m.id))
     pm, pp = model_price(P, market, pick, line) if P is not None else (np.nan, 0.0)
+    p_mkt = float(p) if p is not None and p_src in ('pinnacle', 'blend') else None   # 14.11: цена рынка без маржи (снимок → CLV)
     if p is None:
         p, p_src = pm, 'model'
     elif p_src == 'pinnacle':
@@ -87,7 +88,8 @@ def _offer(m, row, market, pick, line, p, p_src, k, k_src, source) -> dict | Non
     if p != p:
         return None
     return dict(_base(m, row), market=market, pick=pick, line=line, label=label(market, pick, line), p=float(p), p_src=p_src,
-                p_model=pm, p_push=pp, k=k, k_src=k_src, source=source, sigma=C.SIGMA.get(market))
+                p_model=pm, p_push=pp, k=k, k_src=k_src, source=source, sigma=C.SIGMA.get(market), p_mkt=p_mkt,
+                mkt_src=p_src if p_mkt is not None else '')
 
 
 def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
@@ -224,6 +226,8 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:
     e = notify.esc
     head = f'{dpcore.ICON} <b>{dpcore.SPORT} · ставка дня</b>'          # 11.11: единое начало, без даты
+    if c is not None:
+        head += f' · {dpcore.category(c)}'                       # 14.11: 💰 выгодная / 🎯 уверенная
     if c is None:
         return f'{head}\nСегодня ставки дня нет: {e(reason)}.'
     # 12.11 (решение пользователя): после «честный кф» — ничего лишнего; только отметки правок (✏️) и новой линии (➕)
@@ -256,7 +260,9 @@ def _row(c: dict, dstr: str, changes: int, hist: list[str]) -> dict:
                pick=c['pick'], line='' if c['line'] is None else c['line'], k=c.get('k') or '', k_src=c.get('k_src') or '',
                p_src=c['p_src'], conf='' if c.get('conf') is None else round(c['conf'], 4), value_ok=int(c['value_ok']),
                tier=c['tier'], source=c.get('source', ''),
-               p_model='' if c.get('p_model') != c.get('p_model') else round(float(c['p_model']), 4))
+               p_model='' if c.get('p_model') != c.get('p_model') else round(float(c['p_model']), 4),
+               group=c.get('group', ''), edge='' if c.get('edge') is None else round(c['edge'], 4),
+               p_pin='' if not c.get('p_pin') else round(c['p_pin'], 4))
     row['p'] = round(float(row['p']), 4)
     return row
 
