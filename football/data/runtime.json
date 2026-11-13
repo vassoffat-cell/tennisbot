@@ -94,7 +94,8 @@
   "sep": true,
   "hdr2": true,
   "text": "⚽1 <b>Футбол · ставка дня</b>\nСегодня ставки дня нет: подходящей линии пока нет (кф ≥ 1,35 и вероятность ≥ 60%) — появится, объявлю.",
-  "vol": 0
+  "vol": 0,
+  "hdr3": true
  },
  "model_version": 2,
  "reported": [
@@ -145,7 +146,7 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-13 22:36",
+ "tips_book": "2026-11-13 22:58",
  "tips_book_v": 4,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -761,5 +762,7 @@
   "football.yml": 3
  },
  "resend_done": "2026-11-13",
- "resend_week_done": "2026-11-11"
+ "resend_week_done": "2026-11-11",
+ "dp_alarm": {},
+ "dp_last": {}
 }
