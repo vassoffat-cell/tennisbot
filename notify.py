@@ -342,8 +342,9 @@ def edit(messages: list, text: str, markup: dict | None = None) -> int:
                                       'reply_markup': markup or {'inline_keyboard': []}})
             n += 1
         except Exception as e:
-            if 'not modified' not in str(e):
-                print(f'Telegram: не изменено ({e})')
+            body = getattr(e, 'tg_body', '')
+            if 'not modified' not in str(e) + body:
+                print(f'Telegram: не изменено ({_why_tg(e, text)})')
     return n
 
 
