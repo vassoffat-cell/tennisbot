@@ -27,7 +27,7 @@ DP_COLS = ['date', 'rank', 'id', 'league', 'start_utc', 'start_local', 'home', '
            'label', 'p', 'fair_k', 'fire', 'clash', 'status', 'reason', 'result', 'settled', 'created']
 J.SHEETS.setdefault('hk_day_pick', DP_COLS)
 P_MIN, P_MAX = 0.65, 0.80
-MAX_PICKS = 3
+MAX_PICKS = 3                   # 14.11: запасное значение — лимит динамический (selflearn.max_picks)
 LMARK = {'W': '✅', 'L': '❌', 'P': '⚪'}
 
 
@@ -205,7 +205,9 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
             [f"🏒{r} <b>Хоккей · ставка дня: мнение изменилось</b> ✏️ ({notify.esc(why)})\n"
              f"{notify.esc(h)}"])]
         log.append(f'⭐🏒 ⭐{r} правка: {why}')
-    if len(picks) < SL.max_picks('hockey', MAX_PICKS):                               # новая ставка: другой матч лучше ⭐1 (одна за прогон)
+    nday = sum(1 for row, _ in items if lo <= pd.Timestamp(row['start_utc']) < hi and row['league'] in leagues)
+    st['vol'] = max(int(st.get('vol', 0)), nday)
+    if len(picks) < SL.max_picks('hockey', MAX_PICKS, st['vol'], loc):                               # новая ставка: другой матч лучше ⭐1 (одна за прогон)
         used = {str(x['id']) for x in picks}
         main = picks[0]
         for c in cands:

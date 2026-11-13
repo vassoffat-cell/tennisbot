@@ -462,7 +462,7 @@ def DP_LIST(dp: pd.DataFrame, day) -> str:
         return ''
     if 'status' in x.columns:
         x = x[x.status.astype(str) != 'OFF']
-    rk = x['rank'].astype(str).str.strip().replace({'': '1', 'nan': '1', '1.0': '1', '2.0': '2', '3.0': '3'}) if 'rank' in x.columns \
+    rk = x['rank'].astype(str).str.strip().replace({'': '1', 'nan': '1'}).map(lambda v: v[:-2] if v.endswith('.0') else v) if 'rank' in x.columns \
         else pd.Series('1', index=x.index)
     x = x.assign(rk=rk).sort_values('rk')
     e = notify.esc
@@ -511,7 +511,7 @@ def ops_rows(dp: pd.DataFrame) -> list:
             out.append(RT.row(' выгодных (90%)', int((vo == 1).sum()), int(vo.notna().sum())))
     wl = dp.result.astype(str).isin(['W', 'L'])
     if 'rank' in dp.columns:                                    # 11.11: доп. ставки ⭐2/⭐3 и синтез с каперами
-        ex = dp[wl & dp['rank'].astype(str).isin(['2', '3'])]
+        ex = dp[wl & (pd.to_numeric(dp['rank'], errors='coerce') >= 2)]          # 14.11: лимит динамический — ⭐2…⭐5
         if len(ex):
             out.append(RT.row(' ➕ новые линии', int((ex.result.astype(str) == 'W').sum()), len(ex)))
     for col, ru in (('fire', ' 🔥 с каперами'), ('clash', ' ⚔️ против каперов')):
