@@ -453,6 +453,37 @@ def collect_box(log: list[str], limit: int = 1500, threads: int = 4) -> int:
     return len(rows)
 
 
+def espn_odds_probe(log: list[str]) -> None:
+    """A23 (14.11): есть ли кф (pickcenter) в протоколах ESPN футбола и тенниса — покрытие по лигам, 1 матч на лигу."""
+    base = 'https://site.api.espn.com/apis/site/v2/sports'
+    for sport, lg in (('soccer', 'eng.1'), ('soccer', 'esp.1'), ('soccer', 'ita.1'), ('soccer', 'ger.1'), ('soccer', 'fra.1'),
+                      ('soccer', 'por.1'), ('soccer', 'ned.1'), ('soccer', 'tur.1'), ('soccer', 'eng.2'), ('soccer', 'uefa.champions'),
+                      ('tennis', 'atp'), ('tennis', 'wta')):
+        try:
+            sb = _get(f'{base}/{sport}/{lg}/scoreboard')
+            evs = sb.get('events') or []
+            n_odds = sum(1 for e in evs if ((e.get('competitions') or [{}])[0].get('odds')))
+            msg = f'{sport}/{lg}: событий {len(evs)}, с кф в табло {n_odds}'
+            if evs:
+                e = evs[0]
+                c = (e.get('competitions') or [{}])[0]
+                if c.get('odds'):
+                    o = c['odds'][0]
+                    msg += f" · пример {e.get('name')}: {o.get('provider', {}).get('name')} {o.get('details')} ТБ {o.get('overUnder')} " \
+                           f"П1 {(o.get('homeTeamOdds') or {}).get('moneyLine')} П2 {(o.get('awayTeamOdds') or {}).get('moneyLine')} " \
+                           f"X {(o.get('drawOdds') or {}).get('moneyLine')}"
+                try:
+                    sm = _get(f"{base}/{sport}/{lg}/summary?event={e.get('id')}")
+                    pc = sm.get('pickcenter') or []
+                    msg += f' · summary pickcenter {len(pc)}' + (f" ({pc[0].get('provider', {}).get('name')}: {pc[0].get('details')}, ТБ {pc[0].get('overUnder')})" if pc else '')
+                except Exception as ex:
+                    msg += f' · summary {ex.__class__.__name__}'
+            log.append(msg)
+        except Exception as ex:
+            log.append(f'{sport}/{lg}: {ex.__class__.__name__}: {str(ex)[:80]}')
+        time.sleep(0.2)
+
+
 if __name__ == '__main__':
     import sys as _s
     lg: list[str] = []
@@ -460,6 +491,8 @@ if __name__ == '__main__':
         khl_probe_dates(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'box':                  # протоколы НХЛ порциями (≈ 1500 за запуск)
         collect_box(lg)
+    elif len(_s.argv) > 1 and _s.argv[1] == 'odds_probe':
+        espn_odds_probe(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'box_probe':
         summary_probe(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'khl':                 # КХЛ: окно ±1 день + застрявшие по номеру (догрузка дат закрыта планом)
