@@ -26,6 +26,14 @@ import journal as J
 import notify
 import pick as PK
 
+try:                                                            # 🧠 самообучение (общий модуль в корне репозитория)
+    import selflearn as SL
+except ImportError:                                             # футбол: прогон из football/ — корень в sys.path
+    import sys
+    from pathlib import Path
+    sys.path.append(str(Path(__file__).resolve().parent.parent))
+    import selflearn as SL
+
 PRIORITY = {'screenshot': 0, 'api': 1, 'model': 2}
 MAX_PICKS = 3
 REASON = {'исправление': 'исправлена ошибка кф скриншота', 'отказ': 'по вашему отказу', 'скриншот': 'по скриншоту', 'лучше': 'найдена лучше',
@@ -87,8 +95,18 @@ def _log_change(store: J.Store, cur: dict, loc, reason: str, old: dict, new: dic
         print(f'dp_changes: не записано ({e})')
 
 
+def _sk() -> str:
+    return {'Теннис': 'tennis', 'Футбол': 'football'}.get(SPORT, 'tennis')
+
+
 def better(a: dict, b: dict | None) -> str:
-    """Причина, по которой кандидат a лучше текущей ставки b ('' — не лучше). Запас против частых правок."""
+    """Причина, по которой кандидат a лучше текущей ставки b ('' — не лучше). Запас против частых правок.
+    🧠 Самообучение: отключённые причины правок, пониженные сегменты и добавочный запас (selflearn) — тоже здесь."""
+    why = _better(a, b)
+    return why if SL.allow(_sk(), why, a, b) else ''
+
+
+def _better(a: dict, b: dict | None) -> str:
     if not b:
         return 'сравнение'
     pa, pb = float(a.get('p', 0)), float(b.get('p', 0) or 0)
@@ -102,7 +120,7 @@ def better(a: dict, b: dict | None) -> str:
         return 'каперы за (🔥)'
     if ta < tb:
         return 'сравнение (ступень выше)'
-    if ta == tb and pa >= pb + C.DAY_PICK_SWITCH:
+    if ta == tb and pa >= pb + C.DAY_PICK_SWITCH + SL.switch_extra(_sk()):
         return f'сравнение (P +{(pa - pb) * 100:.0f} п.п.)'
     return ''
 
@@ -167,6 +185,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     cands = offers_fn(items, off, day, log) + [_revive(o) for o in cur.get('shots', []) if pd.Timestamp(o['start_utc']) > now]
     cands = [o for o in PK.choose(_dedupe(cands)) if o['market'] not in off]
+    cands = SL.reorder(_sk(), cands)                            # 🧠 пониженные сегменты — в конец очереди
     for c in cands:
         c['slot'] = slot_fn(c, items)
     note = ('; ' + '; '.join(log)) if log else ''
@@ -281,11 +300,11 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                     notify.edit(x.get('msgs', []), x['text'], None)
         cur['notes'] = list(cur.get('notes', [])) + [list(m) for m in notify.send_blocks(
             [f"{ICON}{r} <b>{SPORT} · ставка дня: мнение изменилось</b> ✏️ ({notify.esc(why)})\n"
-             f"было {notify.esc(pk['label'])} → стало {_short(top, match_fn)}\n<i>сообщение {ICON}{r} в закрепе обновлено</i>"])]
+             f"было {notify.esc(pk['label'])} → стало {_short(top, match_fn)}"])]
         events.append(f'{ICON}{r} правка ({why})')
     # 2b. новая ставка: другой матч лучше ⭐1 → ⭐2 / ⭐3 — отдельное закреплённое сообщение (одна за прогон)
     picks = ([dict(cur, rank=1)] if cur.get('espn_id') else []) + [dict(x) for x in (cur.get('extras') or [])]
-    if picks and len(picks) < MAX_PICKS:
+    if picks and len(picks) < SL.max_picks(_sk(), MAX_PICKS):
         used = {str(x['espn_id']) for x in picks}
         main = next((c for c in cands if key(c) == list(cur.get('key', []))), None) or _pick_view(cur)
         for c in cands:

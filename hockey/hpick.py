@@ -20,6 +20,7 @@ import pandas as pd
 import config as C
 import journal as J
 import notify
+import selflearn as SL
 from hockey import hlines as HL
 
 DP_COLS = ['date', 'rank', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'slot', 'market', 'pick', 'line',
@@ -46,6 +47,8 @@ def _syn(c: dict, tp: pd.DataFrame) -> tuple[int, int]:
     if tp is None or not len(tp):
         return 0, 0
     t = tp[(tp.game_id.astype(str) == str(c['id'])) & (tp.market.astype(str) == str(c['market']))]
+    if len(t) and 'src' in t.columns:                       # 🧠 ⛔ слабый капер (selflearn) — его 🔥/⚔️ не учитываются
+        t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) != 'weak')]
     fire = int((t.pick.astype(str) == str(c['pick'])).any())
     clash = int((t.pick.astype(str) != str(c['pick'])).any())
     return fire, clash
@@ -67,11 +70,17 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
                      line=x['line'], label=x['label'], p=round(p, 4), p_low=float(x['p_low']), tier=tier_fn(x, row['league']))
             c['fire'], c['clash'] = _syn(c, tp)
             out.append(c)
-    return sorted(out, key=lambda c: (-c['fire'], c['clash'], -c['tier'], -c['p_low'], -c['p']))
+    return SL.reorder('hockey', sorted(out, key=lambda c: (-c['fire'], c['clash'], -c['tier'], -c['p_low'], -c['p'])))
 
 
 def better(a: dict, b: dict | None) -> str:
-    """Причина, по которой кандидат a лучше текущей ставки b ('' — не лучше)."""
+    """Причина, по которой кандидат a лучше текущей ставки b ('' — не лучше). 🧠 Самообучение (selflearn): отключённые
+    причины правок, пониженные сегменты, добавочный запас."""
+    why = _better(a, b)
+    return why if SL.allow('hockey', why, a, b) else ''
+
+
+def _better(a: dict, b: dict | None) -> str:
     if not b:
         return 'сравнение'
     if b.get('clash') and not a.get('clash'):
@@ -82,7 +91,7 @@ def better(a: dict, b: dict | None) -> str:
         return 'каперы за (🔥)'
     if a['tier'] > b['tier']:
         return 'сравнение (ступень выше)'
-    if a['tier'] == b['tier'] and a['p_low'] >= b['p_low'] + 0.02:
+    if a['tier'] == b['tier'] and a['p_low'] >= b['p_low'] + 0.02 + SL.switch_extra('hockey'):
         return f"сравнение (P +{(a['p_low'] - b['p_low']) * 100:.0f} п.п.)"
     return ''
 
@@ -194,9 +203,9 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         CHANGED[0] = True
         st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_blocks(
             [f"🏒{r} <b>Хоккей · ставка дня: мнение изменилось</b> ✏️ ({notify.esc(why)})\n"
-             f"{notify.esc(h)}\n<i>сообщение 🏒{r} в закрепе обновлено</i>"])]
+             f"{notify.esc(h)}"])]
         log.append(f'⭐🏒 ⭐{r} правка: {why}')
-    if len(picks) < MAX_PICKS:                               # новая ставка: другой матч лучше ⭐1 (одна за прогон)
+    if len(picks) < SL.max_picks('hockey', MAX_PICKS):                               # новая ставка: другой матч лучше ⭐1 (одна за прогон)
         used = {str(x['id']) for x in picks}
         main = picks[0]
         for c in cands:

@@ -572,6 +572,12 @@ def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple
     ours = masks(P, (market, pick, '' if line in (None, '') or str(line) in ('nan', 'None') else float(line)))[0]
     p0 = float(P[ours].sum())
     good = bad = bad_t = 0
+    try:                                                     # 🧠 самообучение: ⛔ слабый канал не учитывается, ✔ доказанный — вето
+        import selflearn as SL
+        trust = trust | {s for s in set(d.src) if SL.capper('football', s) == 'proven'}
+        d = d[d.src.map(lambda s: SL.capper('football', s) != 'weak')]
+    except Exception:
+        pass
     for r in d.itertuples(index=False):
         m = np.ones(P.shape, bool)
         for lg in _dec(r.legs):
@@ -620,5 +626,4 @@ def report_block() -> str:
     head = rtable.render(rows, ('Источник (мод.)', 'Кол-во', '%'))
     roi = ' · '.join(f"{r.name[:10]} {'+' if r.roi > 0 else ''}{rtable.pct(r.roi, 0)}%" for r in k.itertuples(index=False)
                      if r.roi == r.roi)
-    return ('👥 <b>Каперы</b>\n' + head + '\n<i>(мод.) ожидание модели · ✔️ надёжный · 🟢🟡🔴 выше/как/ниже</i>'
-            + (f'\n<i>ROI по их кф: {roi}</i>' if roi else ''))
+    return ('👥 <b>Каперы</b>\n' + head + (f'\nROI по их кф: {roi}' if roi else ''))

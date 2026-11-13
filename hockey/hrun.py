@@ -300,9 +300,7 @@ def list_blocks(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame | None = 
         blocks.setdefault(row['league'], []).append('\n'.join(out))
     wend = window_end(_now()) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
     head = (f"🏒 <b>Хоккей · прогноз до {wend:%d.%m %H:%M}</b> · "
-            f"{_local():%H:%M} · {len(items)} {notify.plural(len(items), 'матч', 'матча', 'матчей')}\n"
-            f"<i>линии — основное время; 🎯 — с ОТ и буллитами; тотал — одна линия лиги; 🔥/⚔️ — капер согласен/спорит</i>\n"
-            f"<i>честный кф = 1 / вероятность: ставка в плюс, если кф букмекера выше</i>")
+            f"{_local():%H:%M} · {len(items)} {notify.plural(len(items), 'матч', 'матча', 'матчей')}")
     out = [head]
     for lg in LEAGUES:
         if blocks.get(lg):
@@ -606,13 +604,17 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
     if due:
         tag = ' · повтор' if replay else ''                    # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
+        import selflearn as SL                                # 🧠 14.11: обучение по каждому суточному отчёту
+        slP, slE, slR = SL.cycle('hockey', 'Хоккей', store, dp if dp is not None else store.read('hk_day_pick'), None, cur, log)
         notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
         try:
             import caprep
-            notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START)])
+            notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START),
+                                SL.safe(SL.cap_block, 'hockey', slR)])
         except Exception as ex:
             log.append(f'🏒 отчёт каперов: сбой {ex.__class__.__name__}')
-        notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday))
+        notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday)
+                           + [SL.safe(SL.day_block, 'hockey', slP, slE, yday, slR)])
         if not replay:
             rt['hk_last_daily'] = str(yday)
         log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен' + (' (повтор)' if replay else ''))
@@ -627,7 +629,8 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
                 notify.send_blocks([caprep.report('hockey', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}', day_start=HK_DAY_START)])
             except Exception as ex:
                 log.append(f'🏒 недельный отчёт каперов: сбой {ex.__class__.__name__}')
-            notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0))
+            notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
+                               + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)])
             log.append('🏒 недельный отчёт отправлен')
     txt = report(gf, ld, '🏒 Хоккей · всё время', None, kcal, kprev, off, tp=tp, dp=dp)[0]
     return [dict(key='hk', kind='hk', title='🏒 Хоккей', text=txt, updated=J.now_utc())]

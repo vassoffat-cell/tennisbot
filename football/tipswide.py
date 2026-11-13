@@ -392,5 +392,4 @@ def report_block() -> str:
     roi = ' · '.join(f"{r.name[:10]} {'+' if r.roi > 0 else ''}{rtable.pct(r.roi, 0)}±{rtable.pct(r.se, 0)}% (n{r.nk})"
                      for r in st.itertuples(index=False) if r.nk > 1)
     return ('👥 <b>Каперы · все матчи</b>\n' + rtable.render(rows, ('Источник (кф)', 'Кол-во', '%'))
-            + '\n<i>(кф) средний кф · ✔️ обыгрывает рынок (≥50) · 🟢🟡🔴 ROI выше/≈/ниже 0</i>'
-            + (f'\n<i>ROI: {roi}</i>' if roi else ''))
+            + (f'\nROI: {roi}' if roi else ''))

@@ -618,9 +618,7 @@ def list_blocks(items: list[tuple], off: dict, star: tuple | None) -> list[str]:
         return []
     n = sum(len(v) for v in groups.values())
     blocks = [f"⚽ <b>Прогноз до {(C.wday(_local()) + dt.timedelta(days=1)):%d.%m} 08:00</b> · {_local().strftime('%H:%M')} · {n} {notify.plural(n, 'матч', 'матча', 'матчей')}"
-              + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')
-              + '\n<i>🔥 модель + капер · ⚔️ конфликт с капером · 👥 их ставки</i>'
-              + '\n<i>честный кф = 1 / вероятность: ставка в плюс, если кф букмекера выше</i>']
+              + ('\n⭐ Ставка дня — в закреплённом сообщении' if star else '')]
     for comp, ms in groups.items():
         blocks += notify.folded(f'🏆 <b>{notify.esc(comp)}</b>', ms)
     return blocks
@@ -861,14 +859,18 @@ def run(dry: bool = False) -> str:
         except Exception as ex:
             log.append(f'🔁 смены: сбой {ex.__class__.__name__}')
         rep_tag = ' · повтор' if resend and not daily_due else ''      # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
+        import selflearn as SL                                    # 🧠 14.11: обучение по каждому суточному отчёту
+        slP, slE, slR = SL.cycle('football', 'Футбол', store, dpk, store.read('dp_changes'), loc.date(), log)
         if not only_week:
             notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, kprev=kprev, off=off,
                                        notes=notes, daily_day=yday, extra=cov, late=late, split=True))
             try:
-                notify.send_blocks([caprep.report('football', yday, yday, f'{yday:%d.%m}' + rep_tag), tipsbook.card()])
+                notify.send_blocks([caprep.report('football', yday, yday, f'{yday:%d.%m}' + rep_tag), tipsbook.card(),
+                                    SL.safe(SL.cap_block, 'football', slR)])
             except Exception as ex:
                 log.append(f'👥 отчёт каперов: сбой {type(ex).__name__}')
-            notify.send_blocks(R.dp_report(dpk, f'⚽ Футбол · ставки дня · {yday:%d.%m}' + rep_tag, yday))
+            notify.send_blocks(R.dp_report(dpk, f'⚽ Футбол · ставки дня · {yday:%d.%m}' + rep_tag, yday)
+                               + [SL.safe(SL.day_block, 'football', slP, slE, yday, slR)])
         if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
             rt['last_daily'] = today
         rt['resend_1111b'] = 1
@@ -887,7 +889,8 @@ def run(dry: bool = False) -> str:
                 notify.send_blocks([caprep.report('football', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
             except Exception as ex:
                 log.append(f'👥 недельный отчёт каперов: сбой {type(ex).__name__}')
-            notify.send_blocks(R.dp_report(d_, f'⚽ Футбол · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0))
+            notify.send_blocks(R.dp_report(d_, f'⚽ Футбол · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
+                               + [SL.safe(SL.week_block, 'football', slP, slE, d0, yday)])
             log.append('недельный отчёт отправлен')
         if reminder_due(rt):                                      # запрос файла — сразу после отчётов
             notify.send_blocks([reminder_text(rt)])

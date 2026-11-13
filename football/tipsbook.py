@@ -408,11 +408,10 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             for r in h.itertuples(index=False):
                 k = str(r.k or '').replace('.', ',')
                 lines.append(f"{ICON.get(r.sport, '•')} {notify.esc(r.a)} — {notify.esc(r.b)} · <b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>"
-                             + (f' @{k}' if k else '') + f"\n   {rel.get(r.uid, '— система: матч вне нашей базы или оценка в ближайшем прогоне')}")
+                             + (f' @{k}' if k else '') + (f"\n   {rel[r.uid]}" if rel.get(r.uid) else ''))
             blocks.append('\n'.join(lines))
         notify.send_blocks([('🧪 <b>ТЕСТ доставки</b> · прошлые прогнозы, не новые\n' if test else '')
-                            + '👥 <b>Каперы · новые прогнозы</b>\n\n' + '\n\n'.join(blocks)
-                            + '\n<i>🔥 система согласна · ⚔️ система против · ROI канала — по табло ESPN, их кф (от 10 ставок)</i>'], bot=bot)
+                            + '👥 <b>Каперы · новые прогнозы</b>\n\n' + '\n\n'.join(blocks)], bot=bot)
         n += len(g)
     if test:
         log.append(f'👥 тест доставки: {n} строк в оба бота')
@@ -558,14 +557,12 @@ def report_block() -> str:
     hon = ' · '.join(f"{r.name[:9]} {r.ok}/{r.chk}" for r in st.groupby('name', as_index=False)[['chk', 'ok']].sum().itertuples(index=False)
                      if r.chk)
     out = ('👥 <b>Каперы · все виды (самоотчёт)</b>\n' + rtable.render(rows, ('Канал·вид (всего)', 'Кол-во', '%'))
-           + '\n<i>угадано / с их отметкой ✅❌; (всего) — прогнозов</i>' + (f'\n<i>Честность отметок: {hon}</i>' if hon else ''))
+           + (f'\nЧестность отметок: {hon}' if hon else ''))
     ss = slip_stats()
     if len(ss):                                                   # 📷 купоны: только показанные до матча
         r2 = [rtable.row(f"{r.name[:8]}·{SPORT_RU.get(r.sport, r.sport)[:4]}", r.w, r.pre, str(r.none))
               for r in ss.itertuples(index=False) if r.pre]
-        post = int(ss.post.sum())
-        out += ('\n📷 <b>Купоны до матча</b>\n' + rtable.render(r2, ('Канал·вид (б/и)', 'W/до', '%'))
-                + f'\n<i>W — показан выигранным; (б/и) без итога — вероятно проигрыш; постфактум {post} — не в счёт</i>')
+        out += ('\n📷 <b>Купоны до матча</b>\n' + rtable.render(r2, ('Канал·вид (б/и)', 'W/до', '%')))
     return out
 
 
@@ -584,8 +581,7 @@ def card() -> str:
             roi = f"{'+' if r.roi > 0 else ''}{r.roi * 100:.0f}" if r.nk >= 10 and r.roi == r.roi else '—'
             mark = '✔' if (r.nk >= W.TRUST_NK and r.t >= W.TRUST_T) else ''
             lines.append(f"{(mark + r.name)[:10]:<10} {f'{r.won}/{r.n}':>6} {r.won / r.n * 100:>3.0f} {roi:>4}")
-    out = '👥 <b>Каперы</b>' + (('\n<pre>' + notify.esc('\n'.join(lines)) + '</pre>'
-                                '\n<i>итог по табло ESPN · ROI % по их кф (от 10 ставок) · ✔ доказан плюс</i>') if lines
+    out = '👥 <b>Каперы</b>' + (('\n<pre>' + notify.esc('\n'.join(lines)) + '</pre>') if lines
                                else '\nрассчитанных ставок пока нет')
     ss = slip_stats()
     if len(ss):
