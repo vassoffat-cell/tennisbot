@@ -460,7 +460,7 @@ def espn_odds_probe(log: list[str]) -> None:
                       ('soccer', 'por.1'), ('soccer', 'ned.1'), ('soccer', 'tur.1'), ('soccer', 'eng.2'), ('soccer', 'uefa.champions'),
                       ('tennis', 'atp'), ('tennis', 'wta')):
         try:
-            sb = _get(f'{base}/{sport}/{lg}/scoreboard')
+            sb = _get(f'{base}/{sport}/{lg}/scoreboard' + ('?dates=20261121-20261124' if sport == 'soccer' else ''))
             evs = sb.get('events') or []
             n_odds = sum(1 for e in evs if ((e.get('competitions') or [{}])[0].get('odds')))
             msg = f'{sport}/{lg}: событий {len(evs)}, с кф в табло {n_odds}'
@@ -469,13 +469,13 @@ def espn_odds_probe(log: list[str]) -> None:
                 c = (e.get('competitions') or [{}])[0]
                 if c.get('odds'):
                     o = c['odds'][0]
-                    msg += f" · пример {e.get('name')}: {o.get('provider', {}).get('name')} {o.get('details')} ТБ {o.get('overUnder')} " \
-                           f"П1 {(o.get('homeTeamOdds') or {}).get('moneyLine')} П2 {(o.get('awayTeamOdds') or {}).get('moneyLine')} " \
-                           f"X {(o.get('drawOdds') or {}).get('moneyLine')}"
+                    msg += f" · пример {e.get('name')} {str(e.get('date'))[:10]}: {(o.get('provider') or {}).get('name')} {o.get('details')} " \
+                           f"ТБ {o.get('overUnder')} П1 {(o.get('homeTeamOdds') or {}).get('moneyLine')} П2 {(o.get('awayTeamOdds') or {}).get('moneyLine')} " \
+                           f"X {(o.get('drawOdds') or {}).get('moneyLine')} · ключи {sorted(o.keys())[:14]}"
                 try:
                     sm = _get(f"{base}/{sport}/{lg}/summary?event={e.get('id')}")
                     pc = sm.get('pickcenter') or []
-                    msg += f' · summary pickcenter {len(pc)}' + (f" ({pc[0].get('provider', {}).get('name')}: {pc[0].get('details')}, ТБ {pc[0].get('overUnder')})" if pc else '')
+                    msg += f' · summary pickcenter {len(pc)}' + (f" ({(pc[0].get('provider') or {}).get('name')}: {pc[0].get('details')}, ТБ {pc[0].get('overUnder')})" if pc else '')
                 except Exception as ex:
                     msg += f' · summary {ex.__class__.__name__}'
             log.append(msg)
