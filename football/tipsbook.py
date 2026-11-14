@@ -317,6 +317,26 @@ def _short(s: str, n: int) -> str:
     return s if len(s) <= n else s[:n - 1].rstrip() + '.'
 
 
+def _context(raw: str, pick: str) -> str:
+    """Пост без распознанной пары команд: короткий контекст из текста (турнир / команды до слова «прогноз»), без рекламы."""
+    s = re.split(r'Ставлю|Ставим|Промокод|Связь со мной|ПОДПИСАТЬСЯ|https?://', str(raw))[0]
+    s = re.sub(r'[🔴➡️👍🎫📢✅☑️🏆🇪🇺⚽🏒🎾]+', ' ', s)
+    s = re.sub(r'(?i)прогноз( на матч)?\s*:?', ' ', s)
+    s = s.replace(str(pick), ' ')
+    s = re.sub(r'\s+', ' ', s).strip(' :—-·,.')
+    return (s[:60] + '…') if len(s) > 60 else (s or 'матч не указан')
+
+
+def _nb_new(sent: set, now) -> pd.DataFrame:
+    """Новые прогнозы ленты nb-bet (tips_all.csv) за 6 ч, ещё не присланные."""
+    try:
+        w = pd.read_csv(T.DIR / 'tips_all.csv', dtype=str, keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+    w = w[(w.src == 'nb-bet') & ~w.uid.isin(sent)]
+    return w[pd.to_datetime(w.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)].head(25)
+
+
 def _pick_short(pick: str, a: str, b: str) -> str:
     """«авангард ИТБ(2.0)» → «ИТ2Б2», «барселона фора (0)» → «Ф2(0)», «победа ланс» → «П1»."""
     def side(team: str) -> str:
@@ -383,22 +403,24 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     sent = set(rt.get('tips_alerted', [])) | set(rt.get('gl_alerted', []))
     fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)
     d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
-    d = d[(d.a != '') & ~d.pick.astype(str).str.lower().str.contains('|'.join(['реклам', 'промокод', 'подписат']), regex=True)]   # 14.11: все прогнозы, кроме рекламы
+    d = d[((d.a != '') | (d.pick.astype(str).str.strip() != ''))     # 14.11: и без распознанной пары команд (матч — из текста поста)
+          & ~d.pick.astype(str).str.lower().str.contains('|'.join(['реклам', 'промокод', 'подписат']), regex=True)]   # все, кроме рекламы
+    nb = _nb_new(sent, now) if not test else pd.DataFrame()       # 14.11: прогнозы nb-bet (лента сайта) — тоже присылать
     if test:                                                      # 🧪 разовая проверка доставки: последние прогнозы, в оба бота
         d = df[(df.a != '') & ((df.slip == '') | (df.seen == 'pre'))].copy()
         okt = d.apply(lambda r: bool(re.match(r'(П[12]|ИТ[12]?[БМ]|Т[БМ]|Ф[12]|ОЗ|1X|X2|12|победа)',
                                               _pick_short(r['pick'], r['a'], r['b']))) and not T.SKIP.search(str(r['pick']).lower()), axis=1)
         d = d[okt].tail(4)
-    if d.empty:
+    if d.empty and nb.empty:
         return
     st = W.stats()
     rel = _relations()
     n = 0
-    for bot in (['main', 'tennis'] if test else sorted({ROUTE.get(x, 'main') for x in d.sport})):
+    for bot in (['main', 'tennis'] if test else sorted({ROUTE.get(x, 'main') for x in d.sport} | ({'main'} if len(nb) else set()))):
         g = d[d.sport.map(lambda x: ROUTE.get(x, 'main')) == bot]
         if test:                                                  # тест: последние прогнозы СВОЕГО бота (хоккей/теннис → «Заметки Т»)
             g = df[(df.a != '') & (df.sport.map(lambda x: ROUTE.get(x, 'main')) == bot)].tail(4)
-        if g.empty:
+        if g.empty and not (bot == 'main' and len(nb)):
             continue
         blocks = []
         for src, h in g.groupby('src', sort=False):
@@ -407,16 +429,25 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             lines = [f"<b>{notify.esc(T.TG.get(src, src))}</b>{roi}"]
             for r in h.itertuples(index=False):
                 k = str(r.k or '').replace('.', ',')
-                lines.append(f"{ICON.get(r.sport, '•')} {notify.esc(r.a)} — {notify.esc(r.b)} · <b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>"
+                head = (f"{notify.esc(r.a)} — {notify.esc(r.b)} · " if r.a else notify.esc(_context(r.raw, r.pick)) + ' · ')
+                lines.append(f"{ICON.get(r.sport, '•')} {head}<b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>"
                              + (f' @{k}' if k else '') + (f"\n   {rel[r.uid]}" if rel.get(r.uid) else ''))
             blocks.append('\n'.join(lines))
+        if bot == 'main' and len(nb):                             # nb-bet: автор, матч, ставка, кф
+            lines = ['<b>nb-bet</b>']
+            for r in nb.itertuples(index=False):
+                k = str(r.k or '').replace('.', ',')
+                lines.append(f"⚽ {notify.esc(r.home)} — {notify.esc(r.away)} · <b>{notify.esc(str(r.label or r.raw)[:40])}</b>"
+                             + (f' @{k}' if k else '') + f" · {notify.esc(str(r.author)[:20])}")
+            blocks.append('\n'.join(lines))
+            n += len(nb)
         notify.send_blocks([('🧪 <b>ТЕСТ доставки</b> · прошлые прогнозы, не новые\n' if test else '')
                             + '👥 <b>Каперы · новые прогнозы</b>\n\n' + '\n\n'.join(blocks)], bot=bot)
         n += len(g)
     if test:
         log.append(f'👥 тест доставки: {n} строк в оба бота')
         return
-    rt['tips_alerted'] = (list(sent) + list(d.uid))[-600:]
+    rt['tips_alerted'] = (list(sent) + list(d.uid) + (list(nb.uid) if len(nb) else []))[-900:]
     rt.pop('gl_alerted', None)
     log.append(f'👥 сигнал каперов: {n}')
 
