@@ -1,12 +1,28 @@
 {
  "segments": {
+  "grp:fallback": {
+   "w": 6,
+   "n": 8,
+   "e": 5.61,
+   "z": 0.3,
+   "zd": 0.0,
+   "n_out": 0,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
+  },
   "market:HCP": {
    "w": 0,
    "n": 1,
    "e": 0.66,
    "z": -1.4,
    "zd": -1.61,
-   "n_out": 7
+   "n_out": 7,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "market:IT1": {
    "w": 1,
@@ -14,7 +30,11 @@
    "e": 0.79,
    "z": 0.52,
    "zd": 0.42,
-   "n_out": 7
+   "n_out": 7,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "market:ML": {
    "w": 3,
@@ -22,7 +42,11 @@
    "e": 2.11,
    "z": 1.12,
    "zd": 1.19,
-   "n_out": 5
+   "n_out": 5,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "market:TOTAL": {
    "w": 2,
@@ -30,7 +54,11 @@
    "e": 2.05,
    "z": -0.06,
    "zd": -0.31,
-   "n_out": 5
+   "n_out": 5,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "p:0.60-0.70": {
    "w": 4,
@@ -38,7 +66,11 @@
    "e": 4.09,
    "z": -0.08,
    "zd": 0.0,
-   "n_out": 2
+   "n_out": 2,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "p:0.70-0.80": {
    "w": 2,
@@ -46,7 +78,11 @@
    "e": 1.52,
    "z": 0.8,
    "zd": 0.72,
-   "n_out": 6
+   "n_out": 6,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "rank:extra": {
    "w": 1,
@@ -54,7 +90,11 @@
    "e": 1.37,
    "z": -0.57,
    "zd": -0.84,
-   "n_out": 6
+   "n_out": 6,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "syn:none": {
    "w": 6,
@@ -62,7 +102,11 @@
    "e": 5.61,
    "z": 0.3,
    "zd": 0.0,
-   "n_out": 0
+   "n_out": 0,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "tier:2": {
    "w": 5,
@@ -70,18 +114,23 @@
    "e": 4.82,
    "z": 0.15,
    "zd": 0.0,
-   "n_out": 1
+   "n_out": 1,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   }
  },
  "demoted": [],
  "strong": [],
  "overconf": false,
- "max_picks": 3,
  "blocked": {},
  "edits": {},
  "switch_extra": 0.0,
  "cappers": {},
  "updated": "2026-11-14",
  "sport": "tennis",
- "history": []
+ "history": [],
+ "clv_neg": false,
+ "extra_adj": 0
 }
