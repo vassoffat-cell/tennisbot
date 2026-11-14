@@ -1006,6 +1006,7 @@ def main() -> None:
             print(f'crash_clear: {e}')
     if prof:
         print(prof.report())
+        print(prof.cpu_top())
 
 
 if __name__ == '__main__':

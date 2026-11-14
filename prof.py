@@ -19,7 +19,15 @@ def _host(url) -> str:
         return '?'
 
 
+PR = None
+
+
 def install() -> None:
+    global PR
+    import os
+    if os.getenv('PROF_CPU'):                                  # ручной запуск с inputs[prof]=1: топ функций по времени
+        import cProfile
+        PR = cProfile.Profile(); PR.enable()
     orig = urllib.request.urlopen
 
     def urlopen(url, *a, **k):
@@ -42,6 +50,17 @@ def install() -> None:
         requests.Session.request = request
     except Exception:
         pass
+
+
+def cpu_top(n: int = 25) -> str:
+    if PR is None:
+        return ''
+    import io
+    import pstats
+    PR.disable()
+    b = io.StringIO()
+    pstats.Stats(PR, stream=b).sort_stats('cumulative').print_stats(n)
+    return b.getvalue()
 
 
 def report() -> str:

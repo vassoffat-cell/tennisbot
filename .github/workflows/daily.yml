@@ -21,6 +21,10 @@ on:
         description: 'ТЗ-006: заново прислать все ставки дня текущих суток (1)'
         default: ''
         required: false
+      prof:
+        description: 'Профиль времени прогона (1)'
+        default: ''
+        required: false
 permissions:
   contents: write
   actions: read
@@ -71,6 +75,7 @@ jobs:
           ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
           APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
           CLOUD: '1'
+          PROF_CPU: ${{ github.event.inputs.prof }}
           PYTHONUNBUFFERED: '1'     # ⏱ 14.11: строки журнала со своим временем — видно длительность этапов
           RESEND_DAY: ${{ github.event.inputs.resend_day }}
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
