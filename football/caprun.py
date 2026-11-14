@@ -20,14 +20,17 @@ import tipsbook
 import tipswide
 
 ROUTE = {'football': 'football.yml', 'tennis': 'daily.yml', 'hockey': 'daily.yml'}
-SCHED_MIN = {'daily.yml': 7, 'football.yml': 37}       # плановые прогоны: :07 / :37 нечётных часов UTC
+SCHED_MIN = {'daily.yml': 7, 'football.yml': 37}       # плановые прогоны: :07 / :37
+SCHED_H = {'daily.yml': {1, 3, 5, 7, 9, 11, 13, 15, 17, 21},          # часы UTC (14.11 экономия: ночью реже)
+           'football.yml': {3, 5, 7, 9, 11, 13, 15, 17, 19}}
 MAX_EXTRA = 8                                         # внеплановых запусков в сутки на бота (кредиты API, квота таблиц)
 SOON = pd.Timedelta(minutes=30)
 
 
-def _next_sched(now: pd.Timestamp, minute: int) -> pd.Timestamp:
+def _next_sched(now: pd.Timestamp, minute: int, hours: set[int] | None = None) -> pd.Timestamp:
+    hours = hours or set(range(1, 24, 2))
     t = now.floor('h') + pd.Timedelta(minutes=minute)
-    while t < now or t.hour % 2 == 0:
+    while t < now or t.hour not in hours:
         t += pd.Timedelta(hours=1)
     return t
 
@@ -50,7 +53,7 @@ def main() -> None:
     cnt = rt.get('cap_extra') if (rt.get('cap_extra') or {}).get('day') == day else {'day': day}
     dispatch = []
     for wf in sorted({ROUTE[s] for s in fresh.sport if s in ROUTE}):
-        nxt = _next_sched(now, SCHED_MIN[wf])
+        nxt = _next_sched(now, SCHED_MIN[wf], SCHED_H.get(wf))
         if nxt - now <= SOON:
             log.append(f'👥 {wf}: плановый прогон через {int((nxt - now).total_seconds() // 60)} мин — без доп. запуска')
         elif int(cnt.get(wf, 0)) >= MAX_EXTRA:

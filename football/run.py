@@ -805,17 +805,8 @@ def run(dry: bool = False) -> str:
             log[-1] += f'; рассчитано {nt}'
         except Exception as ex:
             log.append(f'👥 каперы: сбой {ex.__class__.__name__}: {ex}')
-        try:                                                           # 👥 все матчи каперов: история (разово), новые, итоги
-            tipswide.backfill(rt, log)
-            tipswide.collect(log)
-            tipswide.settle(log)
-        except Exception as ex:
-            log.append(f'👥 все матчи: сбой {ex.__class__.__name__}: {ex}')
-        try:                                                           # 👥 книга прогнозов: все виды спорта, отметки ✅/❌
-            tipsbook.run(rt, log)
-            tipswide.settle(log)                                       # купоны с картинок — итог сразу
-        except Exception as ex:
-            log.append(f'👥 книга: сбой {ex.__class__.__name__}: {ex}')
+        # 14.11 18:50 (экономия минут GitHub, решение пользователя): книга прогнозов, все матчи каперов, OCR и уведомления —
+        # ТОЛЬКО cappers.yml (каждый час, Г0). Здесь их не повторяем: −20…30 с на прогон и нет гонки за runtime.tips_alerted.
     if dry:
         print('\n'.join(log)); publish_list(rt, None, items, off, dry=True); print('\n'.join(skipped))
         return f'dry {time.time() - t0:.0f} с'

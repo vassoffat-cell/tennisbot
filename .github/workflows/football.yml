@@ -1,7 +1,7 @@
 name: football
 on:
   schedule:
-    - cron: '37 1-23/2 * * *'   # :37, а не :30 — меньше задержка GitHub (замер 08–10.11: до 65 мин)
+    - cron: '37 3-19/2 * * *'   # :37 (Ташкент 08:37…00:37); 14.11 экономия минут: 02:37, 04:37, 06:37 убраны (матчей нет)
     - cron: '17 3 * * *'      # 08:17 Ташкента — прогноз на сутки и ставка дня до 09:00
     - cron: '47 2 * * *'      # резерв 07:47: 10.11 GitHub потерял 08:17, прогноз ушёл в 09:25 (автопилот 11.11)
     - cron: '37 6 * * *'      # 11:37 Ташкента — суточный отчёт футбола (решение 14.11: отчёт в 11:00)
@@ -22,6 +22,7 @@ on:
         required: false
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: football
   cancel-in-progress: false
@@ -30,22 +31,36 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Gate — экономия минут (14.11)
+        id: gate
+        if: github.event_name == 'schedule'
+        run: |
+          since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
+          n=$(gh api "repos/${{ github.repository }}/actions/workflows/football.yml/runs?status=success&created=>=$since&per_page=20" -q "[.workflow_runs[]|select(.id != ${{ github.run_id }} and ((.updated_at|fromdate) - (.run_started_at|fromdate)) > 40)]|length" || echo 0)
+          if [ "${n:-0}" -gt 0 ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; echo "⏭ экономия: полный успешный прогон за 35 мин ($n) — пропуск (пропуски не считаются: > 40 с)"; fi
+        env:
+          GH_TOKEN: ${{ github.token }}
       - uses: actions/checkout@v5
+        if: steps.gate.outputs.skip != 'true'
         with:
           sparse-checkout: |
             football
             hockey/data
       - uses: actions/setup-python@v6
+        if: steps.gate.outputs.skip != 'true'
         with:
           python-version: '3.13'
           cache: pip
           cache-dependency-path: requirements-cloud.txt
-      - run: pip install -q -r requirements-cloud.txt
+      - if: steps.gate.outputs.skip != 'true'
+        run: pip install -q -r requirements-cloud.txt
       - name: Google key
+        if: steps.gate.outputs.skip != 'true'
         run: printf '%s' "$GOOGLE_CREDENTIALS_JSON" > service_account.json
         env:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
       - name: Inbox, forecast, settle
+        if: steps.gate.outputs.skip != 'true'
         working-directory: football
         run: python run.py
         env:
@@ -59,7 +74,7 @@ jobs:
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
       - name: Save data
-        if: always()
+        if: always() && steps.gate.outputs.skip != 'true'
         run: |
           git config user.name "football-bot"
           git config user.email "football-bot@users.noreply.github.com"

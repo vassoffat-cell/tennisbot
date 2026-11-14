@@ -1,7 +1,8 @@
 name: tennis
 on:
   schedule:
-  - cron: '7 1-23/2 * * *'     # :07, а не :00 — в начале часа GitHub задерживает запуски на 40–65 мин (замер 08–10.11)
+  - cron: '7 1-17/2 * * *'     # :07 (Ташкент 06:07…22:07); 14.11 экономия минут: ночью только 02:07 (строка ниже)
+  - cron: '7 21 * * *'      # 02:07 Ташкента — НХЛ перед матчами, итоги
   - cron: '27 3 * * *'      # резерв 08:27 Ташкента — утренняя ставка дня (12.11 GitHub задержал 08:07 на 45+ мин)
   - cron: '7 6 * * *'       # 11:07 Ташкента — суточный отчёт тенниса (решение 14.11: отчёт в 11:00)
   - cron: '27 6 * * *'      # резерв 11:27
@@ -22,6 +23,7 @@ on:
         required: false
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: tennis
   cancel-in-progress: false
@@ -30,18 +32,32 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
+      - name: Gate — экономия минут (14.11)
+        id: gate
+        if: github.event_name == 'schedule'
+        run: |
+          since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
+          n=$(gh api "repos/${{ github.repository }}/actions/workflows/daily.yml/runs?status=success&created=>=$since&per_page=20" -q "[.workflow_runs[]|select(.id != ${{ github.run_id }} and ((.updated_at|fromdate) - (.run_started_at|fromdate)) > 40)]|length" || echo 0)
+          if [ "${n:-0}" -gt 0 ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; echo "⏭ экономия: полный успешный прогон за 35 мин ($n) — пропуск (пропуски не считаются: > 40 с)"; fi
+        env:
+          GH_TOKEN: ${{ github.token }}
       - uses: actions/checkout@v5
+        if: steps.gate.outputs.skip != 'true'
       - uses: actions/setup-python@v6
+        if: steps.gate.outputs.skip != 'true'
         with:
           python-version: '3.13'
           cache: pip
           cache-dependency-path: requirements-cloud.txt
-      - run: pip install -r requirements-cloud.txt
+      - if: steps.gate.outputs.skip != 'true'
+        run: pip install -r requirements-cloud.txt
       - name: Google key
+        if: steps.gate.outputs.skip != 'true'
         run: printf '%s' "$GOOGLE_CREDENTIALS_JSON" > service_account.json
         env:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
       - name: Inbox, retrain, forecast, settle
+        if: steps.gate.outputs.skip != 'true'
         run: python autorun.py auto
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
@@ -55,7 +71,7 @@ jobs:
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
       - name: Save data and model
-        if: always()
+        if: always() && steps.gate.outputs.skip != 'true'
         run: |
           git config user.name "tennis-bot"
           git config user.email "tennis-bot@users.noreply.github.com"

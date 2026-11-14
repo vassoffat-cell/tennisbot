@@ -271,11 +271,14 @@ def ocr_round(rt: dict, df: pd.DataFrame, log: list[str]) -> pd.DataFrame:
         for src in OCR_CH:
             scan(src, 30, 30)
         rt['ocr_photos_v1'] = 1
+    edge = pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(days=30)
+    if not any(x.get('photos') and 'ocr' not in x and pd.Timestamp(x['ts']) >= edge
+               for src in OCR_IMG for x in _arch(src).values()):
+        return df                                                    # 14.11: нечего распознавать — Tesseract не ставим (−15…20 с)
     err = shots.ensure_ocr()
     if err:
         log.append(f'👥 OCR: {err}')
         return df
-    edge = pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(days=30)
     done, add, wide, budget = 0, [], [], OCR_MAX
     sample = T.DIR / 'img_sample'
     wdf = W.load()
