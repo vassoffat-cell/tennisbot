@@ -29,7 +29,12 @@ REL = {'1': ' 🔥', '-1': ' ⚔️', '0': ' ·'}
 def _read(p: Path) -> pd.DataFrame:
     try:
         d = pd.read_csv(p, dtype=str, keep_default_na=False)
-        return d[d.src != 'nb-bet'].reset_index(drop=True) if 'src' in d.columns else d   # 14.11: nb-bet отключён пользователем
+        if 'src' in d.columns:
+            d = d[d.src != 'nb-bet']                                 # 14.11: nb-bet отключён пользователем
+        if 'post_ts' in d.columns and 'start_utc' in d.columns:     # 14.11 20:26: опубликованный после начала матча — не прогноз
+            late = pd.to_datetime(d.post_ts, errors='coerce') > pd.to_datetime(d.start_utc, errors='coerce')
+            d = d[~late]
+        return d.reset_index(drop=True)
     except Exception:
         return pd.DataFrame()
 

@@ -399,6 +399,56 @@ def _relations() -> dict:
     return out
 
 
+def _starts(d: pd.DataFrame) -> dict:
+    """uid строки книги → начало матча (UTC, без пояса), если матч найден: футбол — табло ESPN (tips_all.csv),
+    хоккей — наша база (hockey/data/games.csv.gz, hcappers.match). 14.11 20:26: пользователь должен видеть, успевает ли он."""
+    out = {}
+    if d.empty:
+        return out
+    try:
+        w = pd.read_csv(T.DIR / 'tips_all.csv', dtype=str, keep_default_na=False)
+        st = dict(zip(w.uid.str.rsplit(':', n=1).str[0], w.start_utc))
+        for r in d.itertuples(index=False):
+            key = f"tg:{r.src}:" + (f"s{r.slip}" if r.slip and r.slip != '-' else str(r.post_id))
+            s = next((v for k, v in st.items() if k == key or (r.slip and k.startswith(key))), '')
+            if s:
+                out[r.uid] = pd.Timestamp(s)
+    except Exception:
+        pass
+    try:
+        h = d[d.sport == 'hockey']
+        if len(h):
+            import sys
+            from pathlib import Path
+            root = Path(__file__).resolve().parent.parent
+            if str(root) not in sys.path:
+                sys.path.insert(0, str(root))
+            from hockey import hcappers as HC
+            g = pd.read_csv(root / 'hockey' / 'data' / 'games.csv.gz', dtype=str, keep_default_na=False)
+            for r in h.itertuples(index=False):
+                ts = pd.to_datetime(r.post_ts, errors='coerce')
+                mt = HC.match(r.a, r.b, ts, g) if r.a and r.b and ts == ts else None
+                if mt is not None:
+                    out[r.uid] = pd.Timestamp(mt[0].start)
+    except Exception:
+        pass
+    return out
+
+
+def _when(uid: str, post_ts: str, starts: dict, now) -> str:
+    """Строка времени: ⏰ начало / ⚠️ матч уже идёт / 🔴 опубликован после начала (время — Ташкент)."""
+    s = starts.get(uid)
+    if s is None:
+        return ''
+    loc = lambda t: (t + pd.Timedelta(hours=5)).strftime('%H:%M')
+    p = pd.to_datetime(post_ts, errors='coerce')
+    if p == p and p > s:
+        return f"🔴 опубликован в {loc(p)}, матч идёт с {loc(s)}"
+    if now > s:
+        return f"⚠️ матч уже идёт (с {loc(s)})"
+    return f"⏰ начало {loc(s)}"
+
+
 def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> None:
     """👥 Новые прогнозы каперов (за 6 ч, ещё не присланные) → бот своего вида спорта: теннис и хоккей — «Заметки Т», остальное — «Заметки Ф».
     14.11 (решение пользователя): каждый прогноз — канал, матч, ставка, кф и согласна ли система (🔥 / ⚔️); матчи вне нашей базы тоже.
@@ -427,6 +477,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
         return
     st = W.stats()
     rel = _relations()
+    starts = _starts(d)
     n = 0
     for bot in (['main', 'tennis'] if test else sorted({ROUTE.get(x, 'main') for x in d.sport} | ({'main'} if len(nb) else set()))):
         g = d[d.sport.map(lambda x: ROUTE.get(x, 'main')) == bot]
@@ -441,9 +492,12 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             roi = (f" · ROI {'+' if r0.roi.iloc[0] > 0 else ''}{rtable.pct(r0.roi.iloc[0], 0)}%" if len(r0) and r0.nk.iloc[0] >= 10 else '')
             k = str(r.k or '').replace('.', ',')
             match = f"{notify.esc(r.a)} — {notify.esc(r.b)}" if r.a else notify.esc(_context(r.raw, r.pick))
+            wh = _when(r.uid, r.post_ts, starts, now)
+            verdict = rel.get(r.uid) or ('· после начала — не оценивается' if wh.startswith('🔴') else
+                                         '⬜ без оценки системы' if wh else '⬜ вне базы системы')
             msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n{match}\n"
                         f"<b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>" + (f' @{k}' if k else '')
-                        + f"\n{rel.get(r.uid, '⬜ вне базы системы')}")
+                        + (f"\n{wh}" if wh else '') + f"\n{verdict}")
         if bot == 'main':
             for r in nb.itertuples(index=False):                  # nb-bet: автор, матч, ставка, кф
                 k = str(r.k or '').replace('.', ',')

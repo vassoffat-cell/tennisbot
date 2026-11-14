@@ -24,7 +24,7 @@ jobs:
         with:
           sparse-checkout: |
             football
-            hockey/data
+            hockey
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
