@@ -785,3 +785,6 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932858,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Balagne,Montpellier,,Montpellier,0,5,FT,seventh-round,0
 401932843,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:30,CA Boulay,Sochaux,,Sochaux,2,2,ET,seventh-round,0
 401932776,fra.coupe_de_france,cup,FRA,F1,2026-11-14 14:00,Rhone Crussol Foot,Frejus,,,0,3,FT,seventh-round,0
+401932777,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Choisy Au Bac,Caen,,Caen,0,2,FT,seventh-round,0
+401932833,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Fontenay Foot,Clermont Foot,,,0,5,FT,seventh-round,0
+401932836,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Chalon-sur-Saone,Hauts Lyonnais,,,0,3,FT,seventh-round,0
