@@ -21,7 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 4                                         # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 5                                         # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -37,6 +37,7 @@ SPORTS = [
 ]
 DEFAULT = {'stavki': 'football', 'xs_stavkii': 'football', 'groznyi_ruslan': 'football'}   # профиль канала, если вид не назван
 PICK = re.compile(r'(?:ставк\w*|прогноз\w*(?: на матч)?|бер[её]м|играем|вариант)\s*[:\-—]\s*(.{2,140})', re.I)
+ODDS_TAIL = re.compile(r'\s*[-–—]\s*(?:кф|коэф\w*)\b.*$', re.I)
 MARKET = re.compile(r'шайб|минимум|забь[её]т|победит|выиграет|\bт[бм]\b|\bт[бм]\s*\(|\bи?т[12]?\s*[бм]|\bф[12]?\s*\(|\bп[12]\b|\b(1x|x2|2x|1х|х2|2х)\b|обе забьют|тотал|фора|победа',
                     re.I)
 
@@ -133,7 +134,8 @@ def tips_of(src: str, p: dict) -> list[dict]:
                 break
         if not pick:
             for ln in frag.split('\n'):
-                if MARKET.search(ln) and not W.PAIR.search(ln) and len(ln) < 140:
+                # 14.11: «ТБ 2.5 — кф. 1.53» — тире перед кф не пара команд (Хитрости, Косово — Израиль)
+                if MARKET.search(ln) and not W.PAIR.search(ODDS_TAIL.sub('', ln)) and len(ln) < 140:
                     pick = ln.strip()
                     break
         if not pick:
@@ -144,6 +146,11 @@ def tips_of(src: str, p: dict) -> list[dict]:
                         pick=re.sub(r'[✅❌✖️⛔↩🔄✔]+', '', pick).strip()[:100], k=f'{T.odds_in(pick):.2f}' if T.odds_in(pick) else '',
                         self=mk, self_ts=pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M') if mk else '', raw=frag[:200].replace('\n', ' ')))
     return out
+
+
+def _rows(add: list[dict]) -> pd.DataFrame:
+    """Новые строки книги: все колонки, пустое = '' (14.11: NaN в slip/seen скрывал свежий прогноз от alert до следующего прогона)."""
+    return pd.DataFrame(add, columns=COLS).fillna('').astype(str)
 
 
 def load() -> pd.DataFrame:
@@ -174,16 +181,12 @@ def run(rt: dict, log: list[str]) -> None:
         if wide:
             W.save(pd.concat([wdf, pd.DataFrame(wide)], ignore_index=True))
         old = {r.uid: (r.self, r.self_ts) for r in df.itertuples(index=False)}
-        df, _ = merge_slips(pd.DataFrame(rows, columns=COLS), srows)
+        df, _ = merge_slips(_rows(rows), srows)
         for i, u in enumerate(df.uid):
             if u in old and old[u][0] and not df.at[i, 'self']:
                 df.loc[i, ['self', 'self_ts']] = list(old[u])
         log.append(f'👥 книга: пересборка v{VERSION} — {len(df)} прогнозов')
     rt['tips_book_v'] = VERSION
-    try:                                                           # 📷 Green Line и др.: прогноз на картинке → OCR
-        df = ocr_round(rt, df, log)
-    except Exception as e:
-        log.append(f'👥 OCR: сбой {e.__class__.__name__}: {e}')
     idx = {u: i for i, u in enumerate(df.uid)}
     add, upd, stat, req = [], 0, [], 0
     for src, name in T.TG.items():
@@ -213,7 +216,11 @@ def run(rt: dict, log: list[str]) -> None:
                     upd += 1
         stat.append(f'{name} +{len(add) - n0}')
     if add:
-        df = pd.concat([df, pd.DataFrame(add)], ignore_index=True)
+        df = pd.concat([df, _rows(add)], ignore_index=True)
+    try:                                                           # 📷 Green Line, Каппер UK: прогноз на картинке → OCR
+        df = ocr_round(rt, df, log)                                # 14.11: ПОСЛЕ чтения каналов — новый пост распознаётся в том же прогоне
+    except Exception as e:
+        log.append(f'👥 OCR: сбой {e.__class__.__name__}: {e}')
     T.DIR.mkdir(parents=True, exist_ok=True)
     df.to_csv(BOOK, index=False)
     rt['tips_book'] = pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M')
@@ -236,6 +243,7 @@ def run(rt: dict, log: list[str]) -> None:
 
 # ------------------------------------------------------------------ 📷 картинки постов (OCR)
 OCR_CH = {'stavki_na_sport_betting1'}                  # каналы, где прогноз — на картинке (Green Line)
+OCR_IMG = OCR_CH | {'kapper_uk'}                       # 14.11: OCR картинок — и Каппер UK (ставка только на картинке под разбором матча)
 OCR_MAX = 60                                           # картинок за прогон (≈ 1–2 с каждая; история догоняется за несколько прогонов)
 
 
@@ -273,7 +281,7 @@ def ocr_round(rt: dict, df: pd.DataFrame, log: list[str]) -> pd.DataFrame:
     wdf = W.load()
     have_w = set(wdf.uid)
     have_b = set(df.uid)
-    for src in OCR_CH:
+    for src in sorted(OCR_IMG):
         a = _arch(src)
         for pid in sorted(a, reverse=True):
             x = a[pid]
@@ -298,15 +306,16 @@ def ocr_round(rt: dict, df: pd.DataFrame, log: list[str]) -> pd.DataFrame:
             df, n_upd = merge_slips(df, [t for t in new_rows if t.get('slip')])
             add += [t for t in new_rows if t['uid'] not in have_b and not t.get('slip')]
             have_b |= {t['uid'] for t in new_rows}
-            wide += wide_rows(src, new_rows, have_w)
+            if src in OCR_CH:
+                wide += wide_rows(src, new_rows, have_w)
         _save_arch(src, a)
     if len(list(sample.glob('*.jpg'))) >= 6:
         rt['ocr_samples'] = 1
     if add:
-        df = pd.concat([df, pd.DataFrame(add)], ignore_index=True)
+        df = pd.concat([df, _rows(add)], ignore_index=True)
     if wide:
         W.save(pd.concat([wdf, pd.DataFrame(wide)], ignore_index=True))
-    left = sum(1 for src in OCR_CH for x in _arch(src).values()
+    left = sum(1 for src in OCR_IMG for x in _arch(src).values()
                if x.get('photos') and 'ocr' not in x and pd.Timestamp(x['ts']) >= edge)
     log.append(f'👥 OCR: постов {done}, прогнозов +{len(add)}, футбол на табло +{len(wide)}, осталось {left}')
     return df
