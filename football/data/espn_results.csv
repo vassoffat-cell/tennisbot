@@ -788,3 +788,10 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932777,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Choisy Au Bac,Caen,,Caen,0,2,FT,seventh-round,0
 401932833,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Fontenay Foot,Clermont Foot,,,0,5,FT,seventh-round,0
 401932836,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Chalon-sur-Saone,Hauts Lyonnais,,,0,3,FT,seventh-round,0
+401932778,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Firminy,Annecy,,Annecy,1,1,ET,seventh-round,0
+401932832,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,IC Croix,ES Thaon,,,1,2,FT,seventh-round,0
+401932844,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Tinteniac St Domineuc,Concarneau,,Concarneau,1,4,FT,seventh-round,0
+401932765,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Vitre,Saint-Pierre Milizac,,,1,2,FT,seventh-round,0
+401932822,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Asptt Dijon,Selongey,,,0,2,FT,seventh-round,0
+401932830,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,St-Ouen L'Aumone,Boulogne,,Boulogne,1,0,FT,seventh-round,0
+401932839,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Dunkerque,US Quevilly,Dunkerque,,0,3,FT,seventh-round,0
