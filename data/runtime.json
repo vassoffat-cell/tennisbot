@@ -3405,27 +3405,27 @@
   ],
   "ML": [
    1.0,
-   11
+   13
   ],
   "DC": [
-   0.9908,
-   39
+   0.99,
+   43
   ],
   "AH": [
    1.0,
-   17
+   19
   ],
   "TOT": [
    1.0,
-   17
+   19
   ],
   "IT1": [
    1.0,
-   12
+   14
   ],
   "IT2": [
    1.0,
-   15
+   17
   ]
  },
  "hk_list": [],
@@ -3450,40 +3450,40 @@
   "nhl:401892719",
   "nhl:401892720"
  ],
- "hk_last_daily": "2026-11-12",
+ "hk_last_daily": "2026-11-13",
  "hk_dp": {
-  "date": "2026-11-13",
+  "date": "2026-11-14",
   "picks": [
    {
-    "id": "nhl:401892707",
+    "id": "nhl:401892711",
     "league": "NHL",
-    "start_utc": "2026-11-14 03:00",
-    "start_local": "14.11 08:00",
-    "home": "Vegas Golden Knights",
-    "away": "Nashville Predators",
-    "slot": 11,
-    "market": "IT1",
-    "pick": "U",
-    "line": 4.5,
-    "label": "ИТ1 М4.5",
-    "p": 0.7643,
-    "p_low": 0.7184,
+    "start_utc": "2026-11-15 00:00",
+    "start_local": "15.11 05:00",
+    "home": "Montreal Canadiens",
+    "away": "Colorado Avalanche",
+    "slot": 12,
+    "market": "IT2",
+    "pick": "O",
+    "line": 1.5,
+    "label": "ИТ2 Б1.5",
+    "p": 0.799,
+    "p_low": 0.7577,
     "tier": 3,
     "fire": 0,
     "clash": 0,
+    "sl_pen": 0,
     "rank": 1,
     "hist": [],
     "msgs": [
      [
       570704006,
-      397
+      456
      ]
     ]
    }
   ],
   "notes": [],
   "hdr2": true,
-  "vol": 2,
   "hdr3": true
  },
  "resend_done": "2026-11-13",
@@ -3494,7 +3494,7 @@
   "2026-11-14|1": {
    "p": 0.6949,
    "src": "blend",
-   "at": "2026-11-14 06:57",
+   "at": "2026-11-14 07:34",
    "key": "187441|ML|2|"
   }
  },

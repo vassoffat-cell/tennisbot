@@ -1,12 +1,28 @@
 {
  "segments": {
-  "market:IT1": {
-   "w": 2,
-   "n": 2,
-   "e": 1.6,
-   "z": 0.71,
+  "grp:fallback": {
+   "w": 4,
+   "n": 5,
+   "e": 3.94,
+   "z": 0.07,
    "zd": 0.0,
-   "n_out": 2
+   "n_out": 0,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
+  },
+  "market:IT1": {
+   "w": 3,
+   "n": 3,
+   "e": 2.36,
+   "z": 0.9,
+   "zd": 0.0,
+   "n_out": 2,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "market:IT2": {
    "w": 1,
@@ -14,7 +30,11 @@
    "e": 0.79,
    "z": 0.51,
    "zd": 0.0,
-   "n_out": 3
+   "n_out": 4,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "market:TOT": {
    "w": 0,
@@ -22,15 +42,23 @@
    "e": 0.79,
    "z": -1.92,
    "zd": 0.0,
-   "n_out": 3
+   "n_out": 4,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "p:0.70-0.80": {
-   "w": 3,
-   "n": 4,
-   "e": 3.17,
-   "z": -0.21,
+   "w": 4,
+   "n": 5,
+   "e": 3.94,
+   "z": 0.07,
    "zd": 0.0,
-   "n_out": 0
+   "n_out": 0,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "rank:extra": {
    "w": 1,
@@ -38,21 +66,28 @@
    "e": 1.58,
    "z": -1.02,
    "zd": 0.0,
-   "n_out": 2
+   "n_out": 3,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   },
   "syn:none": {
-   "w": 3,
-   "n": 4,
-   "e": 3.17,
-   "z": -0.21,
+   "w": 4,
+   "n": 5,
+   "e": 3.94,
+   "z": 0.07,
    "zd": 0.0,
-   "n_out": 0
+   "n_out": 0,
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
+   "td_clv": 0.0
   }
  },
  "demoted": [],
  "strong": [],
  "overconf": false,
- "max_picks": 3,
  "blocked": {},
  "edits": {},
  "switch_extra": 0.0,
@@ -64,6 +99,9 @@
    "z": 0.2,
    "roi": 0.093,
    "status": "",
+   "n_clv": 0,
+   "clv": 0.0,
+   "t_clv": 0.0,
    "fire": [
     1,
     2
@@ -74,7 +112,9 @@
    ]
   }
  },
- "updated": "2026-11-13",
+ "updated": "2026-11-14",
  "sport": "hockey",
- "history": []
+ "history": [],
+ "clv_neg": false,
+ "extra_adj": 0
 }
