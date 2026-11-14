@@ -31,15 +31,15 @@
 - Формулировка всегда «чтобы получить X, нужно Y», а не «невозможно».
 
 ## Документы и доступы
-- Облачная задача не видит документы Claude-проекта → всё в репозитории `engine/`: STATUS.md, AUTOPILOT.md, IMPROVE.md,
-  REPORT_STYLE.md (обязателен для любого сообщения бота), TZ/TZ-004.md, TZ/TZ-005.md. Писать — туда же, коммитом.
+- Облачная задача не видит документы Claude-проекта → всё в репозитории `engine/`: START.md, AUTOPILOT.md, IMPROVE.md,
+  REPORT_STYLE.md (обязателен для любого сообщения бота), START.md §4–5. Писать — туда же, коммитом.
 - add_repo vassoffat-cell/tennisbot (access push) → git clone --depth 1 в /home/claude/tennisbot (корень — теннис, football — футбол).
 - Облако — только REST: gh api -X POST repos/vassoffat-cell/tennisbot/actions/workflows/{daily.yml|football.yml}/dispatches -f ref=main;
   логи — gh run view <id> --log. Локально PYTHONDONTWRITEBYTECODE=1; __pycache__ и тестовые файлы не коммитить.
 - Google Sheets (если коннектор есть): Tennis 1MSGt31Aw2C7AQxF_QeffLLQJxZA2qHVuTOY_VJlk27o, Football 1awuI_6kHJhAprO_cgusjdYx7uwgGJLEm2l0DiM8IFSE;
   листы reports (готовые отчёты), auto_forecasts, auto_lines, day_pick, dp_changes, learning. Каперы — football/data/tips/.
 - Запреты: секреты не читать и не показывать; Apps Script не менять; внутренние API сайтов не использовать; необратимое,
-  удаление данных, платное — только предложением в STATUS.md («Предложения пользователю»).
+  удаление данных, платное — только предложением в START.md («Предложения пользователю»).
 - Коммит: в конце «Co-Authored-By: <модель сессии> <noreply@anthropic.com>»; при отказе push — pull --rebase и повтор.
 
 ## Порядок (неделя — пн–вс, закончившаяся вчера; теннис и футбол — сутки 08:00 → 08:00, 🏒 хоккей — 12:00 → 12:00)
@@ -77,5 +77,5 @@
     title строго «Итог недели ДД.ММ–ДД.ММ», sent — пусто; text до 1200 символов, разметка:
     [Данные] [Выводы] [Находка] [Ставка дня] [Каперы] [Охват] [Сделано] [Идея] [Дальше] — пункты «- ...», цифры совпадают с отчётами недели.
     Обязательно: в [Выводы] — калибровка и уроки самообучения недели; в [Сделано] — что исправлено по пп. 1–9.
-    Нет коннектора таблиц — записать итог в engine/STATUS.md и отметить это.
-13. Обновить engine/STATUS.md, AUTOPILOT.md (очередь, «Внедрено»), IMPROVE.md (журнал проверок), CONTROL.md (новые правила, ошибки); коммит.
+    Нет коннектора таблиц — записать итог в engine/START.md и отметить это.
+13. Обновить engine/START.md, AUTOPILOT.md (очередь, «Внедрено»), IMPROVE.md (журнал проверок), CONTROL.md (новые правила, ошибки); коммит.

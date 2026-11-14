@@ -78,7 +78,7 @@ SHEET_ID = os.getenv('SHEET_ID', '')                                  # ID Googl
 GOOGLE_CREDENTIALS = os.getenv('GOOGLE_CREDENTIALS', str(ROOT / 'service_account.json'))
 ALLOWED_USERS = {int(x) for x in os.getenv('ALLOWED_USERS', '').replace(' ', '').split(',') if x}
 TESSERACT_CMD = os.getenv('TESSERACT_CMD', 'tesseract')
-GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')      # отправка файлов tennis-data с компьютера в облако (ghsync.py)
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')      # не используется облаком (прежняя отправка файлов с компьютера удалена 14.11)
 GITHUB_REPO = os.getenv('GITHUB_REPO', '')        # например vassoffat-cell/tennisbot
 
 # сутки системы (решение пользователя 08.11.2026): 08:00 → 08:00 Ташкента. 08:00 (футбол 08:30) — переобучение, ⭐ ставка дня
