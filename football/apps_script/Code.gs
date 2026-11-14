@@ -1,28 +1,28 @@
 /**
- * FootBot — Telegram-бот на Google Apps Script (бесплатно, круглосуточно в вашем аккаунте Google). Версия 4 (08.11.2026): меню «Аналитики» — из облака, новые разделы без правки скрипта.
+ * FootBot — Telegram-бот на Google Apps Script. Версия 5 (ТЗ-006, 14.11.2026): меню «⭐ Ставка дня» и «📊 Аналитика».
  *
- *   • кнопки: «Прогноз 24 ч», «Аналитика» (разделы задаёт облако: всё время, месяц, турнир, 🧠 самообучение …),
- *     «⭐ Ставка дня», «Очистить чат»;
- *   • ⭐ ставка дня с кнопками «✅ Принимаем» / «🔄 Другую» — нажатие записывается в лист dp_actions и сразу запускает облако;
- *   • скриншот 1xBet любого матча (фото) → папка Google Диска «footbot_inbox» → облако распознаёт кф и подбирает ставку дня;
- *     скриншот можно прислать ответом на сообщение со списком — так бот точнее поймёт, какой это матч;
- *   • файлы данных (tennis-data / football-data) → та же папка; облако проверяет содержимое.
- * Все тексты готовит облако: лист tg_cache — список прогноза и текст ставки дня, лист reports — отчёты.
+ *   ⭐ Ставка дня → 🔄 Ставки на сутки (облако заново присылает все ставки дня, старые удаляет)
+ *                 → 🗂 История (год → месяц → дата: ставки дня этой даты; другая дата — прежняя удаляется)
+ *   📊 Аналитика  → год → раздел (📈 Отчёт · 👥 Каперы · ⭐ Ставки дня · 🧠 Самообучение · 🔎 Аудит · 🏆 Турниры)
+ *                 → срез (📅 День · 🗓 Неделя · 🗓 Месяц · Σ Год) → период → готовый отчёт
+ *   Меню — одно сообщение-«экран» (правится на месте). 15 минут без нажатий: экран и показанное удаляются,
+ *   остаётся ОДНО сообщение — последний показанный отчёт (функция tick, триггер раз в 5 минут — setupMenu()).
+ *   Скриншоты 1xBet и файлы данных → папка Google Диска «footbot_inbox» → облако.
+ * Тексты отчётов готовит облако: лист archive (ключ «вид|раздел|срез|период», текст — JSON-список HTML-блоков),
+ * турниры — лист reports (kind = event). Облако на нажатия меню не запускается (кроме «Ставки на сутки»).
  *
- * Свойства скрипта (Настройки проекта → Свойства скрипта):
- *   BOT_TOKEN, ALLOWED_USERS, SA_EMAIL, WEBAPP_URL, (необязательно) SHEET_ID,
- *   GH_TOKEN — токен GitHub (только репозиторий tennisbot, право Actions: Read and write) — мгновенный запуск облака.
+ * Свойства скрипта: BOT_TOKEN, ALLOWED_USERS, SA_EMAIL, WEBAPP_URL, (необязательно) SHEET_ID, GH_TOKEN.
  */
 
 const PROPS = PropertiesService.getScriptProperties();
 const BOT = { name: 'FootBot', folder: 'footbot_inbox', workflow: 'football.yml', repo: 'vassoffat-cell/tennisbot' };
-
-const B = { list: '⚽ Прогноз 24 ч', stats: '📊 Аналитика', pick: '⭐ Ставка дня', clear: '🧹 Очистить чат' };
-const MENU = { keyboard: [[{ text: B.pick }, { text: B.stats }]],   // 12.11.2026: убраны «Прогноз 24 ч» и «Очистить чат»
-               resize_keyboard: true, is_persistent: true };
-const STATS_KB = { inline_keyboard: [[{ text: '📊 Всё время', callback_data: 'r:all' }, { text: '📅 По месяцу', callback_data: 'r:month' },
-                                      { text: '🏆 По турниру', callback_data: 'r:event' }]] };
-const DP_KB = { inline_keyboard: [[{ text: '✅ Принимаем', callback_data: 'dp:yes' }, { text: '🔄 Другую', callback_data: 'dp:no' }]] };
+const SPORTS = [{ id: 'fb', icon: '⚽', ru: 'Футбол' }];
+const B = { stats: '📊 Аналитика', pick: '⭐ Ставка дня' };
+const MENU = { keyboard: [[{ text: B.pick }, { text: B.stats }]], resize_keyboard: true, is_persistent: true };
+const SEC = [['rep', '📈 Отчёт'], ['cap', '👥 Каперы'], ['dp', '⭐ Ставки дня'], ['learn', '🧠 Самообучение'], ['audit', '🔎 Аудит']];
+const CUT = [['d', '📅 День'], ['w', '🗓 Неделя'], ['m', '🗓 Месяц'], ['y', 'Σ Год']];
+const MON = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+const IDLE_MS = 15 * 60 * 1000;
 
 // ============================================================ Telegram
 function tg_(method, payload) {
@@ -31,7 +31,9 @@ function tg_(method, payload) {
   });
   let res;
   try { res = JSON.parse(r.getContentText()); } catch (e) { res = { ok: false, description: r.getContentText().slice(0, 200) }; }
-  if (!res.ok && method !== 'deleteMessage') log_('ошибка ' + method, res.description || res);
+  if (!res.ok && method !== 'deleteMessage' && method !== 'deleteMessages' && String(res.description || '').indexOf('not modified') < 0) {
+    log_('ошибка ' + method, res.description || res);
+  }
   return res;
 }
 
@@ -49,7 +51,8 @@ function log_(action, info) {
 function esc_(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
 function send_(chat, text, markup) {
-  const blocks = Array.isArray(text) ? text : String(text).split('\n\n');   // массив — готовые блоки, не резать
+  // text — строка или массив готовых блоков; блоки упаковываются в сообщения ≤ 3800 знаков, блок не режется
+  const blocks = Array.isArray(text) ? text : [String(text)];
   const msgs = []; let cur = '';
   blocks.forEach(function (b) {
     if (cur && cur.length + b.length + 2 > 3800) { msgs.push(cur); cur = ''; }
@@ -66,11 +69,9 @@ function send_(chat, text, markup) {
   return ids;
 }
 
-function remember_(chat, ids) {
-  const ss = ss_();
-  const sh = ss.getSheetByName('tg_messages') || ss.insertSheet('tg_messages');
-  if (sh.getLastRow() === 0) sh.appendRow(['chat_id', 'message_id']);
-  ids.forEach(function (id) { sh.appendRow([chat, id]); });
+function del_(chat, ids) {
+  ids = (ids || []).filter(function (x) { return x; });
+  if (ids.length) tg_('deleteMessages', { chat_id: chat, message_ids: ids });
 }
 
 function allowed_(id) {
@@ -78,27 +79,26 @@ function allowed_(id) {
     .indexOf(String(id)) >= 0;
 }
 
-// ============================================================ мгновенный запуск облака (GitHub Actions)
-function dispatch_() {
+// ============================================================ облако (GitHub Actions)
+function dispatch_(inputs) {
   const token = PROPS.getProperty('GH_TOKEN');
   if (!token) return false;
   const cache = CacheService.getScriptCache();
-  if (cache.get('dispatch')) return true;                    // не чаще раза в 40 с: облако всё равно обработает всё сразу
-  cache.put('dispatch', '1', 40);
+  const tag = 'dispatch' + (inputs ? JSON.stringify(inputs) : '');
+  if (cache.get(tag)) return true;                           // не чаще раза в 40 с
+  cache.put(tag, '1', 40);
+  const body = { ref: 'main' };
+  if (inputs) body.inputs = inputs;
   const r = UrlFetchApp.fetch('https://api.github.com/repos/' + BOT.repo + '/actions/workflows/' + BOT.workflow + '/dispatches', {
-    method: 'post', contentType: 'application/json', payload: JSON.stringify({ ref: 'main' }), muteHttpExceptions: true,
+    method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true,
     headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }
   });
   if (r.getResponseCode() !== 204) { log_('ошибка запуска облака', r.getResponseCode() + ' ' + r.getContentText().slice(0, 200)); return false; }
   return true;
 }
 
-function waitText_(ok) { return ok ? '1–2 минуты' : 'до 2 часов (мгновенный запуск не настроен: свойство GH_TOKEN)'; }
-
 // ============================================================ вход
 function doPost(e) {
-  // Ответ через HtmlService (код 200 сразу). ContentService отвечает перенаправлением 302 — Telegram повторяет обновление
-  // и не присылает новые, кнопки «не работают».
   try {
     const u = JSON.parse(e.postData.contents);
     const cache = CacheService.getScriptCache();
@@ -129,11 +129,38 @@ function onMessage_(m) {
   if (m.document && /^image\//.test(String(m.document.mime_type || ''))) return onShot_(chat, m, m.document.file_id);
   if (m.document) return onFile_(chat, m.document);
   const t = String(m.text || '').trim();
-  if (t === B.list) return remember_(chat, send_(chat, cachedList_()));
-  if (t === B.stats) return tg_('sendMessage', { chat_id: chat, text: '📊 <b>Аналитика</b> — выберите раздел:', parse_mode: 'HTML', reply_markup: statsKb_() });
-  if (t === B.pick) return showPick_(chat);
-  if (t === B.clear) return clearChat_(chat, m.message_id);
-  send_(chat, '⚽ <b>FootBot</b>\nПрогноз на 24 ч (17 турниров) приходит сам каждые 2 часа: у матча — исход и линии с вероятностью (🟢 высокая, 🟡 средняя, ⚪ низкая уверенность).\n⭐ <b>Ставка дня</b> — закреплённое сообщение и кнопка внизу: кф 1xBet ≥ 1,35, максимальная вероятность; «✅ Принимаем» фиксирует ставку, «🔄 Другую» — бот подберёт следующую. Нет нужной линии или кф ниже — пришлите скриншот страницы матча 1xBet (любого матча из списка; лучше ответом на сообщение со списком): бот распознает кф и подберёт ставку.\nВ 00:30 — суточный отчёт. По понедельникам — напоминание о файлах football-data.\n\nКнопки — внизу.');
+  if (t === B.pick) { tg_('deleteMessage', { chat_id: chat, message_id: m.message_id }); return screen_(chat, 'P', true); }
+  if (t === B.stats) { tg_('deleteMessage', { chat_id: chat, message_id: m.message_id }); return screen_(chat, 'A', true); }
+  send_(chat, '⚽ <b>' + BOT.name + '</b>\n⭐ Ставка дня — ставки на сутки и история; 📊 Аналитика — отчёты за день, неделю, месяц, год. Кнопки — внизу.');
+}
+
+// ============================================================ состояние экрана (на чат)
+function st_(chat) { try { return JSON.parse(PROPS.getProperty('ui_' + chat) || '{}'); } catch (e) { return {}; } }
+function save_(chat, s) { s.last = Date.now(); PROPS.setProperty('ui_' + chat, JSON.stringify(s)); }
+
+function screen_(chat, path, fresh) {
+  const v = view_(path);
+  const s = st_(chat);
+  if (fresh && s.scr) { del_(chat, [s.scr]); s.scr = null; }
+  let ok = false;
+  if (s.scr) {
+    const r = tg_('editMessageText', { chat_id: chat, message_id: s.scr, text: v.text, parse_mode: 'HTML', reply_markup: { inline_keyboard: v.kb } });
+    ok = r.ok || String(r.description || '').indexOf('not modified') >= 0;
+  }
+  if (!ok) {
+    const r = tg_('sendMessage', { chat_id: chat, text: v.text, parse_mode: 'HTML', reply_markup: { inline_keyboard: v.kb } });
+    if (r.ok) s.scr = r.result.message_id;
+  }
+  save_(chat, s);
+}
+
+function show_(chat, key, title) {
+  const s = st_(chat);
+  del_(chat, s.shown);                                      // другая дата / отчёт — прежний удаляется
+  const blocks = text_(key);
+  s.shown = blocks ? send_(chat, blocks, { inline_keyboard: [] }) : send_(chat, 'За этот период данных нет.', { inline_keyboard: [] });
+  s.lastKey = blocks ? key : '';
+  save_(chat, s);
 }
 
 function onCallback_(q) {
@@ -141,66 +168,166 @@ function onCallback_(q) {
   tg_('answerCallbackQuery', { callback_query_id: q.id });
   if (!allowed_(q.from.id)) return;
   const d = String(q.data || '');
-  if (d === 'dp:yes' || d === 'dp:no') return dpAction_(chat, q.message.message_id, d.slice(3));
-  const rep = table_('reports');
-  if (d === 'r:month' || d === 'r:event') {
-    const kind = d === 'r:month' ? 'month' : 'event';
-    const list = rep.map(function (r, i) { return { r: r, i: i }; }).filter(function (x) { return x.r.kind === kind; });
-    if (!list.length) return send_(chat, 'Данных пока нет — отчёты появятся после первых доигранных матчей.');
-    const kb = list.slice(0, 30).map(function (x) { return [{ text: String(x.r.title).slice(0, 60), callback_data: 'k:' + x.i }]; });
-    return tg_('sendMessage', { chat_id: chat, text: kind === 'month' ? 'Выберите месяц:' : 'Выберите турнир:', reply_markup: { inline_keyboard: kb } });
+  if (d === 'PN') {                                         // 🔄 ставки на сутки — облако
+    const ok = dispatch_({ resend_picks: '1' });
+    const s = st_(chat);
+    if (s.scr) tg_('editMessageText', { chat_id: chat, message_id: s.scr, parse_mode: 'HTML',
+      text: ok ? '⏳ Присылаю заново все ставки дня — 1–2 минуты. Старые сообщения удалю.' : '⚠️ Облако не запущено (нет GH_TOKEN) — ставки придут с ближайшим прогоном (до 2 ч).',
+      reply_markup: { inline_keyboard: [[{ text: '◀ Назад', callback_data: 'P' }]] } });
+    save_(chat, s);
+    return;
   }
-  if (d.indexOf('k:') === 0) return sendReport_(chat, rep[+d.slice(2)]);
-  if (d.indexOf('r:') === 0) {                              // любой раздел отчёта по ключу (r:all, r:learn, …)
-    const key = d.slice(2);
-    return sendReport_(chat, rep.filter(function (r) { return String(r.key) === key; })[0]);
+  if (d.indexOf('S|') === 0) return show_(chat, d.slice(2));
+  if (d.indexOf('E|') === 0) {                              // 🏆 турнир (лист reports)
+    const rep = table_('reports').filter(function (r) { return r.kind === 'event'; });
+    const r = rep[+d.slice(2)];
+    const s = st_(chat); del_(chat, s.shown);
+    s.shown = r ? send_(chat, [String(r.text)], { inline_keyboard: [] }) : [];
+    s.lastKey = ''; s.lastText = r ? String(r.text) : '';
+    save_(chat, s);
+    return;
   }
+  screen_(chat, d, false);
 }
 
-function statsKb_() {
-  // Разделы «Аналитики» задаёт облако (лист tg_cache, ключ stats_menu): [[{text, data}], …]; нет — стандартные.
-  try {
-    const c = table_('tg_cache').filter(function (r) { return r.key === 'stats_menu'; })[0];
-    const rows = c ? JSON.parse(String(c.text)) : null;
-    if (rows && rows.length) {
-      return { inline_keyboard: rows.map(function (row) {
-        return row.map(function (b) { return { text: String(b.text), callback_data: String(b.data).slice(0, 60) }; });
-      }) };
+// ============================================================ экраны
+function keys_() {
+  const sh = ss_().getSheetByName('archive');
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues().map(function (r) { return String(r[0]); });
+}
+
+function text_(key) {
+  const sh = ss_().getSheetByName('archive');
+  if (!sh || sh.getLastRow() < 2) return null;
+  const ks = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (let i = ks.length - 1; i >= 0; i--) {
+    if (String(ks[i][0]) === key) {
+      try { return JSON.parse(String(sh.getRange(i + 2, 7).getValue())); } catch (e) { return [String(sh.getRange(i + 2, 7).getValue())]; }
     }
-  } catch (e) { log_('меню аналитики', String(e)); }
-  return STATS_KB;
+  }
+  return null;
 }
 
-function sendReport_(chat, r) {
-  if (!r) return send_(chat, 'Отчёт обновился — нажмите «' + B.stats + '» ещё раз.');
-  send_(chat, String(r.text) + '\n\n<i>обновлено ' + esc_(String(r.updated)) + ' UTC</i>');
+function grid_(items, per) {
+  const rows = [];
+  for (let i = 0; i < items.length; i += per) rows.push(items.slice(i, i + per));
+  return rows;
 }
 
-function cachedList_() {
-  const c = table_('tg_cache').filter(function (r) { return r.key === 'list'; })[0];
-  let blocks = [];
-  try { blocks = c ? JSON.parse(String(c.text)) : []; } catch (e) { blocks = []; }
-  if (!blocks.length) return 'В ближайшие 24 часа матчей с прогнозом нет. Как только появятся, список придёт сам.';
-  return blocks;
+function sp_(id) { return SPORTS.filter(function (x) { return x.id === id; })[0] || SPORTS[0]; }
+function back_(path) { return [{ text: '◀ Назад', callback_data: path }]; }
+
+function view_(path) {
+  const p = path.split('|');
+  const ks = keys_();
+  // ⭐ Ставка дня
+  if (p[0] === 'P') return { text: '⭐ <b>Ставка дня</b>', kb: [[{ text: '🔄 Ставки на сутки', callback_data: 'PN' }, { text: '🗂 История', callback_data: 'H' }]] };
+  if (p[0] === 'H' || p[0] === 'A') {
+    const isH = p[0] === 'H';
+    const sec = isH ? 'hist' : null;
+    const root = isH ? 'P' : null;
+    if (p.length === 1) {                                   // выбор вида спорта (если их несколько)
+      if (SPORTS.length === 1) return view_(p[0] + '|' + SPORTS[0].id);
+      return { text: (isH ? '🗂 <b>История ставок дня</b>' : '📊 <b>Аналитика</b>') + ' — вид спорта:',
+               kb: [SPORTS.map(function (x) { return { text: x.icon + ' ' + x.ru, callback_data: p[0] + '|' + x.id }; })]
+                 .concat(isH ? [back_('P')] : []) };
+    }
+    const s = sp_(p[1]);
+    const mine = ks.filter(function (k) { return k.indexOf(s.id + '|') === 0; });
+    const years = uniq_(mine.map(function (k) { return k.split('|')[3].slice(0, 4); }));
+    const up1 = SPORTS.length > 1 ? p[0] : (isH ? 'P' : null);
+    if (p.length === 2) {                                   // год
+      if (!years.length) return { text: s.icon + ' Данных пока нет.', kb: up1 ? [back_(up1)] : [] };
+      if (years.length === 1) return view_(path + '|' + years[0]);
+      return { text: s.icon + ' ' + (isH ? '🗂 История' : '📊 Аналитика') + ' — год:',
+               kb: grid_(years.map(function (y) { return { text: y, callback_data: path + '|' + y }; }), 4).concat(up1 ? [back_(up1)] : []) };
+    }
+    const y = p[2];
+    const upY = years.length > 1 ? p.slice(0, 2).join('|') : up1;
+    if (isH) return dates_(s, mine, 'hist', y, p, upY);
+    if (p.length === 3) {                                   // раздел
+      const secs = SEC.filter(function (x) { return mine.some(function (k) { return k.split('|')[1] === x[0] && k.split('|')[3].indexOf(y) === 0; }); });
+      const kb = grid_(secs.map(function (x) { return { text: x[1], callback_data: path + '|' + x[0] }; }), 2);
+      if (s.id !== 'hk') kb.push([{ text: '🏆 Турниры', callback_data: path + '|ev' }]);
+      if (upY) kb.push(back_(upY));
+      return { text: s.icon + ' <b>' + s.ru + ' · ' + y + '</b> — раздел:', kb: kb };
+    }
+    const sc = p[3];
+    if (sc === 'ev') {
+      const rep = table_('reports').filter(function (r) { return r.kind === 'event'; });
+      const kb = rep.slice(0, 40).map(function (r, i) { return [{ text: String(r.title).slice(0, 50), callback_data: 'E|' + i }]; });
+      kb.push(back_(p.slice(0, 3).join('|')));
+      return { text: '🏆 <b>Турниры</b>', kb: kb };
+    }
+    const secName = (SEC.filter(function (x) { return x[0] === sc; })[0] || ['', sc])[1];
+    if (p.length === 4) {                                   // срез
+      const cuts = CUT.filter(function (c) { return mine.some(function (k) { const a = k.split('|'); return a[1] === sc && a[2] === c[0] && a[3].indexOf(y) === 0; }); });
+      return { text: s.icon + ' <b>' + secName + ' · ' + y + '</b> — срез:',
+               kb: [cuts.map(function (c) { return { text: c[1], callback_data: c[0] === 'y' ? 'S|' + s.id + '|' + sc + '|y|' + y : path + '|' + c[0] }; })]
+                 .concat([back_(p.slice(0, 3).join('|'))]) };
+    }
+    const cut = p[4];
+    const own = mine.filter(function (k) { const a = k.split('|'); return a[1] === sc && a[2] === cut && a[3].indexOf(y) === 0; })
+                    .map(function (k) { return k.split('|')[3]; });
+    const up = p.slice(0, 4).join('|');
+    if (cut === 'd') return dates_(s, mine, sc, y, p.slice(0, 5).concat(p.slice(5)), up, true);
+    if (cut === 'w') {
+      const per = uniq_(own).reverse().slice(0, 30);
+      return { text: s.icon + ' <b>' + secName + '</b> — неделя:',
+               kb: grid_(per.map(function (m0) { return { text: wk_(m0), callback_data: 'S|' + s.id + '|' + sc + '|w|' + m0 }; }), 2).concat([back_(up)]) };
+    }
+    if (cut === 'm') {
+      const per = uniq_(own).reverse();
+      return { text: s.icon + ' <b>' + secName + '</b> — месяц:',
+               kb: grid_(per.map(function (m) { return { text: MON[+m.slice(5, 7) - 1] + ' ' + m.slice(0, 4), callback_data: 'S|' + s.id + '|' + sc + '|m|' + m }; }), 4).concat([back_(up)]) };
+    }
+  }
+  return view_('P');
 }
 
-// ============================================================ ⭐ ставка дня
-function showPick_(chat) {
-  // 12.11.2026: ставки дня живут в закреплённых сообщениях (каждая — отдельным). Кнопка запускает облако:
-  // оно проверяет закрепы и заново присылает удалённые. Кнопок ✅/🔄 больше нет.
-  const ok = dispatch_();
-  send_(chat, '📌 Ставки дня — в закреплённых сообщениях вверху чата. Удалённые пришлю заново через ' + waitText_(ok) + '.');
+function dates_(s, mine, sec, y, p, up, analytics) {
+  // История (H|sp|год|месяц) и срез «День» аналитики (A|sp|год|раздел|d|месяц): месяц → даты
+  const base = analytics ? p.slice(0, 5).join('|') : p.slice(0, 3).join('|');
+  const mIdx = analytics ? 5 : 3;
+  const ds = uniq_(mine.filter(function (k) { const a = k.split('|'); return a[1] === sec && a[2] === 'd' && a[3].indexOf(y) === 0; })
+                       .map(function (k) { return k.split('|')[3]; }));
+  if (!ds.length) return { text: s.icon + ' Данных пока нет.', kb: up ? [back_(up)] : [] };
+  const months = uniq_(ds.map(function (d) { return d.slice(0, 7); }));
+  const title = analytics ? '<b>' + (SEC.filter(function (x) { return x[0] === sec; })[0] || ['', ''])[1] + '</b> · ' : '🗂 <b>История ставок дня</b> · ';
+  if (p.length <= mIdx) {
+    if (months.length === 1) return dates_(s, mine, sec, y, p.slice(0, mIdx).concat([months[0]]), up, analytics);
+    return { text: s.icon + ' ' + title + y + ' — месяц:',
+             kb: grid_(months.reverse().map(function (m) { return { text: MON[+m.slice(5, 7) - 1], callback_data: base + '|' + m }; }), 4).concat(up ? [back_(up)] : []) };
+  }
+  const m = p[mIdx];
+  const days = ds.filter(function (d) { return d.indexOf(m) === 0; });
+  const upM = months.length > 1 ? base : up;
+  return { text: s.icon + ' ' + title + MON[+m.slice(5, 7) - 1] + ' ' + m.slice(0, 4) + ' — дата:',
+           kb: grid_(days.map(function (d) { return { text: d.slice(8, 10), callback_data: 'S|' + s.id + '|' + sec + '|d|' + d }; }), 7)
+                 .concat(upM ? [back_(upM)] : []) };
 }
 
-function dpAction_(chat, messageId, action) {
-  const ss = ss_();
-  const sh = ss.getSheetByName('dp_actions') || ss.insertSheet('dp_actions');
-  if (sh.getLastRow() === 0) sh.appendRow(['time', 'action', 'chat_id', 'message_id', 'done']);
-  sh.appendRow([Utilities.formatDate(new Date(), 'UTC', 'yyyy-MM-dd HH:mm'), action, chat, messageId, '']);
-  tg_('editMessageReplyMarkup', { chat_id: chat, message_id: messageId, reply_markup: { inline_keyboard: [] } });
-  const ok = dispatch_();
-  send_(chat, action === 'yes' ? '✅ Принято. Ставка дня будет зафиксирована (' + waitText_(ok) + ').'
-                               : '🔄 Ищу другую ставку дня — в этом или другом матче (' + waitText_(ok) + ').');
+function uniq_(a) { return a.filter(function (x, i) { return x && a.indexOf(x) === i; }).sort(); }
+function wk_(m0) {
+  const d = new Date(m0 + 'T00:00:00Z'); const e = new Date(d.getTime() + 6 * 864e5);
+  const f = function (x) { return ('0' + x.getUTCDate()).slice(-2) + '.' + ('0' + (x.getUTCMonth() + 1)).slice(-2); };
+  return f(d) + '–' + f(e);
+}
+
+// ============================================================ 15 минут без нажатий → одно сообщение
+function tick() {
+  const all = PROPS.getProperties();
+  Object.keys(all).forEach(function (k) {
+    if (k.indexOf('ui_') !== 0) return;
+    let s; try { s = JSON.parse(all[k]); } catch (e) { return; }
+    if (!s.last || Date.now() - s.last < IDLE_MS || (!s.scr && !(s.shown || []).length)) return;
+    const chat = k.slice(3);
+    del_(chat, [s.scr].concat(s.shown || []));
+    const blocks = s.lastKey ? text_(s.lastKey) : (s.lastText ? [s.lastText] : null);
+    if (blocks) send_(chat, blocks);                        // одно сообщение (длинный отчёт — по лимиту Telegram)
+    PROPS.setProperty(k, JSON.stringify({}));
+  });
 }
 
 // ============================================================ скриншоты и файлы → Google Диск
@@ -223,7 +350,7 @@ function onShot_(chat, m, fileId) {
   const reply = m.reply_to_message ? String(m.reply_to_message.text || m.reply_to_message.caption || '').slice(0, 1500) : '';
   file.setDescription(JSON.stringify({ reply: reply, caption: String(m.caption || '').slice(0, 300) }));
   const ok = dispatch_();
-  send_(chat, '📸 Скриншот получен — распознаю кф 1xBet и подберу ставку дня (' + waitText_(ok) + ').');
+  send_(chat, '📸 Скриншот получен — сравню кф со ставкой дня (' + (ok ? '1–2 минуты' : 'до 2 часов') + ').');
 }
 
 function onFile_(chat, doc) {
@@ -232,8 +359,7 @@ function onFile_(chat, doc) {
   if (!blob) return send_(chat, 'Не удалось получить файл от Telegram (больше 20 МБ?) — отправьте ещё раз.');
   folder_().createFile(blob);
   const ok = dispatch_();
-  send_(chat, '📥 Файл <b>' + esc_(name) + '</b> получен. Облако проверит содержимое (' + waitText_(ok) + ') ' +
-    'и ответит: принят или нет и почему.');
+  send_(chat, '📥 Файл <b>' + esc_(name) + '</b> получен — облако проверит содержимое (' + (ok ? '1–2 минуты' : 'до 2 часов') + ').');
 }
 
 // ============================================================ данные таблицы
@@ -250,25 +376,6 @@ function table_(name) {
   return v.slice(1).map(function (r) { const o = {}; h.forEach(function (k, i) { o[k] = r[i]; }); return o; });
 }
 
-// ============================================================ очистка чата
-function clearChat_(chat, fromId) {
-  let batches = 0, single = 0;
-  for (let hi = fromId; hi > 0 && hi > fromId - 1500; hi -= 100) {
-    const ids = [];
-    for (let i = Math.max(1, hi - 99); i <= hi; i++) ids.push(i);
-    const r = tg_('deleteMessages', { chat_id: chat, message_ids: ids });
-    if (r.ok) { batches++; continue; }
-    let fails = 0;
-    for (let k = ids.length - 1; k >= 0 && fails < 25; k--) {
-      const x = tg_('deleteMessage', { chat_id: chat, message_id: ids[k] });
-      if (x.ok) { single++; fails = 0; } else fails++;
-    }
-  }
-  log_('очистка', 'пачек ' + batches + ', по одному ' + single);
-  send_(chat, '🧹 Чат очищен. Сообщения старше 48 часов Telegram удалять ботам не даёт — их можно убрать вручную: ' +
-    'меню чата ⋮ → «Очистить историю». Свежий прогноз придёт при ближайшем обновлении (до 2 часов) или по кнопке «' + B.list + '».');
-}
-
 // ============================================================ настройка (запускать вручную из редактора)
 function setup() {
   const sa = PROPS.getProperty('SA_EMAIL');
@@ -276,6 +383,17 @@ function setup() {
   const f = folder_();
   f.addEditor(sa);
   Logger.log('Папка ' + BOT.folder + ' готова и открыта для ' + sa + ': ' + f.getUrl());
+}
+
+// ТЗ-006: один раз после вставки кода — триггер tick раз в 5 минут (схлопывание меню через 15 минут) и новая клавиатура.
+function setupMenu() {
+  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'tick') ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger('tick').timeBased().everyMinutes(5).create();
+  String(PROPS.getProperty('ALLOWED_USERS') || '').split(',').forEach(function (u) {
+    u = u.trim();
+    if (u) tg_('sendMessage', { chat_id: u, text: '✅ Меню обновлено: ⭐ Ставка дня · 📊 Аналитика', reply_markup: MENU });
+  });
+  Logger.log('Триггер tick (5 мин) установлен, клавиатура отправлена');
 }
 
 function setWebhook() {
@@ -287,6 +405,4 @@ function setWebhook() {
 }
 
 function checkWebhook() { Logger.log(JSON.stringify(tg_('getWebhookInfo', {}))); }
-
-// Проверка мгновенного запуска облака: выполнить один раз из редактора после добавления GH_TOKEN.
 function testDispatch() { CacheService.getScriptCache().remove('dispatch'); Logger.log(dispatch_() ? 'облако запущено' : 'не запущено — см. лист bot_log'); }

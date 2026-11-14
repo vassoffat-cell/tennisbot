@@ -812,6 +812,7 @@ def run(dry: bool = False) -> str:
             notify.send_blocks(R.dp_report(d_, f'🎾 Теннис · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
                                + [SL.safe(SL.week_block, 'tennis', slP, slE, d0, yday)])
             log.append('недельный отчёт отправлен')
+        archive_run(store, rt, auto, ldf, kcal, off, yday, log)
         if reminder_due(rt):                                      # запрос файлов — сразу после отчётов
             notify.send_blocks([reminder_text(rt)])
             rt['last_reminder'] = today
@@ -820,6 +821,8 @@ def run(dry: bool = False) -> str:
             log.append(news.collect())
         except Exception as e:
             log.append(f'новости: сбой {e.__class__.__name__}')
+    if not rt.get('arch_v1') and not dry:                          # 🗂 ТЗ-006: первый прогон — архив за прошлые сутки и недели
+        archive_run(store, rt, auto, ldf, kcal, off, C.wday(loc) - dt.timedelta(days=1), log)
     daypick.TITLE = title
     hold_list = False                                              # ТЗ-004: прогноз на 24 ч — после скриншотов
     try:
@@ -961,6 +964,22 @@ def learn_cycle(store: J.Store, rt: dict, auto: pd.DataFrame, ldf: pd.DataFrame,
         out.append(f'журнал: в Telegram {sent}')
     return out
 
+
+
+def archive_run(store, rt: dict, af, ld, kcal, off, yday: dt.date, log: list[str]) -> None:
+    """🗂 ТЗ-006: архив отчётов для меню бота (сутки, неделя, месяц, год). Первый раз — все сутки и недели с 08.11."""
+    try:
+        import archive as A
+        if not rt.get('arch_v1'):
+            a_days, a_weeks = A.backfill_plan(yday + dt.timedelta(days=1), dt.date(2026, 11, 8))
+        else:
+            a_days, a_weeks = [yday], [(A.monday(yday), yday)]
+        n_ = A.put(store, A.std_items('tn', 'tennis', 'Теннис', '🎾', R, store, af, ld, store.read('day_pick'), kcal, off,
+                                      a_days, a_weeks, yday, learning.card, log), notify._split_html)
+        rt['arch_v1'] = 1
+        log.append(f'🗂 архив: {n_} отчётов')
+    except Exception as ex:
+        log.append(f'🗂 архив: сбой {ex.__class__.__name__}: {ex}')
 
 def main() -> None:
     ap = argparse.ArgumentParser()

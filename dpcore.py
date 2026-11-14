@@ -262,6 +262,16 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 notify.edit(x['msgs'], x['text'], None)
         cur['hdr2'] = cur['hdr3'] = True
 
+    if __import__('os').getenv('RESEND_PICKS') and not dry:     # ТЗ-006 «🔄 Ставки на сутки»: заново все ставки, старые — удалить
+        n_ = 0
+        for h in [cur] + list(cur.get('extras') or []):
+            if h.get('text'):
+                if h.get('msgs'):
+                    notify.delete([tuple(m) for m in h['msgs']])
+                h['msgs'] = [list(m) for m in notify.send_markup(h['text'], None, silent=True)]
+                notify.pin(h['msgs'])
+                n_ += 1
+        log.append(f'ставки на сутки: прислано заново {n_}')
     back = 0                                                    # 12.11: удалённые пользователем ставки — заново, с закрепом
     for h in [cur] + list(cur.get('extras') or []):
         if h.get('text') and (not h.get('msgs') or not notify.alive(h['msgs'])):   # 14.11: и не доставленные вовсе

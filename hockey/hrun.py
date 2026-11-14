@@ -675,5 +675,65 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
             notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
                                + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)])
             log.append('🏒 недельный отчёт отправлен')
+        try:                                                  # 🗂 ТЗ-006: архив отчётов хоккея для меню теннисного бота
+            log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))
+        except Exception as ex:
+            log.append(f'🗂 архив хоккея: сбой {ex.__class__.__name__}: {ex}')
+    if not rt.get('hk_arch_v1') and not dry:                # 🗂 ТЗ-006: первый прогон — архив хоккея за прошлые сутки и недели
+        try:
+            log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))
+        except Exception as ex:
+            log.append(f'🗂 архив хоккея: сбой {ex.__class__.__name__}: {ex}')
     txt = report(gf, ld, '🏒 Хоккей · всё время', None, kcal, kprev, off, tp=tp, dp=dp)[0]
     return [dict(key='hk', kind='hk', title='🏒 Хоккей', text=txt, updated=J.now_utc())]
+
+
+def archive_hockey(store, rt: dict, gf, ld, kcal, kprev, off, tp, dp, yday: dt.date, log: list[str]) -> str:
+    """🗂 Архив хоккея (лист archive таблицы Tennis, вид hk): сутки, неделя, месяц, год — те же отчёты, месяц и год ёмко."""
+    import archive as A
+    import caprep
+    if not rt.get('hk_arch_v1'):
+        days, weeks = A.backfill_plan(yday + dt.timedelta(days=1), dt.date(2026, 11, 11))
+    else:
+        days, weeks = [yday], [(A.monday(yday), yday)]
+    if dp is None:
+        dp = store.read('hk_day_pick')
+    items = []
+
+    def safe(fn):
+        try:
+            return fn()
+        except Exception as ex:
+            log.append(f'🗂 архив хоккея: {ex.__class__.__name__}: {ex}')
+            return []
+    for d in days:
+        t = f'{d:%d.%m.%Y}'
+        items += [('hk', 'rep', 'd', d.isoformat(), f'🏒 Хоккей · отчёт · {t}',
+                   safe(lambda: report(gf, ld, f'📈 Хоккей · отчёт · {t}', d, kcal, kprev, off, tp=tp, dp=dp, split=True))),
+                  ('hk', 'cap', 'd', d.isoformat(), f'👥 Хоккей · каперы · {t}',
+                   safe(lambda: [caprep.report('hockey', d, d, t, day_start=HK_DAY_START)])),
+                  ('hk', 'dp', 'd', d.isoformat(), f'🏒 Хоккей · ставки дня · {t}', safe(lambda: dp_report(dp, f'🏒 Хоккей · ставки дня · {t}', d))),
+                  ('hk', 'hist', 'd', d.isoformat(), f'🗂 Хоккей · ставки дня · {t}',
+                   safe(lambda: [_dp_list(dp, d) or f'🗂 <b>Хоккей · ставки дня · {t}</b>\nСтавок дня не было.'])),
+                  ('hk', 'learn', 'd', d.isoformat(), f'🧠 Хоккей · самообучение · {t}',
+                   safe(lambda: A.learn_text('hockey', f'Хоккей · самообучение · {t}', d, d, False)))]
+    spans = [(m0, m1, 'w', m0.isoformat(), f'неделя {m0:%d.%m}–{m1:%d.%m}') for m0, m1 in weeks]
+    for cut, (d0, d1, per) in A.periods(yday).items():
+        spans.append((d0, d1, cut, per, f'{d0:%m.%Y}' if cut == 'm' else f'{d0:%Y} год'))
+    for d0, d1, cut, per, lab in spans:
+        def rep():
+            b = report(gf, ld, f'📈 Хоккей · {lab}', d1, kcal, kprev, off, d0=d0, tp=tp, dp=dp, split=True)
+            return b if cut == 'w' else b[:1]
+
+        def dpr():
+            b = dp_report(dp, f'🏒 Хоккей · ставки дня · {lab}', d1, d0)
+            return b if cut == 'w' else b[:1]
+        items += [('hk', 'rep', cut, per, f'🏒 Хоккей · отчёт · {lab}', safe(rep)),
+                  ('hk', 'cap', cut, per, f'👥 Хоккей · каперы · {lab}', safe(lambda: [caprep.report('hockey', d0, d1, lab, day_start=HK_DAY_START)])),
+                  ('hk', 'dp', cut, per, f'🏒 Хоккей · ставки дня · {lab}', safe(dpr)),
+                  ('hk', 'learn', cut, per, f'🧠 Хоккей · самообучение · {lab}',
+                   safe(lambda: A.learn_text('hockey', f'Хоккей · самообучение · {lab}', d0, d1, cut != 'w')))]
+    n = A.put(store, items, notify._split_html)
+    rt['hk_arch_v1'] = 1
+    return f'🗂 архив хоккея: {n} отчётов'
+

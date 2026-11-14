@@ -16,6 +16,10 @@ on:
         description: 'Повтор / тест недельного отчёта: последний день недели ГГГГ-ММ-ДД'
         default: ''
         required: false
+      resend_picks:
+        description: 'ТЗ-006: заново прислать все ставки дня текущих суток (1)'
+        default: ''
+        required: false
 permissions:
   contents: write
 concurrency:
@@ -52,6 +56,7 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           CLOUD: '1'
           RESEND_DAY: ${{ github.event.inputs.resend_day }}
+          RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
       - name: Save data
         if: always()
