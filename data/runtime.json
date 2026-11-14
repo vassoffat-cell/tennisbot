@@ -1,8 +1,12 @@
 {
  "list_messages": [],
- "list_match_ids": [],
+ "list_match_ids": [
+  "186552",
+  "187440",
+  "187441"
+ ],
  "last_daily": "2026-11-13",
- "last_retrain": "2026-11-13",
+ "last_retrain": "2026-11-14",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -58,11 +62,11 @@
   "IT1": "2026-11-10"
  },
  "day_pick": {
-  "date": "2026-11-13",
+  "date": "2026-11-14",
   "msgs": [
    [
     570704006,
-    390
+    445
    ]
   ],
   "changes": 0,
@@ -75,48 +79,50 @@
   "nokb": true,
   "sep": true,
   "hdr2": true,
-  "espn_id": "187384",
-  "slot": 1,
+  "hdr3": true,
+  "espn_id": "187441",
+  "slot": 2,
   "key": [
-   "187384",
+   "187441",
    "ML",
-   "1",
+   "2",
    ""
   ],
-  "p": 0.6874820330036489,
+  "p": 0.690502761464291,
   "tier": 2,
-  "label": "П1 Andreeva",
-  "start_utc": "2026-11-13 20:00",
-  "match": "Mirra Andreeva — Karolina Muchova",
+  "label": "П2 Andreeva",
+  "start_utc": "2026-11-14 20:00",
+  "match": "Jessica Pegula — Mirra Andreeva",
   "best": {
-   "espn_id": "187384",
+   "espn_id": "187441",
    "tour": "WTA",
    "event": "FAGE WTA Finals Indian Wells",
-   "start_utc": "2026-11-13 20:00",
-   "start_local": "14.11 01:00",
-   "player1": "Mirra Andreeva",
-   "player2": "Karolina Muchova",
+   "start_utc": "2026-11-14 20:00",
+   "start_local": "15.11 01:00",
+   "player1": "Jessica Pegula",
+   "player2": "Mirra Andreeva",
    "market": "ML",
-   "pick": "1",
+   "pick": "2",
    "line": null,
-   "label": "П1 Andreeva",
-   "p": 0.6874820330036489,
+   "label": "П2 Andreeva",
+   "p": 0.690502761464291,
    "p_src": "blend",
-   "p_model": 0.7532238207616354,
+   "p_model": 0.722970927561194,
    "p_push": 0.0,
    "k": 1.41,
    "k_src": "api",
    "source": "api",
    "p_pin": null,
+   "p_mkt": 0.6948655201323272,
+   "mkt_src": "blend",
    "edge": null,
    "group": "fallback",
-   "slot": 1
+   "sl_pen": 0,
+   "slot": 2
   },
-  "first_label": "П1 Andreeva",
-  "first_match": "Mirra Andreeva — Karolina Muchova",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Mirra Andreeva — Karolina Muchova</b>\n<b>П1 Andreeva</b> — 69% · честный кф 1,45",
-  "vol": 0,
-  "hdr3": true
+  "first_label": "П2 Andreeva",
+  "first_match": "Jessica Pegula — Mirra Andreeva",
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Jessica Pegula — Mirra Andreeva</b>\n<b>П2 Andreeva</b> — 69% · честный кф 1,45"
  },
  "model_version": 4,
  "reported": [
@@ -3428,7 +3434,6 @@
   "khl:430679",
   "khl:430680",
   "nhl:401891809",
-  "nhl:401892707",
   "nhl:401892708",
   "nhl:401892709",
   "nhl:401892710",
