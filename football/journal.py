@@ -83,7 +83,8 @@ def _retry(fn, *a, **k):
         try:
             return fn(*a, **k)
         except Exception as e:
-            if '429' not in str(e) and 'Quota exceeded' not in str(e) or i == 4:
+            s = str(e)                                            # 14.11: и временные сбои Google (500/502/503/504)
+            if not any(x in s for x in ('429', 'Quota exceeded', '[500]', '[502]', '[503]', '[504]', 'unavailable')) or i == 4:
                 raise
             time.sleep(20 * (i + 1))
 
@@ -93,7 +94,7 @@ class Store:
         self.sh, self.ws, self._cache = None, {}, {}
         if C.SHEET_ID and Path(C.GOOGLE_CREDENTIALS).exists():
             import gspread
-            self.sh = gspread.service_account(filename=C.GOOGLE_CREDENTIALS).open_by_key(C.SHEET_ID)
+            self.sh = _retry(gspread.service_account(filename=C.GOOGLE_CREDENTIALS).open_by_key, C.SHEET_ID)   # 14.11: 503 при открытии
         C.LOGS.mkdir(exist_ok=True)
 
     @property
