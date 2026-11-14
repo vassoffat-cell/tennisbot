@@ -37,6 +37,7 @@ SPORTS = [
 ]
 DEFAULT = {'stavki': 'football', 'xs_stavkii': 'football', 'groznyi_ruslan': 'football'}   # профиль канала, если вид не назван
 PICK = re.compile(r'(?:ставк\w*|прогноз\w*(?: на матч)?|бер[её]м|играем|вариант)\s*[:\-—]\s*(.{2,140})', re.I)
+AD_TAIL = re.compile(r'\s*(?:Ставлю|Ставим|Промокод|Связь со мной|ПОДПИСАТЬСЯ|https?://).*$', re.I | re.S)   # 14.11: рекламный хвост поста
 ODDS_TAIL = re.compile(r'\s*[-–—]\s*(?:кф|коэф\w*)\b.*$', re.I)
 MARKET = re.compile(r'шайб|минимум|забь[её]т|победит|выиграет|\bт[бм]\b|\bт[бм]\s*\(|\bи?т[12]?\s*[бм]|\bф[12]?\s*\(|\bп[12]\b|\b(1x|x2|2x|1х|х2|2х)\b|обе забьют|тотал|фора|победа',
                     re.I)
@@ -143,7 +144,7 @@ def tips_of(src: str, p: dict) -> list[dict]:
         mk = self_mark(pick)                                   # только в строке ставки: «✅ Прогноз:» у части каналов — маркер списка
         out.append(dict(uid=f"{src}:{p['id']}:{n}", src=src, post_id=str(p['id']), post_ts=str(p['ts'])[:16],
                         sport=next((x for x in (sport_of(frag), sport, DEFAULT.get(src, 'other')) if x != 'other'), 'other'), a=a, b=b,
-                        pick=re.sub(r'[✅❌✖️⛔↩🔄✔]+', '', pick).strip()[:100], k=f'{T.odds_in(pick):.2f}' if T.odds_in(pick) else '',
+                        pick=AD_TAIL.sub('', re.sub(r'[✅❌✖️⛔↩🔄✔]+', '', pick)).strip()[:100], k=f'{T.odds_in(pick):.2f}' if T.odds_in(pick) else '',
                         self=mk, self_ts=pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M') if mk else '', raw=frag[:200].replace('\n', ' ')))
     return out
 
@@ -465,8 +466,9 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     sent = set(rt.get('tips_alerted', [])) | set(rt.get('gl_alerted', []))
     fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)
     d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
-    d = d[((d.a != '') | (d.pick.astype(str).str.strip() != ''))     # 14.11: и без распознанной пары команд (матч — из текста поста)
-          & ~d.pick.astype(str).str.lower().str.contains('|'.join(['реклам', 'промокод', 'подписат']), regex=True)]   # все, кроме рекламы
+    d = d.assign(pick=d.pick.astype(str).map(lambda x: AD_TAIL.sub('', x).strip()))   # 14.11 20:40: рекламный хвост срезается, прогноз остаётся
+    d = d[((d.a != '') | (d.pick != ''))                             # 14.11: и без распознанной пары команд (матч — из текста поста)
+          & ~d.pick.str.lower().str.contains('реклам|подписат', regex=True)]   # все, кроме рекламы
     nb = pd.DataFrame()                                           # 14.11 19:35: nb-bet отключён пользователем (мусор)
     if test:                                                      # 🧪 разовая проверка доставки: последние прогнозы, в оба бота
         d = df[(df.a != '') & ((df.slip == '') | (df.seen == 'pre'))].copy()
