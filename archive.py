@@ -91,8 +91,8 @@ def audit_text(store, title: str, d0: dt.date, d1: dt.date, card_fn) -> list[str
     if not len(df):
         return []
     w = df[df.kind.astype(str) == 'неделя'].copy()
-    when = pd.to_datetime(w.when.astype(str).str[:10], errors='coerce').dt.date
-    w = w[(when >= d0) & (when <= d1 + dt.timedelta(days=7))]
+    when = pd.to_datetime(w.when.astype(str).str[:10], errors='coerce')
+    w = w[(when >= pd.Timestamp(d0)) & (when <= pd.Timestamp(d1 + dt.timedelta(days=7)))]
     if not len(w):
         return [f'🔎 <b>{html.escape(title)}</b>\nКарточек аудита за период нет.']
     return [card_fn(r) for r in w.itertuples()]

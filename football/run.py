@@ -907,7 +907,7 @@ def run(dry: bool = False) -> str:
             log.append(news.collect())
         except Exception as ex:
             log.append(f'новости: сбой {ex.__class__.__name__}')
-    if not rt.get('arch_v1') and not dry:                          # 🗂 ТЗ-006: первый прогон — архив за прошлые сутки и недели
+    if not rt.get('arch_v2') and not dry:                          # 🗂 ТЗ-006: первый прогон — архив за прошлые сутки и недели
         archive_run(store, rt, af, ld, kcal, off, C.wday(loc) - dt.timedelta(days=1), log)
     try:
         import dpcore
@@ -1019,13 +1019,13 @@ def archive_run(store, rt: dict, af, ld, kcal, off, yday: dt.date, log: list[str
     """🗂 ТЗ-006: архив отчётов для меню бота (сутки, неделя, месяц, год). Первый раз — все сутки и недели с 08.11."""
     try:
         import archive as A
-        if not rt.get('arch_v1'):
+        if not rt.get('arch_v2'):
             a_days, a_weeks = A.backfill_plan(yday + dt.timedelta(days=1), dt.date(2026, 11, 8))
         else:
             a_days, a_weeks = [yday], [(A.monday(yday), yday)]
         n_ = A.put(store, A.std_items('fb', 'football', 'Футбол', '⚽', R, store, af, ld, store.read('day_pick'), kcal, off,
                                       a_days, a_weeks, yday, learning.card, log), notify._split_html)
-        rt['arch_v1'] = 1
+        rt['arch_v2'] = 1
         log.append(f'🗂 архив: {n_} отчётов')
     except Exception as ex:
         log.append(f'🗂 архив: сбой {ex.__class__.__name__}: {ex}')
