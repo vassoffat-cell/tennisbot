@@ -36,7 +36,9 @@ jobs:
         if: github.event_name == 'schedule'
         run: |
           since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
-          n=$(gh api "repos/${{ github.repository }}/actions/workflows/football.yml/runs?status=success&created=>=$since&per_page=20" -q "[.workflow_runs[]|select(.id != ${{ github.run_id }} and ((.updated_at|fromdate) - (.run_started_at|fromdate)) > 40)]|length" || echo 0)
+          # ключевые часы (ставка дня 08, отчёты 11/12): считается только прогон ПОСЛЕ начала часа — иначе работа часа не сделана
+          h=$(TZ=Asia/Tashkent date +%H); case " 08 11 " in *" $h "*) since2=$(date -u -d "$(TZ=Asia/Tashkent date '+%Y-%m-%d %H:00') +0500" +%Y-%m-%dT%H:%M:%SZ);; *) since2=$since;; esac
+          n=$(gh api "repos/${{ github.repository }}/actions/workflows/football.yml/runs?status=success&created=>=$since&per_page=20" -q "[.workflow_runs[]|select(.id != ${{ github.run_id }} and .run_started_at >= \"$since2\" and ((.updated_at|fromdate) - (.run_started_at|fromdate)) > 40)]|length" || echo 0)
           if [ "${n:-0}" -gt 0 ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; echo "⏭ экономия: полный успешный прогон за 35 мин ($n) — пропуск (пропуски не считаются: > 40 с)"; fi
         env:
           GH_TOKEN: ${{ github.token }}
