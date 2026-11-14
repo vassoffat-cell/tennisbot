@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent
 BOOK = ROOT.parent / 'football' / 'data' / 'tips' / 'book.csv'
 OUT = ROOT / 'data' / 'tips.csv'
 COLS = ['uid', 'src', 'post_ts', 'league', 'game_id', 'start', 'home', 'away', 'market', 'pick', 'line', 'label', 'k',
-        'self', 'ours', 'result', 'p_model', 'p_imp', 'rel', 'raw']
+        'self', 'ours', 'result', 'p_model', 'p_imp', 'rel', 'raw', 'live']
 SRC_RU = {'stavki_na_sport_betting1': 'Green Line', 'stavki': 'Ставки', 'xs_stavkii': 'XS', 'groznyi_ruslan': 'Грозный',
           'kapper_uk': 'Kapper UK'}
 
@@ -201,7 +201,8 @@ def run(games: pd.DataFrame, log: list[str], models: dict | None = None) -> pd.D
         if leg is None:
             noparse += 1; continue
         mk, pk, L = _orient(leg, hf)
-        if pd.to_datetime(g.start) < ts - pd.Timedelta(minutes=5):   # только до матча
+        live = pd.to_datetime(g.start) < ts - pd.Timedelta(minutes=5)   # 14.11 20:38: после начала — учитывается с пометкой 🔴
+        if pd.to_datetime(g.start) < ts - pd.Timedelta(hours=3):       # пост после конца матча — не прогноз
             continue
         day = pd.Timestamp(pd.to_datetime(g.start).date())
         key = (g.league, day)
@@ -214,11 +215,11 @@ def run(games: pd.DataFrame, log: list[str], models: dict | None = None) -> pd.D
             ours = HL.settle(mk, pk, L, x.end, x.hg, x.ag, x.hg_reg, x.ag_reg)
         selfm = r.self if r.self in ('W', 'L', 'P') else ''
         k = _num(r.k)
-        rel = '' if p is None else (1 if p >= 0.55 else -1 if p <= 0.45 else 0)
+        rel = '' if p is None or live else (1 if p >= 0.55 else -1 if p <= 0.45 else 0)   # live: система не оценивает
         out.append(dict(uid=r.uid, src=r.src, post_ts=r.post_ts, league=g.league, game_id=g.id, start=g.start, home=g.home,
                         away=g.away, market=mk, pick=pk, line=L, label=label(mk, pk, L), k=k if k == k else '', self=selfm,
                         ours=ours, result=selfm or ours, p_model='' if p is None else round(p, 4),
-                        p_imp=round(1 / k, 4) if k == k and k > 1 else '', rel=rel, raw=str(r.pick)[:80]))
+                        p_imp=round(1 / k, 4) if k == k and k > 1 else '', rel=rel, raw=str(r.pick)[:80], live='1' if live else ''))
     df = pd.DataFrame(out, columns=COLS)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUT, index=False)

@@ -343,6 +343,8 @@ def capper_values(sport: str) -> dict[str, list[float]]:
                 return out
             d = d[d.result.isin(['W', 'L', 'P']) & ~d.legs.str.contains(r'\|') & (d.legs != '') & (d.src != 'nb-bet')]   # 14.11: nb-bet отключён
             d = d.drop_duplicates(['src', 'espn_id', 'legs'])
+            # 14.11: CLV — только для прогнозов до начала (у live-ставки нет цены закрытия); в итогах live учитывается (caprep)
+            d = d[~(pd.to_datetime(d.post_ts, errors='coerce') > pd.to_datetime(d.start_utc, errors='coerce'))]
             for r in d.itertuples(index=False):
                 mk, pk, L = (str(r.legs).split(':') + ['', '', ''])[:3]
                 pc = football_close(r.home, r.away, r.start_utc, mk, pk, L)
@@ -355,6 +357,8 @@ def capper_values(sport: str) -> dict[str, list[float]]:
             if not len(d):
                 return out
             d = d[d.result.isin(['W', 'L', 'P']) & (d.game_id != '')]
+            if 'live' in d.columns:
+                d = d[d.live != '1']                                 # 14.11: у live-ставки нет цены закрытия
             for r in d.itertuples(index=False):
                 pc = hockey_close(r.game_id, r.league, r.start, r.market, r.pick, r.line)
                 cv = result_of(pc, r.k)

@@ -21,7 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 5                                         # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 6                                         # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -141,6 +141,10 @@ def tips_of(src: str, p: dict) -> list[dict]:
                     break
         if not pick:
             continue
+        if src == 'kapper_uk' and not T.odds_in(pick):        # 14.11: картинка Каппер UK — «Победа в матче. П2 1.675» (кф в конце, 2–3 знака)
+            m = re.search(r'\s(\d\.\d{2,3})\s*$', pick)
+            if m and 1.01 < float(m.group(1)) < 30:
+                pick = f"{pick[:m.start()].strip()} кф {m.group(1)}"
         mk = self_mark(pick)                                   # только в строке ставки: «✅ Прогноз:» у части каналов — маркер списка
         out.append(dict(uid=f"{src}:{p['id']}:{n}", src=src, post_id=str(p['id']), post_ts=str(p['ts'])[:16],
                         sport=next((x for x in (sport_of(frag), sport, DEFAULT.get(src, 'other')) if x != 'other'), 'other'), a=a, b=b,

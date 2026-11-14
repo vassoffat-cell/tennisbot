@@ -31,9 +31,6 @@ def _read(p: Path) -> pd.DataFrame:
         d = pd.read_csv(p, dtype=str, keep_default_na=False)
         if 'src' in d.columns:
             d = d[d.src != 'nb-bet']                                 # 14.11: nb-bet отключён пользователем
-        if 'post_ts' in d.columns and 'start_utc' in d.columns:     # 14.11 20:26: опубликованный после начала матча — не прогноз
-            late = pd.to_datetime(d.post_ts, errors='coerce') > pd.to_datetime(d.start_utc, errors='coerce')
-            d = d[~late]
         return d.reset_index(drop=True)
     except Exception:
         return pd.DataFrame()
@@ -56,19 +53,23 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
         for r in b.itertuples(index=False):
             if getattr(r, 'seen', '') == 'post':                 # купон, показанный после матча, — не прогноз
                 continue
-            res, rel, ind = r.self if r.self in MARK else '', '', ''
+            res, rel, ind, live = r.self if r.self in MARK else '', '', '', ''
             if len(hk) and r.uid in hk.index:
                 h = hk.loc[r.uid]
                 ind = h.result if h.result in MARK else ''
                 res = res or ind
                 rel = str(h.rel)
-            out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.a} — {r.b}', pick=str(r.pick)[:40], k=r.k, res=res, rel=rel, ind=ind))
+                live = '1' if str(h.get('live', '')) == '1' else ''
+            out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.a} — {r.b}', pick=str(r.pick)[:40], k=r.k, res=res, rel=rel, ind=ind, live=live))
     if sport == 'football':
         w = _read(WIDE)
         for r in w.itertuples(index=False) if len(w) else []:
+            live = '1' if pd.to_datetime(r.post_ts, errors='coerce') > pd.to_datetime(r.start_utc, errors='coerce') else ''
             out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.home} — {r.away}', pick=str(r.label or r.raw)[:40], k=r.k,
-                            res=r.result if r.result in MARK else '', rel='', ind=r.result if r.result in MARK else ''))
-    df = pd.DataFrame(out, columns=['ts', 'src', 'match', 'pick', 'k', 'res', 'rel', 'ind'])
+                            res=r.result if r.result in MARK else '', rel='', ind=r.result if r.result in MARK else '', live=live))
+    # 14.11 20:38 (решение пользователя): прогноз, опубликованный после начала матча (live = '1'), учитывается в статистике
+    # и самообучении, но помечен 🔴
+    df = pd.DataFrame(out, columns=['ts', 'src', 'match', 'pick', 'k', 'res', 'rel', 'ind', 'live'])
     if not len(df):
         return df
     loc = pd.to_datetime(df.ts, errors='coerce') + pd.Timedelta(hours=tz) - pd.Timedelta(hours=day_start)
@@ -108,7 +109,7 @@ def report(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8)
         for r in g.itertuples(index=False):
             kk = _num(r.k)
             lines.append(f"{MARK.get(r.res, '⏳')} {e(r.match)} · {e(r.pick)}" + (f' @{kk:.2f}'.replace('.', ',') if kk == kk else '')
-                         + REL.get(r.rel, ''))
+                         + REL.get(r.rel, '') + (' 🔴' if r.live == '1' else ''))
     body = '\n'.join(lines[:60]) + ('\n…' if len(lines) > 60 else '')
     return (f'{head} — {len(df)} прогнозов · угадано {w}/{len(done)}{roi}{syn}\n'
             f'<blockquote expandable>{body}</blockquote>')
