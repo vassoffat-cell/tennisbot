@@ -122,7 +122,8 @@
   },
   "first_label": "П2 Andreeva",
   "first_match": "Jessica Pegula — Mirra Andreeva",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Jessica Pegula — Mirra Andreeva</b>\n<b>П2 Andreeva</b> — 69% · честный кф 1,45"
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Jessica Pegula — Mirra Andreeva</b>\n<b>П2 Andreeva</b> — 69% · честный кф 1,45",
+  "vol": 3
  },
  "model_version": 4,
  "reported": [
@@ -3488,5 +3489,12 @@
  "hk_resend_done": "2026-11-13",
  "resend_week_done": "2026-11-13",
  "hk_resend_week_done": "2026-11-13",
- "dp_last": {}
+ "dp_last": {
+  "2026-11-14|1": {
+   "p": 0.6949,
+   "src": "blend",
+   "at": "2026-11-14 04:20",
+   "key": "187441|ML|2|"
+  }
+ }
 }
