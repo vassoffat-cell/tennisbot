@@ -788,10 +788,30 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932777,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Choisy Au Bac,Caen,,Caen,0,2,FT,seventh-round,0
 401932833,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Fontenay Foot,Clermont Foot,,,0,5,FT,seventh-round,0
 401932836,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Chalon-sur-Saone,Hauts Lyonnais,,,0,3,FT,seventh-round,0
+401932758,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Saint Sebastien,La Baule-Le Pouliguen,,,0,2,FT,seventh-round,0
 401932778,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Firminy,Annecy,,Annecy,1,1,ET,seventh-round,0
+401932803,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Le Poire SV,Vertou,,,2,1,FT,seventh-round,0
 401932832,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,IC Croix,ES Thaon,,,1,2,FT,seventh-round,0
+401932834,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Pont-de-Cheruy,Bourg-Peronnas,,,1,5,FT,seventh-round,0
 401932844,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Tinteniac St Domineuc,Concarneau,,Concarneau,1,4,FT,seventh-round,0
+401932757,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:30,Koetzingue,Biesheim,,,1,3,FT,seventh-round,0
+401932737,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Grau-Du-Roi,Riviera,,,2,4,FT,seventh-round,0
+401932738,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Cournon,Chassieu Declines FC,,,2,2,ET,seventh-round,0
+401932740,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Lyon-la-Duchere,US Feurs,,,1,4,FT,seventh-round,0
 401932765,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Vitre,Saint-Pierre Milizac,,,1,2,FT,seventh-round,0
+401932768,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Caen,FC Chambly,Caen,Chambly,2,3,FT,seventh-round,0
+401932801,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Strasbourg Koenigshoffen,Oberlauterbach,,,1,2,FT,seventh-round,0
+401932802,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Amneville,Sundhoffen,,,0,1,FT,seventh-round,0
+401932808,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Contres,ESA Linas-Montlhery,,,0,2,FT,seventh-round,0
+401932811,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,US Cheminots Paray-Foot,Villefranche,,,0,3,FT,seventh-round,0
+401932812,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Pays de Saint-Omer,AF Virois,,,2,2,ET,seventh-round,0
+401932814,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Racing Besancon,Am. du Personnel Municipal Metz,,,4,1,FT,seventh-round,0
+401932818,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Sag Cestas,Bayonne,,,0,1,FT,seventh-round,0
 401932822,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Asptt Dijon,Selongey,,,0,2,FT,seventh-round,0
+401932829,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Le Touquet,Avranches,,,2,3,FT,seventh-round,0
 401932830,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,St-Ouen L'Aumone,Boulogne,,Boulogne,1,0,FT,seventh-round,0
+401932831,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Saint-Brieuc,Rouen,,,0,0,ET,seventh-round,0
 401932839,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Dunkerque,US Quevilly,Dunkerque,,0,3,FT,seventh-round,0
+401932842,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Vesoul,FC Fleury 91,,,2,2,ET,seventh-round,0
+401933060,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Chateaubriant,Horizon Patho,,,5,0,FT,seventh-round,0
+401932806,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:30,Balma,Castanet,,,1,1,ET,seventh-round,0
