@@ -50,9 +50,13 @@ jobs:
         if: steps.gate.outputs.skip != 'true'
         with:
           python-version: '3.13'
-          cache: pip
-          cache-dependency-path: requirements-cloud.txt
-      - if: steps.gate.outputs.skip != 'true'
+      - uses: actions/cache@v4          # 14.11 экономия: готовое окружение Python вместо pip install (−10 с)
+        id: pyc
+        if: steps.gate.outputs.skip != 'true'
+        with:
+          path: ${{ env.pythonLocation }}
+          key: pyenv-${{ runner.os }}-${{ env.pythonLocation }}-${{ hashFiles('requirements-cloud.txt') }}
+      - if: steps.gate.outputs.skip != 'true' && steps.pyc.outputs.cache-hit != 'true'
         run: pip install -q -r requirements-cloud.txt
       - name: Google key
         if: steps.gate.outputs.skip != 'true'
