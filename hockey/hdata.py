@@ -166,6 +166,7 @@ KHL_SEASON_START = dt.date(2026, 9, 1)
 KSTATE = DATA / 'khl_state.json'
 DAY_CAP = 90                       # запас 10 запросов в сутки на ручные проверки
 PAUSE = 6.5                        # 10 запросов в минуту
+FREE_BURST = 8                     # 14.11 (Ц7, −20 с на прогон): первые 8 запросов прогона — без паузы (< 10 в минуту); дальше — PAUSE
 
 
 def _kstate() -> dict:
@@ -209,7 +210,7 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
     for gid in list(k.sort_values('start', ascending=False).id)[:8]:
         if st['used'] >= DAY_CAP:
             break
-        if asked:
+        if asked >= FREE_BURST:
             time.sleep(PAUSE)
         try:
             js = _apis(f"/games?id={str(gid).split(':')[1]}&timezone=Europe/Moscow"); asked += 1; st['used'] += 1
@@ -221,7 +222,7 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
     for d in want:
         if st['used'] >= DAY_CAP:
             errs.append('суточный лимит'); break
-        if asked:
+        if asked >= FREE_BURST:
             time.sleep(PAUSE)
         try:
             r = khl_date(d); asked += 1; st['used'] += 1
