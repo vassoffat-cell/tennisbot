@@ -422,27 +422,25 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             g = df[(df.a != '') & (df.sport.map(lambda x: ROUTE.get(x, 'main')) == bot)].tail(4)
         if g.empty and not (bot == 'main' and len(nb)):
             continue
-        blocks = []
-        for src, h in g.groupby('src', sort=False):
-            r0 = st[st.src == src] if len(st) else st
+        # 14.11 (замечание пользователя): КАЖДЫЙ прогноз — отдельным сообщением, с вердиктом системы (🔥 / ⚔️ / нейтрально / вне базы)
+        msgs = []
+        for r in g.itertuples(index=False):
+            r0 = st[st.src == r.src] if len(st) else st
             roi = (f" · ROI {'+' if r0.roi.iloc[0] > 0 else ''}{rtable.pct(r0.roi.iloc[0], 0)}%" if len(r0) and r0.nk.iloc[0] >= 10 else '')
-            lines = [f"<b>{notify.esc(T.TG.get(src, src))}</b>{roi}"]
-            for r in h.itertuples(index=False):
+            k = str(r.k or '').replace('.', ',')
+            match = f"{notify.esc(r.a)} — {notify.esc(r.b)}" if r.a else notify.esc(_context(r.raw, r.pick))
+            msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n{match}\n"
+                        f"<b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>" + (f' @{k}' if k else '')
+                        + f"\n{rel.get(r.uid, '⬜ вне базы системы')}")
+        if bot == 'main':
+            for r in nb.itertuples(index=False):                  # nb-bet: автор, матч, ставка, кф
                 k = str(r.k or '').replace('.', ',')
-                head = (f"{notify.esc(r.a)} — {notify.esc(r.b)} · " if r.a else notify.esc(_context(r.raw, r.pick)) + ' · ')
-                lines.append(f"{ICON.get(r.sport, '•')} {head}<b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>"
-                             + (f' @{k}' if k else '') + (f"\n   {rel[r.uid]}" if rel.get(r.uid) else ''))
-            blocks.append('\n'.join(lines))
-        if bot == 'main' and len(nb):                             # nb-bet: автор, матч, ставка, кф
-            lines = ['<b>nb-bet</b>']
-            for r in nb.itertuples(index=False):
-                k = str(r.k or '').replace('.', ',')
-                lines.append(f"⚽ {notify.esc(r.home)} — {notify.esc(r.away)} · <b>{notify.esc(str(r.label or r.raw)[:40])}</b>"
-                             + (f' @{k}' if k else '') + f" · {notify.esc(str(r.author)[:20])}")
-            blocks.append('\n'.join(lines))
+                msgs.append(f"👥 <b>nb-bet</b> · {notify.esc(str(r.author)[:20])} · ⚽\n{notify.esc(r.home)} — {notify.esc(r.away)}\n"
+                            f"<b>{notify.esc(str(r.label or r.raw)[:40])}</b>" + (f' @{k}' if k else '')
+                            + f"\n{rel.get(r.uid, '⬜ вне базы системы')}")
             n += len(nb)
-        notify.send_blocks([('🧪 <b>ТЕСТ доставки</b> · прошлые прогнозы, не новые\n' if test else '')
-                            + '👥 <b>Каперы · новые прогнозы</b>\n\n' + '\n\n'.join(blocks)], bot=bot)
+        for m in msgs:
+            notify.send_blocks([('🧪 <b>ТЕСТ</b>\n' if test else '') + m], bot=bot)
         n += len(g)
     if test:
         log.append(f'👥 тест доставки: {n} строк в оба бота')
