@@ -34,6 +34,41 @@ def grep(text: str, pat: str) -> list[str]:
     return [re.sub(r'^.*?Z ', '', x)[:160] for x in text.splitlines() if re.search(pat, x)]
 
 
+def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
+    """👥 Нерушимое правило (CONTROL Г2/Г2а/К6): каналы читаются каждый час, КАЖДЫЙ прогноз — отдельным сообщением.
+    ① перерыв между чтениями каналов (cappers.yml + football.yml — оба читают каналы) ≤ 75 мин;
+    ② прогнозы, прочитанные за окно, но не присланные (журнал книги против runtime.tips_alerted; нужен свежий git pull)."""
+    out = []
+    ts = sorted(datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
+                for wf in ('cappers.yml', 'football.yml') for r in runs(wf, since - timedelta(hours=2)) if r['conclusion'] == 'success')
+    ts = [t for t in ts if t >= since - timedelta(hours=2)] + [datetime.now(timezone.utc)]
+    gaps = [(b - a, a) for a, b in zip(ts, ts[1:]) if b >= since]
+    g, at = max(gaps) if gaps else (timedelta(0), since)
+    out.append(('каперы: перерыв между чтениями каналов', '≤ 75 мин', f'макс {int(g.total_seconds() // 60)} мин (с {(at + TZ):%d.%m %H:%M})',
+                '✅' if g <= timedelta(minutes=75) else '❌'))
+    try:
+        import csv
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent / 'football' / 'data'
+        sent = set(json.loads((root / 'runtime.json').read_text(encoding='utf-8')).get('tips_alerted', []))
+        edge = (since.replace(tzinfo=None)).strftime('%Y-%m-%d %H:%M')
+        miss = []
+        with open(root / 'tips' / 'book.csv', encoding='utf-8') as f:
+            for r in csv.DictReader(f):
+                if r['post_ts'] < edge or r['uid'] in sent:
+                    continue
+                if r['slip'] and not (r['seen'] == 'pre' and not r['self']):          # купон после матча / рассчитанный — не прогноз
+                    continue
+                if re.search(r'реклам|промокод|подписат', r['pick'], re.I):
+                    continue
+                miss.append(f"{r['src']}:{r['post_id']}")
+        out.append(('каперы: прочитаны, но не присланы', '0', f"{len(miss)}" + (f" ({', '.join(miss[:4])})" if miss else ''),
+                    '✅' if not miss else '❌'))
+    except Exception as e:
+        out.append(('каперы: прочитаны, но не присланы', '0', f'нет данных ({e.__class__.__name__})', '❌'))
+    return out
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -75,6 +110,7 @@ def main(hours: int = 26) -> None:
         bad = 'сбо' in name or 'потерян' in name
         ok = (not hit) if bad else bool(hit)
         rows.append((name, 'нет' if bad else 'есть', (hit[0] if hit else '—') + (f' (+{len(hit) - 1})' if len(hit) > 1 else ''), '✅' if ok else '❌'))
+    rows += cappers(since)
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:
