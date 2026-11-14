@@ -122,7 +122,7 @@ tg_cache, summary, bot_log, tg_messages, dp_actions (устар., только �
 - **Новые сутки** — закрепы прошлых ставок сняты. Удалённые закрепы возвращаются. «Ставки на сутки» (resend_picks) — прислать всё заново.
 
 ## 5. Каперы
-- **Источники:** Telegram — @stavki, @xs_stavkii, @groznyi_ruslan, @kapper_uk, @stavki_na_sport_betting1 (Green Line, купоны 1WIN через OCR);
+- **Источники:** Telegram — @stavki, @xs_stavkii, @groznyi_ruslan, @kapper_uk, @stavki_na_sport_betting1 (Green Line, купоны 1WIN через OCR; Каппер UK — ставка на картинке, тоже OCR с 14.11);
   сайт nb-bet.com (лента). Каждый час, все виды спорта (football/tipsbook, tipswide, tips; хоккей — hcappers).
 - **Сообщения:** КАЖДЫЙ новый прогноз — отдельным сообщением: канал (ROI) · вид · матч · ставка @кф · вердикт системы
   (🔥 согласна / ⚔️ против / · нейтральна (P%) / ⬜ вне базы). Посты без пары команд — с контекстом из текста. Купоны,
