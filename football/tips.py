@@ -463,6 +463,9 @@ def collect(items: list[tuple], log: list[str]) -> int:
             seen[ch] = max(last, max(p['id'] for p in posts))
         stat.append(f'{name}: постов {len(fresh)}, наших {got}')
     try:
+        import config as _C
+        if not getattr(_C, 'NB_ON', False):                       # 14.11: nb-bet отключён пользователем
+            raise StopIteration
         feed = nb_feed()
         LAST_FEED[:] = feed
         got = 0
@@ -478,6 +481,8 @@ def collect(items: list[tuple], log: list[str]) -> int:
                         new.append(r); have.add(uid); got += 1
                     break
         stat.append(f'nb-bet: в ленте {len(feed)}, наших {got}')
+    except StopIteration:
+        pass
     except Exception as e:
         stat.append(f'nb-bet: ✖ {e.__class__.__name__}')
     DIR.mkdir(parents=True, exist_ok=True)
@@ -544,7 +549,7 @@ def trusted(st: pd.DataFrame | None = None) -> set[str]:
 
 def for_match(espn_id: str) -> pd.DataFrame:
     df = load()
-    return df[(df.espn_id == str(espn_id)) & (df.settled == '')]
+    return df[(df.espn_id == str(espn_id)) & (df.settled == '') & (df.src != NB)]   # 14.11: nb-bet отключён (🔥/⚔️ без него)
 
 
 def match_line(espn_id: str, trust: set[str] | None = None) -> str:

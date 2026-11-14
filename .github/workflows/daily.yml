@@ -71,6 +71,7 @@ jobs:
           ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
           APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
           CLOUD: '1'
+          PYTHONUNBUFFERED: '1'     # ⏱ 14.11: строки журнала со своим временем — видно длительность этапов
           RESEND_DAY: ${{ github.event.inputs.resend_day }}
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}

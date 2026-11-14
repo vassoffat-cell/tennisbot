@@ -417,7 +417,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
     d = d[((d.a != '') | (d.pick.astype(str).str.strip() != ''))     # 14.11: и без распознанной пары команд (матч — из текста поста)
           & ~d.pick.astype(str).str.lower().str.contains('|'.join(['реклам', 'промокод', 'подписат']), regex=True)]   # все, кроме рекламы
-    nb = _nb_new(sent, now) if not test else pd.DataFrame()       # 14.11: прогнозы nb-bet (лента сайта) — тоже присылать
+    nb = pd.DataFrame()                                           # 14.11 19:35: nb-bet отключён пользователем (мусор)
     if test:                                                      # 🧪 разовая проверка доставки: последние прогнозы, в оба бота
         d = df[(df.a != '') & ((df.slip == '') | (df.seen == 'pre'))].copy()
         okt = d.apply(lambda r: bool(re.match(r'(П[12]|ИТ[12]?[БМ]|Т[БМ]|Ф[12]|ОЗ|1X|X2|12|победа)',

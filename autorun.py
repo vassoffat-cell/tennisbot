@@ -982,6 +982,11 @@ def archive_run(store, rt: dict, af, ld, kcal, off, yday: dt.date, log: list[str
         log.append(f'🗂 архив: сбой {ex.__class__.__name__}: {ex}')
 
 def main() -> None:
+    try:                                                        # ⏱ 14.11 Ц7: профиль времени прогона (одна строка в журнал)
+        import prof
+        prof.install()
+    except Exception:
+        prof = None
     ap = argparse.ArgumentParser()
     ap.add_argument('mode', choices=['auto', 'daily'], nargs='?', default='auto')
     ap.add_argument('--dry', action='store_true')
@@ -999,6 +1004,8 @@ def main() -> None:
             notify.crash_clear()                                # успешный прогон — уведомления о сбоях убрать
         except Exception as e:
             print(f'crash_clear: {e}')
+    if prof:
+        print(prof.report())
 
 
 if __name__ == '__main__':

@@ -341,7 +341,7 @@ def capper_values(sport: str) -> dict[str, list[float]]:
             d = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
             if not len(d):
                 return out
-            d = d[d.result.isin(['W', 'L', 'P']) & ~d.legs.str.contains(r'\|') & (d.legs != '')]
+            d = d[d.result.isin(['W', 'L', 'P']) & ~d.legs.str.contains(r'\|') & (d.legs != '') & (d.src != 'nb-bet')]   # 14.11: nb-bet отключён
             d = d.drop_duplicates(['src', 'espn_id', 'legs'])
             for r in d.itertuples(index=False):
                 mk, pk, L = (str(r.legs).split(':') + ['', '', ''])[:3]

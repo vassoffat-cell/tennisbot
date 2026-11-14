@@ -28,7 +28,8 @@ REL = {'1': ' 🔥', '-1': ' ⚔️', '0': ' ·'}
 
 def _read(p: Path) -> pd.DataFrame:
     try:
-        return pd.read_csv(p, dtype=str, keep_default_na=False)
+        d = pd.read_csv(p, dtype=str, keep_default_na=False)
+        return d[d.src != 'nb-bet'].reset_index(drop=True) if 'src' in d.columns else d   # 14.11: nb-bet отключён пользователем
     except Exception:
         return pd.DataFrame()
 
