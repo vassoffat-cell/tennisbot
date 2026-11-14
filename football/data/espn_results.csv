@@ -779,3 +779,6 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932841,fra.coupe_de_france,cup,FRA,F1,2026-11-13 19:00,Neuvillette-Jamin,Valenciennes,,Valenciennes,2,2,ET,seventh-round,0
 401932845,fra.coupe_de_france,cup,FRA,F1,2026-11-13 19:00,US Saint-Philbert-de-Grand-Lieu,La Roche-sur-Yon,,,1,3,FT,seventh-round,0
 401928487,esp.copa_del_rey,cup,ESP,SP1,2026-11-13 20:00,Salamanca UDS,Celta Vigo,,Celta,0,5,FT,first-round,0
+401932840,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Tourcoing,Stade de Reims,,,0,0,FT,seventh-round,0
+401932856,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Versailles 78,Rodez Aveyron,,,0,0,FT,seventh-round,0
+401932858,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Balagne,Montpellier,,Montpellier,0,5,FT,seventh-round,0
