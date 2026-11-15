@@ -1,4 +1,5 @@
 uid,src,post_ts,league,game_id,start,home,away,market,pick,line,label,k,self,ours,result,p_model,p_imp,rel,raw,live
+kapper_uk:22522:r,kapper_uk,2026-11-10 16:21,KHL,khl:430663,2026-11-10 16:30,Niznekamsk,Salavat Ufa,ML,A,,П2 ОТ,,,L,L,0.641,,,❔ Хоккей | КХЛ Нефтехимик — Салават Салават Юлаев уже 6 раз подряд выигрывал очн,
 kapper_uk:22593:0,kapper_uk,2026-11-14 11:53,KHL,khl:430679,2026-11-14 11:00,Niznekamsk,Avangard Omsk,ML,A,,П2 ОТ,1.68,,W,W,0.5878,0.5952,,Победа в матче. П2 кф 1.675,1
 kapper_uk:22610:0,kapper_uk,2026-11-15 11:02,KHL,khl:430682,2026-11-15 14:00,Nizhny Novgorod,Dinamo Minsk,ML,H,,П1 ОТ,1.67,,,,0.2545,0.5988,,Победа в матче. П1 кф 1.67,
 stavki_na_sport_betting1:slip:389719189:0,stavki_na_sport_betting1,2026-11-10 12:25,KHL,khl:430664,2026-11-10 14:00,Tractor Chelyabinsk,Shanghai,TOT,O,4.5,ТБ4.5,1.64,W,W,W,0.7303,0.6098,,ТБ(4.5),
