@@ -1,0 +1,85 @@
+"""🔏 Печать прогнозов суток (решение пользователя 15.11.2026 19:44).
+
+Зачем: пользователь не видит списков прогнозов (решение 11.11 — списки не публикуются) и должен иметь возможность убедиться,
+что отчёт не подгоняется задним числом. Поэтому:
+  1. Каждый прогон пишет снимок ВСЕХ линий суток в файл репозитория (<data>/seal/<вид>_ГГГГ-ММ-ДД.csv). Строки матча, который уже
+     начался, больше НЕ меняются (заморожены последней версией до начала). Файл коммитится облаком — время коммита ставит GitHub,
+     история версий файла = чекпоинты.
+  2. Утренний первый приговор (⭐1) получает строку «🔎»: сколько матчей и линий рассмотрено за сутки, сколько матчей подошли на
+     ставку дня, разбивка по турнирам / лигам и 🔏 код — первые 8 знаков SHA-256 снимка в момент объявления (время ставит Telegram).
+Команды не перечисляются. Расход — доли секунды, файл ~10–60 КБ в сутки.
+"""
+from __future__ import annotations
+
+import hashlib
+from collections import Counter
+from pathlib import Path
+
+import pandas as pd
+
+COLS = ['match_id', 'start_utc', 'group', 'market', 'pick', 'line', 'p']
+SURF = {'hard': 'хард', 'clay': 'грунт', 'grass': 'трава', 'carpet': 'ковёр'}
+LEAGUE_RU = {'NHL': 'НХЛ', 'KHL': 'КХЛ'}
+
+
+def _short_event(ev: str) -> str:
+    for w in ('Nitto ', 'FAGE ', 'Bybit ', 'Prudential ', 'BNP Paribas ', 'Rolex ', 'Mutua ', 'Internazionali BNL d\'Italia'):
+        ev = ev.replace(w, '')
+    return ev.strip()[:24]
+
+
+def rows(sport: str, items: list) -> list[dict]:
+    """Линии прогона → строки печати. Теннис/футбол: items = [(m, row, lines)], хоккей: [(row, lines)]."""
+    out = []
+    for it in items:
+        if sport == 'hockey':
+            row, lns = it
+            mid, grp = str(row.get('id')), LEAGUE_RU.get(str(row.get('league')), str(row.get('league')))
+        else:
+            m, row, lns = it
+            mid = str(getattr(m, 'id', row.get('espn_id', '')))
+            if sport == 'tennis':
+                x0 = lns[0] if lns else {}
+                surf = SURF.get(str(x0.get('surface', row.get('surface', ''))).lower(), str(x0.get('surface', '')).lower())
+                grp = f"{_short_event(str(x0.get('event', getattr(m, 'event', ''))))}, {surf}".strip(', ')
+            else:
+                grp = str(row.get('comp_name') or row.get('comp') or '')
+        for x in lns:
+            line = x.get('line', '')
+            out.append(dict(match_id=mid, start_utc=str(row.get('start_utc', ''))[:16], group=grp, market=str(x.get('market', '')),
+                            pick=str(x.get('pick', '')), line='' if line in (None, '') or str(line) == 'nan' else line,
+                            p=round(float(x.get('p', 0) or 0), 4)))
+    return out
+
+
+def seal(sport: str, items: list, lo, hi, now, folder: Path, day) -> dict:
+    """Снимок суток [lo, hi) (UTC): начавшиеся матчи заморожены, будущие — свежие. Возвращает счётчики и код снимка."""
+    lo, hi, now = pd.Timestamp(lo), pd.Timestamp(hi), pd.Timestamp(now)
+    new = pd.DataFrame(rows(sport, items), columns=COLS)
+    st = pd.to_datetime(new.start_utc, errors='coerce')
+    new = new[(st >= lo) & (st < hi) & (st > now)]
+    f = Path(folder) / 'seal' / f'{sport}_{day}.csv'
+    old = pd.read_csv(f, dtype=str, keep_default_na=False) if f.exists() else pd.DataFrame(columns=COLS)
+    if len(old):                                                  # начавшиеся (их нет в прогоне) — заморожены; будущие — свежая версия
+        old = old[~old.match_id.isin(set(new.match_id))]
+    snap = pd.concat([old.astype(str), new.astype(str)], ignore_index=True).sort_values(['start_utc', 'match_id', 'market', 'pick', 'line'])
+    f.parent.mkdir(parents=True, exist_ok=True)
+    body = snap.to_csv(index=False)
+    f.write_text(body, encoding='utf-8')
+    per = snap.drop_duplicates('match_id')
+    return dict(n=int(len(per)), lines=int(len(snap)), groups=Counter(per.group), code=hashlib.sha256(body.encode()).hexdigest()[:8])
+
+
+def _plural(n: int, one: str, few: str, many: str) -> str:
+    n100, n10 = n % 100, n % 10
+    return one if n10 == 1 and n100 != 11 else few if 2 <= n10 <= 4 and not 12 <= n100 <= 14 else many
+
+
+def text(info: dict, n_cand: int) -> str:
+    """«🔎 Сутки: 3 матча · 21 линия · на ставку дня — 2 · Турин, хард 2 · Индиан-Уэллс, хард 1 · 🔏 7f3a91c2»."""
+    n, L = info['n'], info['lines']
+    grp = ' · '.join(f'{g} {c}' for g, c in info['groups'].most_common(4) if g)
+    more = len(info['groups']) - 4
+    return (f"🔎 Сутки: {n} {_plural(n, 'матч', 'матча', 'матчей')} · {L} {_plural(L, 'линия', 'линии', 'линий')}"
+            f" · на ставку дня — {n_cand}" + (f"\n{grp}" + (f' · ещё {more}' if more > 0 else '') if grp else '')
+            + f" · 🔏 {info['code']}")

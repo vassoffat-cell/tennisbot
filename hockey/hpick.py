@@ -105,7 +105,7 @@ def _line(c: dict, e) -> str:
 
 def _text(day, c: dict, rank: int, hist: list[str]) -> str:
     e = notify.esc
-    out = [f"🏒{rank} <b>Хоккей · ставка дня</b> · 🎯 уверенная", _line(c, e)]  # 11.11: единое начало; 14.11: категория (второй цены нет)
+    out = [f"🏒{rank} <b>Хоккей · ставка дня</b> · 🎯 уверенная"] + ([e(c['scan'])] if c.get('scan') else []) + [_line(c, e)]  # 15.11: 🔎 печать суток
     out += [e(h) for h in hist]                           # 12.11: после «честный кф» — только отметки правок / новой линии
     return '\n'.join(out)
 
@@ -134,6 +134,7 @@ def busy(start, starts: list) -> bool:
     return any(abs((s - pd.Timestamp(x)).total_seconds()) < SEGMENT_H * 3600 for x in starts if x not in (None, ''))
 
 
+HD_DATA = __import__('pathlib').Path(__file__).resolve().parent / 'data'   # hockey/data (печать — hockey/data/seal)
 CHANGED = [False]                 # ставки хоккея изменились в этом прогоне → autorun обновит кэш кнопки «⭐ Ставка дня»
 
 
@@ -147,6 +148,13 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
     st = rt.get('hk_dp') or {}
     loc = now + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
     cands = candidates(items, tp, leagues, lo, hi, now, tier_fn)
+    scan = ''
+    try:                                                     # 🔏 15.11: печать прогнозов суток (снимок в репозитории каждый прогон)
+        import seal as SEAL
+        info = SEAL.seal('hockey', [it for it in items if it[0].get('league') in leagues], lo, hi, now, HD_DATA, str(day))
+        scan = SEAL.text(info, len({str(c['id']) for c in cands}))
+    except Exception as ex:
+        log.append(f'⭐🏒 печать: сбой {ex.__class__.__name__}: {ex}')
     if st.get('date') != str(day):                           # новые сутки: снять закрепы прошлых, убрать уведомления
         old = [tuple(m) for x in st.get('picks', []) for m in x.get('msgs', [])] + [tuple(m) for m in st.get('msgs', [])]
         if old:
@@ -158,7 +166,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         if not first:
             log.append(f'⭐🏒 {day:%d.%m}: нет уверенных кандидатов')
             return
-        st['picks'] = [_publish(day, first, 1, [])]
+        st['picks'] = [_publish(day, dict(first, scan=scan), 1, [])]
         store.append('hk_day_pick', [_row(day, 1, first)])
         log.append(f"⭐🏒 {day:%d.%m}: ⭐1 {first['label']} {first['home']}–{first['away']} P {first['p']:.2f}")
         return
@@ -188,7 +196,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
     if not picks:                                            # утром кандидатов не было — первая появившаяся = ⭐1
         first = next((c for c in cands if not c['clash']), None)
         if first:
-            st['picks'] = [_publish(day, first, 1, [f'➕ появилась в {loc:%H:%M}'])]
+            st['picks'] = [_publish(day, dict(first, scan=scan), 1, [f'➕ появилась в {loc:%H:%M}'])]
             store.append('hk_day_pick', [_row(day, 1, first, reason='новая: появилась линия')])
             log.append(f"⭐🏒 ⭐1 появилась: {first['label']}")
         rt['hk_dp'] = st
@@ -216,7 +224,9 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         store.append('hk_day_pick', [_row(day, r, top, reason=f'правка: {why}')])
         h = f"✏️ мнение изменилось в {loc:%H:%M}: было {x['label']} {x['p'] * 100:.0f}% → {top['label']} ({why})"
         msgs, hist = x.get('msgs', []), list(x.get('hist', [])) + [h]
-        x.clear(); x.update(dict(top, rank=r, hist=hist, msgs=msgs, edits=int(len([q for q in hist if q.startswith('✏️')]))))
+        sc = x.get('scan', '')
+        x.clear(); x.update(dict(top, rank=r, hist=hist, msgs=msgs, edits=int(len([q for q in hist if q.startswith('✏️')])),
+                                 **({'scan': sc} if sc else {})))
         notify.edit([tuple(m) for m in msgs], _text(day, x, r, hist), None)
         CHANGED[0] = True
         st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_blocks(

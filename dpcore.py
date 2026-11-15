@@ -213,6 +213,14 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     snap_prices(rt, cur, cands, now)                            # 📈 последняя цена рынка до начала — для CLV
     for c in cands:
         c['slot'] = slot_fn(c, items)
+    info = None
+    if not dry:                                                 # 🔏 15.11: печать прогнозов суток (снимок в репозитории каждый прогон)
+        try:
+            import seal as SEAL
+            lo = pd.Timestamp(day) + pd.Timedelta(hours=C.DAY_START_HOUR - C.TZ_OFFSET_HOURS)
+            info = SEAL.seal(_sk(), items, lo, lo + pd.Timedelta(days=1), now, C.DATA, dstr)
+        except Exception as e:
+            log.append(f'печать: сбой {e.__class__.__name__}: {e}')
     note = ('; ' + '; '.join(log)) if log else ''
     if dry:
         print(text_fn(cands[0] if cands else None, day, [], '', 'нет подходящих линий'))
@@ -221,8 +229,12 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     def main_text() -> str:
         best = next((c for c in cands if key(c) == list(cur.get('key', []))), None) or \
             (_revive(cur['best']) if cur.get('best') else None)
-        return _titled(text_fn(best, day, cur.get('history', []), score_fn(dp),
-                               'подходящей линии пока нет (кф ≥ 1,35 и вероятность ≥ 60%) — появится, объявлю'), 1)
+        t = _titled(text_fn(best, day, cur.get('history', []), score_fn(dp),
+                            'подходящей линии пока нет (кф ≥ 1,35 и вероятность ≥ 60%) — появится, объявлю'), 1)
+        if cur.get('scan'):                                     # 🔎 15.11: что рассмотрено на старте суток — строкой под заголовком
+            head, _, rest = t.partition('\n')
+            t = f"{head}\n{notify.esc(cur['scan'])}" + (f"\n{rest}" if rest else '')
+        return t
 
     def extra_text(x: dict) -> str:
         c = next((o for o in cands if key(o) == list(x['key'])), None) or _revive(x)
@@ -230,6 +242,9 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
 
     if not cur.get('msgs'):                                     # 1. утро — первый приговор: ⭐1, закреплён
         best = cands[0] if cands else None
+        if info:
+            import seal as SEAL
+            cur['scan'] = SEAL.text(info, len({str(c.get('espn_id', c.get('id', ''))) for c in cands}))
         if best:
             _set_main(cur, best, match_fn)
             cur.update(first_label=best['label'], first_match=match_fn(best))
