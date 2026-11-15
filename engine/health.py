@@ -34,13 +34,34 @@ def grep(text: str, pat: str) -> list[str]:
     return [re.sub(r'^.*?Z ', '', x)[:160] for x in text.splitlines() if re.search(pat, x)]
 
 
+def _dur(r: dict) -> float:
+    """Длительность прогона, с (шлюз Ц7: пропущенный прогон ≈ 5–20 с)."""
+    try:
+        a = datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
+        return (datetime.fromisoformat(r['updated_at'].replace('Z', '+00:00')) - a).total_seconds()
+    except Exception:
+        return 0.0
+
+
+def seal_today() -> list[tuple[str, str, str, str]]:
+    """🔏 С16: снимок линий суток есть у тенниса и хоккея (футбол — если у него были матчи; полная сверка — seal_check.py)."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    day = (datetime.now(timezone.utc) + TZ - timedelta(hours=12)).date()      # к 12:00 сутки всех видов уже начались
+    got = {s: sorted((root / d / 'seal').glob(f'{s}_*.csv'))[-1:] for s, d in
+           (('tennis', 'data'), ('hockey', 'hockey/data'), ('football', 'football/data'))}
+    last = {s: (f[0].stem.split('_')[1] if f else '—') for s, f in got.items()}
+    ok = all(last[s] != '—' and last[s] >= str(day) for s in ('tennis', 'hockey'))
+    return [('печать С16: последний снимок суток', f'≥ {day:%d.%m}', ', '.join(f'{s} {v}' for s, v in last.items()), '✅' if ok else '❌')]
+
+
 def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
     """👥 Нерушимое правило (CONTROL Г2/Г2а/К6): каналы читаются каждый час, КАЖДЫЙ прогноз — отдельным сообщением.
-    ① перерыв между чтениями каналов (cappers.yml + football.yml — оба читают каналы) ≤ 75 мин;
+    ① перерыв между чтениями каналов ≤ 75 мин (с 14.11 каналы читает ТОЛЬКО cappers.yml — Ц7; футбол не считается);
     ② прогнозы, прочитанные за окно, но не присланные (журнал книги против runtime.tips_alerted; нужен свежий git pull)."""
     out = []
     ts = sorted(datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
-                for wf in ('cappers.yml', 'football.yml') for r in runs(wf, since - timedelta(hours=2)) if r['conclusion'] == 'success')
+                for wf in ('cappers.yml',) for r in runs(wf, since - timedelta(hours=2)) if r['conclusion'] == 'success')
     ts = [t for t in ts if t >= since - timedelta(hours=2)] + [datetime.now(timezone.utc)]
     gaps = [(b - a, a) for a, b in zip(ts, ts[1:]) if b >= since]
     g, at = max(gaps) if gaps else (timedelta(0), since)
@@ -94,6 +115,9 @@ def main(hours: int = 26) -> None:
               ('daily.yml', (12, 14), r'🧠 hockey: правил', 'хоккей: цикл самообучения'),
               ('daily.yml', (0, 24), r'НЕ ДОСТАВЛЕНО|потеряно', 'теннис/хоккей: потерянные сообщения (последний прогон)'),
               ('football.yml', (0, 24), r'НЕ ДОСТАВЛЕНО|потеряно', 'футбол: потерянные сообщения (последний прогон)'),
+              ('daily.yml', (0, 24), r'🔒 заглушка: [1-9]', 'теннис/хоккей: 🔒 контрольная точка (В3а, последний полный прогон)'),
+              ('football.yml', (0, 24), r'🔒 заглушка: [1-9]', 'футбол: 🔒 контрольная точка (В3а, последний полный прогон)'),
+              ('cappers.yml', (0, 24), r'🔒 контрольная точка: 2', 'каперы: 🔒 контрольная точка в оба бота (В3а, последний прогон)'),
               ('daily.yml', (0, 24), r'Traceback|сбой', 'теннис/хоккей: сбои внутри прогонов (последний прогон)'),
               ('football.yml', (0, 24), r'Traceback|сбой', 'футбол: сбои внутри прогонов (последний прогон)')]
     cache: dict[int, str] = {}
@@ -101,8 +125,9 @@ def main(hours: int = 26) -> None:
         rs = [r for r in runs(wf, since) if r['conclusion'] == 'success']
         if (h0, h1) != (0, 24):
             rs = [r for r in rs if h0 <= (datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) + TZ).hour < h1]
-        else:
-            rs = rs[:1]
+        else:                                                     # последний ПОЛНЫЙ прогон (шлюз Ц7 даёт пустые ≈ 5 с)
+            full = [r for r in rs if wf == 'cappers.yml' or _dur(r) > 25]
+            rs = full[:1]
         hit = []
         for r in rs:
             cache.setdefault(r['id'], log(r['id']))
@@ -111,6 +136,7 @@ def main(hours: int = 26) -> None:
         ok = (not hit) if bad else bool(hit)
         rows.append((name, 'нет' if bad else 'есть', (hit[0] if hit else '—') + (f' (+{len(hit) - 1})' if len(hit) > 1 else ''), '✅' if ok else '❌'))
     rows += cappers(since)
+    rows += seal_today()
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:

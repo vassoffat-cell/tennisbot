@@ -67,7 +67,8 @@ GOOGLE_CREDENTIALS_JSON, ALLOWED_USERS, ODDS_API_KEY, ODDSPAPI_KEY, APISPORTS_KE
 | `hockey/` | hdata (НХЛ ESPN, КХЛ API-Sports), hmodel (Пуассон, инверсия рынка, пустые ворота), hlines, hrun, hpick, hcappers |
 | `football/` | run.py (цикл), model/dc (Dixon–Coles), flines, ffactors, fespn, fmarket, daypick/dpcore/pick/odds, tips/tipsbook/tipswide (каперы), caprun, slips/ocr, report, свои journal/notify/config |
 | `apps_script/`, `football/apps_script/` | Code.gs ботов (+ `menu_template.gs` — шаблон ТЗ-006) |
-| `engine/health.py` | проверка здоровья без чтения всех логов |
+| `engine/health.py` | проверка здоровья без чтения всех логов (вкл. 🔒 В3а и печать С16) |
+| `engine/seal_check.py` | честность снимков суток (С16): снимок есть, записан до матчей, ставка дня в нём |
 | `engine/research/` | скрипты проверок (a1–a3, a14, hk_*, t32, t33) — чтобы воспроизводить цифры IMPROVE |
 
 **Данные в репозитории** (облако обновляет само): `data/` — tennis-data, Sackmann, TennisMyLife (tml), ESPN, odds, runtime.json,
@@ -141,7 +142,7 @@ tg_cache, summary, bot_log, tg_messages, dp_actions (устар., только �
 - **Суточный** — три сообщения: ① «📈 отчёт» (таблица сутки / эта неделя / всего + матчи с итогами), ② «👥 каперы»
   (+ «🧠 Обучение на каперах»), ③ «ставки дня» (по категориям: угадано, ROI, CLV; + «🧠 Обучение»).
 - **Недельный** (пн) — те же три сообщения + «🧠 Аудит недели».
-- **Без легенд и подсказок.** Заглушка «🔒 ·» после каждого прогона.
+- **Без легенд и подсказок.** После каждого прогона — тихая контрольная точка «🔒 ЧЧ:ММ · <что> проверка ✓ / ⭐ без изменений (или «прислано N ↑») · далее ЧЧ:ММ» (CONTROL В3а); каперы — каждый час в оба бота «👥 каперы ✓ / новых нет».
 - **Доставка** (CODEX §6): повтор при сбоях, нарезка длинных сообщений, очередь недоставленного (undelivered.json),
   окно отчёта до 23:00.
 
