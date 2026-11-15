@@ -389,11 +389,33 @@ function setup() {
 function setupMenu() {
   ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'tick') ScriptApp.deleteTrigger(t); });
   ScriptApp.newTrigger('tick').timeBased().everyMinutes(5).create();
+  if (BOT.workflow === 'football.yml') {                     // Г0: страховка каперов — только в FootBot (один бот на оба)
+    ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'capTick') ScriptApp.deleteTrigger(t); });
+    ScriptApp.newTrigger('capTick').timeBased().everyHours(1).create();
+  }
   String(PROPS.getProperty('ALLOWED_USERS') || '').split(',').forEach(function (u) {
     u = u.trim();
     if (u) tg_('sendMessage', { chat_id: u, text: '✅ Меню обновлено: ⭐ Ставка дня · 📊 Аналитика', reply_markup: MENU });
   });
-  Logger.log('Триггер tick (5 мин) установлен, клавиатура отправлена');
+  Logger.log('Триггер tick (5 мин)' + (BOT.workflow === 'football.yml' ? ' и capTick (1 ч)' : '') + ' установлен, клавиатура отправлена');
+}
+
+// ============================================================ Г0 (15.11): страховка ежечасной проверки каперов
+// GitHub иногда пропускает плановый запуск каперов (15.11 ночью — перерыв 97 мин). Раз в час (триггер — setupMenu, только FootBot):
+// если прогона cappers.yml не было больше 65 минут — запустить его. Минуты GitHub тратятся только на пропущенные часы.
+function capTick() {
+  const token = PROPS.getProperty('GH_TOKEN');
+  if (!token) return;
+  const h = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
+  const api = 'https://api.github.com/repos/' + BOT.repo + '/actions/workflows/cappers.yml/';
+  const r = UrlFetchApp.fetch(api + 'runs?per_page=3', { headers: h, muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) { log_('каперы: проверка запусков', r.getResponseCode()); return; }
+  const runs = JSON.parse(r.getContentText()).workflow_runs || [];
+  const last = runs.length ? new Date(runs[0].created_at).getTime() : 0;
+  if (Date.now() - last < 65 * 60 * 1000) return;
+  const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
+    payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });
+  log_('каперы: страховочный запуск', d.getResponseCode() === 204 ? 'запущено' : d.getResponseCode() + ' ' + d.getContentText().slice(0, 200));
 }
 
 function setWebhook() {
