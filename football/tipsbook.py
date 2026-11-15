@@ -21,7 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 9                                         # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 10                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -158,7 +158,36 @@ def tips_of(src: str, p: dict) -> list[dict]:
                         sport=next((x for x in (sport_of(frag), sport, DEFAULT.get(src, 'other')) if x != 'other'), 'other'), a=a, b=b,
                         pick=AD_TAIL.sub('', re.sub(r'[✅❌✖️⛔↩🔄✔]+', '', pick)).strip()[:100], k=f'{T.odds_in(pick):.2f}' if T.odds_in(pick) else '',
                         self=mk, self_ts=pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M') if mk else '', raw=frag[:200].replace('\n', ' ')))
+    if not out and _candidate(p):                               # 15.11 «страховочная сеть» (Г0): не разобрали — НЕ теряем
+        body = re.sub(r'\s+', ' ', AD_TAIL.sub('', p['text'])).strip()
+        bet = [ln.strip() for ln in str(p.get('ocr', '')).split('\n')            # ставка с картинки (строки рынка, без «Ставка: 2000 Р»)
+               if MARKET.search(ln) and not re.search(r'(?i)ставка\s*:|выигрыш|статус|коэффициент', ln)][:2]
+        if bet:
+            body = ' · '.join(bet) + ' — ' + body
+        a0, b0 = next(((x[1], x[2]) for x in W.pairs(p['text']) if x[1][:1].isupper() and x[2][:1].isupper()), ('', ''))
+        out.append(dict(uid=f"{src}:{p['id']}:r", src=src, post_id=str(p['id']), post_ts=str(p['ts'])[:16],
+                        sport=next((x for x in (sport, DEFAULT.get(src, 'other')) if x != 'other'), 'other'), a=a0, b=b0,
+                        pick=('❔ ' + body)[:240], k=f'{T.odds_in(body):.2f}' if T.odds_in(body) else '', self='', self_ts='',
+                        raw=body[:200]))
     return out
+
+
+# 15.11 «страховочная сеть»: пост капера, который разбор не понял, но он похож на прогноз → в книгу строкой «❔» и пользователю
+# (текст поста + ссылка). Не прогноз: реклама, итоги, отзывы, новости, анонсы «🔜», платные «послеоплатники».
+CAND_POS = re.compile(r'(?i)прогноз|ставк[аиу]\b|ставлю|ставим|экспресс|\bкф\b|коэф|\bп\s?[12]\b|\bт[бм]\b|\bит\s?[12]?\s?[бм]|фора|тотал'
+                      r'|победа|победит|забь|обе команды|\b1[хx]\b|\b[хx]2\b|минимум|ординар|паровоз|карточ|углов|шайб|не проиграет')
+CAND_NEG = re.compile(r'(?i)отзывы|бонус|регистрир|приложени|ден[её]жный|заход|зашел|зашёл|зашла|прош[её]л|прошла|не прош|проход|возврат'
+                      r'|статистика с|итоги|видео-?отч|поздравля|доброе утро|расписание|замен|в личку|послеоплат|стоимость|гарантии'
+                      r'|мимо по ставкам|подпиш|согласны|легальн|🔜|кнопк|на связи|прошли|реакци|позор|горит|отработали|цена\s*\d|завершение дня|вчера забрал')
+
+
+def _candidate(p: dict) -> bool:
+    t = AD_TAIL.sub('', str(p.get('text', ''))).strip()
+    if not t and not p.get('photos'):
+        return False
+    if CAND_NEG.search(t):
+        return False
+    return bool(CAND_POS.search(t)) or (bool(p.get('photos')) and len(t) < 80 and bool(re.search(r'(?i)экспресс|ставк|прогноз|🔥', t)))
 
 
 def _rows(add: list[dict]) -> pd.DataFrame:
@@ -185,7 +214,7 @@ def run(rt: dict, log: list[str]) -> None:
         for src in T.TG:
             for pid in sorted(_arch(src)):                           # по времени: открытый купон раньше рассчитанного
                 x = _arch_cache(src)[pid]
-                p = dict(id=x['id'], ts=pd.Timestamp(x['ts']), text=x['text'], ocr=x.get('ocr', ''))
+                p = dict(id=x['id'], ts=pd.Timestamp(x['ts']), text=x['text'], ocr=x.get('ocr', ''), photos=x.get('photos', []))
                 r = tips_of(src, p)
                 rows += [t for t in r if not t.get('slip')]
                 srows += [t for t in r if t.get('slip')]
@@ -317,7 +346,7 @@ def ocr_round(rt: dict, df: pd.DataFrame, log: list[str]) -> pd.DataFrame:
                 budget -= 1
             x['ocr'] = '\n§\n'.join(t for t in parts if t)
             done += 1
-            p = dict(id=pid, ts=pd.Timestamp(x['ts']), text=x['text'], ocr=x['ocr'])
+            p = dict(id=pid, ts=pd.Timestamp(x['ts']), text=x['text'], ocr=x['ocr'], photos=x.get('photos', []))
             new_rows = tips_of(src, p)
             df, n_upd = merge_slips(df, [t for t in new_rows if t.get('slip')])
             add += [t for t in new_rows if t['uid'] not in have_b and not t.get('slip')]
@@ -547,6 +576,9 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     d = d.assign(pick=d.pick.astype(str).map(lambda x: AD_TAIL.sub('', x).strip()))   # 14.11 20:40: рекламный хвост срезается, прогноз остаётся
     slip_posts = set(df[(df.slip != '') & (df.slip != '-')].apply(lambda r: f'{r.src}:{r.post_id}', axis=1)) if len(df) else set()
     d = d[~((d.slip == '') & (d.a == '') & d.apply(lambda r: f'{r.src}:{r.post_id}' in slip_posts, axis=1))] if len(d) else d   # 15.11: текст поста + его купон — одно сообщение (купон: с матчем)
+    if len(d):                                                    # 15.11: «❔» поста, у которого есть разобранная ставка (картинка распознана) — не нужен
+        parsed = set(df[~df.pick.astype(str).str.startswith('❔')].apply(lambda r: f'{r.src}:{r.post_id}', axis=1))
+        d = d[~(d.pick.str.startswith('❔') & d.apply(lambda r: f'{r.src}:{r.post_id}' in parsed, axis=1))]
     d = d[((d.a != '') | (d.pick != ''))                             # 14.11: и без распознанной пары команд (матч — из текста поста)
           & ~d.pick.str.lower().str.contains('реклам|подписат', regex=True)]   # все, кроме рекламы
     nb = pd.DataFrame()                                           # 14.11 19:35: nb-bet отключён пользователем (мусор)
@@ -576,11 +608,17 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             k = str(r.k or '').replace('.', ',')
             match = f"{notify.esc(r.a)} — {notify.esc(r.b)}" if r.a else notify.esc(_context(r.raw, r.pick))
             wh = _when(r.uid, r.post_ts, starts, now)
+            link = f'<a href="https://t.me/{r.src}/{r.post_id}">пост ↗</a>'   # 15.11: всегда можно открыть пост целиком
+            if str(r.pick).startswith('❔'):                    # 15.11 страховочная сеть: ставку не разобрали — текст поста как есть
+                msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n"
+                            + (f"{notify.esc(r.a)} — {notify.esc(r.b)}\n" if r.a else '')
+                            + f"❔ <i>{notify.esc(str(r.pick)[2:220])}</i>" + (f"\n{wh}" if wh else '') + f"\n⬜ ставка не разобрана · {link}")
+                continue
             verdict = rel.get(r.uid) or ('· после начала — не оценивается' if wh.startswith('🔴') else
                                          '⬜ без оценки системы' if wh else '⬜ вне базы системы')
             msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n{match}\n"
                         f"<b>{notify.esc(_pick_short(r.pick, r.a, r.b, r.sport) or str(r.pick)[:40])}</b>" + (f' @{k}' if k else '')
-                        + (f"\n{wh}" if wh else '') + f"\n{verdict}")
+                        + (f"\n{wh}" if wh else '') + f"\n{verdict} · {link}")
         if bot == 'main':
             for r in nb.itertuples(index=False):                  # nb-bet: автор, матч, ставка, кф
                 k = str(r.k or '').replace('.', ',')

@@ -53,6 +53,8 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
         for r in b.itertuples(index=False):
             if getattr(r, 'seen', '') == 'post':                 # купон, показанный после матча, — не прогноз
                 continue
+            if str(r.pick).startswith('❔'):                     # 15.11: не разобранный пост (страховочная сеть) — в статистику не идёт
+                continue
             res, rel, ind, live = r.self if r.self in MARK else '', '', '', ''
             if len(hk) and r.uid in hk.index:
                 h = hk.loc[r.uid]
