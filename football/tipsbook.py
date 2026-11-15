@@ -21,7 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 7                                         # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 8                                         # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -147,6 +147,8 @@ def tips_of(src: str, p: dict) -> list[dict]:
                     break
         if not pick:
             continue
+        if src in OCR_IMG:                                     # 15.11: OCR путает «1» с «Л», «l», «|», «I» («П1» → «ПЛ»)
+            pick = re.sub(r'\bП[ЛlI|]\b', 'П1', pick)
         if src == 'kapper_uk' and not T.odds_in(pick):        # 14.11: картинка Каппер UK — «Победа в матче. П2 1.675» (кф в конце, 2–3 знака)
             m = re.search(r'\s(\d\.\d{2,3})\s*$', pick)
             if m and 1.01 < float(m.group(1)) < 30:
@@ -360,8 +362,26 @@ def _nb_new(sent: set, now) -> pd.DataFrame:
     return w[pd.to_datetime(w.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)].head(25)
 
 
-def _pick_short(pick: str, a: str, b: str) -> str:
-    """«авангард ИТБ(2.0)» → «ИТ2Б2», «барселона фора (0)» → «Ф2(0)», «победа ланс» → «П1»."""
+def _pick_short(pick: str, a: str, b: str, sport: str = '') -> str:
+    """«авангард ИТБ(2.0)» → «ИТ2Б2», «барселона фора (0)» → «Ф2(0)», «победа ланс» → «П1».
+    15.11: формы Каппер UK — «Победа в матче. П1 кф 1.67» → «П1 с ОТ» (хоккей) / «П1»; «Обе забьют. Да» → «ОЗ да»;
+    «Индивидуальный тотал 2-го. (1) Б» → «ИТ2Б1»; «Тотал. (2) Б» → «ТБ2»; «Фора. 1 (-1.5)» → «Ф1(-1.5)». Кф — только в @."""
+    pick = re.sub(r'\s*кф\.?\s*\d+[.,]\d+\s*$', '', str(pick)).strip()
+    m = re.match(r'(?i)победа в матче\.?\s*П\s*([12])\b', pick)
+    if m:
+        return f"П{m.group(1)}" + (' с ОТ' if sport == 'hockey' else '')
+    m = re.match(r'(?i)обе (?:команды )?забьют\.?\s*[-–—]?\s*(да|нет)', pick)
+    if m:
+        return f"ОЗ {m.group(1).lower()}"
+    m = re.match(r'(?i)индивидуальный тотал\s*([12])-го\.?\s*\(\s*([\d.]+)\s*\)\s*([БМ])', pick)
+    if m:
+        return f"ИТ{m.group(1)}{m.group(3).upper()}{float(m.group(2)):g}" + pick[m.end():].rstrip()
+    m = re.match(r'(?i)тотал\.?\s*\(\s*([\d.]+)\s*\)\s*([БМ])', pick)
+    if m:
+        return f"Т{m.group(2).upper()}{float(m.group(1)):g}" + pick[m.end():].rstrip()
+    m = re.match(r'(?i)фора\.?\s*([12])\s*\(\s*([+-]?[\d.]+)\s*\)', pick)
+    if m:
+        return f"Ф{m.group(1)}({float(m.group(2)):+g})" + pick[m.end():].rstrip()
     def side(team: str) -> str:
         t = team.lower().strip()[:4]
         return '1' if t and t in a.lower() else '2' if t and t in b.lower() else ''
@@ -446,6 +466,50 @@ def _starts(d: pd.DataFrame) -> dict:
     return out
 
 
+def _hockey_rel(d: pd.DataFrame, rel: dict) -> dict:
+    """15.11: оценка системы для свежего прогноза капера на хоккей — сразу, в момент сообщения (раньше — только в прогоне
+    тенниса/хоккея, позже сообщения → «без оценки»). Матч из нашей базы (НХЛ/КХЛ), модель Пуассона того дня."""
+    out = {}
+    h = d[(d.sport == 'hockey') & (d.a != '') & (d.b != '') & ~d.uid.isin(list(rel))]
+    if h.empty:
+        return out
+    try:
+        import sys
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        from hockey import hcappers as HC, hdata as HD, hmodel as HM
+        g = HD.load()
+        models = {}
+        for r in h.itertuples(index=False):
+            ts = pd.to_datetime(r.post_ts, errors='coerce')
+            mt = HC.match(r.a, r.b, ts, g) if ts == ts else None
+            if mt is None:
+                continue
+            gm, hf = mt
+            if pd.to_datetime(gm.start) < ts - pd.Timedelta(minutes=5):   # после начала — не оценивается (К8)
+                continue
+            leg = HC.parse(r.pick, r.a, r.b)
+            if leg is None:
+                continue
+            mk, pk, L = HC._orient(leg, hf)
+            ok, nh, na = HC.fresh(g, gm.league, gm.home, gm.away, ts)
+            if not ok:
+                out[r.uid] = f'⬜ мало свежих матчей {gm.league} ({nh} и {na} из {HC.FRESH_N}) — без оценки'
+                continue
+            key = (gm.league, pd.Timestamp(pd.to_datetime(gm.start).date()))
+            if key not in models:
+                models[key] = HM.fit(g, gm.league, key[1])
+            p = HC.p_model(models[key], gm.home, gm.away, mk, pk, L)
+            if p is not None:
+                out[r.uid] = (f'🔥 система согласна (P {p * 100:.0f}%)' if p >= 0.55 else
+                              f'⚔️ система против (P {p * 100:.0f}%)' if p <= 0.45 else f'· система нейтральна (P {p * 100:.0f}%)')
+    except Exception as e:
+        print(f'👥 оценка хоккея: {e.__class__.__name__}: {e}')
+    return out
+
+
 def _when(uid: str, post_ts: str, starts: dict, now) -> str:
     """Строка времени: ⏰ начало / ⚠️ матч уже идёт / 🔴 опубликован после начала (время — Ташкент)."""
     s = starts.get(uid)
@@ -489,6 +553,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
         return
     st = W.stats()
     rel = _relations()
+    rel.update(_hockey_rel(d, rel))
     starts = _starts(d)
     n = 0
     for bot in (['main', 'tennis'] if test else sorted({ROUTE.get(x, 'main') for x in d.sport} | ({'main'} if len(nb) else set()))):
@@ -508,7 +573,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             verdict = rel.get(r.uid) or ('· после начала — не оценивается' if wh.startswith('🔴') else
                                          '⬜ без оценки системы' if wh else '⬜ вне базы системы')
             msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n{match}\n"
-                        f"<b>{notify.esc(_pick_short(r.pick, r.a, r.b) or str(r.pick)[:40])}</b>" + (f' @{k}' if k else '')
+                        f"<b>{notify.esc(_pick_short(r.pick, r.a, r.b, r.sport) or str(r.pick)[:40])}</b>" + (f' @{k}' if k else '')
                         + (f"\n{wh}" if wh else '') + f"\n{verdict}")
         if bot == 'main':
             for r in nb.itertuples(index=False):                  # nb-bet: автор, матч, ставка, кф

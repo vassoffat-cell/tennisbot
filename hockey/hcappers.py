@@ -112,6 +112,8 @@ def parse(pick: str, a: str, b: str) -> tuple[str, str, float | str] | None:
         return 'AH', 'H' if (m.group(1) or side) == '1' else 'A', float(m.group(2).replace(' ', ''))
     m = re.search(r'\bп\s*([12])\b', s)
     if m:
+        if 'в матче' in s or 'с от' in s or 'вкл' in s:            # 15.11: «Победа в матче. П1» — с овертаймом и буллитами
+            return 'ML', 'H' if m.group(1) == '1' else 'A', ''
         return '1X2', 'H' if m.group(1) == '1' else 'A', ''
     m = re.search(r'(?<![\d.])(1x|x2|2x|12)(?![\d.])', s)
     if m:
@@ -133,6 +135,18 @@ def _orient(leg, home_first: bool):
     if mk == 'DC':
         return mk, {'1X': 'X2', 'X2': '1X'}.get(pk, pk), L
     return mk, pk, L
+
+
+FRESH_N, FRESH_DAYS = 5, 60     # 15.11: оценка 🔥/⚔️ только если у обеих команд ≥ 5 сыгранных матчей за 60 дней
+
+
+def fresh(games: pd.DataFrame, league: str, home: str, away: str, ts) -> tuple[bool, int, int]:
+    """Свежие данные о силе команд: (хватает ли, матчей у хозяев, у гостей). КХЛ в базе с 10.11.2026 — сезон почти пуст,
+    модель КХЛ стоит на силах 2024/25 → без свежих матчей оценка капера не даётся (честнее «мало данных», чем ложный ⚔️)."""
+    st = pd.to_datetime(games.start, errors='coerce')
+    g = games[(games.league == league) & games.end.isin(['REG', 'OT', 'SO']) & (st < ts) & (st >= ts - pd.Timedelta(days=FRESH_DAYS))]
+    nh = int(((g.home == home) | (g.away == home)).sum()); na = int(((g.home == away) | (g.away == away)).sum())
+    return nh >= FRESH_N and na >= FRESH_N, nh, na
 
 
 def label(mk: str, pk: str, L) -> str:
@@ -215,7 +229,8 @@ def run(games: pd.DataFrame, log: list[str], models: dict | None = None) -> pd.D
             ours = HL.settle(mk, pk, L, x.end, x.hg, x.ag, x.hg_reg, x.ag_reg)
         selfm = r.self if r.self in ('W', 'L', 'P') else ''
         k = _num(r.k)
-        rel = '' if p is None or live else (1 if p >= 0.55 else -1 if p <= 0.45 else 0)   # live: система не оценивает
+        ok = fresh(games, g.league, g.home, g.away, ts)[0]
+        rel = '' if p is None or live or not ok else (1 if p >= 0.55 else -1 if p <= 0.45 else 0)   # live / мало свежих данных: без оценки
         out.append(dict(uid=r.uid, src=r.src, post_ts=r.post_ts, league=g.league, game_id=g.id, start=g.start, home=g.home,
                         away=g.away, market=mk, pick=pk, line=L, label=label(mk, pk, L), k=k if k == k else '', self=selfm,
                         ours=ours, result=selfm or ours, p_model='' if p is None else round(p, 4),
