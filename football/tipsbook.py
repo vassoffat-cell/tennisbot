@@ -420,6 +420,8 @@ def _relations() -> dict:
         from pathlib import Path
         h = pd.read_csv(Path(__file__).resolve().parent.parent / 'hockey' / 'data' / 'tips.csv', dtype=str, keep_default_na=False)
         for r in h.itertuples(index=False):
+            if str(r.rel) not in ('1', '-1', '0'):               # 15.11: нет оценки (после начала / мало свежих данных) — не «нейтральна»
+                continue
             try:
                 p = float(r.p_model)
             except (TypeError, ValueError):
