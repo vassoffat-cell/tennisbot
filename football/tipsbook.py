@@ -21,7 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 6                                         # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 7                                         # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -39,7 +39,7 @@ DEFAULT = {'stavki': 'football', 'xs_stavkii': 'football', 'groznyi_ruslan': 'fo
 PICK = re.compile(r'(?:ставк\w*|прогноз\w*(?: на матч)?|бер[её]м|играем|вариант)\s*[:\-—]\s*(.{2,140})', re.I)
 AD_TAIL = re.compile(r'\s*(?:Ставлю|Ставим|Промокод|Связь со мной|ПОДПИСАТЬСЯ|https?://).*$', re.I | re.S)   # 14.11: рекламный хвост поста
 ODDS_TAIL = re.compile(r'\s*[-–—]\s*(?:кф|коэф\w*)\b.*$', re.I)
-MARKET = re.compile(r'шайб|минимум|забь[её]т|победит|выиграет|\bт[бм]\b|\bт[бм]\s*\(|\bи?т[12]?\s*[бм]|\bф[12]?\s*\(|\bп[12]\b|\b(1x|x2|2x|1х|х2|2х)\b|обе забьют|тотал|фора|победа',
+MARKET = re.compile(r'шайб|минимум|забь[её]т|забьют|обе команды забьют|победит|выиграет|\bт[бм]\b|\bт[бм]\s*\(|\bи?т[12]?\s*[бм]|\bф[12]?\s*\(|\bп[12]\b|\b(1x|x2|2x|1х|х2|2х)\b|обе забьют|тотал|фора|победа',
                     re.I)
 
 
@@ -123,10 +123,16 @@ def tips_of(src: str, p: dict) -> list[dict]:
             return rows
     txt = (p['text'] + ('\n' + p['ocr'] if p.get('ocr') else '')).strip()
     sport = sport_of(txt)
-    ps = W.pairs(txt)
+    # 15.11: номер сегмента = номер пары в W.pairs (uid прежних прогнозов не меняется);
+    # пара из прозы («в пяти матчах - ожидать …») — не пара команд (названия команд с заглавной буквы)
+    ps = [(n, x) for n, x in enumerate(W.pairs(txt)) if x[1][:1].isupper() and x[2][:1].isupper()]
     out = []
-    segs = [(a, b, txt[pos:ps[n + 1][0] if n + 1 < len(ps) else len(txt)]) for n, (pos, a, b) in enumerate(ps)] or [('', '', txt)]
-    for n, (a, b, frag) in enumerate(segs):
+    segs = [(n, a, b, txt[pos:ps[i + 1][1][0] if i + 1 < len(ps) else len(txt)]) for i, (n, (pos, a, b)) in enumerate(ps)] or [(0, '', '', txt)]
+    if ps and ps[0][1][0] > 0:                                 # 15.11: прогноз ДО первой пары («✅ Прогноз: 1Х+ТМ(3.5)», потом разбор)
+        segs = [('h', '', '', txt[:ps[0][1][0]])] + segs
+    # 15.11: «✅ПРОГНОЗ НА МАТЧ:» и ставка на СЛЕДУЮЩЕЙ строке («Обе команды забьют - Да») — склеить
+    segs = [(n, a, b, re.sub(r'(?i)((?:ставк\w*|прогноз\w*(?: на матч)?)\s*:)\s*\n\s*', r'\1 ', f)) for n, a, b, f in segs]
+    for n, a, b, frag in segs:
         pick = ''
         for ln in frag.split('\n'):
             m = PICK.search(ln)
