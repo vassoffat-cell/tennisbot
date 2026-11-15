@@ -831,3 +831,21 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932837,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,FC Lourdes,Pau,,Pau FC,0,4,FT,seventh-round,0
 401932824,fra.coupe_de_france,cup,FRA,F1,2026-11-14 19:00,Olympique des Membres de Cambrai Amerique,SC Amiens,,Amiens,0,3,FT,seventh-round,0
 401933039,fra.coupe_de_france,cup,FRA,F1,2026-11-15 04:00,AS Tefana,Thionville,,,0,0,FT,seventh-round,0
+401932755,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Massay,Montlouis,,,2,2,ET,seventh-round,0
+401932759,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Racing Chambery,Chamois Niortais FC,,,2,2,ET,seventh-round,0
+401932769,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Verson,Calais,,,1,5,FT,seventh-round,0
+401932771,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Vandruvre,Epinal,,,0,3,FT,seventh-round,0
+401932772,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Montigny-Les-Metz,Pontarlier,,,0,5,FT,seventh-round,0
+401932775,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Talange,Baume-Les-Dames,,,2,0,FT,seventh-round,0
+401932797,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Paris 13 Atletico,Red Star FC 93,,,0,2,FT,seventh-round,0
+401932798,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Sedan,Bourges Foot,,,2,0,FT,seventh-round,0
+401932800,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Olympique Charleville Prix AM,Olympique Marcquois,,,2,0,FT,seventh-round,0
+401932807,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Senlis,Saint-Pryvé Saint Hilaire,,,0,2,FT,seventh-round,0
+401932819,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Rives 82,Trelissac FC,,,2,1,FT,seventh-round,0
+401932820,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,US Marseille Endoume,SC Toulon,,,2,1,FT,seventh-round,0
+401932821,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Seyssinet,Nimes,,Nimes,0,2,FT,seventh-round,0
+401932855,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Stade Castelbourgeois,Nantes,,Nantes,1,9,FT,seventh-round,0
+401932859,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Saint-Die Kellermann,Metz,,Metz,1,0,FT,seventh-round,0
+401932860,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Saint-Renan,Stade Laval,,,1,2,FT,seventh-round,0
+401933040,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,St Martin Tatinghem,Racing Club de France,,,1,2,FT,seventh-round,0
+401932735,fra.coupe_de_france,cup,FRA,F1,2026-11-15 14:00,Rumilly Vallières,Saint-Étienne,,St Etienne,1,2,FT,seventh-round,0
