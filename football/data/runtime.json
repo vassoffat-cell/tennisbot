@@ -146,7 +146,7 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-15 14:58",
+ "tips_book": "2026-11-15 15:02",
  "tips_book_v": 10,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -646,5 +646,6 @@
  "dp_alarm": {},
  "dp_last": {},
  "arch_v1": 1,
- "arch_v2": 1
+ "arch_v2": 1,
+ "chk_cap": "2026-11-15T15:02:23"
 }
