@@ -545,6 +545,8 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)
     d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
     d = d.assign(pick=d.pick.astype(str).map(lambda x: AD_TAIL.sub('', x).strip()))   # 14.11 20:40: рекламный хвост срезается, прогноз остаётся
+    slip_posts = set(df[(df.slip != '') & (df.slip != '-')].apply(lambda r: f'{r.src}:{r.post_id}', axis=1)) if len(df) else set()
+    d = d[~((d.slip == '') & (d.a == '') & d.apply(lambda r: f'{r.src}:{r.post_id}' in slip_posts, axis=1))] if len(d) else d   # 15.11: текст поста + его купон — одно сообщение (купон: с матчем)
     d = d[((d.a != '') | (d.pick != ''))                             # 14.11: и без распознанной пары команд (матч — из текста поста)
           & ~d.pick.str.lower().str.contains('реклам|подписат', regex=True)]   # все, кроме рекламы
     nb = pd.DataFrame()                                           # 14.11 19:35: nb-bet отключён пользователем (мусор)
