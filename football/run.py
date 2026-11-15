@@ -53,6 +53,19 @@ STORE_COLS = ['id', 'comp', 'kind', 'country', 'div', 'date', 'home', 'away', 'h
               'stage', 'ko']
 
 
+
+def _check(rt: dict) -> dict:
+    """15.11 (решение пользователя): 🔒 контрольная точка каждого прогона — «проверка ✓, {what}», пропуск прошлой — ⚠️."""
+    import datetime as _d
+    now = _d.datetime.now(_d.timezone.utc).replace(tzinfo=None)
+    m, hrs = 37, {3, 5, 7, 9, 11, 13, 15, 17, 19}
+    last = rt.get('chk_run')
+    prev = notify.slot(now - _d.timedelta(minutes=45), m, hrs, back=True)
+    missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
+    rt['chk_run'] = now.isoformat(timespec='seconds')
+    nxt = notify.slot(now + _d.timedelta(minutes=35), m, hrs)        # шлюз Ц7 пропускает плановый прогон в 35 мин после полного
+    return {'main': lambda n: notify.status('⚽ проверка', '⭐ без изменений', n, nxt, missed)}
+
 def _now() -> pd.Timestamp:
     return pd.Timestamp.now(tz='UTC').tz_localize(None)
 
@@ -952,7 +965,7 @@ def run(dry: bool = False) -> str:
         log.append(f'отчёт самообучения: сбой {ex.__class__.__name__}: {ex}')
     store.write_all('reports', reps)
     try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
-        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json")}')
+        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json", _check(rt))}')
     except Exception as ex:
         log.append(f'🔒 заглушка: сбой {ex.__class__.__name__}')
     runtime.save(rt)

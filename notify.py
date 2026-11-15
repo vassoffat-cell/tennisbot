@@ -24,6 +24,7 @@ def esc(s: str) -> str:
 
 BOTS = {'main': lambda: C.BOT_TOKEN, 'tennis': lambda: getattr(C, 'TENNIS_BOT_TOKEN', '')}   # 'tennis' — из футбольного облака
 _SENT: set[str] = set()                         # боты, которым в этом прогоне ушли новые сообщения (для заглушки 🔒)
+_CNT: dict[str, int] = {}                        # 15.11: сколько сообщений ушло боту в этом прогоне (контрольная точка)
 COVER = '🔒 ·'                                  # не одиночный эмодзи — без крупной анимации
 
 
@@ -32,6 +33,7 @@ def _call(method: str, payload: dict | None = None, timeout: int = 30, bot: str 
     Ошибка 400 (неверный запрос) не повторяется — её разбирает вызывающий (send_blocks)."""
     if method in ('sendMessage', 'sendPhoto', 'sendDocument') and not (payload or {}).get('_cover'):
         _SENT.add(bot)
+        _CNT[bot] = _CNT.get(bot, 0) + 1
     (payload or {}).pop('_cover', None)
     data = json.dumps(payload or {}).encode()
     for k in range(TRIES):
@@ -375,9 +377,35 @@ def plural(n: int, one: str, few: str, many: str) -> str:
     return many
 
 
-def cover(path) -> int:
-    """🔒 Заглушка последним сообщением чата: в списке чатов не видно, что прислал бот, пока чат не открыт.
-    Ставится в конце прогона, только если в прогоне ушли новые сообщения; прошлая заглушка удаляется (файл path)."""
+def slot(now, minute: int, hours=None, back: bool = False):
+    """Плановое время прогона (UTC, naive): ближайшее после now (back=False) или последнее не позже now (back=True)."""
+    import datetime as _d
+    hours = set(hours) if hours else set(range(24))
+    t = now.replace(minute=minute, second=0, microsecond=0)
+    step = _d.timedelta(hours=-1 if back else 1)
+    while (t > now if back else t < now) or t.hour not in hours:
+        t += step
+    return t
+
+
+def status(head: str, quiet: str, n: int, nxt=None, missed: bool = False) -> str:
+    """15.11 (решение пользователя): контрольная точка вместо «🔒 ·» — видно, что проверка прошла и что нового нет.
+    head — что проверено, quiet — текст «новостей нет», n — сколько сообщений ушло в этом прогоне, nxt — следующая проверка (UTC)."""
+    import datetime as _d
+    off = _d.timedelta(hours=C.TZ_OFFSET_HOURS)
+    now = _d.datetime.now(_d.timezone.utc).replace(tzinfo=None)
+    s = f'🔒 {(now + off):%H:%M} · {head} ✓\n' + (quiet if n == 0 else f'прислано {n} ↑')
+    if nxt is not None:
+        s += f' · далее {(nxt + off):%H:%M}'
+    if missed:
+        s += '\n⚠️ прошлая проверка пропущена'
+    return s
+
+
+def cover(path, spec: dict | None = None) -> int:
+    """🔒 Контрольная точка последним сообщением чата (превью скрыто: в списке чатов не видно, что прислал бот).
+    Ставится в конце КАЖДОГО прогона; прошлая точка этого прогона удаляется (файл path).
+    spec: {бот: функция(n отправленных) -> текст}; без spec — «🔒 ·» (как раньше)."""
     import pathlib
     f = pathlib.Path(path)
     try:                                                          # 14.11: сначала — повтор недоставленного (очередь рядом)
@@ -386,7 +414,9 @@ def cover(path) -> int:
         print(f'Telegram: очередь повтора — сбой {e.__class__.__name__}')
     old = json.loads(f.read_text()) if f.exists() else {}
     n = 0
+    spec = spec or {}
     _SENT.add('main')            # 12.11: заглушка — после КАЖДОГО прогона (списков нет → иначе ответ на кнопку остаётся на виду)
+    _SENT.update(spec)
     for bot in sorted(_SENT):
         if not BOTS[bot]():
             continue
@@ -400,15 +430,22 @@ def cover(path) -> int:
                     _call('deleteMessages', {'chat_id': chat, 'message_ids': ids}, bot=bot)
             except Exception as e:
                 print(f'Telegram: заглушка не удалена ({e})')
+        text = COVER
+        if bot in spec:
+            try:
+                text = spec[bot](_CNT.get(bot, 0))
+            except Exception as e:
+                print(f'Telegram: текст контрольной точки — сбой {e.__class__.__name__}')
         cur = []
         for chat in C.ALLOWED_USERS:
             try:
-                r = _call('sendMessage', {'chat_id': chat, 'text': COVER, 'disable_notification': True, '_cover': 1}, bot=bot)
+                r = _call('sendMessage', {'chat_id': chat, 'text': text, 'disable_notification': True, '_cover': 1}, bot=bot)
                 cur.append([chat, r['result']['message_id']]); n += 1
             except Exception as e:
                 print(f'Telegram: заглушка не отправлена ({e})')
         old[bot] = cur
     _SENT.clear()
+    _CNT.clear()
     f.parent.mkdir(parents=True, exist_ok=True)
     f.write_text(json.dumps(old))
     return n

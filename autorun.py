@@ -45,6 +45,19 @@ CONF_WORD = {1: 'очень низкая', 2: 'низкая', 3: 'средняя
 MARKETS = ('ML', 'HCP', 'IT1', 'IT2', 'TOTAL')
 
 
+
+def _check(rt: dict) -> dict:
+    """15.11 (решение пользователя): 🔒 контрольная точка каждого прогона — «проверка ✓, {what}», пропуск прошлой — ⚠️."""
+    import datetime as _d
+    now = _d.datetime.now(_d.timezone.utc).replace(tzinfo=None)
+    m, hrs = 7, range(1, 24, 2)
+    last = rt.get('chk_run')
+    prev = notify.slot(now - _d.timedelta(minutes=45), m, hrs, back=True)
+    missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
+    rt['chk_run'] = now.isoformat(timespec='seconds')
+    nxt = notify.slot(now + _d.timedelta(minutes=35), m, hrs)        # шлюз Ц7 пропускает плановый прогон в 35 мин после полного
+    return {'main': lambda n: notify.status('🎾🏒 проверка', '⭐ без изменений', n, nxt, missed)}
+
 def _now() -> pd.Timestamp:
     return pd.Timestamp.now(tz='UTC').tz_localize(None)
 
@@ -905,7 +918,7 @@ def run(dry: bool = False) -> str:
         log.append(traceback.format_exc()[-600:])
     store.write_all('reports', reps)
     try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
-        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json")}')
+        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json", _check(rt))}')
     except Exception as e:
         log.append(f'🔒 заглушка: сбой {e.__class__.__name__}')
     runtime.save(rt)

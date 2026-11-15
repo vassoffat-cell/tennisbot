@@ -67,10 +67,27 @@ def main() -> None:
             tipsbook.alert(rt, tipsbook.load(), log, test=True)
         except Exception as e:
             log.append(f'👥 тест: сбой {e.__class__.__name__}: {e}')
-    try:                                                         # уведомления ушли → заглушка 🔒 (превью скрыто)
+    try:                                                         # 15.11: 🔒 контрольная точка каперов в оба бота, каждый час
+        import json
         import notify
         import config as C
-        log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json")}')
+        leg = C.DATA / 'cover.json'                             # разово: старая заглушка каперов в «Заметки Т» (ключ 'tennis')
+        lo = json.loads(leg.read_text()) if leg.exists() else {}
+        if 'tennis' in lo:
+            for chat, mid in lo.pop('tennis'):
+                try:
+                    notify._call('deleteMessages', {'chat_id': int(chat), 'message_ids': [int(mid)]}, bot='tennis')
+                except Exception:
+                    pass
+            leg.write_text(json.dumps(lo))
+        n_now = now.to_pydatetime()
+        last = rt.get('chk_cap')
+        prev = notify.slot(n_now - dt.timedelta(minutes=45), 22, None, back=True)
+        missed = bool(last) and dt.datetime.fromisoformat(str(last)) < prev - dt.timedelta(minutes=40)
+        rt['chk_cap'] = n_now.isoformat(timespec='seconds')
+        nxt = notify.slot(n_now + dt.timedelta(minutes=5), 22)
+        mk = lambda n: notify.status('👥 каперы', 'новых нет', n, nxt, missed)
+        log.append(f'🔒 контрольная точка: {notify.cover(C.DATA / "cover_cap.json", {"main": mk, "tennis": mk})}')
     except Exception as e:
         log.append(f'🔒 заглушка: сбой {e.__class__.__name__}')
     runtime.save(rt)
