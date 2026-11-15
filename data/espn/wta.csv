@@ -138,3 +138,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 187379,2026-11-13,Indian Wells,FAGE WTA Finals Indian Wells,Group Stage,1,0,202494,214544,Elina Svitolina,Aryna Sabalenka,6-3 3-6 6-1,STATUS_FINAL
 187441,2026-11-14,Indian Wells,FAGE WTA Finals Indian Wells,Semifinal,6,0,259799,202468,Mirra Andreeva,Jessica Pegula,6-3 6-4,STATUS_FINAL
 187440,2026-11-14,Indian Wells,FAGE WTA Finals Indian Wells,Semifinal,6,0,202494,222328,Elina Svitolina,Linda Noskova,6-2 6-1,STATUS_FINAL
+187442,2026-11-15,Indian Wells,FAGE WTA Finals Indian Wells,Final,7,0,259799,202494,Mirra Andreeva,Elina Svitolina,7-5 6-3,STATUS_FINAL
