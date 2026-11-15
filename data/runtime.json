@@ -120,7 +120,8 @@
   },
   "first_label": "П2 Andreeva",
   "first_match": "Elina Svitolina — Mirra Andreeva",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Elina Svitolina — Mirra Andreeva</b>\n<b>П2 Andreeva</b> — 72% · честный кф 1,39"
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Elina Svitolina — Mirra Andreeva</b>\n<b>П2 Andreeva</b> — 72% · честный кф 1,39",
+  "vol": 3
  },
  "model_version": 4,
  "reported": [
@@ -186,7 +187,9 @@
  "steps": {
   "линии": 65.0
  },
- "dp_alarm": {},
+ "dp_alarm": {
+  "fallback_hi": true
+ },
  "r4": {
   "date": "2026-11-11",
   "queue": [
@@ -3492,6 +3495,12 @@
    "src": "blend",
    "at": "2026-11-14 19:41",
    "key": "187441|ML|2|"
+  },
+  "2026-11-15|1": {
+   "p": 0.7094,
+   "src": "pinnacle",
+   "at": "2026-11-15 05:51",
+   "key": "187442|ML|2|"
   }
  },
  "arch_v1": 1,
