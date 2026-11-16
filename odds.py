@@ -178,6 +178,11 @@ def _usage() -> dict:
 # 16.11 (решение пользователя): доли месячного лимита The Odds API (500) по ботам — ставка дня не остаётся без цен из-за исследования.
 # Декабрь без долей: футбол ≈ 440 + хоккей A31 ≈ 186 = 626 > 500. Тенниса в январе станет больше — пересмотр на аудите (AUDIT).
 QUOTA = {'football': 300, 'hockey': 150, 'tennis': 50}
+QUOTA_BY_MONTH = {'2026-12': {'football': 350, 'hockey': 120, 'tennis': 30}}   # 16.11: декабрь — тенниса нет, футбол важнее A31
+
+
+def _quota() -> dict:
+    return QUOTA_BY_MONTH.get(_month(), QUOTA)
 SAFETY = 5                   # общий остаток API не опускать ниже
 
 
@@ -199,9 +204,10 @@ def _save_usage(meta: dict, bot: str = '', cost: int = 0) -> None:
 
 def quota_left(bot: str) -> int | None:
     """Остаток доли бота в этом месяце (None — у бота нет доли)."""
-    if bot not in QUOTA:
+    q = _quota()
+    if bot not in q:
         return None
-    return QUOTA[bot] - int(((_usage().get('spent') or {}).get(_month()) or {}).get(bot, 0))
+    return q[bot] - int(((_usage().get('spent') or {}).get(_month()) or {}).get(bot, 0))
 
 
 def budget_ok(cost: int, bot: str = '') -> bool:
