@@ -1,4 +1,6 @@
 name: tennis
+# 16.11 аудит: разовая проверка помечается в названии прогона — шлюз, health и сторож ключевых часов не считают её полным прогоном
+run-name: ${{ format('{0}', github.event.inputs.research) != '' && 'tennis research' || 'tennis' }}
 on:
   schedule:
   - cron: '7 1-23/2 * * *'     # :07 каждые 2 ч круглые сутки (ночью — НХЛ: правки и цена закрытия перед матчами 03:00–08:00; 14.11 ночь возвращена)
@@ -61,7 +63,7 @@ jobs:
           since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
           # ключевые часы (ставка дня 08, отчёты 11/12): считается только прогон ПОСЛЕ начала часа — иначе работа часа не сделана
           h=$(TZ=Asia/Tashkent date +%H); case " 08 11 12 " in *" $h "*) since2=$(date -u -d "$(TZ=Asia/Tashkent date '+%Y-%m-%d %H:00') +0500" +%Y-%m-%dT%H:%M:%SZ);; *) since2=$since;; esac
-          n=$(gh api "repos/${{ github.repository }}/actions/workflows/daily.yml/runs?status=success&created=>=$since&per_page=20" -q "[.workflow_runs[]|select(.id != ${{ github.run_id }} and .run_started_at >= \"$since2\" and ((.updated_at|fromdate) - (.run_started_at|fromdate)) > 40)]|length" || echo 0)
+          n=$(gh api "repos/${{ github.repository }}/actions/workflows/daily.yml/runs?status=success&created=>=$since&per_page=20" -q "[.workflow_runs[]|select(.id != ${{ github.run_id }} and .run_started_at >= \"$since2\" and (.display_title|test(\"rehearse|research\")|not) and ((.updated_at|fromdate) - (.run_started_at|fromdate)) > 40)]|length" || echo 0)
           if [ "${n:-0}" -gt 0 ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; echo "⏭ экономия: полный успешный прогон за 35 мин ($n) — пропуск (пропуски не считаются: > 40 с)"; fi
         env:
           GH_TOKEN: ${{ github.token }}

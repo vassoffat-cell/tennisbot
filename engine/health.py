@@ -113,6 +113,11 @@ def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
     return out
 
 
+def _special(r: dict) -> bool:
+    """16.11 аудит: разовая проверка (research) и репетиция (rehearse) — не полный прогон: без отправок и 🔒 (название прогона)."""
+    return any(k in (r.get('display_title') or '') for k in ('rehearse', 'research'))
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -150,7 +155,7 @@ def main(hours: int = 26) -> None:
         if (h0, h1) != (0, 24):
             rs = [r for r in rs if h0 <= (datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) + TZ).hour < h1]
         else:                                                     # последний ПОЛНЫЙ прогон (шлюз Ц7 даёт пустые ≈ 5 с)
-            full = [r for r in rs if wf == 'cappers.yml' or _dur(r) > 25]
+            full = [r for r in rs if wf == 'cappers.yml' or (_dur(r) > 25 and not _special(r))]
             rs = full[:1]
         hit = []
         for r in rs:

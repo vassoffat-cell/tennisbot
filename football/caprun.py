@@ -50,7 +50,8 @@ def _wf_runs(wf: str) -> list[pd.Timestamp] | None:
                                  headers={'Authorization': f'Bearer {tok}', 'Accept': 'application/vnd.github+json'})
     with urllib.request.urlopen(req, timeout=20) as r:
         js = json.loads(r.read().decode())
-    return [pd.Timestamp(x['created_at']).tz_convert(None) for x in js.get('workflow_runs', [])]
+    return [pd.Timestamp(x['created_at']).tz_convert(None) for x in js.get('workflow_runs', [])
+            if not any(k in (x.get('display_title') or '') for k in ('rehearse', 'research'))]   # 16.11: репетиция/проверка — не работа часа
 
 
 def key_guard(now: pd.Timestamp, log: list[str]) -> list[str]:
