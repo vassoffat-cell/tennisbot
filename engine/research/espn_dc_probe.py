@@ -5,7 +5,7 @@ import sys, datetime as dt
 sys.path.insert(0, '.')
 import espn, odds as OD
 
-for d0, n in ((dt.date(2025, 11, 18), 6), (dt.date(2026, 11, 24), 6)):
+for d0, n in ((dt.date(2026, 11, 16), 1), (dt.date(2025, 11, 18), 2), (dt.date(2026, 11, 24), 2)):
     for k in range(n):
         d = d0 + dt.timedelta(days=k)
         try:
@@ -17,6 +17,10 @@ for d0, n in ((dt.date(2025, 11, 18), 6), (dt.date(2026, 11, 24), 6)):
         print(d, f'матчей {len(ms)}; турниры: {ev}; Davis {len(dc)}',
               ('пример: ' + ' | '.join(f"{' — '.join(m.names)} {m.state} {m.location}" for m in dc[:3])) if dc else '')
 try:
-    print('The Odds API, теннис:', [s['key'] for s in OD.sports() if 'tennis' in s['key']])
+    js, _ = OD._get('/sports', {'all': 'true'})
+    print('The Odds API, теннис (все):', [(s['key'], s.get('active')) for s in js if 'tennis' in s['key'] and ('davis' in s['key'] or 'atp' in s['key'])])
+    import json, urllib.request
+    raw = espn._get(espn.URL.format(tour='atp', d='20251120'))
+    print('ESPN сырое 20.11.2025: events', len(raw.get('events', [])), [e.get('name') for e in raw.get('events', [])][:5])
 except Exception as e:
     print('The Odds API: ошибка', e)
