@@ -1,0 +1,221 @@
+{
+ "event": {
+  "id": "2ef747b5f529d07b71843f1b5240eb38",
+  "sport_key": "icehockey_nhl",
+  "sport_title": "NHL",
+  "commence_time": "2026-11-17T00:30:00Z",
+  "home_team": "New York Rangers",
+  "away_team": "Montréal Canadiens",
+  "bookmakers": [
+   {
+    "key": "onexbet",
+    "title": "1xBet",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-11-16T08:50:43Z",
+      "outcomes": [
+       {
+        "name": "Montréal Canadiens",
+        "price": 2.45
+       },
+       {
+        "name": "New York Rangers",
+        "price": 2.64
+       },
+       {
+        "name": "Draw",
+        "price": 4.11
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-11-16T08:50:43Z",
+      "outcomes": [
+       {
+        "name": "Montréal Canadiens",
+        "price": 1.87,
+        "point": 0.0
+       },
+       {
+        "name": "New York Rangers",
+        "price": 2.01,
+        "point": 0.0
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-11-16T08:50:43Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 1.76,
+        "point": 5.5
+       },
+       {
+        "name": "Under",
+        "price": 2.17,
+        "point": 5.5
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "key": "pinnacle",
+    "title": "Pinnacle",
+    "markets": [
+     {
+      "key": "h2h",
+      "last_update": "2026-11-16T08:50:28Z",
+      "outcomes": [
+       {
+        "name": "Montréal Canadiens",
+        "price": 1.86
+       },
+       {
+        "name": "New York Rangers",
+        "price": 2.03
+       }
+      ]
+     },
+     {
+      "key": "spreads",
+      "last_update": "2026-11-16T08:50:28Z",
+      "outcomes": [
+       {
+        "name": "Montréal Canadiens",
+        "price": 3.18,
+        "point": -1.5
+       },
+       {
+        "name": "New York Rangers",
+        "price": 1.38,
+        "point": 1.5
+       }
+      ]
+     },
+     {
+      "key": "totals",
+      "last_update": "2026-11-16T08:50:28Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 1.91,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": 1.96,
+        "point": 6.0
+       }
+      ]
+     },
+     {
+      "key": "alternate_totals",
+      "last_update": "2026-11-16T08:50:28Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "price": 1.91,
+        "point": 6.0
+       },
+       {
+        "name": "Over",
+        "price": 1.35,
+        "point": 5.0
+       },
+       {
+        "name": "Over",
+        "price": 1.72,
+        "point": 5.5
+       },
+       {
+        "name": "Over",
+        "price": 2.11,
+        "point": 6.5
+       },
+       {
+        "name": "Over",
+        "price": 2.99,
+        "point": 7.0
+       },
+       {
+        "name": "Over",
+        "price": 5.08,
+        "point": 8.5
+       },
+       {
+        "name": "Under",
+        "price": 1.96,
+        "point": 6.0
+       },
+       {
+        "name": "Under",
+        "price": 3.33,
+        "point": 5.0
+       },
+       {
+        "name": "Under",
+        "price": 2.17,
+        "point": 5.5
+       },
+       {
+        "name": "Under",
+        "price": 1.76,
+        "point": 6.5
+       },
+       {
+        "name": "Under",
+        "price": 1.41,
+        "point": 7.0
+       },
+       {
+        "name": "Under",
+        "price": 1.18,
+        "point": 8.5
+       }
+      ]
+     },
+     {
+      "key": "team_totals",
+      "last_update": "2026-11-16T08:49:39Z",
+      "outcomes": [
+       {
+        "name": "Over",
+        "description": "Montréal Canadiens",
+        "price": 2.36,
+        "point": 3.5
+       },
+       {
+        "name": "Under",
+        "description": "Montréal Canadiens",
+        "price": 1.6,
+        "point": 3.5
+       },
+       {
+        "name": "Over",
+        "description": "New York Rangers",
+        "price": 1.61,
+        "point": 2.5
+       },
+       {
+        "name": "Under",
+        "description": "New York Rangers",
+        "price": 2.34,
+        "point": 2.5
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "meta": {
+  "remaining": "432",
+  "used": "68",
+  "last": "5"
+ }
+}
