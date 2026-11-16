@@ -30,6 +30,8 @@ def main(arg: str) -> None:
     day_s, *flags = [x.strip() for x in arg.split(',')]
     day = pd.Timestamp(day_s).date()
     use_odds = 'odds' in flags
+    auto = 'auto' in flags                                          # 16.11: плановая репетиция 21:13 — ⚠️ в бот только при проблеме
+    send = notify.send_blocks
     fake = pd.Timestamp(day) + pd.Timedelta(hours=C.DAY_START_HOUR - C.TZ_OFFSET_HOURS, minutes=30)   # 08:30 Ташкента
     RN._now = lambda: fake                                          # прогноз и окно суток — как в 08:30 того дня
     notify.send_blocks = notify.send = lambda *a, **k: []           # страховка: репетиция ничего не отправляет
@@ -76,6 +78,14 @@ def main(arg: str) -> None:
     print('\n⭐ так выглядела бы ⚽1 (без строки 🔎):')
     print(daypick.text(cands[0] if cands else None, day, [], '', 'подходящей линии нет'))
     print(f'\nрепетиция {time.time() - t0:.0f} с; {knote}')
+    n_pre = int((days == day).sum()) if len(days) else 0
+    probs = ([f'ESPN: ошибок запросов {len(errs)}'] if errs else []) \
+        + ([f'в расписании {n_pre} матчей, а прогноз — 0'] if n_pre and not items else []) \
+        + ([f'прогноз {len(items)} матчей, а кандидатов ставки дня 0'] if items and not cands else []) \
+        + ([f'не опознано {len(skipped)} из {len(skipped) + len(items)} матчей'] if len(skipped) > max(5, len(items)) else [])
+    print('🎬 итог:', '; '.join(probs) if probs else 'проблем нет')
+    if auto and probs:
+        send([f'⚠️ <b>Футбол · репетиция {day:%d.%m}</b>\n' + '\n'.join(f'• {notify.esc(p)}' for p in probs)])
 
 
 if __name__ == '__main__':
