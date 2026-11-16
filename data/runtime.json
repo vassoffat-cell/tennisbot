@@ -117,7 +117,8 @@
   },
   "first_label": "ТБ 18.5",
   "first_match": "Carlos Alcaraz — Frances Tiafoe",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 179af19f\n🏆 ATP · Nitto ATP Finals · 🕒 18:00\n<b>Carlos Alcaraz — Frances Tiafoe</b>\n<b>ТБ 18.5</b> — 69% · честный кф 1,44"
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 179af19f\n🏆 ATP · Nitto ATP Finals · 🕒 18:00\n<b>Carlos Alcaraz — Frances Tiafoe</b>\n<b>ТБ 18.5</b> — 69% · честный кф 1,44",
+  "vol": 2
  },
  "model_version": 4,
  "reported": [
@@ -3493,5 +3494,5 @@
  "arch_v1": 1,
  "hk_arch_v1": 1,
  "arch_v2": 1,
- "chk_run": "2026-11-16T04:09:57"
+ "chk_run": "2026-11-16T04:59:50"
 }
