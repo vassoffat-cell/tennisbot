@@ -1,8 +1,11 @@
 {
  "list_messages": [],
- "list_match_ids": [],
+ "list_match_ids": [
+  "187511",
+  "187512"
+ ],
  "last_daily": "2026-11-15",
- "last_retrain": "2026-11-15",
+ "last_retrain": "2026-11-16",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -56,11 +59,11 @@
  "kcal_date": "2026-11-15",
  "breaker": {},
  "day_pick": {
-  "date": "2026-11-15",
+  "date": "2026-11-16",
   "msgs": [
    [
     570704006,
-    481
+    522
    ]
   ],
   "changes": 0,
@@ -74,50 +77,47 @@
   "sep": true,
   "hdr2": true,
   "hdr3": true,
-  "espn_id": "187442",
-  "slot": 2,
+  "scan": "🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 179af19f",
+  "espn_id": "187511",
+  "slot": 0,
   "key": [
-   "187442",
-   "ML",
-   "2",
-   ""
+   "187511",
+   "TOTAL",
+   "O",
+   "18.5"
   ],
-  "p": 0.7173389189521069,
-  "tier": 2,
-  "label": "П2 Andreeva",
-  "start_utc": "2026-11-15 20:00",
-  "match": "Elina Svitolina — Mirra Andreeva",
+  "p": 0.6944142335878425,
+  "tier": 3,
+  "label": "ТБ 18.5",
+  "start_utc": "2026-11-16 13:00",
+  "match": "Carlos Alcaraz — Frances Tiafoe",
   "best": {
-   "espn_id": "187442",
-   "tour": "WTA",
-   "event": "FAGE WTA Finals Indian Wells",
-   "start_utc": "2026-11-15 20:00",
-   "start_local": "16.11 01:00",
-   "player1": "Elina Svitolina",
-   "player2": "Mirra Andreeva",
-   "market": "ML",
-   "pick": "2",
-   "line": null,
-   "label": "П2 Andreeva",
-   "p": 0.7173389189521069,
-   "p_src": "pinnacle",
-   "p_model": 0.6318490221712676,
+   "espn_id": "187511",
+   "tour": "ATP",
+   "event": "Nitto ATP Finals",
+   "start_utc": "2026-11-16 13:00",
+   "start_local": "16.11 18:00",
+   "player1": "Carlos Alcaraz",
+   "player2": "Frances Tiafoe",
+   "market": "TOTAL",
+   "pick": "O",
+   "line": 18.5,
+   "label": "ТБ 18.5",
+   "p": 0.6944142335878425,
+   "p_src": "model",
+   "p_model": 0.6944142335878425,
    "p_push": 0.0,
-   "k": 1.39,
-   "k_src": "api",
-   "source": "api",
-   "p_pin": 0.7094136418029519,
-   "p_mkt": 0.7094136418029519,
-   "mkt_src": "pinnacle",
-   "edge": -0.013915037893897031,
+   "k": null,
+   "k_src": null,
+   "source": "model",
+   "edge": null,
    "group": "fallback",
    "sl_pen": 0,
-   "slot": 2
+   "slot": 0
   },
-  "first_label": "П2 Andreeva",
-  "first_match": "Elina Svitolina — Mirra Andreeva",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🏆 WTA · FAGE WTA Finals Indian Wells · 🕒 01:00\n<b>Elina Svitolina — Mirra Andreeva</b>\n<b>П2 Andreeva</b> — 72% · честный кф 1,39",
-  "vol": 3
+  "first_label": "ТБ 18.5",
+  "first_match": "Carlos Alcaraz — Frances Tiafoe",
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 179af19f\n🏆 ATP · Nitto ATP Finals · 🕒 18:00\n<b>Carlos Alcaraz — Frances Tiafoe</b>\n<b>ТБ 18.5</b> — 69% · честный кф 1,44"
  },
  "model_version": 4,
  "reported": [
@@ -3493,5 +3493,5 @@
  "arch_v1": 1,
  "hk_arch_v1": 1,
  "arch_v2": 1,
- "chk_run": "2026-11-16T02:22:54"
+ "chk_run": "2026-11-16T04:09:57"
 }
