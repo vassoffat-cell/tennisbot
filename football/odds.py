@@ -175,21 +175,49 @@ def _usage() -> dict:
         return {}
 
 
-def _save_usage(meta: dict) -> None:
+# 16.11 (решение пользователя): доли месячного лимита The Odds API (500) по ботам — ставка дня не остаётся без цен из-за исследования.
+# Декабрь без долей: футбол ≈ 440 + хоккей A31 ≈ 186 = 626 > 500. Тенниса в январе станет больше — пересмотр на аудите (AUDIT).
+QUOTA = {'football': 300, 'hockey': 150, 'tennis': 50}
+SAFETY = 5                   # общий остаток API не опускать ниже
+
+
+def _month() -> str:
+    return dt.datetime.now(dt.timezone.utc).strftime('%Y-%m')
+
+
+def _save_usage(meta: dict, bot: str = '', cost: int = 0) -> None:
     if meta.get('remaining') is not None:
         DIR.mkdir(parents=True, exist_ok=True)
+        u = _usage()
+        spent = {m: v for m, v in (u.get('spent') or {}).items() if m == _month()}          # учёт доли — только текущий месяц
+        if bot and cost:
+            spent.setdefault(_month(), {})[bot] = int(spent.get(_month(), {}).get(bot, 0)) + int(cost)
         USAGE.write_text(json.dumps(dict(remaining=int(float(meta['remaining'])), used=meta.get('used'),
-                                         when=dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds'))), encoding='utf-8')
+                                         when=dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds'), spent=spent)),
+                         encoding='utf-8')
 
 
-def budget_ok(cost: int) -> bool:
-    """Хватает ли кредитов с запасом RESERVE_PER_DAY на каждый оставшийся день месяца (новый месяц — сброс до 500)."""
+def quota_left(bot: str) -> int | None:
+    """Остаток доли бота в этом месяце (None — у бота нет доли)."""
+    if bot not in QUOTA:
+        return None
+    return QUOTA[bot] - int(((_usage().get('spent') or {}).get(_month()) or {}).get(bot, 0))
+
+
+def budget_ok(cost: int, bot: str = '') -> bool:
+    """Хватает ли кредитов: у бота с долей — в пределах доли месяца и общий остаток ≥ SAFETY; без доли — с запасом
+    RESERVE_PER_DAY на каждый оставшийся день месяца (новый месяц — сброс до 500)."""
+    left = quota_left(bot)
+    if left is not None and cost > left:
+        return False
     u = _usage()
     if not u:
         return True
     now = dt.datetime.now(dt.timezone.utc)
     if u.get('when', '')[:7] != now.strftime('%Y-%m'):
         return True
+    if left is not None:
+        return int(u['remaining']) - cost >= SAFETY
     nxt = (now.replace(day=28) + dt.timedelta(days=4)).replace(day=1)
     days_left = (nxt - now).days + 1
     return int(u['remaining']) - cost >= RESERVE_PER_DAY * days_left
@@ -209,21 +237,22 @@ def day_events(bot: str, sport_keys: list[str], markets: tuple[str, ...], day: s
         got = cache['sports'].get(key)
         if got and (now - dt.datetime.fromisoformat(got)).total_seconds() < refresh_hours * 3600:
             continue
-        if not budget_ok(len(markets)):
-            log.append(f'кф: {key} пропущен — бережём кредиты')
+        if not budget_ok(len(markets), bot):
+            log.append(f'кф: {key} пропущен — бережём кредиты (доля {bot}: осталось {quota_left(bot)})')
             continue
         try:
             ev, meta = odds(key, markets)
         except OddsError as e:
             log.append(f'кф: {key} — {e}')
             continue
-        _save_usage(meta)
-        spent += int(float(meta.get('last') or len(markets)))
+        c = int(float(meta.get('last') or len(markets)))
+        _save_usage(meta, bot, c)
+        spent += c
         cache['events'][key] = ev
         cache['sports'][key] = now.isoformat(timespec='seconds')
     f.write_text(json.dumps(cache, ensure_ascii=False), encoding='utf-8')
     if spent:
-        log.append(f'кф: потрачено {spent}, осталось {_usage().get("remaining")}')
+        log.append(f'кф: потрачено {spent}, осталось {_usage().get("remaining")}; доля {bot}: осталось {quota_left(bot)}')
     return [dict(e, sport_key=k) for k, evs in cache['events'].items() for e in evs], log
 
 
@@ -233,13 +262,13 @@ def add_alternates(bot: str, day: str, sport_key: str, event_id: str, markets: t
     cache = json.loads(f.read_text(encoding='utf-8')) if f.exists() else {}
     if event_id in cache:
         return cache[event_id], ''
-    if not budget_ok(len(markets)):
+    if not budget_ok(len(markets), bot):
         return None, 'кф: альтернативные линии — бережём кредиты'
     try:
         ev, meta = event_odds(sport_key, event_id, markets)
     except OddsError as e:
         return None, f'кф: альтернативы {event_id} — {e}'
-    _save_usage(meta)
+    _save_usage(meta, bot, int(float(meta.get('last') or len(markets))))
     cache[event_id] = ev
     f.write_text(json.dumps(cache, ensure_ascii=False), encoding='utf-8')
     return ev, ''
