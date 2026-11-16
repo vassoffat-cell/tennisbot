@@ -73,16 +73,21 @@ def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
         root = Path(__file__).resolve().parent.parent / 'football' / 'data'
         sent = set(json.loads((root / 'runtime.json').read_text(encoding='utf-8')).get('tips_alerted', []))
         edge = (since.replace(tzinfo=None)).strftime('%Y-%m-%d %H:%M')
-        miss = []
+        posts: dict[tuple[str, str], list[dict]] = {}
         with open(root / 'tips' / 'book.csv', encoding='utf-8') as f:
             for r in csv.DictReader(f):
-                if r['post_ts'] < edge or r['uid'] in sent:
-                    continue
-                if r['slip'] and not (r['seen'] == 'pre' and not r['self']):          # купон после матча / рассчитанный — не прогноз
-                    continue
-                if re.search(r'реклам|промокод|подписат', r['pick'], re.I):
-                    continue
-                miss.append(f"{r['src']}:{r['post_id']}")
+                if r['post_ts'] >= edge:
+                    posts.setdefault((r['src'], r['post_id']), []).append(r)
+        miss = []
+        for (src, pid), rs in posts.items():                  # 16.11: доставка — по ПОСТУ (текст + купон одного поста = одно сообщение)
+            if any(r['uid'] in sent for r in rs):
+                continue
+            slips = [r for r in rs if r['slip']]
+            want = [r for r in slips if r['seen'] == 'pre' and not r['self']]       # купон до матча — прогноз
+            if not slips:                                                           # купонов нет — текст поста (кроме рекламы)
+                want += [r for r in rs if not re.search(r'реклам|промокод|подписат', r['pick'], re.I)]
+            if want:
+                miss.append(f'{src}:{pid}')
         out.append(('каперы: прочитаны, но не присланы', '0', f"{len(miss)}" + (f" ({', '.join(miss[:4])})" if miss else ''),
                     '✅' if not miss else '❌'))
     except Exception as e:

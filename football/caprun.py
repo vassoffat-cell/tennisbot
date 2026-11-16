@@ -35,6 +35,47 @@ def _next_sched(now: pd.Timestamp, minute: int, hours: set[int] | None = None) -
     return t
 
 
+KEY_SLOTS = {'daily.yml': (8, 11, 12), 'football.yml': (8, 11)}   # ключевые часы Ташкента: ⭐1 08:00, отчёты 11, хоккей 12
+KEY_LATE = pd.Timedelta(minutes=25)                   # прогона после начала ключевого часа нет 25 мин — GitHub его пропустил
+
+
+def _wf_runs(wf: str) -> list[pd.Timestamp] | None:
+    """Время создания последних прогонов workflow (UTC, naive) — GitHub REST с токеном прогона; нет токена — None."""
+    import json
+    import urllib.request
+    tok, repo = os.getenv('GH_TOKEN'), os.getenv('GITHUB_REPOSITORY')
+    if not tok or not repo:
+        return None
+    req = urllib.request.Request(f'https://api.github.com/repos/{repo}/actions/workflows/{wf}/runs?per_page=20',
+                                 headers={'Authorization': f'Bearer {tok}', 'Accept': 'application/vnd.github+json'})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        js = json.loads(r.read().decode())
+    return [pd.Timestamp(x['created_at']).tz_convert(None) for x in js.get('workflow_runs', [])]
+
+
+def key_guard(now: pd.Timestamp, log: list[str]) -> list[str]:
+    """16.11 (🎾1 пришла в 09:07 вместо 08:07: GitHub пропустил 08:07 и резерв 08:27). Каперы идут каждый час (+ capTick) →
+    сторожат ключевые часы других ботов: прогона после начала ключевого часа нет 25 мин → запуск (≤ 3 ч после начала часа)."""
+    out = []
+    loc = now + pd.Timedelta(hours=5)
+    for wf, hours in KEY_SLOTS.items():
+        for h in hours:
+            start = loc.normalize() + pd.Timedelta(hours=h)
+            if not (start + KEY_LATE <= loc < start + pd.Timedelta(hours=3)):
+                continue
+            try:
+                rs = _wf_runs(wf)
+            except Exception as e:
+                log.append(f'🛡 {wf}: проверка ключевого часа {h:02d}:00 — сбой {e.__class__.__name__}')
+                continue
+            if rs is None:
+                continue
+            if not any(t >= start - pd.Timedelta(hours=5) for t in rs):
+                out.append(wf)
+                log.append(f'🛡 {wf}: после {h:02d}:00 прогона нет {int((loc - start).total_seconds() // 60)} мин — запуск')
+    return out
+
+
 def main() -> None:
     rt = runtime.load()
     log: list[str] = []
@@ -61,6 +102,9 @@ def main() -> None:
         else:
             dispatch.append(wf)
             cnt[wf] = int(cnt.get(wf, 0)) + 1
+    for wf in key_guard(now, log):                              # 16.11: сторож ключевых часов (⭐1 08:00, отчёты 11, хоккей 12)
+        if wf not in dispatch:
+            dispatch.append(wf)
     rt['cap_extra'] = cnt
     if os.getenv('CAP_TEST'):                                   # 14.11: тест вида уведомления (последние прогнозы, в оба бота)
         try:

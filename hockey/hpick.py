@@ -151,7 +151,8 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
     scan = ''
     try:                                                     # 🔏 15.11: печать прогнозов суток (снимок в репозитории каждый прогон)
         import seal as SEAL
-        info = SEAL.seal('hockey', [it for it in items if it[0].get('league') in leagues], lo, hi, now, HD_DATA, str(day))
+        info = SEAL.seal('hockey', [it for it in items if it[0].get('league') in leagues], lo, hi, now, HD_DATA, str(day),
+                         SEAL.cand_rows(cands, 'id'))
         scan = SEAL.text(info, len({str(c['id']) for c in cands}))
     except Exception as ex:
         log.append(f'⭐🏒 печать: сбой {ex.__class__.__name__}: {ex}')

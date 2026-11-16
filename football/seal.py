@@ -52,10 +52,29 @@ def rows(sport: str, items: list) -> list[dict]:
     return out
 
 
-def seal(sport: str, items: list, lo, hi, now, folder: Path, day) -> dict:
-    """Снимок суток [lo, hi) (UTC): начавшиеся матчи заморожены, будущие — свежие. Возвращает счётчики и код снимка."""
+def cand_rows(cands: list[dict], id_key: str = 'espn_id') -> list[dict]:
+    """16.11: линии-кандидаты ставки дня (в т.ч. линия букмекера, напр. ТБ 18.5 при фикс. 22.5) — тоже в снимок."""
+    out = []
+    for c in cands or []:
+        line = c.get('line', '')
+        out.append(dict(match_id=str(c.get(id_key, '')), start_utc=str(c.get('start_utc', ''))[:16], group='', market=str(c.get('market', '')),
+                        pick=str(c.get('pick', '')), line='' if line in (None, '') or str(line) == 'nan' else f'{float(line):g}',
+                        p=round(float(c.get('p', 0) or 0), 4)))
+    return out
+
+
+def seal(sport: str, items: list, lo, hi, now, folder: Path, day, extra: list[dict] | None = None) -> dict:
+    """Снимок суток [lo, hi) (UTC): начавшиеся матчи заморожены, будущие — свежие. Возвращает счётчики и код снимка.
+    extra — строки кандидатов ставки дня (cand_rows); группа берётся у линий того же матча."""
     lo, hi, now = pd.Timestamp(lo), pd.Timestamp(hi), pd.Timestamp(now)
     new = pd.DataFrame(rows(sport, items), columns=COLS)
+    if extra:
+        ex = pd.DataFrame(extra, columns=COLS)
+        grp = dict(zip(new.match_id, new.group))
+        ex['group'] = ex.match_id.map(grp).fillna('')
+        new = pd.concat([new, ex], ignore_index=True)
+        new['line'] = new.line.map(lambda v: '' if str(v) in ('', 'nan', 'None') else f'{float(v):g}')
+        new = new.drop_duplicates(['match_id', 'market', 'pick', 'line'], keep='first')
     st = pd.to_datetime(new.start_utc, errors='coerce')
     new = new[(st >= lo) & (st < hi) & (st > now)]
     f = Path(folder) / 'seal' / f'{sport}_{day}.csv'

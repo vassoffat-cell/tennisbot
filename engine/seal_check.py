@@ -45,6 +45,9 @@ def main(days: int = 7) -> None:
                 rows.append((sport, f'{day:%d.%m}', '—', '—', '—', '—', '—', '⬜ нет снимка'))
                 continue
             df = pd.read_csv(f, dtype=str, keep_default_na=False)
+            if df.empty:
+                rows.append((sport, f'{day:%d.%m}', 0, 0, '—', '—', '—', '⬜ матчей нет'))
+                continue
             st = pd.to_datetime(df.start_utc, errors='coerce').min()
             cs = commits(rel)
             first = cs[0] if cs else None
@@ -68,7 +71,9 @@ def main(days: int = 7) -> None:
                 continue
             f = ROOT / folder / 'seal' / f'{sport}_{dp["date"]}.csv'
             df = pd.read_csv(f, dtype=str, keep_default_na=False) if f.exists() else pd.DataFrame(columns=['match_id', 'market', 'pick'])
-            hit = df[(df.match_id == str(key[0])) & (df.market == str(key[1])) & (df.pick == str(key[2]))]
+            ln = lambda v: '' if str(v) in ('', 'nan') else f'{float(v):g}'
+            hit = df[(df.match_id == str(key[0])) & (df.market == str(key[1])) & (df.pick == str(key[2]))
+                     & (df.line.map(ln) == ln(key[3] if len(key) > 3 else ''))]
             bad += hit.empty
             print(f'⭐ {sport} {dp["date"]}: {dp.get("label", key)} — в снимке {"✅" if len(hit) else "❌ нет"}')
         except Exception as e:
