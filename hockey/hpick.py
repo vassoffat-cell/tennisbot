@@ -55,12 +55,27 @@ def _syn(c: dict, tp: pd.DataFrame) -> tuple[int, int]:
     return fire, clash
 
 
+def stale(games: pd.DataFrame | None, row: dict) -> bool:
+    """Аудит 16.11 (0б): КХЛ — ставка дня только при свежих силах обеих команд (≥ 5 матчей за 60 дней, как hcappers.fresh).
+    История без утечки (engine/research/hk_stale.py, пропуск сезона как сейчас): линии P ≥ 0,75 при < 5 свежих —
+    угадано 65,1% при обещанных 79,7% (n = 149, z = −4,43), лог-лосс хуже постоянного; при ≥ 5 — 77,9% при 79,6% (z = −1,36)."""
+    if games is None or row.get('league') != 'KHL' or not getattr(C, 'KHL_DP_FRESH', True):
+        return False
+    from hockey import hcappers as HC
+    ok, _, _ = HC.fresh(games, 'KHL', row['home'], row['away'], pd.Timestamp(row['start_utc']))
+    return not ok
+
+
 def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: tuple, lo: pd.Timestamp, hi: pd.Timestamp,
-               now: pd.Timestamp, tier_fn) -> list[dict]:
+               now: pd.Timestamp, tier_fn, games: pd.DataFrame | None = None, skipped: list | None = None) -> list[dict]:
     out = []
     for row, lns in items:
         st = pd.Timestamp(row['start_utc'])
         if row['league'] not in leagues or not (lo <= st < hi) or st <= now + pd.Timedelta(minutes=10):
+            continue
+        if stale(games, row):                                 # 16.11: КХЛ на устаревших силах — в «тени» ставки дня
+            if skipped is not None:
+                skipped.append(row['id'])
             continue
         for x in lns:
             p = float(x['p'])
@@ -143,11 +158,19 @@ def texts(rt: dict) -> list[str]:
     return [_text(None, x, int(x['rank']), x.get('hist', [])) for x in (rt.get('hk_dp') or {}).get('picks', [])]
 
 
-def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, now, tier_fn, log: list[str]) -> None:
+def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, now, tier_fn, log: list[str],
+            games: pd.DataFrame | None = None) -> None:
     """Каждая ставка — отдельное закреплённое сообщение; rt['hk_dp'] = {date, picks: [...], notes: [...]}."""
     st = rt.get('hk_dp') or {}
     loc = now + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
-    cands = candidates(items, tp, leagues, lo, hi, now, tier_fn)
+    skipped: list = []
+    try:
+        cands = candidates(items, tp, leagues, lo, hi, now, tier_fn, games, skipped)
+    except Exception as ex:                                  # сторож свежести не должен ломать ставку дня
+        log.append(f'⭐🏒 свежесть КХЛ: сбой {ex.__class__.__name__}: {ex}')
+        cands = candidates(items, tp, leagues, lo, hi, now, tier_fn)
+    if skipped:
+        log.append(f'⭐🏒 КХЛ мало свежих матчей (< 5 за 60 дн.) — вне ставки дня: {len(set(skipped))} матч.')
     scan = ''
     try:                                                     # 🔏 15.11: печать прогнозов суток (снимок в репозитории каждый прогон)
         import seal as SEAL

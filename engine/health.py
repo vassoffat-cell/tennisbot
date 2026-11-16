@@ -21,9 +21,22 @@ def gh(path: str) -> dict:
     return json.loads(subprocess.run(['gh', 'api', path], capture_output=True, text=True, check=True).stdout)
 
 
+_RUNS: dict[tuple[str, datetime], list[dict]] = {}
+
+
 def runs(wf: str, since: datetime) -> list[dict]:
-    js = gh(f'repos/{REPO}/actions/workflows/{wf}/runs?per_page=100&created=>={since:%Y-%m-%dT%H:%M:%SZ}')
-    return js.get('workflow_runs', [])
+    """Все прогоны workflow с момента since (16.11 аудит: постранично — за 168 ч их > 100, раньше счёт обрезался на 100)."""
+    key = (wf, since)
+    if key not in _RUNS:
+        out: list[dict] = []
+        for page in range(1, 8):
+            js = gh(f'repos/{REPO}/actions/workflows/{wf}/runs?per_page=100&page={page}&created=>={since:%Y-%m-%dT%H:%M:%SZ}')
+            got = js.get('workflow_runs', [])
+            out += got
+            if len(got) < 100:
+                break
+        _RUNS[key] = out
+    return _RUNS[key]
 
 
 def log(run_id: int) -> str:
@@ -48,11 +61,16 @@ def seal_today() -> list[tuple[str, str, str, str]]:
     from pathlib import Path
     root = Path(__file__).resolve().parent.parent
     day = (datetime.now(timezone.utc) + TZ - timedelta(hours=12)).date()      # к 12:00 сутки всех видов уже начались
+    # 16.11 аудит: снимок хоккейных суток пишет первый прогон ПОСЛЕ 12:00 (плановый 13:07, GitHub сдвигает до ~14:30)
+    dh = (datetime.now(timezone.utc) + TZ - timedelta(hours=14, minutes=30)).date()
     got = {s: sorted((root / d / 'seal').glob(f'{s}_*.csv'))[-1:] for s, d in
            (('tennis', 'data'), ('hockey', 'hockey/data'), ('football', 'football/data'))}
     last = {s: (f[0].stem.split('_')[1] if f else '—') for s, f in got.items()}
-    ok = all(last[s] != '—' and last[s] >= str(day) for s in ('tennis', 'hockey'))
+    ok = last['tennis'] != '—' and last['tennis'] >= str(day) and last['hockey'] != '—' and last['hockey'] >= str(dh)
     return [('печать С16: последний снимок суток', f'≥ {day:%d.%m}', ', '.join(f'{s} {v}' for s, v in last.items()), '✅' if ok else '❌')]
+
+
+K9_UTC = '2026-11-15 14:06'    # К9 «страховочная сеть» (15.11 19:06 Ташкент): с этого момента книга v10 и сообщение «❔»
 
 
 def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
@@ -78,7 +96,7 @@ def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
             for r in csv.DictReader(f):
                 if r['post_ts'] >= edge:
                     posts.setdefault((r['src'], r['post_id']), []).append(r)
-        miss = []
+        miss, hist = [], []
         for (src, pid), rs in posts.items():                  # 16.11: доставка — по ПОСТУ (текст + купон одного поста = одно сообщение)
             if any(r['uid'] in sent for r in rs):
                 continue
@@ -86,10 +104,10 @@ def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
             want = [r for r in slips if r['seen'] == 'pre' and not r['self']]       # купон до матча — прогноз
             if not slips:                                                           # купонов нет — текст поста (кроме рекламы)
                 want += [r for r in rs if not re.search(r'реклам|промокод|подписат', r['pick'], re.I)]
-            if want:
-                miss.append(f'{src}:{pid}')
-        out.append(('каперы: прочитаны, но не присланы', '0', f"{len(miss)}" + (f" ({', '.join(miss[:4])})" if miss else ''),
-                    '✅' if not miss else '❌'))
+            if want:                                         # 16.11 аудит: посты ДО К9 (15.11 19:06), найденные пересборкой книги
+                (hist if min(r['post_ts'] for r in rs) < K9_UTC else miss).append(f'{src}:{pid}')   # задним числом, — история
+        out.append(('каперы: прочитаны, но не присланы', '0', f"{len(miss)}" + (f" ({', '.join(miss[:4])})" if miss else '')
+                    + (f'; до К9 (история, пересборка): {len(hist)}' if hist else ''), '✅' if not miss else '❌'))
     except Exception as e:
         out.append(('каперы: прочитаны, но не присланы', '0', f'нет данных ({e.__class__.__name__})', '❌'))
     return out

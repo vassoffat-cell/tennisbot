@@ -633,7 +633,7 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     dp = None
     try:                                                  # ⭐ ставка дня хоккея (hpick.py)
         HP.settle(store, games)
-        HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log)
+        HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log, games=games)
         dp = store.read('hk_day_pick')
     except Exception as ex:
         log.append(f'⭐🏒 сбой {ex.__class__.__name__}: {ex}')

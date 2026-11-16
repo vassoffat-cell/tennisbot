@@ -21,7 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 10                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 11                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -114,6 +114,15 @@ def scan(src: str, days: float, pages: int) -> tuple[list[dict], int]:
 
 
 # ------------------------------------------------------------------ прогнозы из поста
+RESULT_LN = re.compile(r'(?i)пробил|зашл|зашёл|зашел|прош[её]л|прошла|забрал|мимо|сыграл[аи]?\b')   # 16.11: строка-итог («пробила наш тотал») — не ставка
+
+
+def _real_pair(s: str) -> bool:
+    """Пара команд «A — B», где ни одна сторона не слово рынка («Победа - Португалия» — ставка, не пара)."""
+    import tipswide as W
+    return any(not MARKET.search(m.group(1)) and not MARKET.search(m.group(2)) for m in W.PAIR.finditer(s))
+
+
 def tips_of(src: str, p: dict) -> list[dict]:
     """Все прогнозы поста: по парам «A — B» (фрагмент до следующей пары) или одна ставка без пары."""
     import tipswide as W
@@ -125,7 +134,9 @@ def tips_of(src: str, p: dict) -> list[dict]:
     sport = sport_of(txt)
     # 15.11: номер сегмента = номер пары в W.pairs (uid прежних прогнозов не меняется);
     # пара из прозы («в пяти матчах - ожидать …») — не пара команд (названия команд с заглавной буквы)
-    ps = [(n, x) for n, x in enumerate(W.pairs(txt)) if x[1][:1].isupper() and x[2][:1].isupper()]
+    # 16.11 аудит: «Победа - Португалия» — не пара команд (сторона пары — слово рынка)
+    ps = [(n, x) for n, x in enumerate(W.pairs(txt)) if x[1][:1].isupper() and x[2][:1].isupper()
+          and not MARKET.search(x[1]) and not MARKET.search(x[2]) and len(x[1].split()) <= 4 and len(x[2].split()) <= 4]
     out = []
     segs = [(n, a, b, txt[pos:ps[i + 1][1][0] if i + 1 < len(ps) else len(txt)]) for i, (n, (pos, a, b)) in enumerate(ps)] or [(0, '', '', txt)]
     if ps and ps[0][1][0] > 0:                                 # 15.11: прогноз ДО первой пары («✅ Прогноз: 1Х+ТМ(3.5)», потом разбор)
@@ -140,10 +151,23 @@ def tips_of(src: str, p: dict) -> list[dict]:
                 pick = m.group(1).strip()
                 break
         if not pick:
-            for ln in frag.split('\n'):
+            # 16.11 аудит (❔ недели): пост одной строкой без переносов («🔥 Обе забьют - ДА  Ставлю тут: 1WIN…») —
+            # строки режутся и по двойному пробелу, рекламный хвост срезается ДО проверки длины; своя пара сегмента не мешает
+            # («Косово — Израиль 🟨 Жёлтые карточки ТБ 2.5 — кф. 1.53»)
+            own = re.compile(re.escape(a) + r'\s*[-–—]\s*' + re.escape(b)) if a and b else None
+            for ln in re.split(r'\n|\s{2,}', frag):
+                ln = AD_TAIL.sub('', ln).strip()
+                chk = ODDS_TAIL.sub('', own.sub('', ln, count=1) if own else ln)
                 # 14.11: «ТБ 2.5 — кф. 1.53» — тире перед кф не пара команд (Хитрости, Косово — Израиль)
-                if MARKET.search(ln) and not W.PAIR.search(ODDS_TAIL.sub('', ln)) and len(ln) < 140:
-                    pick = ln.strip()
+                if not MARKET.search(ln) or len(ln) >= 140 or RESULT_LN.search(ln):
+                    continue
+                if not _real_pair(chk):
+                    pick = ln
+                    break
+                m = next((x for x in W.PAIR.finditer(chk) if not MARKET.search(x.group(1)) and not MARKET.search(x.group(2))), None)
+                tail = chk[m.end():] if m else ''        # 16.11: «⚽️ Косово — Израиль 🟨 Жёлтые карточки ТБ 2.5» — пара, затем ставка
+                if not own and MARKET.search(tail) and not _real_pair(tail):
+                    pick = ln
                     break
         if not pick:
             continue
@@ -178,7 +202,7 @@ CAND_POS = re.compile(r'(?i)прогноз|ставк[аиу]\b|ставлю|с�
                       r'|победа|победит|забь|обе команды|\b1[хx]\b|\b[хx]2\b|минимум|ординар|паровоз|карточ|углов|шайб|не проиграет')
 CAND_NEG = re.compile(r'(?i)отзывы|бонус|регистрир|приложени|ден[её]жный|заход|зашел|зашёл|зашла|прош[её]л|прошла|не прош|проход|возврат'
                       r'|статистика с|итоги|видео-?отч|поздравля|доброе утро|расписание|замен|в личку|послеоплат|стоимость|гарантии'
-                      r'|мимо по ставкам|подпиш|согласны|легальн|🔜|кнопк|на связи|прошли|реакци|позор|горит|отработали|цена\s*\d|завершение дня|вчера забрал')
+                      r'|мимо по ставкам|забрали одну|забрали ставк|подпиш|согласны|легальн|🔜|кнопк|на связи|прошли|реакци|позор|горит|отработали|цена\s*\d|завершение дня|вчера забрал')
 
 
 def _candidate(p: dict) -> bool:
