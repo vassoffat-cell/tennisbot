@@ -138,9 +138,18 @@ def calibration(ld: pd.DataFrame) -> dict[str, tuple[float, int]]:
 
 
 def breaker(ld: pd.DataFrame) -> dict[str, str]:
-    """⛔ рынок: последние 30 показанных линий значимо ниже обещанного (z ≤ −2); снова ✅ при z > −1."""
-    L = _done(ld)
-    L = L[L.league.isin(public())]
+    """⛔ рынок: последние 30 линий в зоне показа значимо ниже обещанного (z ≤ −2); снова ✅ при z > −1.
+    16.11 (HANDOFF з.3): берутся линии в зоне показа (hlines.visible), а не только показанные — у ⛔-рынка shown = 0,
+    и по показанным он не мог вернуться никогда (последние 30 «замерзали»). Тест на живых линиях — engine/research/hk_side.py."""
+    if not len(ld):
+        return {}
+    x = ld[ld.result.astype(str).isin(['W', 'L'])].copy()
+    x['p'] = x.p.map(_num).astype(float)
+    tot = x.market.astype(str) == 'TOT'
+    x = x[~tot | (x.line.map(_num) == x.league.map(lambda lg: HL.FIXED_TOTAL.get(lg, -1)))]
+    x = x[[HL.visible(p, mk) for p, mk in zip(x.p, x.market.astype(str))]].copy()
+    x['won'] = (x.result.astype(str) == 'W').astype(int)
+    L = x[x.league.isin(public())].sort_values('start_utc')
     off = {}
     for mk, g in L.groupby('market'):
         g = g.tail(30)
