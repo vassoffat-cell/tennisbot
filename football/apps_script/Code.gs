@@ -391,13 +391,13 @@ function setupMenu() {
   ScriptApp.newTrigger('tick').timeBased().everyMinutes(5).create();
   if (BOT.workflow === 'football.yml') {                     // Г0: страховка каперов — только в FootBot (один бот на оба)
     ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'capTick') ScriptApp.deleteTrigger(t); });
-    ScriptApp.newTrigger('capTick').timeBased().everyHours(1).create();
+    ScriptApp.newTrigger('capTick').timeBased().everyMinutes(10).create();   // 16.11 аудит: раз в час давало перерыв до ≈ 125 мин
   }
   String(PROPS.getProperty('ALLOWED_USERS') || '').split(',').forEach(function (u) {
     u = u.trim();
     if (u) tg_('sendMessage', { chat_id: u, text: '✅ Меню обновлено: ⭐ Ставка дня · 📊 Аналитика', reply_markup: MENU });
   });
-  Logger.log('Триггер tick (5 мин)' + (BOT.workflow === 'football.yml' ? ' и capTick (1 ч)' : '') + ' установлен, клавиатура отправлена');
+  Logger.log('Триггер tick (5 мин)' + (BOT.workflow === 'football.yml' ? ' и capTick (10 мин)' : '') + ' установлен, клавиатура отправлена');
 }
 
 // ============================================================ Г0 (15.11): страховка ежечасной проверки каперов
@@ -412,7 +412,7 @@ function capTick() {
   if (r.getResponseCode() !== 200) { log_('каперы: проверка запусков', r.getResponseCode()); return; }
   const runs = JSON.parse(r.getContentText()).workflow_runs || [];
   const last = runs.length ? new Date(runs[0].created_at).getTime() : 0;
-  if (Date.now() - last < 65 * 60 * 1000) return;
+  if (Date.now() - last < 62 * 60 * 1000) return;   // 16.11: проверка каждые 10 мин → перерыв ≤ ≈ 75 мин
   const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
     payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });
   log_('каперы: страховочный запуск', d.getResponseCode() === 204 ? 'запущено' : d.getResponseCode() + ' ' + d.getContentText().slice(0, 200));

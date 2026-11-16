@@ -22,7 +22,7 @@ on:
         required: false
 permissions:
   contents: write
-  actions: read
+  actions: write              # 16.11: сторож каперов запускает cappers.yml (разрешение пользователя)
 concurrency:
   group: football
   cancel-in-progress: false
@@ -31,6 +31,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Сторож каперов (Г0, аудит 16.11)
+        # GitHub пропускает плановые :22 каперов (16.11: перерывы 92–107 мин). Любой прогон тенниса/футбола (и пропущенный шлюзом)
+        # проверяет: последний прогон cappers.yml > 70 мин назад и нет в очереди → запуск. Минуты — только на пропущенный час.
+        continue-on-error: true
+        run: |
+          js=$(gh api "repos/${{ github.repository }}/actions/workflows/cappers.yml/runs?per_page=5")
+          last=$(echo "$js" | jq -r '[.workflow_runs[].created_at]|max // "1970-01-01T00:00:00Z"')
+          busy=$(echo "$js" | jq '[.workflow_runs[]|select(.status=="queued" or .status=="in_progress")]|length')
+          age=$(( ( $(date -u +%s) - $(date -u -d "$last" +%s) ) / 60 ))
+          echo "👥 каперы: последний прогон $age мин назад, в очереди ${busy:-0}"
+          if [ "$age" -gt 70 ] && [ "${busy:-0}" -eq 0 ]; then
+            gh api -X POST "repos/${{ github.repository }}/actions/workflows/cappers.yml/dispatches" -f ref=main && echo "🛡 каперы: перерыв $age мин — запуск"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Gate — экономия минут (14.11)
         id: gate
         if: github.event_name == 'schedule'
