@@ -631,6 +631,14 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
             evs, ol = OA.day_events('hockey', ['icehockey_nhl'], ('h2h', 'totals', 'spreads'),
                                     str((now + dt.timedelta(hours=C.TZ_OFFSET_HOURS)).date()), refresh_hours=10)
             log += [f'🏒 {x}' for x in ol] + [f'🏒 A31 цены 1xBet/Pinnacle: матчей НХЛ {len(evs)}']
+            if any('потрачено' in x for x in ol):         # 16.11: история снимков (кэш дня перезаписывается) — для CLV и проверки EV
+                import gzip, json as _js
+                hf = OA.DIR / f"hockey_hist_{now:%Y-%m}.jsonl.gz"
+                slim = [dict(id=e['id'], start=e['commence_time'], home=e['home_team'], away=e['away_team'],
+                             books={b['key']: {m['key']: [[o['name'], o.get('point'), o['price']] for m_ in [m] for o in m_['outcomes']]
+                                               for m in b.get('markets', [])} for b in e.get('bookmakers', [])}) for e in evs]
+                with gzip.open(hf, 'at', encoding='utf-8') as fh:
+                    fh.write(_js.dumps(dict(ts=now.isoformat(timespec='seconds'), events=slim), ensure_ascii=False) + '\n')
         except Exception as ex:
             log.append(f'🏒 A31 цены: сбой {ex.__class__.__name__}: {ex}')
     try:
