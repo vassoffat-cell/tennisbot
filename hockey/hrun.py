@@ -608,6 +608,7 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     off = breaker(ld)
     models: dict = {}
     market = {}
+    up = games.iloc[0:0]
     try:                                                  # A21: цены ESPN для матчей окна прогноза (НХЛ)
         up = games[(games.league == 'NHL') & (games.state.astype(str) == 'pre') & (pd.to_datetime(games.start) > now)
                    & (pd.to_datetime(games.start) <= window_end(now))]
@@ -615,6 +616,14 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     except Exception as ex:
         log.append(f'🏒 рынок: сбой {ex.__class__.__name__}: {ex}')
     items = forecast(games, kc, off, models, market)
+    if len(up) and not dry and getattr(C, 'HK_ODDS_LOG', True):
+        try:                                              # A31 (16.11): цены 1xBet + Pinnacle НХЛ — сбор для EV/CLV ставки дня
+            import odds as OA                             # (рынки h2h, тотал, фора; ≤ 2 снимка в сутки по 3 кредита, кэш data/odds)
+            evs, ol = OA.day_events('hockey', ['icehockey_nhl'], ('h2h', 'totals', 'spreads'),
+                                    str((now + dt.timedelta(hours=C.TZ_OFFSET_HOURS)).date()), refresh_hours=10)
+            log += [f'🏒 {x}' for x in ol] + [f'🏒 A31 цены 1xBet/Pinnacle: матчей НХЛ {len(evs)}']
+        except Exception as ex:
+            log.append(f'🏒 A31 цены: сбой {ex.__class__.__name__}: {ex}')
     try:
         tp = HC.run(games, log)
     except Exception as ex:
