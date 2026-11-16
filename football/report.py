@@ -480,7 +480,8 @@ def DP_LIST(dp: pd.DataFrame, day) -> str:
         p = J.num(r.p); k = J.num(getattr(r, 'k', ''))
         a, b = (getattr(r, 'player1', '') or getattr(r, 'home', ''), getattr(r, 'player2', '') or getattr(r, 'away', ''))
         line = (f"{mark.get(str(r.result), '⏳')} {dpcore.ICON}{r.rk} <b>{e(str(r.label))}</b> · {e(str(a))} — {e(str(b))}"
-                + (f" · {p * 100:.0f}%" if p == p else '') + (f" · кф {k:.2f}".replace('.', ',') if k == k else ''))
+                + (f" · {p * 100:.0f}%" if p == p else '') + (f" · кф {k:.2f}".replace('.', ',') if k == k else '')
+                + (f" · EV {(p * k - 1) * 100:+.1f}%".replace('.', ',').replace('-', '−') if p == p and k == k and k > 1 else ''))   # 16.11
         out.append(line)
         h = str(getattr(r, 'history', '') or '')
         if h and h != 'nan':

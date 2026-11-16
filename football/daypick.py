@@ -223,6 +223,15 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
     return PK.choose(out)
 
 
+def ev_line(c: dict) -> str:
+    """16.11 (решение пользователя, HANDOFF з.2): строка под ставкой — кф 1xBet и EV = P × кф − 1; «≈» — кф оценён по Pinnacle."""
+    k, p = c.get('k'), c.get('p')
+    v = OD.ev(p, k)
+    if v is None:
+        return ''
+    pre = '≈' if c.get('k_src') == 'est' else ''
+    return f"💵 1xBet {pre}{float(k):.2f} · EV {v * 100:+.1f}%".replace('.', ',').replace('-', '−')
+
 # ------------------------------------------------------------------ текст и публикация
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:
     e = notify.esc
@@ -231,9 +240,12 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
         head += f' · {dpcore.category(c)}'                       # 14.11: 💰 выгодная / 🎯 уверенная
     if c is None:
         return f'{head}\nСегодня ставки дня нет: {e(reason)}.'
-    # 12.11 (решение пользователя): после «честный кф» — ничего лишнего; только отметки правок (✏️) и новой линии (➕)
+    # 12.11 (решение пользователя): после «честный кф» — ничего лишнего; только отметки правок (✏️) и новой линии (➕);
+    # 16.11 (решение пользователя): + одна строка «💵 1xBet кф · EV ±x%», если кф известен
     out = [head, f"🏆 {e(c['comp_name'])} · 🕒 {e(str(c['start_local'])[6:])}", f"<b>{e(c['home'])} — {e(c['away'])}</b>",
            f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''} — {c['p'] * 100:.0f}% · {notify.fair(c['p'])}"]
+    if ev_line(c):
+        out.append(ev_line(c))
     out += [e(h) for h in hist]
     return '\n'.join(out)
 
