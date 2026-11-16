@@ -17,22 +17,31 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          sparse-checkout: hockey
+          sparse-checkout: |
+            hockey
+            engine/research
+            data/odds
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
       - run: pip install -q pandas numpy scipy
       - name: History
+        if: github.event.inputs.mode != 'odds_probe'
         working-directory: hockey
         run: python hdata.py ${{ github.event.inputs.mode }}
         env:
           APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
+      - name: A31 проба цен хоккея (The Odds API)
+        if: github.event.inputs.mode == 'odds_probe'
+        run: python engine/research/hk_odds_probe.py
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
       - name: Save data
         if: always()
         run: |
           git config user.name "hockey-bot"
           git config user.email "hockey-bot@users.noreply.github.com"
-          git add hockey/data
+          git add hockey/data data/odds
           git diff --cached --quiet && exit 0
           git commit -m "Hockey data $(date -u +%F)"
           ok=0; for i in 1 2 3; do (git pull --rebase -X theirs --autostash origin main || { git rebase --abort; false; }) && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]
