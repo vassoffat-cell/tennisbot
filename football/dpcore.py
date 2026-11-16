@@ -240,6 +240,15 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         c = next((o for o in cands if key(o) == list(x['key'])), None) or _revive(x)
         return _titled(text_fn(c, day, x.get('hist', []), ''), int(x['rank']))
 
+    if not cur.get('msgs') and not items and getattr(C, 'QUIET_EMPTY', False):   # 16.11 «тихий режим»: в сутках нет матчей
+        if not rt.get('quiet_on'):                             # одно сообщение на весь перерыв (без закрепа)
+            notify.send_blocks([f'{ICON} <b>{SPORT} · межсезонье</b>\nМатчей основного тура нет. Ставки дня и отчёты '
+                                f'вернутся с первым матчем.'])
+            rt['quiet_on'] = dstr
+        rt['day_pick'] = cur
+        return 'ставка дня: тихий режим — матчей в сутках нет'
+    if items:
+        rt.pop('quiet_on', None)
     if not cur.get('msgs'):                                     # 1. утро — первый приговор: ⭐1, закреплён
         best = cands[0] if cands else None
         if info:

@@ -46,6 +46,20 @@ MARKETS = ('ML', 'HCP', 'IT1', 'IT2', 'TOTAL')
 
 
 
+
+def _tn_empty(auto: pd.DataFrame, dpk: pd.DataFrame, d0, d1) -> bool:
+    """16.11 «тихий режим» (решение пользователя): в сутках / неделе [d0, d1] нет ни одного матча тенниса и ни одной ставки дня."""
+    if not getattr(C, 'QUIET_EMPTY', False):
+        return False
+    try:
+        day = (pd.to_datetime(auto.start_utc, errors='coerce') + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - C.DAY_START_HOUR)).dt.date
+        n_m = int(((day >= d0) & (day <= d1)).sum())
+        dd = pd.to_datetime(dpk.date, errors='coerce').dt.date if len(dpk) else pd.Series(dtype=object)
+        n_p = int(((dd >= d0) & (dd <= d1)).sum()) if len(dd) else 0
+        return n_m == 0 and n_p == 0
+    except Exception:
+        return False
+
 def _check(rt: dict) -> dict:
     """15.11 (решение пользователя): 🔒 контрольная точка каждого прогона — «проверка ✓, {what}», пропуск прошлой — ⚠️."""
     import datetime as _d
@@ -161,7 +175,8 @@ def confidence(p: float, n_min: int, auto: pd.DataFrame) -> int:
     return int(np.clip(s, 1, 5))
 
 
-LEVEL_RU = {'Grand Slam': 'Большой шлем', '1000': '1000', '500': '500', '250': '250', 'Finals': 'Итоговый турнир'}
+LEVEL_RU = {'Grand Slam': 'Большой шлем', '1000': '1000', '500': '500', '250': '250', 'Finals': 'Итоговый турнир',
+            'Davis Cup': 'Кубок Дэвиса'}
 ROUND_RU = {'Final': 'финал', 'Semifinal': '1/2', 'Quarterfinal': '1/4', 'Round Robin': 'группа'}
 SURF_RU = {'Hard': 'хард', 'Clay': 'грунт', 'Grass': 'трава'}
 
@@ -248,7 +263,7 @@ def forecast_all(tour: str, matches: list[espn.EspnMatch], auto: pd.DataFrame, k
             continue
         if not (now < m.start <= C.window_end_utc(now)):
             continue
-        level = live.level_for(tour, m.location, m.start, m.major)
+        level = 'Davis Cup' if 'davis' in str(m.event).lower() else live.level_for(tour, m.location, m.start, m.major)   # 16.11
         if level not in C.LEVELS:
             continue
         ids = [live.identify(n, players, act) for n in m.names]
@@ -793,7 +808,8 @@ def run(dry: bool = False) -> str:
         except Exception as ex:
             log.append(f'📈 CLV tennis: сбой {ex.__class__.__name__}: {ex}')
         slP, slE, slR = SL.cycle('tennis', 'Теннис', store, dpk, store.read('dp_changes'), loc.date(), log)
-        if not only_week:
+        quiet_d = _tn_empty(auto, dpk, yday, yday)
+        if not only_week and not quiet_d:
             notify.send_blocks(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,
                                        kprev=kprev, off=off, notes=notes, daily_day=yday, split=True))
             try:
@@ -808,13 +824,18 @@ def run(dry: bool = False) -> str:
         rt['resend_1111b'] = 1
         if rday:
             rt['resend_done'] = rday
-        log.append('суточный отчёт отправлен' if not only_week else 'суточный — пропущен (только недельный)')
+        log.append('суточный отчёт: тихий режим — сутки без матчей' if quiet_d else
+                   'суточный отчёт отправлен' if not only_week else 'суточный — пропущен (только недельный)')
         wk = os.getenv('RESEND_WEEK', '').strip()                 # тест / повтор недельного: неделя, оканчивающаяся этой датой
-        if (daily_due and C.wday(loc).weekday() == 0) or (wk and rt.get('resend_week_done') != wk):
+        week_due = (daily_due and C.wday(loc).weekday() == 0) or bool(wk and rt.get('resend_week_done') != wk)
+        if week_due:
             if wk and rt.get('resend_week_done') != wk:
                 yday = dt.date.fromisoformat(wk); rt['resend_week_done'] = wk
             d0 = yday - dt.timedelta(days=6)
             a_, l_, d_ = R.week(auto, ldf, store.read('day_pick'), d0, yday)
+        if week_due and _tn_empty(auto, dpk, d0, yday):            # 16.11 «тихий режим»: неделя без матчей — без пустого отчёта
+            log.append('недельный отчёт: тихий режим — неделя без матчей')
+        elif week_due:
             notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
                                        period='за неделю', split=True) + R.week_lines(ldf, d0, yday))
             try:

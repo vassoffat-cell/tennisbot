@@ -24,6 +24,10 @@ on:
         description: 'Профиль времени прогона (1)'
         default: ''
         required: false
+      research:
+        description: 'Разовый скрипт проверки вместо прогона: engine/research/<файл>.py [аргументы] (16.11; без отправок и записи)'
+        default: ''
+        required: false
 permissions:
   contents: write
   actions: write              # 16.11: сторож каперов запускает cappers.yml (разрешение пользователя)
@@ -82,7 +86,9 @@ jobs:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
       - name: Inbox, retrain, forecast, settle
         if: steps.gate.outputs.skip != 'true'
-        run: python autorun.py auto
+        run: |
+          if [ -n "$RESEARCH" ]; then case "$RESEARCH" in engine/research/*.py*) python $RESEARCH;; *) echo "research: только engine/research/*.py"; exit 1;; esac
+          else python autorun.py auto; fi
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
@@ -96,8 +102,9 @@ jobs:
           RESEND_DAY: ${{ github.event.inputs.resend_day }}
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
+          RESEARCH: ${{ github.event.inputs.research }}
       - name: Save data and model
-        if: always() && steps.gate.outputs.skip != 'true'
+        if: always() && steps.gate.outputs.skip != 'true' && github.event.inputs.research == ''
         run: |
           git config user.name "tennis-bot"
           git config user.email "tennis-bot@users.noreply.github.com"
