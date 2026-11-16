@@ -412,10 +412,34 @@ function capTick() {
   if (r.getResponseCode() !== 200) { log_('каперы: проверка запусков', r.getResponseCode()); return; }
   const runs = JSON.parse(r.getContentText()).workflow_runs || [];
   const last = runs.length ? new Date(runs[0].created_at).getTime() : 0;
-  if (Date.now() - last < 62 * 60 * 1000) return;   // 16.11: проверка каждые 10 мин → перерыв ≤ ≈ 75 мин
-  const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
-    payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });
-  log_('каперы: страховочный запуск', d.getResponseCode() === 204 ? 'запущено' : d.getResponseCode() + ' ' + d.getContentText().slice(0, 200));
+  if (Date.now() - last >= 62 * 60 * 1000) {          // 16.11: проверка каждые 10 мин → перерыв ≤ ≈ 75 мин
+    const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
+      payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });
+    log_('каперы: страховочный запуск', d.getResponseCode() === 204 ? 'запущено' : d.getResponseCode() + ' ' + d.getContentText().slice(0, 200));
+  }
+  keyTick_(h);
+}
+
+// 16.11 (HANDOFF з.7, A35): ключевые часы — минута в минуту. GitHub запускает плановые прогоны с опозданием (медиана 36–46 мин,
+// p90 52–56 мин). Раз в 10 мин (тот же триггер capTick): если после начала ключевого часа прогона бота ещё нет — запустить сразу.
+// Окно: со 2-й минуты до 3 ч после начала. Плановый прогон, пришедший позже, пропустит шлюз (полный прогон < 35 мин назад).
+const KEY_SLOTS = [['daily.yml', 8, 0], ['daily.yml', 11, 0], ['daily.yml', 12, 0],   // 🎾1 · отчёт тенниса · 🏒 отчёт и 🏒1
+                   ['football.yml', 8, 0], ['football.yml', 11, 30]];                 // ⚽1 · отчёт футбола
+function keyTick_(h) {
+  const loc = Utilities.formatDate(new Date(), 'Asia/Tashkent', 'HH:mm').split(':');
+  const nowMin = Number(loc[0]) * 60 + Number(loc[1]);
+  KEY_SLOTS.forEach(function (s) {
+    const ago = nowMin - (s[1] * 60 + s[2]);            // минут после начала ключевого часа
+    if (ago < 2 || ago > 180) return;
+    const since = new Date(Date.now() - ago * 60 * 1000).toISOString().slice(0, 19) + 'Z';
+    const api = 'https://api.github.com/repos/' + BOT.repo + '/actions/workflows/' + s[0] + '/';
+    const r = UrlFetchApp.fetch(api + 'runs?per_page=5&created=%3E%3D' + since, { headers: h, muteHttpExceptions: true });
+    if (r.getResponseCode() !== 200) { log_('ключевой час: проверка ' + s[0], r.getResponseCode()); return; }
+    if ((JSON.parse(r.getContentText()).workflow_runs || []).length) return;   // прогон после начала часа уже есть / в очереди
+    const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
+      payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });
+    log_('ключевой час ' + s[1] + ':' + ('0' + s[2]).slice(-2) + ' · ' + s[0], d.getResponseCode() === 204 ? 'запущено' : d.getResponseCode());
+  });
 }
 
 function setWebhook() {

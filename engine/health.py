@@ -118,6 +118,47 @@ def _special(r: dict) -> bool:
     return any(k in (r.get('display_title') or '') for k in ('rehearse', 'research'))
 
 
+
+KEY = [('daily.yml', (8, 0), r'ставка дня: объявлена|ставка дня: тихий режим', '🎾1 / межсезонье'),
+       ('football.yml', (8, 0), r'ставка дня: объявлена|ставка дня: тихий режим', '⚽1'),
+       ('daily.yml', (11, 0), r'суточный отчёт отправлен|суточный отчёт: тихий режим', 'отчёт тенниса'),
+       ('football.yml', (11, 30), r'суточный отчёт отправлен', 'отчёт футбола'),
+       ('daily.yml', (12, 0), r'⭐🏒 .*⭐1|⭐🏒 \d', '🏒1'),
+       ('daily.yml', (12, 0), r'🏒 суточный отчёт', 'отчёт хоккея (ждёт итогов НХЛ)')]
+LATE_MIN = 30                                   # A35 (аудит 16.11): опоздание > 30 мин от начала ключевого часа = ❌
+
+
+def punctual(cache: dict) -> list[tuple[str, str, str, str]]:
+    """A35: во сколько на самом деле пришли ключевые сообщения последних суток — прогон с событием, минут от начала часа."""
+    now = datetime.now(timezone.utc)
+    out = []
+    for wf, (hh, mm), pat, name in KEY:
+        loc = now + TZ
+        slot = loc.replace(hour=hh, minute=mm, second=0, microsecond=0)
+        if slot > loc:
+            slot -= timedelta(days=1)
+        s_utc = slot - TZ
+        rs = sorted([r for r in runs(wf, s_utc) if r['conclusion'] == 'success' and _dur(r) > 25],
+                    key=lambda r: r.get('run_started_at') or r['created_at'])
+        hit = None
+        for r in rs:
+            t0 = datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
+            if t0 > s_utc + timedelta(hours=6):
+                break
+            cache.setdefault(r['id'], log(r['id']))
+            if grep(cache[r['id']], pat):
+                hit = t0
+                break
+        if hit is None:
+            late = int((now - s_utc).total_seconds() // 60)
+            out.append((f'вовремя: {name} ({slot:%d.%m %H:%M})', f'≤ {LATE_MIN} мин',
+                        'нет' + (f' (прошло {late} мин)' if late < 360 else ''), '❌' if late > LATE_MIN else '⏳'))
+            continue
+        late = int((hit - s_utc).total_seconds() // 60)
+        out.append((f'вовремя: {name} ({slot:%d.%m %H:%M})', f'≤ {LATE_MIN} мин', f'{(hit + TZ):%H:%M} (+{late} мин)',
+                    '✅' if late <= LATE_MIN else '❌'))
+    return out
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -165,6 +206,7 @@ def main(hours: int = 26) -> None:
         ok = (not hit) if bad else bool(hit)
         rows.append((name, 'нет' if bad else 'есть', (hit[0] if hit else '—') + (f' (+{len(hit) - 1})' if len(hit) > 1 else ''), '✅' if ok else '❌'))
     rows += cappers(since)
+    rows += punctual(cache)
     rows += seal_today()
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
