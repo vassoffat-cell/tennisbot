@@ -17,7 +17,28 @@ import urllib.request
 from pathlib import Path
 
 API = 'https://api.the-odds-api.com/v4'
-BOOKS = ('onexbet', 'pinnacle')
+BOOKS = ('onexbet', 'pinnacle',                     # 16.11 (HANDOFF з.2): + 8 книг для «лучшей цены» — та же цена в кредитах:
+         'marathonbet', 'williamhill', 'unibet_eu', 'betsson',   # до 10 букмекеров = 1 регион (кредиты = рынки × 1)
+         'sport888', 'betclic', 'betfair_ex_eu', 'matchbook')
+EXCH = {'betfair_ex_eu': 0.05, 'matchbook': 0.02}     # биржи: комиссия с выигрыша → кф для сравнения = 1 + (кф − 1)(1 − c)
+
+
+def best(books: dict | None) -> tuple[float | None, str]:
+    """Лучшая цена исхода среди букмекеров (биржи — за вычетом комиссии): (кф, букмекер)."""
+    eff = {b: 1 + (float(k) - 1) * (1 - EXCH.get(b, 0.0)) for b, k in (books or {}).items() if k}
+    if not eff:
+        return None, ''
+    b = max(eff, key=eff.get)
+    return round(eff[b], 3), b
+
+
+def ev(p, k) -> float | None:
+    """Ожидание ставки на 1 единицу: P × кф − 1 (возврат — без учёта, линии с половинкой)."""
+    try:
+        p, k = float(p), float(k)
+    except (TypeError, ValueError):
+        return None
+    return round(p * k - 1, 4) if p == p and k > 1 else None
 DIR = Path(__file__).resolve().parent / 'data' / 'odds'
 
 

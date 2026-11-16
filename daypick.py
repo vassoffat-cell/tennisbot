@@ -115,8 +115,9 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
                 continue
             k1x = sides[n].get('onexbet')
             k, ksrc = (k1x, 'api') if k1x else ((round(r * pin[i], 3), 'est') if pin[i] else (None, None))
+            kb, bb = OD.best(sides[n])                      # 16.11: лучшая цена среди 10 букмекеров (HANDOFF з.2)
             out.append(dict(_base(m, row), market=mk, pick=n, line=line, label=label(mk, n, line, p1n, p2n), p=float(p),
-                            p_src=src, p_model=pm, p_push=pp, k=k, k_src=ksrc, source='api',
+                            p_src=src, p_model=pm, p_push=pp, k=k, k_src=ksrc, source='api', k_best=kb, book_best=bb,
                             p_pin=float(fair[i]) if fair else None,
                             p_mkt=float(fair[i]) if fair else (float(fair_x[i]) if fair_x else None),   # 14.11: снимок цены → CLV
                             mkt_src='pinnacle' if fair else ('blend' if fair_x else '')))
@@ -209,6 +210,9 @@ def _row(c: dict, dstr: str, changes: int, hist: list[str]) -> dict:
                round(float(c['p_model']), 4), edge='' if c.get('edge') is None else round(c['edge'], 4),
                group=c.get('group', ''), p_pin='' if not c.get('p_pin') else round(c['p_pin'], 4))
     row['p'] = round(float(row['p']), 4)
+    e1, eb = OD.ev(row['p'], c.get('k')), OD.ev(row['p'], c.get('k_best'))    # 16.11 (HANDOFF з.2): EV по кф 1xBet и лучшей цене
+    row.update(ev='' if e1 is None else e1, k_best=c.get('k_best') or '', book_best=c.get('book_best') or '',
+               ev_best='' if eb is None else eb)
     return row
 
 

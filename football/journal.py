@@ -42,7 +42,8 @@ DAY_COLS = ['date', 'espn_id', 'slot', 'comp_name', 'start_utc', 'start_local', 
             'screenshots',
             'rank', 'fire', 'clash',        # 11.11: ⭐2/⭐3 (rank), синтез с каперами 🔥/⚔️
             'group', 'edge', 'p_pin',       # 14.11: категория 💰 выгодная (value) / 🎯 уверенная (fallback), перевес, P Pinnacle
-            'p_close', 'clv']               # 14.11: цена закрытия (Pinnacle без маржи) и CLV = кф × P_закр − 1
+            'p_close', 'clv',               # 14.11: цена закрытия (Pinnacle без маржи) и CLV = кф × P_закр − 1
+            'ev', 'k_best', 'book_best', 'ev_best']   # 16.11: EV = P × кф − 1 (1xBet) и по лучшей цене из 10 книг
 CHG_COLS = ['date', 'time', 'reason', 'rank', 'espn_id', 'market', 'pick', 'line', 'label', 'match', 'p', 'k', 'to_label',
             'to_key', 'slot', 'status', 'result', 'settled']   # журнал смен ставки дня (заменённые ставки тоже получают итог)
 SHEETS = {'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS, 'summary': ['показатель', 'значение'],

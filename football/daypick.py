@@ -75,7 +75,7 @@ def _base(m, row) -> dict:
                 home=row['home'], away=row['away'], start=m.start)
 
 
-def _offer(m, row, market, pick, line, p, p_src, k, k_src, source) -> dict | None:
+def _offer(m, row, market, pick, line, p, p_src, k, k_src, source, books: dict | None = None) -> dict | None:
     P = DISTS.get(str(m.id))
     pm, pp = model_price(P, market, pick, line) if P is not None else (np.nan, 0.0)
     p_mkt = float(p) if p is not None and p_src in ('pinnacle', 'blend') else None   # 14.11: цена рынка без маржи (снимок → CLV)
@@ -89,7 +89,8 @@ def _offer(m, row, market, pick, line, p, p_src, k, k_src, source) -> dict | Non
         return None
     return dict(_base(m, row), market=market, pick=pick, line=line, label=label(market, pick, line), p=float(p), p_src=p_src,
                 p_model=pm, p_push=pp, k=k, k_src=k_src, source=source, sigma=C.SIGMA.get(market), p_mkt=p_mkt,
-                mkt_src=p_src if p_mkt is not None else '')
+                mkt_src=p_src if p_mkt is not None else '',
+                **dict(zip(('k_best', 'book_best'), OD.best(books))))      # 16.11: лучшая цена среди 10 букмекеров
 
 
 def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
@@ -107,7 +108,7 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
     for s, books in h2h.items():
         k1 = books.get('onexbet')
         k, ks = (k1, 'api') if k1 else ((round(r * books['pinnacle'], 3), 'est') if books.get('pinnacle') else (None, None))
-        o = _offer(m, row, '1X2', s, None, fair[s] if fair else None, fsrc, k, ks, 'api')
+        o = _offer(m, row, '1X2', s, None, fair[s] if fair else None, fsrc, k, ks, 'api', books)
         if o:
             out.append(o)
     for (mk, n, pt), books in q.items():
@@ -117,7 +118,7 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
             code = {'HD': '1X', 'DA': 'X2', 'HA': '12'}.get(dc)
             if code:
                 p = sum(fair[x] for x in dc) if fair else None
-                o = _offer(m, row, 'DC', code, None, p, fsrc, books['onexbet'], 'api', 'api')
+                o = _offer(m, row, 'DC', code, None, p, fsrc, books['onexbet'], 'api', 'api', books)
                 if o:
                     out.append(o)
     # тоталы и форы (основные и альтернативные): P — Pinnacle без маржи по паре сторон той же линии
@@ -144,7 +145,7 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
             line = lh if (mk == 'TOT' or x == 'H') else -lh
             k1 = sides[x].get('onexbet')
             k, ks = (k1, 'api') if k1 else ((round(r * pin[idx], 3), 'est') if pin[idx] else (None, None))
-            o = _offer(m, row, mk, x, line, fair2[idx] if fair2 else None, src2, k, ks, 'api')
+            o = _offer(m, row, mk, x, line, fair2[idx] if fair2 else None, src2, k, ks, 'api', sides[x])
             if o:
                 out.append(o)
     return out
@@ -264,6 +265,9 @@ def _row(c: dict, dstr: str, changes: int, hist: list[str]) -> dict:
                group=c.get('group', ''), edge='' if c.get('edge') is None else round(c['edge'], 4),
                p_pin='' if not c.get('p_pin') else round(c['p_pin'], 4))
     row['p'] = round(float(row['p']), 4)
+    e1, eb = OD.ev(row['p'], c.get('k')), OD.ev(row['p'], c.get('k_best'))    # 16.11 (HANDOFF з.2): EV по кф 1xBet и лучшей цене
+    row.update(ev='' if e1 is None else e1, k_best=c.get('k_best') or '', book_best=c.get('book_best') or '',
+               ev_best='' if eb is None else eb)
     return row
 
 
