@@ -20,6 +20,10 @@ on:
         description: 'ТЗ-006: заново прислать все ставки дня текущих суток (1)'
         default: ''
         required: false
+      rehearse:
+        description: 'Репетиция будущих суток без отправок: ГГГГ-ММ-ДД или ГГГГ-ММ-ДД,odds (16.11)'
+        default: ''
+        required: false
 permissions:
   contents: write
   actions: write              # 16.11: сторож каперов запускает cappers.yml (разрешение пользователя)
@@ -83,7 +87,7 @@ jobs:
       - name: Inbox, forecast, settle
         if: steps.gate.outputs.skip != 'true'
         working-directory: football
-        run: python run.py
+        run: if [ -n "$REHEARSE" ]; then python rehearse.py "$REHEARSE"; else python run.py; fi
         env:
           FOOT_BOT_TOKEN: ${{ secrets.FOOT_BOT_TOKEN }}
           TENNIS_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
@@ -94,8 +98,9 @@ jobs:
           RESEND_DAY: ${{ github.event.inputs.resend_day }}
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
+          REHEARSE: ${{ github.event.inputs.rehearse }}
       - name: Save data
-        if: always() && steps.gate.outputs.skip != 'true'
+        if: always() && steps.gate.outputs.skip != 'true' && github.event.inputs.rehearse == ''
         run: |
           git config user.name "football-bot"
           git config user.email "football-bot@users.noreply.github.com"
