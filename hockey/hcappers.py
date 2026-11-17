@@ -33,7 +33,7 @@ SRC_RU = {'stavki_na_sport_betting1': 'Green Line', 'stavki': 'Ставки', 'x
 # русское название (регэксп по нижнему регистру) → английское в базе (регэксп). Порядок важен: «динамо минск» раньше «динамо».
 KHL = [(r'динамо\s*мн|минск', r'minsk'), (r'динамо', r'(dinamo|dynamo) mos'), (r'авангард', r'avangard'),
        (r'автомобилист', r'avtomobilist|yekaterinburg|ekaterinburg'), (r'адмирал', r'admiral|vladivostok'), (r'ак\s*барс', r'ak bars|bars kazan|kazan'), (r'\bамур', r'amur|khabarovsk'),
-       (r'барыс', r'barys'), (r'\bлада', r'lada|togliatti'), (r'локомотив', r'lokomotiv|yaroslavl'), (r'металлург', r'metallurg|magnitogorsk'),
+       (r'барыс', r'barys'), (r'\bлада', r'lada|togliatti'), (r'локомотив', r'lokomotiv|yaroslavl'), (r'металлург(?!\s*новокузн)', r'metallurg|magnitogorsk'),
        (r'нефтехимик', r'neftekhimik|nizh?nekamsk|niznekamsk'), (r'салават', r'salavat'), (r'северсталь', r'severstal|cherepovets'), (r'\bцска', r'cska'),
        (r'\bска\b', r'^ska|\bska\b'), (r'сибирь', r'sibir|novosibirsk'), (r'спартак', r'spartak'), (r'торпедо|\bнн\b', r'torpedo|nizhny novgorod'),
        (r'трактор', r'tra[ck]tor'), (r'шанха|куньлун|дракон|дрэгонс', r'shanghai|kunlun'), (r'витязь', r'vityaz'), (r'\bсочи', r'sochi')]
@@ -107,6 +107,15 @@ def parse(pick: str, a: str, b: str) -> tuple[str, str, float | str] | None:
         if L <= 3.5:                                         # «Локомотив, ТБ(2.5)» — индивидуальный тотал
             return (f'IT{side}', bm, L) if side else None
         return 'TOT', bm, L
+    m = re.search(r'минимум\s*(\d+)\s*шайб', s) or re.search(r'не\s*менее\s*(\d+)\s*шайб', s)   # 18.11 К14: Каппер UK
+    if m:
+        return 'TOT', 'O', int(m.group(1)) - 0.5
+    m = re.search(r'максимум\s*(\d+)\s*шайб', s) or re.search(r'не\s*более\s*(\d+)\s*шайб', s)
+    if m:
+        return 'TOT', 'U', int(m.group(1)) + 0.5
+    m = re.search(r'\bфора\.?\s*([12])\s*\(\s*([+-]?\s*' + NUM[1:-1] + r')\s*\)', s)   # «Фора. 1 (-1)»
+    if m:
+        return 'AH', 'H' if m.group(1) == '1' else 'A', float(m.group(2).replace(' ', ''))
     m = re.search(r'\bф\s*([12])?\s*\(\s*([+-]?\s*' + NUM[1:-1] + r')\s*\)', s)
     if m and (m.group(1) or side):
         return 'AH', 'H' if (m.group(1) or side) == '1' else 'A', float(m.group(2).replace(' ', ''))

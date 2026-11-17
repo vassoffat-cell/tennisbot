@@ -195,6 +195,12 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
     today = (dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=3)).date()
     want = [today - dt.timedelta(days=1), today, today + dt.timedelta(days=1)] if fresh else []
     want = [d for d in want if str(d) not in done]
+    # 18.11 (К14): лимит 90/сутки кончался к 16:00 UTC (4 запроса × ~22 прогона с планом Р7) → вечерние итоги КХЛ ждали полуночи.
+    # Дата не запрашивается чаще: сегодня/вчера — раз в 50 мин, завтра — раз в 6 ч. Расход ≤ ≈ 60/сутки.
+    last = st.get('last', {})
+    now_ts = time.time()
+    gap = {today - dt.timedelta(days=1): 50 * 60, today: 50 * 60, today + dt.timedelta(days=1): 6 * 3600}
+    want = [d for d in want if now_ts - float(last.get(str(d), 0)) >= gap.get(d, 0)]
     d = KHL_SEASON_START
     miss = []
     while d < today - dt.timedelta(days=1):
@@ -226,6 +232,7 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
             time.sleep(PAUSE)
         try:
             r = khl_date(d); asked += 1; st['used'] += 1
+            last[str(d)] = now_ts
         except Exception as e:
             asked += 1; st['used'] += 1
             errs.append(f'{d}: {str(e)[:80]}')
@@ -238,6 +245,7 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
     if rows:
         save(pd.concat([load(), pd.DataFrame(rows)], ignore_index=True))
     st['done'] = sorted(done)
+    st['last'] = {k: v for k, v in last.items() if k >= str(today - dt.timedelta(days=3))}
     DATA.mkdir(parents=True, exist_ok=True)
     KSTATE.write_text(json.dumps(st, ensure_ascii=False), encoding='utf-8')
     log.append(f'🏒 КХЛ: запросов {asked} (сутки {st["used"]}/{DAY_CAP}), матчей {len(rows)}'

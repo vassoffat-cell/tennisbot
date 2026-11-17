@@ -67,7 +67,7 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
             if len(hk) and r.uid in hk.index:
                 h = hk.loc[r.uid]
                 ind_ = h.result if h.result in MARK else ''
-                res = res or ind_
+                res = ind_ or res                                   # 18.11 К14: итог по нашей базе важнее отметки канала
                 rel = str(h.rel)
                 live = '1' if str(h.get('live', '')) == '1' else ''
             out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.a} — {r.b}', pick=str(r.pick)[:40], k=r.k, res=res, rel=rel, ind=ind_, live=live,
