@@ -138,7 +138,8 @@ def calibration(ld: pd.DataFrame) -> dict[str, tuple[float, int]]:
 
 
 def breaker(ld: pd.DataFrame) -> dict[str, str]:
-    """⛔ рынок: последние 30 линий в зоне показа значимо ниже обещанного (z ≤ −2); снова ✅ при z > −1.
+    """⛔ рынок: последние 30 линий в зоне показа значимо ниже обещанного (z ≤ −2); снова ✅ при z > −2 (без памяти:
+    решение заново каждым прогоном). 17.11: в логе — «⛔ IT2 (z −2.3)», чтобы снятие можно было проверить по логу.
     16.11 (HANDOFF з.3): берутся линии в зоне показа (hlines.visible), а не только показанные — у ⛔-рынка shown = 0,
     и по показанным он не мог вернуться никогда (последние 30 «замерзали»). Тест на живых линиях — engine/research/hk_side.py."""
     if not len(ld):
@@ -649,7 +650,7 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     nn, nu = save(store, items, gf, ld) if not dry else (0, 0)
     by = {lg: sum(r['league'] == lg for r, _ in items) for lg in LEAGUES}
     log.append(f'🏒 матчей ESPN {n}, рассчитано {ng}/{nl}, прогнозов НХЛ {by["NHL"]} · КХЛ {by["KHL"]}'
-               f'{"" if "KHL" in public() else " (тень)"}, новых {nn}, обновлено {nu}; ⛔ {", ".join(off) or "нет"}; '
+               f'{"" if "KHL" in public() else " (тень)"}, новых {nn}, обновлено {nu}; ⛔ {", ".join(f"{k} ({v})" for k, v in off.items()) or "нет"}; '
                f'сутки {cur:%d.%m}, отчёт {"да" if due else "нет"} (ждут итога {pend})'
                + (f'; гости 2-й день подряд: {len(B2B_LOG)}' if B2B_LOG else '') + f'; от рынка: {len(MARKET_LOG)}')
     if dry:

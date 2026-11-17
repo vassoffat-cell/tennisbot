@@ -26,6 +26,10 @@ from hockey import hdata as HD, hmodel as HM          # noqa: E402
 import odds as OD                                      # noqa: E402
 import pick as PK                                      # noqa: E402
 
+def _utc(x) -> pd.Timestamp:
+    """Время в UTC без пояса: история пишет ts без пояса (UTC), кэш и The Odds API — с «Z» (17.11: tz_convert падал на наивном ts)."""
+    t = pd.Timestamp(x)
+    return t.tz_convert(None) if t.tzinfo is not None else t
 
 
 def snapshots() -> list[dict]:
@@ -137,17 +141,18 @@ def main(t_min: float = 0.0) -> None:
         by_ev.setdefault(s['id'], []).append(s)
     for eid, ss in by_ev.items():
         ss = sorted(ss, key=lambda x: str(x['ts']))
-        st = pd.Timestamp(ss[0]['start']).tz_convert(None)
-        ss = [x for x in ss if pd.Timestamp(x['ts']).tz_convert(None) < st] if all(x['ts'] for x in ss) else ss
+        st = _utc(ss[0]['start'])
+        ss = [x for x in ss if _utc(x['ts']) < st] if all(x['ts'] for x in ss) else ss
         if not ss:
             continue
         cand = nhl[(nhl.t - st).abs() <= pd.Timedelta(hours=3)]
         g = next((r for r in cand.itertuples() if OD.same_name(r.home, ss[0]['home']) > 0.6 and OD.same_name(r.away, ss[0]['away']) > 0.6), None)
-        first, last = ss[0], ss[-1]
-        lam0, lam1 = fair_lambdas(M, first), fair_lambdas(M, last)
-        if lam0 is None:
+        lams = [(x, fair_lambdas(M, x)) for x in ss]      # 17.11: ранний снимок — первый С ЦЕНОЙ Pinnacle (раньше брался просто
+        lams = [(x, lm) for x, lm in lams if lm is not None]  # первый: у снимка накануне Pinnacle ещё нет → матч выпадал целиком)
+        if not lams:
             continue
-        p0, p1 = probs(M, lam0, first), (probs(M, lam1, last) if lam1 is not None else {})
+        (first, lam0), (last, lam1) = lams[0], lams[-1]
+        p0, p1 = probs(M, lam0, first), probs(M, lam1, last)
         done = g is not None and str(g.end) in ('REG', 'OT', 'SO') and g.hg == g.hg
         for (book, m, n, pt), (pw, pp) in p0.items():
             k = next(kk for nn, ptt, kk in first['books'][book][m] if nn == n and ptt == pt)
@@ -176,6 +181,10 @@ def main(t_min: float = 0.0) -> None:
     n_ev = R.ev_id.nunique(); n_done = R[R.res != ''].ev_id.nunique()
     print(f'A31 · НХЛ: матчей со снимками {n_ev}, с итогом {n_done}; снимков {len(snaps)}; цен {len(R)}; книги: '
           + ', '.join(f'{b} {c}' for b, c in R.book.value_counts().items()))
+    pn = R[R.book == 'pinnacle']                          # самопроверка: Pinnacle против своей же справедливой цены → EV ≈ −маржа
+    if len(pn):
+        print(f'\nPinnacle сам с собой: цен {len(pn)}, средний EV {pn.ev.mean() * 100:+.2f}% (ждём ≈ −маржа, 2–4%); по рынкам: '
+              + ', '.join(f'{m} {v * 100:+.1f}%' for m, v in pn.groupby('market').ev.mean().items()))
     x1 = R[R.book == 'onexbet']
     print(f'\n1xBet: цен {len(x1)}, EV ≥ 0 — {(x1.ev >= 0).mean() * 100:.1f}%, средний EV {x1.ev.mean() * 100:+.2f}% (маржа против справедливой цены)')
     print(x1.groupby('market').ev.describe()[['count', 'mean', '50%', 'max']].round(3).to_string())
