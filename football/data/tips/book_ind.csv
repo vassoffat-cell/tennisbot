@@ -1,8 +1,8 @@
 uid,espn_id,home,away,legs,label,why,status,result,settled
-stavki:5665:0,,,,,,матч не найден,,,
-stavki:5665:1,,,,,,матч не найден,,,
-stavki:5667:0,,,,,,матч не найден,,,
-stavki:5676:0,,,,,,матч не найден,,,
+stavki:5665:0,401884781,Borussia Dortmund,Werder Bremen,IT1:O:2.0|BTTS:Y:,ИТ1 Б2 + ОЗ да,,FT,P,2026-11-17
+stavki:5665:1,401876447,Lens,Lyon,AH:H:0.0,Ф1(+0),,FT,W,2026-11-17
+stavki:5667:0,401878773,Manchester United,Tottenham Hotspur,IT2:O:1.0,ИТ2 Б1,,FT,P,2026-11-17
+stavki:5676:0,401879264,Liverpool,Manchester City,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
 stavki:5681:0,401915435,Galatasaray,Barcelona,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
 stavki:5681:1,401915418,Lens,Sporting CP,IT1:O:1.0,ИТ1 Б1,,FT,L,2026-11-17
 stavki:5681:2,401915412,Atlético Madrid,Manchester United,AH:H:0.0,Ф1(+0),,FT,W,2026-11-17
@@ -37,21 +37,21 @@ stavki:5801:0,,,,,,матч не найден,,,
 stavki:5808:0,401861151,Italy,France,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
 stavki:5816:0,401861165,Norway,Wales,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
 stavki:5823:0,401861175,Spain,England,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
-xs_stavkii:7877:1,,,,,,матч не найден,,,
-xs_stavkii:7878:1,,,,,,матч не найден,,,
-xs_stavkii:7881:1,,,,,,матч не найден,,,
-xs_stavkii:7883:1,,,,,,матч не найден,,,
-xs_stavkii:7884:1,,,,,,матч не найден,,,
-xs_stavkii:7885:1,,,,,,матч не найден,,,
+xs_stavkii:7877:1,401861143,Scotland,Slovenia,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
+xs_stavkii:7878:1,732355,Andorra U21,Slovakia U21,AH:A:-1.25,Ф2(-1.25),,FT,L,2026-11-17
+xs_stavkii:7881:1,401841250,Vitória,Chapecoense,TOT:U:3.0,ТМ3,,FT,L,2026-11-17
+xs_stavkii:7883:1,401878976,Waasland-Beveren,Lommel SK,DC:1X:|TOT:O:1.5,1X + ТБ1.5,,FT,L,2026-11-17
+xs_stavkii:7884:1,401882851,Málaga,Espanyol,,,не разобрано,,,
+xs_stavkii:7885:1,401884781,Borussia Dortmund,Werder Bremen,1X2:H:|TOT:U:5.5,П1 + ТМ5.5,,FT,L,2026-11-17
 xs_stavkii:7889:1,,,,,,нет данных,,,
 xs_stavkii:7889:3,,,,,,нет данных,,,
-xs_stavkii:7889:6,,,,,,матч не найден,,,
-xs_stavkii:7889:8,,,,,,матч не найден,,,
+xs_stavkii:7889:6,401876446,Lille,Le Havre AC,DC:1X:|TOT:U:3.5,1X + ТМ3.5,,FT,W,2026-11-17
+xs_stavkii:7889:8,401875588,Fortuna Sittard,FC Twente,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
 xs_stavkii:7893:1,,,,,,нет данных,,,
-xs_stavkii:7893:4,,,,,,матч не найден,,,
+xs_stavkii:7893:4,401876440,Troyes,Marseille,AH:A:0.0,Ф2(+0),,FT,W,2026-11-17
 xs_stavkii:7893:6,,,,,,матч не найден,,,
 xs_stavkii:7894:1,,,,,,нет данных,,,
-xs_stavkii:7894:4,,,,,,матч не найден,,,
+xs_stavkii:7894:4,401884778,SC Freiburg,Schalke 04,DC:1X:|TOT:O:1.5,1X + ТБ1.5,,FT,W,2026-11-17
 xs_stavkii:7898:0,401875005,Atalanta,Venezia,1X2:H:,П1,,FT,W,2026-11-17
 xs_stavkii:7898:3,,,,,,нет данных,,,
 xs_stavkii:7904:0,,,,,,нет данных,,,
