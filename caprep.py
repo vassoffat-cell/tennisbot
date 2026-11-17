@@ -22,7 +22,8 @@ HK = ROOT / 'hockey' / 'data' / 'tips.csv'
 SRC = {'stavki_na_sport_betting1': 'Green Line', 'stavki': 'Прогнозы', 'xs_stavkii': 'Хитрости', 'groznyi_ruslan': 'Грозный',
        'kapper_uk': 'Каппер UK', 'nb-bet': 'nb-bet'}
 SPORT = {'tennis': ('🎾', 'Теннис', 'по теннису'), 'hockey': ('🏒', 'Хоккей', 'по хоккею'), 'football': ('⚽', 'Футбол', 'по футболу')}
-MARK = {'W': '✅', 'L': '❌', 'P': '⚪'}
+MARK = {'W': '✅', 'L': '❌', 'P': '⚪', 'N': '▫'}   # 18.11: N — итог не найден (прогноз старше суток без итога)
+STALE_H = 24
 REL = {'1': ' 🔥', '-1': ' ⚔️', '0': ' ·'}
 
 
@@ -62,16 +63,18 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
                 res = res or ind
                 rel = str(h.rel)
                 live = '1' if str(h.get('live', '')) == '1' else ''
-            out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.a} — {r.b}', pick=str(r.pick)[:40], k=r.k, res=res, rel=rel, ind=ind, live=live))
+            out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.a} — {r.b}', pick=str(r.pick)[:40], k=r.k, res=res, rel=rel, ind=ind, live=live,
+                            post=str(getattr(r, 'post_id', '')), wide=0))
     if sport == 'football':
         w = _read(WIDE)
         for r in w.itertuples(index=False) if len(w) else []:
             live = '1' if pd.to_datetime(r.post_ts, errors='coerce') > pd.to_datetime(r.start_utc, errors='coerce') else ''
             out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.home} — {r.away}', pick=str(r.label or r.raw)[:40], k=r.k,
-                            res=r.result if r.result in MARK else '', rel='', ind=r.result if r.result in MARK else '', live=live))
+                            res=r.result if r.result in MARK else '', rel='', ind=r.result if r.result in MARK else '', live=live,
+                            post=(str(r.uid).split(':')[2] if str(r.uid).startswith('tg:') and str(r.uid).count(':') >= 2 else ''), wide=1))
     # 14.11 20:38 (решение пользователя): прогноз, опубликованный после начала матча (live = '1'), учитывается в статистике
     # и самообучении, но помечен 🔴
-    df = pd.DataFrame(out, columns=['ts', 'src', 'match', 'pick', 'k', 'res', 'rel', 'ind', 'live'])
+    df = pd.DataFrame(out, columns=['ts', 'src', 'match', 'pick', 'k', 'res', 'rel', 'ind', 'live', 'post', 'wide'])
     if not len(df):
         return df
     loc = pd.to_datetime(df.ts, errors='coerce') + pd.Timedelta(hours=tz) - pd.Timedelta(hours=day_start)
@@ -83,7 +86,20 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
     kk = df.k.map(_num)
     keyed = df[kk == kk].sort_values('has', ascending=False).drop_duplicates(['src', 'ts', 'k'])
     df = pd.concat([keyed, df[kk != kk]])
-    return df.drop(columns='has').sort_values('ts')        # ind — итог по независимому табло (ESPN / наша база), не отметка канала
+    # 18.11 (пользователь: «почему матчи ждут завершения, хотя давно закончились?»): один и тот же пост — строка книги (итог только
+    # по отметке канала) и строка сверки с табло ESPN (итог по счёту). Книжные строки без итога этого поста убираются, если сверка
+    # дала не меньше строк, чем книга (иначе неизвестно, какая из них «двойник», — остаются).
+    drop = []
+    for (s, p), g in df[df.post.astype(str) != ''].groupby(['src', 'post']):
+        nw = int((g.wide == 1).sum())
+        bk = g[(g.wide == 0) & (g.res == '')]
+        if nw and len(bk) and len(bk) <= nw:
+            drop += list(bk.index)
+    df = df.drop(index=drop)
+    # прогноз старше суток без итога — не «ждёт», а «итог не найден» (рынок без данных: угловые, карточки; матч не опознан)
+    old = pd.to_datetime(df.ts, errors='coerce') < pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=STALE_H)
+    df.loc[(df.res == '') & old, 'res'] = 'N'
+    return df.drop(columns=['has', 'post', 'wide']).sort_values('ts')        # ind — итог по независимому табло (ESPN / наша база), не отметка канала
 
 
 def report(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8) -> str:
@@ -121,14 +137,15 @@ def blocks(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8)
         gw, gn = int((gd.res == 'W').sum()), len(gd)
         gp = [(kk - 1) if r == 'W' else -1.0 for r, kk in zip(gd.res, gd.k.map(_num)) if kk == kk]
         name = e(SRC.get(src, src))
+        nn = int((g.res == 'N').sum())
         summ.append(f'{name} — ' + (f'{gw}/{gn}' if gn else 'итогов нет') + f' · прогнозов {len(g)}'
-                    + (f' · ROI {sum(gp) / len(gp) * 100:+.0f}%' if gp else ''))
+                    + (f' · ROI {sum(gp) / len(gp) * 100:+.0f}%' if gp else '') + (f' · ▫ {nn}' if nn else ''))
         rows_ = []
         for r in g.itertuples(index=False):
             kk = _num(r.k)
             rows_.append(f"{MARK.get(r.res, '⏳')} {e(r.match)} · {e(r.pick)}" + (f' @{kk:.2f}'.replace('.', ',') if kk == kk else '')
                          + REL.get(r.rel, '') + (' 🔴' if r.live == '1' else ''))
         parts.append(f'👤 <b>{name}</b> · {e(title)} — ' + (f'{gw}/{gn}' if gn else 'итогов нет') + f' · прогнозов {len(g)}'
-                     + (f' · ROI {sum(gp) / len(gp) * 100:+.0f}%' if gp else '')
+                     + (f' · ROI {sum(gp) / len(gp) * 100:+.0f}%' if gp else '') + (f' · ▫ итог не найден {nn}' if nn else '')
                      + '\n<blockquote expandable>' + '\n'.join(rows_) + '</blockquote>')
     return [f'{head} — {len(df)} прогнозов · угадано {w}/{len(done)}{roi}{syn}\n' + '\n'.join(summ)] + parts

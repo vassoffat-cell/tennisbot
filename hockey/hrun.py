@@ -715,7 +715,7 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
             log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))
         except Exception as ex:
             log.append(f'🗂 архив хоккея: сбой {ex.__class__.__name__}: {ex}')
-    if rt.get('hk_arch_v1') != 4 and not dry:                # 🗂 ТЗ-006: первый прогон — архив хоккея за прошлые сутки и недели
+    if rt.get('hk_arch_v1') != 5 and not dry:                # 🗂 ТЗ-006: первый прогон — архив хоккея за прошлые сутки и недели
         try:
             log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))
         except Exception as ex:
@@ -728,7 +728,7 @@ def archive_hockey(store, rt: dict, gf, ld, kcal, kprev, off, tp, dp, yday: dt.d
     """🗂 Архив хоккея (лист archive таблицы Tennis, вид hk): сутки, неделя, месяц, год — те же отчёты, месяц и год ёмко."""
     import archive as A
     import caprep
-    if rt.get('hk_arch_v1') != 4:
+    if rt.get('hk_arch_v1') != 5:
         days, weeks = A.backfill_plan(yday + dt.timedelta(days=1), dt.date(2026, 11, 11))
     else:
         days, weeks = [yday], [(A.monday(yday), yday)]
@@ -770,6 +770,6 @@ def archive_hockey(store, rt: dict, gf, ld, kcal, kprev, off, tp, dp, yday: dt.d
                   ('hk', 'learn', cut, per, f'🧠 Хоккей · самообучение · {lab}',
                    safe(lambda: A.learn_text('hockey', f'Хоккей · самообучение · {lab}', d0, d1, cut != 'w')))]
     n = A.put(store, items, notify._split_html)
-    rt['hk_arch_v1'] = 4
+    rt['hk_arch_v1'] = 5
     return f'🗂 архив хоккея: {n} отчётов'
 
