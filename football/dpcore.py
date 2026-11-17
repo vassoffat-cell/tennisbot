@@ -248,7 +248,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 notify.pin(pins, on=False)
             notify.delete([tuple(x) for x in old.get('ask', [])] + [tuple(x) for x in old.get('notes', [])])
         cur = dict(date=dstr, msgs=[], changes=0, history=[], shots=[], screenshots=0, extras=[], log=[], notes=[], nokb=True, sep=True,
-                   hdr2=True, hdr3=True)
+                   hdr2=True, hdr3=True, hdr4=True)
     fix = bool(cur.pop('fix', None)) and bool(cur.get('espn_id'))
     if shots:                                                   # скриншоты дня — точные кф (сравнение)
         known = {tuple(key(o)): o for o in cur.get('shots', [])}
@@ -333,17 +333,21 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         notify.edit(cur['msgs'], cur['text'], None)
         cur['sep'] = True
 
-    if not cur.get('hdr2') or not cur.get('hdr3'):               # 11–12.11 начало без «хвоста»; 14.11 категория — обновить закрепы
+    if not cur.get('hdr2') or not cur.get('hdr3') or not cur.get('hdr4'):   # 11–12.11 «хвост»; 14.11 категория; 17.11 С23 «ставка ¼ / 1 ед.» — обновить закрепы
         cur['text'] = main_text()
         notify.edit(cur['msgs'], cur['text'], None)
         for x in cur.get('extras') or []:
             if x.get('msgs'):
                 x['text'] = extra_text(x)
                 notify.edit(x['msgs'], x['text'], None)
-        cur['hdr2'] = cur['hdr3'] = True
+        cur['hdr2'] = cur['hdr3'] = cur['hdr4'] = True
 
     if __import__('os').getenv('RESEND_PICKS') and not dry:     # ТЗ-006 «🔄 Ставки на сутки»: заново все ставки, старые — удалить
         n_ = 0
+        if cur.get('text'):                                     # 17.11: текст по текущим правилам (не сохранённый утром)
+            cur['text'] = main_text()
+            for x in cur.get('extras') or []:
+                x['text'] = extra_text(x)
         for h in [cur] + list(cur.get('extras') or []):
             if h.get('text'):
                 if h.get('msgs'):
