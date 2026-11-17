@@ -555,6 +555,11 @@ def dp_report(dp: pd.DataFrame, title: str, day: dt.date, d0: dt.date | None = N
             T.append(('📈 P закр. − P', str(s['n_dp']), f"{s['dp'] * 100:+.1f}".replace('.', ','), '🟢' if s['dp'] > 0 else '🔴'))
     except Exception:
         pass
+    try:                                                  # 💼 17.11: банк в единицах (хоккей — ¼ ед.) с начала лестницы
+        import bank as BANK
+        T += BANK.rows(dp, 'hockey', day, d0)
+    except Exception:
+        pass
     blocks = [f'<b>{e(title)}</b>\n' + RT.render(T)]
     for k in range(((day - d0).days + 1) if d0 is not None else 1):
         lst = _dp_list(dp, (d0 or day) + dt.timedelta(days=k))

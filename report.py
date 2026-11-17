@@ -442,6 +442,11 @@ def dp_report(dp: pd.DataFrame, title: str, daily_day=None, d0=None) -> list[str
     else:
         T.append(('⭐1 — итогов пока нет', '', '', ''))
     T += ops_rows(dp)
+    try:                                                       # 💼 17.11: банк в единицах (💰 1 ед., 🎯 ¼ ед.) с начала лестницы
+        import bank as BANK
+        T += BANK.rows(dp, dpcore._sk(), daily_day, d0)
+    except Exception:
+        pass
     blocks = [f'<b>{e(title)}</b>\n' + RT.render(T)]
     days = [daily_day] if (daily_day is not None and d0 is None) else \
         ([d0 + pd.Timedelta(days=k).to_pytimedelta() for k in range((daily_day - d0).days + 1)] if d0 is not None else [])
