@@ -147,7 +147,7 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-16 23:57",
+ "tips_book": "2026-11-17 01:02",
  "tips_book_v": 12,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -670,8 +670,7 @@
  "resend_1111": 1,
  "resend_1111b": 1,
  "cap_extra": {
-  "day": "2026-11-16",
-  "football.yml": 7
+  "day": "2026-11-17"
  },
  "resend_done": "2026-11-13",
  "resend_week_done": "2026-11-11",
@@ -679,6 +678,6 @@
  "dp_last": {},
  "arch_v1": 1,
  "arch_v2": 1,
- "chk_cap": "2026-11-16T23:57:28",
+ "chk_cap": "2026-11-17T01:02:53",
  "chk_run": "2026-11-16T22:06:40"
 }
