@@ -1,8 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "187503"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-17",
  "last_retrain": "2026-11-17",
  "last_files": "2026-11-05",
@@ -123,7 +121,7 @@
   "first_match": "Alexander Zverev — Ben Shelton",
   "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 43 линии · на ставку дня — 2\nATP Finals, хард 2 · 🔏 4180d91f\n🏆 ATP · Nitto ATP Finals · 🕒 00:30\n<b>Alexander Zverev — Ben Shelton</b>\n<b>П1 Zverev</b> — 64% · честный кф 1,57\n💵 1xBet 1,53 · EV −2,5% · ставка ¼ ед.",
   "vol": 2,
-  "played": false,
+  "played": true,
   "hdr4": true
  },
  "model_version": 4,
@@ -3558,7 +3556,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 1,
  "arch_v2": 1,
- "chk_run": "2026-11-17T18:32:08",
+ "chk_run": "2026-11-17T20:00:53",
  "plan_at": [
   "2026-11-17 22:00",
   "2026-11-17 23:30",
