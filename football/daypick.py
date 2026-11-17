@@ -230,7 +230,10 @@ def ev_line(c: dict) -> str:
     if v is None:
         return ''
     pre = '≈' if c.get('k_src') == 'est' else ''
-    return f"💵 1xBet {pre}{float(k):.2f} · EV {v * 100:+.1f}%".replace('.', ',').replace('-', '−')
+    st = ''
+    if getattr(PK, 'DP_LADDER', False) and c.get('tier') not in (None, ''):          # 17.11 лестница: ставка 1 / ¼ ед.
+        st = ' · ставка ' + ('1 ед.' if PK.stake(c) >= 1 else '¼ ед.')
+    return (f"💵 1xBet {pre}{float(k):.2f} · EV {v * 100:+.1f}%".replace('.', ',').replace('-', '−') + st)
 
 # ------------------------------------------------------------------ текст и публикация
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:

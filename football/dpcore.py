@@ -187,6 +187,14 @@ def _better(a: dict, b: dict | None) -> str:
         return 'каперы за (🔥)'
     if ta < tb:
         return 'сравнение (ступень выше)'
+    if ta == tb and ta != 0 and getattr(PK, 'DP_V2', False) and getattr(PK, 'DP_LADDER', False):   # 17.11 лестница: 🎯 — по EV
+        try:
+            ea, eb = pa * float(a['k']) - 1, pb * float(b['k']) - 1
+        except (KeyError, TypeError, ValueError):
+            return ''
+        if ea >= eb + C.DAY_PICK_SWITCH + SL.switch_extra(_sk()):
+            return f'сравнение (EV +{(ea - eb) * 100:.0f} п.п.)'
+        return ''
     if ta == tb and pa >= pb + C.DAY_PICK_SWITCH + SL.switch_extra(_sk()):
         return f'сравнение (P +{(pa - pb) * 100:.0f} п.п.)'
     return ''

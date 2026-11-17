@@ -40,6 +40,17 @@ VALUE_MARKETS = ('ML',)
 DP_V2 = True                # R1: ⭐ только с ценой 1xBet (API / скриншот) и справедливой P рынка; без цены — не ⭐ (только теневой портфель)
 DP_STRICT = False           # R5: True — нет 💰 → «выгодной ставки нет»; False («мягкий», по умолчанию до решения пользователя) — одна 🎯
 EV_FLOOR = -0.03            # R5 мягкий: 🎯 только при EV ≥ −3% (по кф 1xBet и P рынка)
+# 17.11 R5 «лестница» (пользователь: «объедини строгий и мягкий — ставка дня каждый день и с пользой»; engine/research/daily_hybrid.py):
+# 💰 есть → она (ставка 1 ед.); нет → 🎯 с МАКСИМАЛЬНЫМ EV среди P ≥ 0,60, кф ≥ 1,35 (не max P), ставка ¼ ед.
+# История тенниса, одна ⭐ в сутки, ⭐ в 92% дней: max P −6,2% (2019–22) / −4,5% (2023–25); лестница по EV 1xBet −0,2% / −0,7%;
+# + ставки 1 / ¼ ед. +3,1% / +5,3%; 🎯 по лучшей из Bet365/Pinnacle +2,7% / +1,2% (+ ставки +5,1% / +6,7%).
+DP_LADDER = True
+STAKE_MONEY, STAKE_SAFE = 1.0, 0.25
+
+
+def stake(o: dict) -> float:
+    """Ставка в единицах банка: 💰 (ступень 0) — 1, 🎯 — ¼ (лестница R5)."""
+    return STAKE_MONEY if str(o.get('tier', '')) in ('0', '0.0') else STAKE_SAFE
 
 
 def edge(o: dict) -> float | None:
@@ -130,7 +141,9 @@ def choose(offers: Iterable[dict]) -> list[dict]:
     ok = [finish(dict(o)) for o in offers]
     ok = [o for o in ok if o['tier'] < 9]
     ok.sort(key=lambda o: (o['tier'], 0 if o.get('fire') else 1, 1 if o.get('clash') else 0,   # 🔥 синтез с каперами — выше
-                           -(o['edge'] or 0) if o['tier'] == 0 else -o['p'], -(o['conf'] or 0), str(o.get('start_utc', ''))))
+                           -(o['edge'] or 0) if o['tier'] == 0 else                              # 💰 — по перевесу
+                           -(o['ev'] if o['ev'] is not None else -9) if DP_V2 and DP_LADDER else    # 🎯 — по EV (лестница R5)
+                           -o['p'], -(o['conf'] or 0), str(o.get('start_utc', ''))))
     return ok
 
 
