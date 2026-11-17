@@ -301,7 +301,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         log.append(f'⭐🏒 ⭐{r} правка: {why}')
     nday = sum(1 for row, _ in items if lo <= pd.Timestamp(row['start_utc']) < hi and row['league'] in leagues)
     st['vol'] = max(int(st.get('vol', 0)), nday)
-    if len(picks) < SL.max_picks('hockey', MAX_PICKS, st['vol'], loc):                               # новая ставка: другой матч лучше ⭐1 (одна за прогон)
+    if not HK_LADDER and len(picks) < SL.max_picks('hockey', MAX_PICKS, st['vol'], loc):   # 17.11 лестница: новые 🎯 днём не добавляются (💰 в хоккее нет)
         used = {str(x['id']) for x in picks}
         main = picks[0]
         for c in cands:
