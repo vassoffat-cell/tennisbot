@@ -35,8 +35,10 @@ def frame(dp: pd.DataFrame, sport: str) -> pd.DataFrame:
     x['d'] = pd.to_datetime(x.date, errors='coerce').dt.date
     x['kk'] = x.k.map(_num)
     x = x[(x.d >= START) & x.kk.notna() & (x.kk > 1) & x.result.astype(str).isin(['W', 'L', 'P'])]
-    if sport == 'hockey' and 'status' in x.columns:          # хоккей: строки «правка» — заменённые версии, в банк не идут
-        x = x[x.status.astype(str).str.strip().isin(['', 'nan'])]
+    if sport == 'hockey':                                     # хоккей: строки «правка» — заменённые версии, в банк не идут;
+        if 'status' in x.columns:                            # k в hk_day_pick до 17.11 — DraftKings: в банк — только ставки
+            x = x[x.status.astype(str).str.strip().isin(['', 'nan'])]   # с ценой 1xBet (заполнен ev, лестница hvalue)
+        x = x[x['ev'].map(_num).notna()] if 'ev' in x.columns else x.iloc[:0]
     if not len(x):
         return pd.DataFrame(columns=['d', 'st', 'pnl'])
     x['st'] = [stake(r, sport) for r in x.itertuples(index=False)]

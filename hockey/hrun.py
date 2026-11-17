@@ -518,7 +518,9 @@ def _dp_list(dp: pd.DataFrame, day: dt.date) -> str:
     for r in x.itertuples(index=False):
         old = str(r.status) == 'правка'
         out.append(f"{LMARK.get(str(r.result), '⏳')} 🏒{int(r.rk)} {'<s>' if old else '<b>'}{e(str(r.label))}{'</s>' if old else '</b>'} · "
-                   f"{e(str(r.home))} — {e(str(r.away))} · {_num(r.p) * 100:.0f}% · {notify.fair(_num(r.p))}"
+                   f"{e(str(r.home))} — {e(str(r.away))} · {_num(r.p) * 100:.0f}% · "
+                   + (f"кф {_num(r.k):.2f} · EV {_num(r.ev) * 100:+.1f}%".replace('.', ',').replace('-', '−')       # 17.11 цена 1xBet
+                      if 'ev' in x.columns and _num(getattr(r, 'ev', '')) == _num(getattr(r, 'ev', '')) else notify.fair(_num(r.p)))
                    + (f" · <i>{'заменена' if old else e(str(r.reason))}</i>" if old or not _blank(r.reason) else ''))
     return '\n'.join(out)
 
