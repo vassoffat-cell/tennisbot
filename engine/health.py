@@ -81,7 +81,8 @@ def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
     ts = sorted(datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
                 for wf in ('cappers.yml',) for r in runs(wf, since - timedelta(hours=2)) if r['conclusion'] == 'success')
     ts = [t for t in ts if t >= since - timedelta(hours=2)] + [datetime.now(timezone.utc)]
-    gaps = [(b - a, a) for a, b in zip(ts, ts[1:]) if b >= since]
+    gaps = [(b - a, a) for a, b in zip(ts, ts[1:]) if b >= since
+            and not 3 <= (a + TZ).hour <= 7]                     # 17.11 Г0а: перерыв, начатый в 03–07 Ташкента (тихое окно), не ошибка
     g, at = max(gaps) if gaps else (timedelta(0), since)
     out.append(('каперы: перерыв между чтениями каналов', '≤ 75 мин', f'макс {int(g.total_seconds() // 60)} мин (с {(at + TZ):%d.%m %H:%M})',
                 '✅' if g <= timedelta(minutes=75) else '❌'))
@@ -163,7 +164,7 @@ def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
     rows = []
-    for wf, per_day in (('daily.yml', 15), ('football.yml', 15), ('cappers.yml', 24)):
+    for wf, per_day in (('daily.yml', 15), ('football.yml', 15), ('cappers.yml', 21)):
         rs = runs(wf, since)
         bad = [r for r in rs if r['conclusion'] not in ('success', None)]
         exp = int(per_day * hours / 24)

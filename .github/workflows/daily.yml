@@ -51,7 +51,8 @@ jobs:
           busy=$(echo "$js" | jq '[.workflow_runs[]|select(.status=="queued" or .status=="in_progress")]|length')
           age=$(( ( $(date -u +%s) - $(date -u -d "$last" +%s) ) / 60 ))
           echo "👥 каперы: последний прогон $age мин назад, в очереди ${busy:-0}"
-          if [ "$age" -gt 70 ] && [ "${busy:-0}" -eq 0 ]; then
+          hh=$(TZ=Asia/Tashkent date +%H); case " 04 05 06 07 " in *" $hh "*) quiet=1;; *) quiet=0;; esac   # 17.11 Г0а: тихое окно
+          if [ "$quiet" = 0 ] && [ "$age" -gt 70 ] && [ "${busy:-0}" -eq 0 ]; then
             gh api -X POST "repos/${{ github.repository }}/actions/workflows/cappers.yml/dispatches" -f ref=main && echo "🛡 каперы: перерыв $age мин — запуск"
           fi
         env:

@@ -23,6 +23,7 @@ ROUTE = {'football': 'football.yml', 'tennis': 'daily.yml', 'hockey': 'daily.yml
 SCHED_MIN = {'daily.yml': 7, 'football.yml': 37}       # плановые прогоны: :07 / :37
 SCHED_H = {'daily.yml': set(range(1, 24, 2)),                       # часы UTC (14.11: теннис/хоккей круглые сутки, футбол ночью реже)
            'football.yml': {3, 5, 7, 9, 11, 13, 15, 17, 19}}
+CAP_HOURS = set(range(2, 23))                         # 17.11 Г0а: часы UTC запусков каперов (тихое окно 04:00–07:00 Ташкента)
 MAX_EXTRA = 8                                         # внеплановых запусков в сутки на бота (кредиты API, квота таблиц)
 SOON = pd.Timedelta(minutes=30)
 
@@ -127,10 +128,10 @@ def main() -> None:
             leg.write_text(json.dumps(lo))
         n_now = now.to_pydatetime()
         last = rt.get('chk_cap')
-        prev = notify.slot(n_now - dt.timedelta(minutes=45), 22, None, back=True)
+        prev = notify.slot(n_now - dt.timedelta(minutes=45), 22, CAP_HOURS, back=True)
         missed = bool(last) and dt.datetime.fromisoformat(str(last)) < prev - dt.timedelta(minutes=40)
         rt['chk_cap'] = n_now.isoformat(timespec='seconds')
-        nxt = notify.slot(n_now + dt.timedelta(minutes=5), 22)
+        nxt = notify.slot(n_now + dt.timedelta(minutes=5), 22, CAP_HOURS)
         mk = lambda n: notify.status('👥 каперы', 'новых нет', n, nxt, missed)
         log.append(f'🔒 контрольная точка: {notify.cover(C.DATA / "cover_cap.json", {"main": mk, "tennis": mk})}')
     except Exception as e:

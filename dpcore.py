@@ -37,6 +37,7 @@ except ImportError:                                             # футбол: 
 PRIORITY = {'screenshot': 0, 'api': 1, 'model': 2}
 SEGMENT_H = 2.0                 # 14.11 (решение пользователя): одна ставка дня на игровой отрезок — начала не ближе 2 ч
 MAX_PICKS = 3                   # 14.11: только запасное значение — лимит динамический (selflearn.max_picks)
+MAX_V2 = 8                      # 17.11 ТЗ-007 R4: защитный потолок ⭐ в сутки на вид (лимита количества нет — С7а)
 REASON = {'исправление': 'исправлена ошибка кф скриншота', 'отказ': 'по вашему отказу', 'скриншот': 'по скриншоту', 'лучше': 'найдена лучше',
           'каперы': 'по каперам (🔥/⚔️)'}
 
@@ -101,6 +102,48 @@ def snap_prices(rt: dict, cur: dict, cands: list[dict], now) -> None:
     if len(last) > 120:
         for k in sorted(last)[:len(last) - 120]:
             last.pop(k, None)
+
+
+SHADOW_COLS = ['key', 'date', 'espn_id', 'start_utc', 'match', 'market', 'pick', 'line', 'label', 'p', 'p_model', 'p_mkt', 'mkt_src',
+               'k', 'k_src', 'k_best', 'book_best', 'ev', 'tier', 'group', 'fire', 'clash',
+               'first_at', 'k_first', 'p_first', 'last_at', 'p_mkt_last']
+
+
+def shadow(cands: list[dict], now, folder, match_fn: Callable) -> int:
+    """17.11 ТЗ-007 §3: теневой портфель — каждый кандидат с кф (бумажная ставка) в <data>/shadow/<вид>_ГГГГ-ММ.csv.
+    Одна строка на линию; до начала матча обновляются последние цена и P рынка (последняя до старта = цена закрытия → CLV);
+    k_first / p_first — цена и P при первом появлении (ставка «утром»). Итог и CLV считает аудит (engine/research/shadow_eval.py)."""
+    from pathlib import Path
+    rows = [c for c in cands if c.get('k') and pd.Timestamp(c['start_utc']) > now]
+    if not rows:
+        return 0
+    f = Path(folder) / 'shadow' / f'{_sk()}_{now:%Y-%m}.csv'
+    old = pd.read_csv(f, dtype=str, keep_default_na=False) if f.exists() else pd.DataFrame(columns=SHADOW_COLS)
+    idx = {k: i for i, k in enumerate(old.key)} if len(old) else {}
+    at = f'{now:%Y-%m-%d %H:%M}'
+    add = []
+    for c in rows:
+        kk = '|'.join(map(str, key(c)))
+        rec = dict(key=kk, date=str((pd.Timestamp(c['start_utc']) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - C.DAY_START_HOUR)).date()),
+                   espn_id=str(c['espn_id']), start_utc=str(c['start_utc'])[:16], match=match_fn(c), market=c['market'],
+                   pick=str(c['pick']), line='' if c.get('line') in (None, '') else f"{float(c['line']):g}", label=c['label'],
+                   p=round(float(c['p']), 4), p_model='' if c.get('p_model') != c.get('p_model') or c.get('p_model') is None
+                   else round(float(c['p_model']), 4), p_mkt='' if not c.get('p_mkt') else round(float(c['p_mkt']), 4),
+                   mkt_src=c.get('mkt_src', ''), k=c['k'], k_src=c.get('k_src', ''), k_best=c.get('k_best') or '',
+                   book_best=c.get('book_best') or '', ev='' if c.get('ev') is None else round(float(c['ev']), 4),
+                   tier=c.get('tier', ''), group=c.get('group', ''), fire=int(bool(c.get('fire'))), clash=int(bool(c.get('clash'))),
+                   last_at=at, p_mkt_last='' if not c.get('p_mkt') else round(float(c['p_mkt']), 4))
+        if kk in idx:
+            i = idx[kk]
+            for col in ('p', 'p_mkt', 'k', 'k_best', 'book_best', 'ev', 'tier', 'group', 'fire', 'clash', 'last_at', 'p_mkt_last'):
+                old.at[i, col] = str(rec[col])
+        else:
+            rec.update(first_at=at, k_first=rec['k'], p_first=rec['p'])
+            add.append(rec)
+    out = pd.concat([old, pd.DataFrame(add, columns=SHADOW_COLS)], ignore_index=True).reindex(columns=SHADOW_COLS)
+    f.parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(f, index=False)
+    return len(rows)
 
 
 def _log_change(store: J.Store, cur: dict, loc, reason: str, old: dict, new: dict | None, rank: int = 1) -> None:
@@ -211,6 +254,11 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     cands = [o for o in PK.choose(_dedupe(cands)) if o['market'] not in off]
     cands = SL.reorder(_sk(), cands)                            # 🧠 пониженные сегменты — в конец очереди
     snap_prices(rt, cur, cands, now)                            # 📈 последняя цена рынка до начала — для CLV
+    if not dry:
+        try:
+            shadow(cands, now, C.DATA, match_fn)               # 17.11 ТЗ-007 §3: теневой портфель — все кандидаты с ценой
+        except Exception as e:
+            log.append(f'теневой портфель: сбой {e.__class__.__name__}: {e}')
     for c in cands:
         c['slot'] = slot_fn(c, items)
     info = None
@@ -365,7 +413,27 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     picks = ([dict(cur, rank=1)] if cur.get('espn_id') else []) + [dict(x) for x in (cur.get('extras') or [])]
     nday = sum(1 for it in items if C.wday(it[0].start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)) == day) if items else 0
     cur['vol'] = max(int(cur.get('vol', 0)), nday)              # матчей суток (максимум за день: утром список может быть неполным)
-    if picks and len(picks) < SL.max_picks(_sk(), MAX_PICKS, cur['vol'], loc):
+    if getattr(PK, 'DP_V2', False):                            # 17.11 ТЗ-007 R4 (С7а): каждая 💰 — своя ⭐, без лимита, «лучше ⭐1» и отрезка
+        used = {str(x['espn_id']) for x in picks}
+        for c in cands:
+            if len(picks) >= MAX_V2 or int(c.get('tier', 9)) != 0:
+                continue
+            if str(c['espn_id']) in used or pd.Timestamp(c['start_utc']) <= now:
+                continue
+            r = len(picks) + 1
+            why = f"перевес над Pinnacle +{float(c.get('edge') or 0) * 100:.0f}%"
+            x = dict(_plain(c), tier=c['tier'], rank=r, key=key(c), match=match_fn(c), why=why, at=f'{loc:%H:%M}', edits=0,
+                     hist=[f'➕ новая линия дня в {loc:%H:%M}: {why}'])
+            x['text'] = extra_text(x)
+            x['msgs'] = [list(m) for m in notify.send_markup(x['text'], None)]
+            notify.pin(x['msgs'])
+            cur.setdefault('extras', []).append(x)
+            _sheet_row(store, dp, dstr, row_fn(c, dstr, 0, x['hist']), cur, c, rank=r)
+            _log_new(store, cur, loc, why, c, r, match_fn)
+            events.append(f'{ICON}{r} новая ({why})')
+            picks.append(dict(x))
+            used.add(str(c['espn_id']))
+    elif picks and len(picks) < SL.max_picks(_sk(), MAX_PICKS, cur['vol'], loc):
         used = {str(x['espn_id']) for x in picks}
         main = next((c for c in cands if key(c) == list(cur.get('key', []))), None) or _pick_view(cur)
         starts = [x.get('start_utc') for x in picks]
@@ -389,7 +457,12 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             _log_new(store, cur, loc, why, c, r, match_fn)
             events.append(f'{ICON}{r} новая ({why})')
             break
+    allp = ([cur] if cur.get('espn_id') else []) + list(cur.get('extras') or [])
+    cur['played'] = bool(allp) and all(pd.Timestamp(x['start_utc']) <= now for x in allp if x.get('start_utc')) \
+        and not any(pd.Timestamp(c['start_utc']) > now for c in cands)       # 17.11 R6: всё сыграно, впереди кандидатов нет
     rt['day_pick'] = cur
+    if cur['played'] and not events:
+        return 'ставка дня: сыграна — ждём итог' + note
     return 'ставка дня: ' + ('; '.join(events) if events else 'без изменений') + note
 
 

@@ -36,6 +36,10 @@ VALUE_EDGE = 0.03
 VALUE_EDGE_MAX = 0.20      # перевес > 20% над Pinnacle — почти наверняка ошибка данных (порядок игроков, OCR) → не «с перевесом»
 VALUE_K = (1.70, 2.50)
 VALUE_MARKETS = ('ML',)
+# 17.11 ТЗ-007 v2 (решение пользователя «внедряй»), шаг 0 — tz007_retro: max P при кф ≥ 1,35 — ROI −4,8% (n 4901, z −4,8) и −1,2% вне выборки.
+DP_V2 = True                # R1: ⭐ только с ценой 1xBet (API / скриншот) и справедливой P рынка; без цены — не ⭐ (только теневой портфель)
+DP_STRICT = False           # R5: True — нет 💰 → «выгодной ставки нет»; False («мягкий», по умолчанию до решения пользователя) — одна 🎯
+EV_FLOOR = -0.03            # R5 мягкий: 🎯 только при EV ≥ −3% (по кф 1xBet и P рынка)
 
 
 def edge(o: dict) -> float | None:
@@ -102,8 +106,12 @@ def finish(o: dict) -> dict:
     k = o.get('k')
     o['edge'] = edge(o)
     o['group'] = 'value' if is_value(o) else 'fallback'
+    priced = bool(k) and o.get('k_src') in ('api', 'screenshot') and o.get('p_src') in ('pinnacle', 'blend')
     if o['group'] == 'value':
         o['tier'] = 0                                   # ТЗ-004: ставка с перевесом над Pinnacle — первой
+    elif DP_V2:                                         # 17.11 ТЗ-007 R1/R2/R5: только цена рынка, EV ≥ EV_FLOOR, без 3–4 ступеней
+        ok = priced and k >= MIN_K and o['p'] >= MIN_P_VALUE and o['ev'] is not None and o['ev'] >= EV_FLOOR and not DP_STRICT
+        o['tier'] = (1 if o['value_ok'] else 2) if ok else 9
     elif k and k >= MIN_K and o['value_ok'] and o['p'] >= MIN_P_VALUE:
         o['tier'] = 1
     elif k and k >= MIN_K and o['p'] >= MIN_P_VALUE:

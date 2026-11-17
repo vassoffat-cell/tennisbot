@@ -70,7 +70,11 @@ def _check(rt: dict) -> dict:
     missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
     rt['chk_run'] = now.isoformat(timespec='seconds')
     nxt = notify.slot(now + _d.timedelta(minutes=35), m, hrs)        # шлюз Ц7 пропускает плановый прогон в 35 мин после полного
-    return {'main': lambda n: notify.status('🎾🏒 проверка', '⭐ без изменений', n, nxt, missed)}
+    # 17.11 ТЗ-007 R6: все ⭐ суток (теннис и хоккей) начались, новых кандидатов нет — «⭐ сыграны, ждём итог», а не «без изменений»
+    hk = [x for x in (rt.get('hk_dp') or {}).get('picks', []) if x.get('start_utc')]
+    hk_done = all(pd.Timestamp(x['start_utc']) <= pd.Timestamp(now) for x in hk)
+    quiet = '⭐ сыграны, ждём итог' if (rt.get('day_pick') or {}).get('played') and hk_done else '⭐ без изменений'
+    return {'main': lambda n: notify.status('🎾🏒 проверка', quiet, n, nxt, missed)}
 
 def _now() -> pd.Timestamp:
     return pd.Timestamp.now(tz='UTC').tz_localize(None)
