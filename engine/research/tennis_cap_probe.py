@@ -17,7 +17,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'football'))
 import tips as T  # noqa: E402
 
-CANDS = ['imperatortennis', 'tennisrangeatp', 'BetonTenn1s', 'tennisnyykapper', 'xmtennis']
+CANDS = ['stavki', 'imperatortennis', 'tennisrangeatp', 'BetonTenn1s', 'tennisnyykapper', 'xmtennis']
 TEN = re.compile(r'🎾|теннис|\batp\b|\bwta\b|\bitf\b|челленджер|challenger|\bгейм|\bсет|тай-?брейк|большой шлем', re.I)
 MAIN = re.compile(r'\batp\b(?!\s*challenger)|\bwta\b(?!\s*125)|итогов|finals|турин|ролан|уимблдон|us open|australian|мастерс|masters|\b(250|500|1000)\b', re.I)
 LOW = re.compile(r'челленджер|challenger|\bitf\b|\bw\d{2,3}\b|\bm\d{2}\b|\buts\b|wta 125', re.I)
@@ -41,9 +41,16 @@ def probe(ch: str, pages: int = 12, days: int = 90) -> dict:
         if min(p['ts'] for p in got) < edge:
             break
         time.sleep(1.0)
+    raw = len(posts)
+    last = str(max(p['ts'] for p in posts))[:10] if posts else '—'
     posts = [p for p in posts if p['ts'] >= edge]
     if not posts:
-        return dict(ch=ch, err='веб-лента пуста или закрыта')
+        try:
+            html = T._get(f'https://t.me/s/{ch}')
+            probe_ = f'страница {len(html)} байт, редирект на t.me/{ch}: {"tgme_page_extra" in html}'
+        except Exception as e:
+            probe_ = f'ошибка {str(e)[:60]}'
+        return dict(ch=ch, err=f'за {days} сут постов нет (всего прочитано {raw}, последний {last}; {probe_})')
     tx = [p['text'] for p in posts]
     ten = [t for t in tx if TEN.search(t) or PAIR.search(t)]
     return dict(ch=ch, n=len(posts), d0=str(min(p['ts'] for p in posts))[:10], d1=str(max(p['ts'] for p in posts))[:10],
