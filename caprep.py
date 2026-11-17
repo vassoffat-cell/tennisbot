@@ -87,13 +87,19 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
 
 
 def report(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8) -> str:
-    """Сообщение «👥 <вид> · каперы · <период>» (HTML)."""
+    """Сообщение «👥 <вид> · каперы · <период>» (HTML) — одним сообщением (суточный отчёт ② в чате)."""
+    return '\n'.join(blocks(sport, d0, d1, title, day_start))
+
+
+def blocks(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8) -> list[str]:
+    """18.11 (пользователь: «отчёт по каждому каперу отдельно»): [сводка по всем каналам, затем каждый капер — своим сообщением].
+    Аналитика (архив меню) шлёт их отдельными сообщениями; report() склеивает для суточного ② в чате."""
     icon, ru, po = SPORT[sport]
     e = html.escape
     df = rows(sport, d0, d1, day_start)
     head = f'👥 <b>{ru} · каперы · {e(title)}</b>'
     if not len(df):
-        return f'{head}\n{po} каперы не прогнозировали.'.replace('\nпо', '\nПо', 1)
+        return [f'{head}\n{po} каперы не прогнозировали.'.replace('\nпо', '\nПо', 1)]
     done = df[df.res.isin(['W', 'L'])]
     w = int((done.res == 'W').sum())
     k = done.k.map(_num)
@@ -122,7 +128,7 @@ def report(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8)
             kk = _num(r.k)
             rows_.append(f"{MARK.get(r.res, '⏳')} {e(r.match)} · {e(r.pick)}" + (f' @{kk:.2f}'.replace('.', ',') if kk == kk else '')
                          + REL.get(r.rel, '') + (' 🔴' if r.live == '1' else ''))
-        parts.append(f'<b>{name}</b> — {gw}/{gn}\n<blockquote expandable>' + '\n'.join(rows_) + '</blockquote>'
-                     if gn else f'<b>{name}</b>\n<blockquote expandable>' + '\n'.join(rows_) + '</blockquote>')
-    return (f'{head} — {len(df)} прогнозов · угадано {w}/{len(done)}{roi}{syn}\n'
-            + '\n'.join(summ) + '\n' + '\n'.join(parts))
+        parts.append(f'👤 <b>{name}</b> · {e(title)} — ' + (f'{gw}/{gn}' if gn else 'итогов нет') + f' · прогнозов {len(g)}'
+                     + (f' · ROI {sum(gp) / len(gp) * 100:+.0f}%' if gp else '')
+                     + '\n<blockquote expandable>' + '\n'.join(rows_) + '</blockquote>')
+    return [f'{head} — {len(df)} прогнозов · угадано {w}/{len(done)}{roi}{syn}\n' + '\n'.join(summ)] + parts

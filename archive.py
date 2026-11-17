@@ -122,7 +122,7 @@ def std_items(sp: str, sport: str, ru: str, icon: str, R, store, af, ld, dp, kca
         t = f'{d:%d.%m.%Y}'
         out.append((sp, 'rep', 'd', d.isoformat(), f'{icon} {ru} · отчёт · {t}', safe('rep', lambda: R.build(
             af, ld, dp, f'📈 {ru} · отчёт · {t}', kcal=kcal, off=off, daily_day=d, split=True))))
-        out.append((sp, 'cap', 'd', d.isoformat(), f'👥 {ru} · каперы · {t}', safe('cap', lambda: [caprep.report(sport, d, d, t)])))
+        out.append((sp, 'cap', 'd', d.isoformat(), f'👥 {ru} · каперы · {t}', safe('cap', lambda: caprep.blocks(sport, d, d, t))))
         out.append((sp, 'dp', 'd', d.isoformat(), f'{icon} {ru} · ставки дня · {t}',
                     safe('dp', lambda: R.dp_report(dp, f'{icon} {ru} · ставки дня · {t}', d))))
         out.append((sp, 'hist', 'd', d.isoformat(), f'🗂 {ru} · ставки дня · {t}',
@@ -139,7 +139,7 @@ def std_items(sp: str, sport: str, ru: str, icon: str, R, store, af, ld, dp, kca
             b = R.build(a_, l_, d_, f'📈 {ru} · {lab}', kcal=kcal, off=off, period='за период', split=True)
             return b if cut == 'w' else b[:1]                     # месяц / год — ёмко: только таблица
         out.append((sp, 'rep', cut, per, f'{icon} {ru} · отчёт · {lab}', safe('rep', rep)))
-        out.append((sp, 'cap', cut, per, f'👥 {ru} · каперы · {lab}', safe('cap', lambda: [caprep.report(sport, d0, d1, lab)])))
+        out.append((sp, 'cap', cut, per, f'👥 {ru} · каперы · {lab}', safe('cap', lambda: caprep.blocks(sport, d0, d1, lab))))
 
         def dpr():
             _, _, d_ = R.week(af.iloc[:0], ld.iloc[:0], dp, d0, d1)
