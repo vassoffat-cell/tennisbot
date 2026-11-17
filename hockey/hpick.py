@@ -25,7 +25,8 @@ from hockey import hlines as HL
 
 DP_COLS = ['date', 'rank', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'slot', 'market', 'pick', 'line',
            'label', 'p', 'fair_k', 'fire', 'clash', 'status', 'reason', 'result', 'settled', 'created',
-           'k', 'p_close', 'clv']          # 14.11: кф DraftKings на момент ставки, цена закрытия (DK без маржи перед матчем), CLV
+           'k', 'p_close', 'clv',          # 14.11: кф DraftKings на момент ставки, цена закрытия (DK без маржи перед матчем), CLV
+           'ev']                           # 17.11 лестница: EV по кф 1xBet (линии с ценой)
 J.SHEETS.setdefault('hk_day_pick', DP_COLS)
 P_MIN, P_MAX = 0.65, 0.80
 MAX_PICKS = 3                   # 14.11: запасное значение — лимит динамический (selflearn.max_picks)
@@ -66,9 +67,14 @@ def stale(games: pd.DataFrame | None, row: dict) -> bool:
     return not ok
 
 
+HK_LADDER = True                  # 17.11 С23 для хоккея: сначала линии с ценой 1xBet (hvalue, по EV), затем линии модели без цены
+TIER_PRICED = 4                   # выше ступеней модели (1–3)
+
+
 def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: tuple, lo: pd.Timestamp, hi: pd.Timestamp,
-               now: pd.Timestamp, tier_fn, games: pd.DataFrame | None = None, skipped: list | None = None) -> list[dict]:
-    out = []
+               now: pd.Timestamp, tier_fn, games: pd.DataFrame | None = None, skipped: list | None = None,
+               evs: list | None = None, M=None) -> list[dict]:
+    out, priced = [], []
     for row, lns in items:
         st = pd.Timestamp(row['start_utc'])
         if row['league'] not in leagues or not (lo <= st < hi) or st <= now + pd.Timedelta(minutes=10):
@@ -77,6 +83,19 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
             if skipped is not None:
                 skipped.append(row['id'])
             continue
+        if HK_LADDER and evs and M is not None and row['league'] == 'NHL':
+            try:
+                from hockey import hvalue as HV
+                for v in HV.candidates(M, row, evs):
+                    c = dict(id=row['id'], league=row['league'], start_utc=row['start_utc'], start_local=row['start_local'],
+                             home=row['home'], away=row['away'], slot=v['slot'], market=v['market'], pick=v['pick'], line=v['line'],
+                             label=v['label'], p=round(v['p'], 4), p_low=round(v['p'], 4), tier=TIER_PRICED,
+                             k=round(v['k'], 2), ev=round(v['ev'], 4))
+                    c['fire'], c['clash'] = _syn(c, tp)
+                    priced.append(c)
+            except Exception as ex:                           # цена — улучшение, а не условие работы ставки дня
+                if skipped is not None:
+                    skipped.append(f'цены: {ex.__class__.__name__}')
         for x in lns:
             p = float(x['p'])
             if not int(x['shown']) or x['market'] == '1X2' or not (P_MIN <= p <= P_MAX):
@@ -86,7 +105,8 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
                      line=x['line'], label=x['label'], p=round(p, 4), p_low=float(x['p_low']), tier=tier_fn(x, row['league']))
             c['fire'], c['clash'] = _syn(c, tp)
             out.append(c)
-    return SL.reorder('hockey', sorted(out, key=lambda c: (-c['fire'], c['clash'], -c['tier'], -c['p_low'], -c['p'])))
+    model = SL.reorder('hockey', sorted(out, key=lambda c: (-c['fire'], c['clash'], -c['tier'], -c['p_low'], -c['p'])))
+    return sorted(priced, key=lambda c: (-c['fire'], c['clash'], -c['ev'])) + model   # лестница: цена 1xBet → модель
 
 
 def better(a: dict, b: dict | None) -> str:
@@ -106,7 +126,10 @@ def _better(a: dict, b: dict | None) -> str:
     if a.get('fire') and not b.get('fire') and a['p'] >= b['p'] - 0.03:
         return 'каперы за (🔥)'
     if a['tier'] > b['tier']:
-        return 'сравнение (ступень выше)'
+        return 'сравнение (есть цена 1xBet)' if int(a['tier']) == TIER_PRICED else 'сравнение (ступень выше)'
+    if a.get('ev') is not None and b.get('ev') not in (None, ''):             # 17.11 лестница: обе с ценой — по EV
+        d = float(a['ev']) - float(b['ev'])
+        return f'сравнение (EV +{d * 100:.0f} п.п.)' if d >= 0.02 + SL.switch_extra('hockey') else ''
     if a['tier'] == b['tier'] and a['p_low'] >= b['p_low'] + 0.02 + SL.switch_extra('hockey'):
         return f"сравнение (P +{(a['p_low'] - b['p_low']) * 100:.0f} п.п.)"
     return ''
@@ -118,9 +141,22 @@ def _line(c: dict, e) -> str:
             f"<b>{e(c['label'])}{'' if c.get('market') == 'ML' else ' (осн. время)'} — {c['p'] * 100:.0f}%</b> · {notify.fair(c['p'])}{syn}")
 
 
+def _ev_line(c: dict) -> str:
+    """17.11 лестница: кф 1xBet и EV (линии с ценой) или «цены 1xBet нет»; ставка хоккея — ¼ ед. (💰 в хоккее не доказана)."""
+    if not HK_LADDER:
+        return ''
+    if c.get('k') not in (None, '') and c.get('ev') not in (None, ''):
+        s = f"💵 1xBet {float(c['k']):.2f} · EV {float(c['ev']) * 100:+.1f}%".replace('.', ',').replace('-', '−')
+    else:
+        s = '💵 цены 1xBet нет'
+    return s + ' · ставка ¼ ед.'
+
+
 def _text(day, c: dict, rank: int, hist: list[str]) -> str:
     e = notify.esc
     out = [f"🏒{rank} <b>Хоккей · ставка дня</b> · 🎯 уверенная"] + ([e(c['scan'])] if c.get('scan') else []) + [_line(c, e)]  # 15.11: 🔎 печать суток
+    if _ev_line(c):
+        out.append(_ev_line(c))
     out += [e(h) for h in hist]                           # 12.11: после «честный кф» — только отметки правок / новой линии
     return '\n'.join(out)
 
@@ -129,7 +165,7 @@ def _row(day, rank: int, c: dict, status: str = '', reason: str = '') -> dict:
     return dict(date=str(day), rank=rank, id=c['id'], league=c['league'], start_utc=c['start_utc'], start_local=c['start_local'],
                 home=c['home'], away=c['away'], slot=c['slot'], market=c['market'], pick=c['pick'], line=c['line'],
                 label=c['label'], p=c['p'], fair_k=round(1 / c['p'], 2), fire=c['fire'], clash=c['clash'], status=status,
-                reason=reason, result='', settled='', created=J.now_utc())
+                reason=reason, result='', settled='', created=J.now_utc(), k=c.get('k', ''), ev=c.get('ev', ''))
 
 
 def _publish(day, c: dict, rank: int, hist: list[str]) -> dict:
@@ -159,13 +195,19 @@ def texts(rt: dict) -> list[str]:
 
 
 def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, now, tier_fn, log: list[str],
-            games: pd.DataFrame | None = None) -> None:
+            games: pd.DataFrame | None = None, evs: list | None = None, M=None) -> None:
     """Каждая ставка — отдельное закреплённое сообщение; rt['hk_dp'] = {date, picks: [...], notes: [...]}."""
     st = rt.get('hk_dp') or {}
     loc = now + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
     skipped: list = []
     try:
-        cands = candidates(items, tp, leagues, lo, hi, now, tier_fn, games, skipped)
+        cands = candidates(items, tp, leagues, lo, hi, now, tier_fn, games, skipped, evs=evs, M=M)
+        np_ = sum(int(c['tier']) == TIER_PRICED for c in cands)
+        if HK_LADDER:
+            log.append(f'⭐🏒 лестница: линий с ценой 1xBet {np_} (матчей {len({str(c["id"]) for c in cands if int(c["tier"]) == TIER_PRICED})})')
+        for s in {str(s) for s in skipped if str(s).startswith('цены')}:
+            log.append(f'⭐🏒 {s} — ставка дня по линиям модели')
+        skipped = [s for s in skipped if not str(s).startswith('цены')]
     except Exception as ex:                                  # сторож свежести не должен ломать ставку дня
         log.append(f'⭐🏒 свежесть КХЛ: сбой {ex.__class__.__name__}: {ex}')
         cands = candidates(items, tp, leagues, lo, hi, now, tier_fn)
@@ -184,7 +226,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         if old:
             notify.pin(old, on=False)
         notify.delete([tuple(m) for m in st.get('notes', [])])
-        st = dict(date=str(day), picks=[], notes=[], hdr2=True, hdr3=True)
+        st = dict(date=str(day), picks=[], notes=[], hdr2=True, hdr3=True, hdr4=True)
         rt['hk_dp'] = st
         first = next((c for c in cands if not c['clash']), cands[0] if cands else None)
         if not first:
@@ -199,10 +241,10 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         notify.delete([tuple(m) for m in st.pop('msgs')])
         picks = [_publish(day, x, i + 1, x.get('hist', [])) for i, x in enumerate(picks)]
         st['picks'] = picks
-    if not st.get('hdr2') or not st.get('hdr3'):                                    # 11.11: единое начало «🏒1 Хоккей · ставка дня» — обновить закрепы
+    if not st.get('hdr2') or not st.get('hdr3') or not st.get('hdr4'):              # 11.11 единое начало; 17.11 строка 💵 / ставка ¼
         for x in picks:
             notify.edit([tuple(m) for m in x.get('msgs', [])], _text(day, x, int(x['rank']), x.get('hist', [])), None)
-        st['hdr2'] = st['hdr3'] = True
+        st['hdr2'] = st['hdr3'] = st['hdr4'] = True
     if __import__('os').getenv('RESEND_PICKS'):              # ТЗ-006 «🔄 Ставки на сутки»: заново все, старые — удалить
         for x in picks:
             if x.get('msgs'):

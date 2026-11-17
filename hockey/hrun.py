@@ -626,6 +626,7 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     except Exception as ex:
         log.append(f'🏒 рынок: сбой {ex.__class__.__name__}: {ex}')
     items = forecast(games, kc, off, models, market)
+    evs: list = []                                        # 17.11 лестница: цены 1xBet/Pinnacle НХЛ → кандидаты ⭐ с ценой (hvalue)
     if len(up) and not dry and getattr(C, 'HK_ODDS_LOG', True):
         try:                                              # A31 (16.11): цены 1xBet + Pinnacle НХЛ — сбор для EV/CLV ставки дня
             import odds as OA                             # (рынки h2h, тотал, фора; ≤ 2 снимка в сутки по 3 кредита, кэш data/odds)
@@ -660,7 +661,8 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     dp = None
     try:                                                  # ⭐ ставка дня хоккея (hpick.py)
         HP.settle(store, games)
-        HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log, games=games)
+        HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log, games=games,
+                   evs=evs, M=models.get('NHL'))
         dp = store.read('hk_day_pick')
     except Exception as ex:
         log.append(f'⭐🏒 сбой {ex.__class__.__name__}: {ex}')
