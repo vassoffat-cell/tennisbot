@@ -1,8 +1,11 @@
 {
  "list_messages": [],
- "list_match_ids": [],
+ "list_match_ids": [
+  "187503",
+  "187508"
+ ],
  "last_daily": "2026-11-16",
- "last_retrain": "2026-11-16",
+ "last_retrain": "2026-11-17",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -56,11 +59,11 @@
  "kcal_date": "2026-11-16",
  "breaker": {},
  "day_pick": {
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "msgs": [
    [
     570704006,
-    564
+    613
    ]
   ],
   "changes": 0,
@@ -74,48 +77,52 @@
   "sep": true,
   "hdr2": true,
   "hdr3": true,
-  "scan": "🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 179af19f",
-  "espn_id": "187511",
-  "slot": 0,
+  "scan": "🔎 Сутки: 2 матча · 43 линии · на ставку дня — 2\nATP Finals, хард 2 · 🔏 4180d91f",
+  "espn_id": "187503",
+  "slot": 1,
   "key": [
-   "187511",
-   "TOTAL",
-   "O",
-   "18.5"
+   "187503",
+   "ML",
+   "1",
+   ""
   ],
-  "p": 0.6944142335878425,
-  "tier": 3,
-  "label": "ТБ 18.5",
-  "start_utc": "2026-11-16 13:00",
-  "match": "Carlos Alcaraz — Frances Tiafoe",
+  "p": 0.6371445596418307,
+  "tier": 2,
+  "label": "П1 Zverev",
+  "start_utc": "2026-11-17 19:30",
+  "match": "Alexander Zverev — Ben Shelton",
   "best": {
-   "espn_id": "187511",
+   "espn_id": "187503",
    "tour": "ATP",
    "event": "Nitto ATP Finals",
-   "start_utc": "2026-11-16 13:00",
-   "start_local": "16.11 18:00",
-   "player1": "Carlos Alcaraz",
-   "player2": "Frances Tiafoe",
-   "market": "TOTAL",
-   "pick": "O",
-   "line": 18.5,
-   "label": "ТБ 18.5",
-   "p": 0.6944142335878425,
-   "p_src": "model",
-   "p_model": 0.6944142335878425,
+   "start_utc": "2026-11-17 19:30",
+   "start_local": "18.11 00:30",
+   "player1": "Alexander Zverev",
+   "player2": "Ben Shelton",
+   "market": "ML",
+   "pick": "1",
+   "line": null,
+   "label": "П1 Zverev",
+   "p": 0.6371445596418307,
+   "p_src": "pinnacle",
+   "p_model": 0.6469161133140668,
    "p_push": 0.0,
-   "k": null,
-   "k_src": null,
-   "source": "model",
-   "edge": null,
+   "k": 1.53,
+   "k_src": "api",
+   "source": "api",
+   "k_best": 1.53,
+   "book_best": "onexbet",
+   "p_pin": 0.6381181403378962,
+   "p_mkt": 0.6381181403378962,
+   "mkt_src": "pinnacle",
+   "edge": -0.0236792452830189,
    "group": "fallback",
    "sl_pen": 0,
-   "slot": 0
+   "slot": 1
   },
-  "first_label": "ТБ 18.5",
-  "first_match": "Carlos Alcaraz — Frances Tiafoe",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 179af19f\n🏆 ATP · Nitto ATP Finals · 🕒 18:00\n<b>Carlos Alcaraz — Frances Tiafoe</b>\n<b>ТБ 18.5</b> — 69% · честный кф 1,44",
-  "vol": 2
+  "first_label": "П1 Zverev",
+  "first_match": "Alexander Zverev — Ben Shelton",
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 43 линии · на ставку дня — 2\nATP Finals, хард 2 · 🔏 4180d91f\n🏆 ATP · Nitto ATP Finals · 🕒 00:30\n<b>Alexander Zverev — Ben Shelton</b>\n<b>П1 Zverev</b> — 64% · честный кф 1,57\n💵 1xBet 1,53 · EV −2,5%"
  },
  "model_version": 4,
  "reported": [
@@ -3435,7 +3442,6 @@
   "khl:430690",
   "khl:430691",
   "khl:430692",
-  "nhl:401892727",
   "nhl:401892728",
   "nhl:401892729",
   "nhl:401892730",
@@ -3507,5 +3513,5 @@
  "arch_v1": 1,
  "hk_arch_v1": 1,
  "arch_v2": 1,
- "chk_run": "2026-11-17T02:10:36"
+ "chk_run": "2026-11-17T03:05:25"
 }
