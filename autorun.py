@@ -34,6 +34,7 @@ import live
 import daypick
 import news
 import notify
+import plan as PL
 import learning
 import pipeline as P
 import report as R
@@ -70,6 +71,8 @@ def _check(rt: dict) -> dict:
     missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
     rt['chk_run'] = now.isoformat(timespec='seconds')
     nxt = notify.slot(now + _d.timedelta(minutes=35), m, hrs)        # шлюз Ц7 пропускает плановый прогон в 35 мин после полного
+    pn = PL.next_at(rt, now)                                           # ТЗ-007 шаг 2: прогон по матчам раньше планового
+    nxt = min(nxt, pn) if pn else nxt
     # 17.11 ТЗ-007 R6: все ⭐ суток (теннис и хоккей) начались, новых кандидатов нет — «⭐ сыграны, ждём итог», а не «без изменений»
     hk = [x for x in (rt.get('hk_dp') or {}).get('picks', []) if x.get('start_utc')]
     hk_done = all(pd.Timestamp(x['start_utc']) <= pd.Timestamp(now) for x in hk)
@@ -942,6 +945,11 @@ def run(dry: bool = False) -> str:
         log.append(f'🏒 хоккей: сбой {e.__class__.__name__}: {e}')
         log.append(traceback.format_exc()[-600:])
     store.write_all('reports', reps)
+    try:                                                               # 📅 ТЗ-007 шаг 2: план прогонов по времени матчей (теннис + НХЛ; у КХЛ нет цены рынка)
+        hg = store.read('hk_games')
+        log.append(PL.update(store, rt, C.DATA, list(auto.start_utc) + (list(hg[hg.league.astype(str) == 'NHL'].start_utc) if len(hg) else [])))
+    except Exception as e:
+        log.append(f'📅 план: сбой {e.__class__.__name__}: {e}')
     try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
         log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json", _check(rt))}')
     except Exception as e:

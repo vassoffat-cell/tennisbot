@@ -160,6 +160,33 @@ def punctual(cache: dict) -> list[tuple[str, str, str, str]]:
                     '✅' if late <= LATE_MIN else '❌'))
     return out
 
+def plan_check(since: datetime) -> list[tuple[str, str, str, str]]:
+    """ТЗ-007 шаг 2: каждое окно плана (data/plan.json, football/data/plan.json) закрыто прогоном бота в [at − 15 мин, hi + 15 мин]."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    now = datetime.now(timezone.utc)
+    out = []
+    for wf, fn, name in (('daily.yml', 'data/plan.json', 'теннис/хоккей'), ('football.yml', 'football/data/plan.json', 'футбол')):
+        try:
+            gs = json.loads((root / fn).read_text(encoding='utf-8')).get('groups', [])
+        except Exception:
+            gs = []
+        ts = [datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
+              for r in runs(wf, since - timedelta(hours=1)) if not _special(r)]
+        due, miss = 0, []
+        for g in gs:
+            at = datetime.strptime(g['at'], '%Y-%m-%d %H:%M').replace(tzinfo=timezone.utc)
+            hi = datetime.strptime(g['hi'], '%Y-%m-%d %H:%M').replace(tzinfo=timezone.utc)
+            if not (since <= at and hi < now - timedelta(minutes=15)):
+                continue
+            due += 1
+            if not any(at - timedelta(minutes=15) <= t <= hi + timedelta(minutes=15) for t in ts):
+                miss.append(f'{(at + TZ):%H:%M}')
+        out.append((f'план по матчам ({name}): окно → прогон', 'все', f'окон {due}, без прогона {len(miss)}'
+                    + (f" ({', '.join(miss[:6])})" if miss else ''), '⏳' if not due else ('✅' if not miss else '❌')))
+    return out
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -209,6 +236,7 @@ def main(hours: int = 26) -> None:
     rows += cappers(since)
     rows += punctual(cache)
     rows += seal_today()
+    rows += plan_check(since)
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:

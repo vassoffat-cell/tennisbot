@@ -328,6 +328,43 @@ function tick() {
     if (blocks) send_(chat, blocks);                        // одно сообщение (длинный отчёт — по лимиту Telegram)
     PROPS.setProperty(k, JSON.stringify({}));
   });
+  try { planTick_(); } catch (e) { log_('план: сбой', String(e).slice(0, 200)); }   // ТЗ-007 шаг 2
+}
+
+// ============================================================ ТЗ-007 шаг 2 (17.11): прогоны по расписанию матчей
+// Облако после каждого прогона пишет лист plan: окна «T−3 ч» (линии и ⭐ по свежей цене) и «T−40 мин» (цена закрытия, последняя
+// правка) до начала матчей, слитые в минимум прогонов; время — UTC «ГГГГ-ММ-ДД ЧЧ:ММ». Каждые 5 мин (триггер tick): окно наступило
+// (at ≤ сейчас ≤ hi + 10 мин) и прогона бота после at − 15 мин нет → запуск сразу (без задержки cron GitHub). Один запуск за тик.
+function planTick_() {
+  const token = PROPS.getProperty('GH_TOKEN');
+  const sh = token ? ss_().getSheetByName('plan') : null;
+  if (!sh || sh.getLastRow() < 2) return;
+  const now = Date.now();
+  const cache = CacheService.getScriptCache();
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 3).getDisplayValues();
+  for (var i = 0; i < rows.length; i++) {
+    const at = utc_(rows[i][0]), hi = utc_(rows[i][1]);
+    if (!at || !hi || now < at || now > hi + 10 * 60 * 1000) continue;
+    const key = 'plan|' + BOT.workflow + '|' + rows[i][0];
+    if (cache.get(key)) continue;
+    const h = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
+    const api = 'https://api.github.com/repos/' + BOT.repo + '/actions/workflows/' + BOT.workflow + '/';
+    const since = new Date(at - 15 * 60 * 1000).toISOString().slice(0, 19) + 'Z';
+    const r = UrlFetchApp.fetch(api + 'runs?per_page=5&created=%3E%3D' + since, { headers: h, muteHttpExceptions: true });
+    if (r.getResponseCode() !== 200) { log_('план: проверка ' + BOT.workflow, r.getResponseCode()); return; }
+    if (!(JSON.parse(r.getContentText()).workflow_runs || []).length) {
+      const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
+        payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });
+      log_('план ' + rows[i][0] + ' UTC · ' + rows[i][2], d.getResponseCode() === 204 ? 'запущено' : d.getResponseCode());
+    }
+    cache.put(key, '1', 21600);
+    return;
+  }
+}
+
+function utc_(s) {
+  const m = String(s).match(/^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d)/);
+  return m ? Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) : 0;
 }
 
 // ============================================================ скриншоты и файлы → Google Диск

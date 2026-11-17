@@ -46,6 +46,7 @@ import tipswide
 
 sys.path.append(str(__import__('pathlib').Path(__file__).resolve().parent.parent))   # общий модуль отчёта каперов
 import caprep  # noqa: E402
+import plan as PL  # noqa: E402  ТЗ-007 шаг 2 (общий модуль в корне)
 
 LEAGUE_KINDS = ('league',)
 SRC_RU = {'market': 'рынок', 'model': 'модель'}
@@ -64,6 +65,8 @@ def _check(rt: dict) -> dict:
     missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
     rt['chk_run'] = now.isoformat(timespec='seconds')
     nxt = notify.slot(now + _d.timedelta(minutes=35), m, hrs)        # шлюз Ц7 пропускает плановый прогон в 35 мин после полного
+    pn = PL.next_at(rt, now)                                           # ТЗ-007 шаг 2: прогон по матчам раньше планового
+    nxt = min(nxt, pn) if pn else nxt
     quiet = '⭐ сыграна, ждём итог' if (rt.get('day_pick') or {}).get('played') else '⭐ без изменений'   # 17.11 ТЗ-007 R6
     return {'main': lambda n: notify.status('⚽ проверка', quiet, n, nxt, missed)}
 
@@ -965,6 +968,10 @@ def run(dry: bool = False) -> str:
     except Exception as ex:
         log.append(f'отчёт самообучения: сбой {ex.__class__.__name__}: {ex}')
     store.write_all('reports', reps)
+    try:                                                               # 📅 ТЗ-007 шаг 2: план прогонов по времени матчей
+        log.append(PL.update(store, rt, C.DATA, list(store.read('auto_forecasts').start_utc)))
+    except Exception as ex:
+        log.append(f'📅 план: сбой {ex.__class__.__name__}: {ex}')
     try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
         log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json", _check(rt))}')
     except Exception as ex:
