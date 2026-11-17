@@ -104,14 +104,25 @@ def report(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8)
     if len(fire) or len(clash):
         fw = int((fire.res == 'W').sum()); cw = int((clash.res == 'L').sum())
         syn = f'\n🔥 система согласна: {fw}/{int(fire.res.isin(["W", "L"]).sum())} угадано · ⚔️ против: права система {cw}/{int(clash.res.isin(["W", "L"]).sum())}'
-    lines = []
-    for src, g in df.groupby('src', sort=False):
-        gw = int((g.res == 'W').sum()); gn = int(g.res.isin(['W', 'L']).sum())
-        lines.append(f'<b>{e(SRC.get(src, src))}</b> — {gw}/{gn}' if gn else f'<b>{e(SRC.get(src, src))}</b>')
+    # 18.11 (пользователь: «почему только Green Line? где остальные?»): раньше список резался на 60 строках — в месячном отчёте
+    # (154 прогноза) Green Line занимала их почти все. Теперь: сводка по ВСЕМ каналам сверху (видна сразу), затем каждый канал —
+    # своим раскрывающимся блоком, без обрезки (длинное сообщение режет notify._split_html / archive split_fn с целыми тегами).
+    order = df.groupby('src', sort=False).size().sort_values(ascending=False).index
+    summ, parts = [], []
+    for src in order:
+        g = df[df.src == src]
+        gd = g[g.res.isin(['W', 'L'])]
+        gw, gn = int((gd.res == 'W').sum()), len(gd)
+        gp = [(kk - 1) if r == 'W' else -1.0 for r, kk in zip(gd.res, gd.k.map(_num)) if kk == kk]
+        name = e(SRC.get(src, src))
+        summ.append(f'{name} — ' + (f'{gw}/{gn}' if gn else 'итогов нет') + f' · прогнозов {len(g)}'
+                    + (f' · ROI {sum(gp) / len(gp) * 100:+.0f}%' if gp else ''))
+        rows_ = []
         for r in g.itertuples(index=False):
             kk = _num(r.k)
-            lines.append(f"{MARK.get(r.res, '⏳')} {e(r.match)} · {e(r.pick)}" + (f' @{kk:.2f}'.replace('.', ',') if kk == kk else '')
+            rows_.append(f"{MARK.get(r.res, '⏳')} {e(r.match)} · {e(r.pick)}" + (f' @{kk:.2f}'.replace('.', ',') if kk == kk else '')
                          + REL.get(r.rel, '') + (' 🔴' if r.live == '1' else ''))
-    body = '\n'.join(lines[:60]) + ('\n…' if len(lines) > 60 else '')
+        parts.append(f'<b>{name}</b> — {gw}/{gn}\n<blockquote expandable>' + '\n'.join(rows_) + '</blockquote>'
+                     if gn else f'<b>{name}</b>\n<blockquote expandable>' + '\n'.join(rows_) + '</blockquote>')
     return (f'{head} — {len(df)} прогнозов · угадано {w}/{len(done)}{roi}{syn}\n'
-            f'<blockquote expandable>{body}</blockquote>')
+            + '\n'.join(summ) + '\n' + '\n'.join(parts))
