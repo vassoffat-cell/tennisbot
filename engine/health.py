@@ -187,6 +187,31 @@ def plan_check(since: datetime) -> list[tuple[str, str, str, str]]:
     return out
 
 
+def capper_check() -> list[tuple[str, str, str, str]]:
+    """К13 (18.11): сверка книги каперов с табло — совпадение с собственными отметками каналов (должно быть 100%) и доля
+    прогнозов без итога за 7 дней (рост — новая формулировка канала, которую разбор не знает)."""
+    import pandas as pd
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent / 'football' / 'data' / 'tips'
+    try:
+        b = pd.read_csv(root / 'book.csv', dtype=str, keep_default_na=False).set_index('uid')
+        ind = pd.read_csv(root / 'book_ind.csv', dtype=str, keep_default_na=False)
+    except Exception as e:
+        return [('каперы: сверка книги с табло (К13)', 'файлы', f'нет: {e.__class__.__name__}', '❌')]
+    ind = ind[ind.uid.isin(b.index)]
+    ind['self'] = ind.uid.map(b['self'])
+    ind['ts'] = pd.to_datetime(ind.uid.map(b['post_ts']), errors='coerce')
+    both = ind[ind.result.isin(['W', 'L']) & ind.self.isin(['W', 'L'])]
+    bad = int((both.result != both.self).sum())
+    rows = [('каперы: сверка с табло = отметки каналов (К13)', '100%', f'{len(both) - bad}/{len(both)}', '✅' if not bad else '❌')]
+    wk = ind[(ind.ts > pd.Timestamp.now() - pd.Timedelta(days=7)) & (ind.ts < pd.Timestamp.now() - pd.Timedelta(hours=26))]
+    if len(wk):
+        nf = int(wk.why.isin(['матч не найден', 'не разобрано']).sum())
+        rows.append(('каперы: без итога за 7 дн. (не найден / не разобрано)', '≤ 20%', f'{nf}/{len(wk)} ({nf / len(wk) * 100:.0f}%)',
+                     '✅' if nf <= 0.2 * len(wk) else '❌'))
+    return rows
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -237,6 +262,7 @@ def main(hours: int = 26) -> None:
     rows += punctual(cache)
     rows += seal_today()
     rows += plan_check(since)
+    rows += capper_check()
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:
