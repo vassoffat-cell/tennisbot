@@ -83,7 +83,7 @@ def main() -> None:
     log: list[str] = []
     before = set(tipsbook.load().uid)
     for name, fn in (('все матчи', lambda: (tipswide.collect(log), tipswide.settle(log))),
-                     ('книга', lambda: (tipsbook.run(rt, log), tipswide.settle(log)))):
+                     ('книга', lambda: (tipsbook.run(rt, log), tipswide.settle(log), tipswide.book_ind(log)))):   # 18.11 К13
         try:
             fn()
         except Exception as e:

@@ -132,6 +132,20 @@ ALIAS = {
     'галатасарай': 'galatasaray', 'фенербахче': 'fenerbahce', 'бешикташ': 'besiktas', 'трабзонспор': 'trabzonspor',
     'башакшехир': 'basaksehir', 'гент': 'gent', 'брюгге': 'brugge', 'андерлехт': 'anderlecht', 'селтик': 'celtic',
     'рейнджерс': 'rangers', 'зальцбург': 'salzburg', 'копенгаген': 'copenhagen', 'олимпиакос': 'olympiacos',
+    # 18.11 К13: названия, на которых сверка каперов не находила матч (Хитрости, Каппер UK, Green Line) — значения = части
+    # английских названий ESPN после _fold (без диакритики: Bodø → «bod glimt», Sønderjyske → «snderjyske»)
+    'труа': 'troyes', 'монца': 'monza', 'венеция': 'venezia', 'ле ман': 'le mans', 'тулуза': 'toulouse', 'лилль': 'lille',
+    'гавр': 'le havre', 'марсель': 'marseille', 'нанси': 'nancy', 'сошо': 'sochaux', 'шарлеруа': 'charleroi',
+    'ла-лувьер': 'louviere', 'сент-жиллуаз': 'gilloise', 'серкль брюгге': 'cercle brugge', 'беверен': 'beveren',
+    'ломмел': 'lommel', 'сент-трюйден': 'sint truiden', 'хольштайн киль': 'holstein kiel', 'герта': 'hertha',
+    'кёльн': 'koln', 'кельн': 'koln', 'шальке': 'schalke', 'фрайбург': 'freiburg', 'штурм': 'sturm', 'целе': 'celje',
+    'спартак трнава': 'spartak trnava', 'слован': 'slovan', 'сарыер': 'sariyer', 'карагюмрюк': 'karagumruk',
+    'фатих карагюмрюк': 'karagumruk', 'хорсенс': 'horsens', 'сённерйюск': 'snderjyske', 'сеннерйюск': 'snderjyske',
+    'мидтьюлланд': 'midtjylland', 'офи': 'ofi', 'паок': 'paok', 'пушкаш академия': 'puskas', 'ньиредьхаза': 'nyiregyhaza',
+    'гонвед': 'honved', 'уйпешт': 'ujpest', 'каса пия': 'casa pia', 'будё-глимт': 'bod glimt', 'буде-глимт': 'bod glimt',
+    'будё': 'bod glimt', 'мьельбю': 'mjallby', 'иберия': 'iberia', 'динамо загреб': 'dinamo zagreb', 'нек': 'nec',
+    'гурник забже': 'gornik zabrze', 'легия': 'legia', 'аек': 'aek', 'фортуна ситтард': 'fortuna sittard', 'твенте': 'twente',
+    'эспаньол': 'espanyol', 'малага': 'malaga', 'шапекоэнсе': 'chapecoense', 'витория': 'vitoria',
 }
 
 

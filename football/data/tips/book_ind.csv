@@ -1,0 +1,340 @@
+uid,espn_id,home,away,legs,label,why,status,result,settled
+stavki:5665:0,,,,,,матч не найден,,,
+stavki:5665:1,,,,,,матч не найден,,,
+stavki:5667:0,,,,,,матч не найден,,,
+stavki:5676:0,,,,,,матч не найден,,,
+stavki:5681:0,401915435,Galatasaray,Barcelona,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
+stavki:5681:1,401915418,Lens,Sporting CP,IT1:O:1.0,ИТ1 Б1,,FT,L,2026-11-17
+stavki:5681:2,401915412,Atlético Madrid,Manchester United,AH:H:0.0,Ф1(+0),,FT,W,2026-11-17
+stavki:5691:0,401915416,Feyenoord Rotterdam,Como,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-17
+stavki:5691:1,401915414,AS Roma,Real Madrid,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-17
+stavki:5691:2,401915407,Manchester City,Paris Saint-Germain,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+stavki:5696:0,401915407,Manchester City,Paris Saint-Germain,AH:H:0.0,Ф1(+0),,FT,L,2026-11-17
+stavki:5714:0,401882846,Real Betis,Barcelona,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-17
+stavki:5737:0,401915392,VfB Stuttgart,Atlético Madrid,,,не разобрано,,,
+stavki:5745:0,401915313,Real Madrid,RB Leipzig,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
+stavki:5751:0,401915552,AFC Bournemouth,AC Milan,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+stavki:5754:0,401878768,Arsenal,Everton,TOT:O:2.0,ТБ2,,FT,P,2026-11-17
+stavki:5754:1,401878767,Chelsea,Tottenham Hotspur,BTTS:Y:,ОЗ да,,FT,L,2026-11-17
+stavki:5754:2,401874948,Napoli,AS Roma,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+stavki:5755:0,401878767,Chelsea,Tottenham Hotspur,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+stavki:5765:0,401878765,Liverpool,Brighton & Hove Albion,DC:X2:,X2,,FT,L,2026-11-17
+stavki:5778:0,401874795,AC Milan,Internazionale,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-17
+stavki:5779:0,401879248,Chelsea,Manchester United,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+stavki:5779:1,401879251,AFC Bournemouth,Leeds United,TOT:O:2.0,ТБ2,,FT,P,2026-11-17
+stavki:5779:2,401879245,Manchester City,Brighton & Hove Albion,DC:1X:|TOT:O:1.5,1X + ТБ1.5,,FT,L,2026-11-17
+stavki:5782:0,401874949,Juventus,Napoli,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+stavki:5783:0,401879246,Liverpool,Arsenal,AH:A:0.0,Ф2(+0),,FT,W,2026-11-17
+stavki:5786:0,401915309,Villarreal,Paris Saint-Germain,,,не разобрано,,,
+stavki:5787:0,401915386,Atlético Madrid,Bayern Munich,IT1:O:1.0,ИТ1 Б1,,FT,L,2026-11-17
+stavki:5787:1,401915308,Manchester United,AS Roma,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+stavki:5787:2,401915387,Barcelona,Aston Villa,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+stavki:5789:0,401915381,Slavia Prague,Arsenal,IT2:O:2.0,ИТ2 Б2,,FT,P,2026-11-17
+stavki:5796:0,,,,,,матч не найден,,,
+stavki:5799:0,401879244,Brighton & Hove Albion,Brentford,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+stavki:5800:0,401879239,Sunderland,Chelsea,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,FT,L,2026-11-17
+stavki:5801:0,,,,,,матч не найден,,,
+stavki:5808:0,401861151,Italy,France,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki:5816:0,401861165,Norway,Wales,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
+stavki:5823:0,401861175,Spain,England,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+xs_stavkii:7877:1,,,,,,матч не найден,,,
+xs_stavkii:7878:1,,,,,,матч не найден,,,
+xs_stavkii:7881:1,,,,,,матч не найден,,,
+xs_stavkii:7883:1,,,,,,матч не найден,,,
+xs_stavkii:7884:1,,,,,,матч не найден,,,
+xs_stavkii:7885:1,,,,,,матч не найден,,,
+xs_stavkii:7889:1,,,,,,нет данных,,,
+xs_stavkii:7889:3,,,,,,нет данных,,,
+xs_stavkii:7889:6,,,,,,матч не найден,,,
+xs_stavkii:7889:8,,,,,,матч не найден,,,
+xs_stavkii:7893:1,,,,,,нет данных,,,
+xs_stavkii:7893:4,,,,,,матч не найден,,,
+xs_stavkii:7893:6,,,,,,матч не найден,,,
+xs_stavkii:7894:1,,,,,,нет данных,,,
+xs_stavkii:7894:4,,,,,,матч не найден,,,
+xs_stavkii:7898:0,401875005,Atalanta,Venezia,1X2:H:,П1,,FT,W,2026-11-17
+xs_stavkii:7898:3,,,,,,нет данных,,,
+xs_stavkii:7904:0,,,,,,нет данных,,,
+xs_stavkii:7905:0,,,,,,нет данных,,,
+xs_stavkii:7905:4,,,,,,нет данных,,,
+xs_stavkii:7914:0,401915415,LASK Linz,Liverpool,,,не разобрано,,,
+xs_stavkii:7914:1,,,,,,нет данных,,,
+xs_stavkii:7914:3,401880223,Norwich City,Southampton,IT2:O:1.0,ИТ2 Б1,,FT,P,2026-11-17
+xs_stavkii:7917:1,,,,,,нет данных,,,
+xs_stavkii:7924:1,401876437,Le Mans,Toulouse,IT1:O:1.0,ИТ1 Б1,,FT,L,2026-11-17
+xs_stavkii:7924:3,401880218,Burnley,Wolverhampton Wanderers,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
+xs_stavkii:7924:5,401885087,Holstein Kiel,Hertha Berlin,AH:A:0.25,Ф2(+0.25),,FT,W,2026-11-17
+xs_stavkii:7928:2,401879259,Manchester City,Ipswich Town,1X2:H:|TOT:U:5.5,П1 + ТМ5.5,,FT,W,2026-11-17
+xs_stavkii:7928:5,401876431,Troyes,Lens,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,FT,W,2026-11-17
+xs_stavkii:7928:7,,,,,,матч не найден,,,
+xs_stavkii:7929:0,,,,,,нет данных,,,
+xs_stavkii:7929:2,,,,,,нет данных,,,
+xs_stavkii:7939:1,401874784,Parma,Torino,,,не разобрано,,,
+xs_stavkii:7939:4,401885480,Braga,Gil Vicente,DC:1X:|TOT:U:3.5,1X + ТМ3.5,,FT,L,2026-11-17
+xs_stavkii:7941:0,401915392,VfB Stuttgart,Atlético Madrid,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
+xs_stavkii:7941:1,401915397,Liverpool,Villarreal,1X2:H:,П1,,FT,W,2026-11-17
+xs_stavkii:7946:0,401915391,Sporting CP,LASK Linz,1X2:H:|TOT:U:5.5,П1 + ТМ5.5,,FT,L,2026-11-17
+xs_stavkii:7946:3,401915313,Real Madrid,RB Leipzig,,,не разобрано,,,
+xs_stavkii:7955:1,,,,,,нет данных,,,
+xs_stavkii:7958:0,,,,,,матч не найден,,,
+xs_stavkii:7958:1,,,,,,матч не найден,,,
+xs_stavkii:7958:2,401878768,Arsenal,Everton,DC:1X:|TOT:U:3.5,1X + ТМ3.5,,FT,W,2026-11-17
+xs_stavkii:7958:4,,,,,,матч не найден,,,
+xs_stavkii:7958:6,401880208,Blackburn Rovers,Wrexham,TOT:O:2.0,ТБ2,,FT,P,2026-11-17
+xs_stavkii:7958:8,401874948,Napoli,AS Roma,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+xs_stavkii:7958:9,,,,,,нет данных,,,
+xs_stavkii:7960:0,401879252,Manchester United,AFC Bournemouth,BTTS:Y:,ОЗ да,,FT,L,2026-11-17
+xs_stavkii:7960:2,,,,,,нет данных,,,
+xs_stavkii:7960:3,,,,,,нет данных,,,
+xs_stavkii:7960:4,401884760,TSG Hoffenheim,Bayer Leverkusen,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,L,2026-11-17
+xs_stavkii:7960:5,401874546,AC Horsens,Sønderjyske Fodbold,AH:H:0.0,Ф1(+0),,FT,W,2026-11-17
+xs_stavkii:7960:7,401896740,OFI Crete,PAOK,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,FT,L,2026-11-17
+xs_stavkii:7960:8,,,,,,матч не найден,,,
+xs_stavkii:7960:10,401844237,Deportivo Maipú,Güemes,TOT:U:3.0,ТМ3,,FT,L,2026-11-17
+xs_stavkii:7960:11,401878961,Union St.-Gilloise,Cercle Brugge KSV,1X2:H:|TOT:U:5.5,П1 + ТМ5.5,,FT,L,2026-11-17
+xs_stavkii:7970:0,,,,,,нет данных,,,
+xs_stavkii:7970:2,,,,,,нет данных,,,
+xs_stavkii:7978:1,,,,,,нет данных,,,
+xs_stavkii:7979:1,,,,,,нет данных,,,
+xs_stavkii:7980:1,401888259,Konyaspor,Galatasaray,1X2:A:,П2,,FT,W,2026-11-17
+xs_stavkii:7981:1,401885408,Casa Pia,Sporting CP,IT2:O:2.0,ИТ2 Б2,,FT,P,2026-11-17
+xs_stavkii:7986:1,,,,,,нет данных,,,
+xs_stavkii:7987:1,401878955,Royal Charleroi SC,RAAL La Louvière,1X2:H:,П1,,FT,W,2026-11-17
+xs_stavkii:7992:0,,,,,,нет данных,,,
+xs_stavkii:7992:1,401915308,Manchester United,AS Roma,DC:X2:,X2,,FT,L,2026-11-17
+xs_stavkii:7998:0,,,,,,нет данных,,,
+xs_stavkii:8003:0,401915524,SK Sturm Graz,NK Celje,1X2:H:,П1,,FT,L,2026-11-17
+xs_stavkii:8007:2,,,,,,нет данных,,,
+xs_stavkii:8007:4,401876692,AS Nancy Lorraine,Sochaux,DC:1X:|TOT:U:3.5,1X + ТМ3.5,,FT,W,2026-11-17
+xs_stavkii:8007:7,401842876,Hammarby IF,IF Elfsborg,,,не разобрано,,,
+xs_stavkii:8008:2,401876693,Saint-Étienne,Stade Laval,1X2:H:|TOT:U:5.5,П1 + ТМ5.5,,FT,W,2026-11-17
+xs_stavkii:8008:4,401882813,Espanyol,Deportivo,IT1:O:1.0,ИТ1 Б1,,FT,L,2026-11-17
+xs_stavkii:8008:6,401878757,Nottingham Forest,Manchester City,1X2:A:,П2,,FT,L,2026-11-17
+xs_stavkii:8010:1,401878945,KAA Gent,KV Kortrijk,1X2:H:,П1,,FT,W,2026-11-17
+xs_stavkii:8010:4,,,,,,нет данных,,,
+xs_stavkii:8010:6,,,,,,нет данных,,,
+xs_stavkii:8015:1,,,,,,матч не найден,,,
+xs_stavkii:8015:3,,,,,,нет данных,,,
+xs_stavkii:8017:0,401861149,San Marino,Belarus,IT2:O:2.0,ИТ2 Б2,,FT,P,2026-11-17
+xs_stavkii:8017:2,,,,,,нет данных,,,
+xs_stavkii:8018:1,401927184,Madagascar,Guinea-Bissau,AH:A:0.0,Ф2(+0),,FT,P,2026-11-17
+xs_stavkii:8020:0,401861161,Scotland,North Macedonia,1X2:H:|TOT:U:4.5,П1 + ТМ4.5,,FT,W,2026-11-17
+xs_stavkii:8020:3,401861159,Netherlands,Greece,1X2:H:,П1,,FT,W,2026-11-17
+xs_stavkii:8021:0,401861156,Slovenia,Switzerland,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+xs_stavkii:8021:2,,,,,,нет данных,,,
+xs_stavkii:8025:0,,,,,,нет данных,,,
+xs_stavkii:8027:0,401861176,Belgium,Italy,IT2:O:1.0,ИТ2 Б1,,FT,P,2026-11-17
+xs_stavkii:8027:1,401861175,Spain,England,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+kapper_uk:21907:0,401915414,AS Roma,Real Madrid,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:21908:0,,,,,,матч не найден,,,
+kapper_uk:21912:0,401915407,Manchester City,Paris Saint-Germain,1X2:D:,X,,FT,L,2026-11-17
+kapper_uk:21917:0,401915415,LASK Linz,Liverpool,TOT:O:3.5,ТБ3.5,,FT,W,2026-11-17
+kapper_uk:21920:0,401915407,Manchester City,Paris Saint-Germain,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,W,2026-11-17
+kapper_uk:21924:0,401915414,AS Roma,Real Madrid,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:21936:0,401915560,Celta Vigo,Juventus,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:21939:0,401915747,Riga FC,Kairat Almaty,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+kapper_uk:21941:0,401915560,Celta Vigo,Juventus,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:21950:0,401915550,Marseille,Olympiacos,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+kapper_uk:21979:0,401882846,Real Betis,Barcelona,BTTS:Y:|TOT:O:3.5,ОЗ да + ТБ3.5,,FT,W,2026-11-17
+kapper_uk:21988:0,401874935,AS Roma,Genoa,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+kapper_uk:21990:0,,,,,,нет данных,,,
+kapper_uk:22014:0,401876435,Lorient,AS Monaco,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+kapper_uk:22048:0,,,,,,нет данных,,,
+kapper_uk:22050:0,401915397,Liverpool,Villarreal,1X2:H:,П1,,FT,W,2026-11-17
+kapper_uk:22051:0,401915404,Sabah FK,Borussia Dortmund,TOT:U:4.5|1X2:A:,ТМ4.5 + П2,,FT,W,2026-11-17
+kapper_uk:22052:0,401915392,VfB Stuttgart,Atlético Madrid,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:22061:0,401915404,Sabah FK,Borussia Dortmund,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22079:0,401915313,Real Madrid,RB Leipzig,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
+kapper_uk:22080:0,401915312,Bayern Munich,Arsenal,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22081:0,401915313,Real Madrid,RB Leipzig,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22109:0,,,,,,матч не найден,,,
+kapper_uk:22114:0,401915845,Iberia 1999,Mjällby AIF,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+kapper_uk:22116:0,401915556,Dinamo Zagreb,NEC Nijmegen,TOT:O:3.5,ТБ3.5,,FT,W,2026-11-17
+kapper_uk:22138:0,401882836,Alavés,Málaga,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:22139:0,401879253,Ipswich Town,Nottingham Forest,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:22140:0,401874957,Torino,Monza,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22143:0,401874957,Torino,Monza,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22192:0,401884759,SC Freiburg,Bayern Munich,TOT:O:3.5,ТБ3.5,,FT,W,2026-11-17
+kapper_uk:22207:0,401882828,Sevilla,Osasuna,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:22240:0,401874799,Monza,Napoli,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:22246:0,401874993,AC Milan,Bologna,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:22251:0,401921840,AFC Bournemouth,Aston Villa,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,L,2026-11-17
+kapper_uk:22254:0,401921834,Manchester City,Brighton & Hove Albion,TOT:O:3.5,ТБ3.5,,ET,P,2026-11-17
+kapper_uk:22283:0,401876421,Le Havre AC,Paris Saint-Germain,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
+kapper_uk:22286:0,,,,,,матч не найден,,,
+kapper_uk:22287:0,401876421,Le Havre AC,Paris Saint-Germain,TOT:O:3.5,ТБ3.5,,FT,W,2026-11-17
+kapper_uk:22290:0,,,,,,матч не найден,,,
+kapper_uk:22306:0,401884751,FC Augsburg,SC Freiburg,TOT:O:3.5,ТБ3.5,,FT,L,2026-11-17
+kapper_uk:22307:0,401884748,Werder Bremen,TSG Hoffenheim,DC:X2:,X2,,FT,L,2026-11-17
+kapper_uk:22310:0,401874798,Bologna,Monza,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22314:0,401879251,AFC Bournemouth,Leeds United,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+kapper_uk:22316:0,401884753,Bayer Leverkusen,VfB Stuttgart,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22361:0,401915309,Villarreal,Paris Saint-Germain,1X2:A:,П2,,FT,W,2026-11-17
+kapper_uk:22362:0,,,,,,нет данных,,,
+kapper_uk:22363:0,401915387,Barcelona,Aston Villa,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
+kapper_uk:22370:0,401915310,Shakhtar Donetsk,Sporting CP,TOT:O:1.5,ТБ1.5,,FT,L,2026-11-17
+kapper_uk:22371:0,401915309,Villarreal,Paris Saint-Germain,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22388:0,401915304,Borussia Dortmund,Real Betis,1X2:H:,П1,,FT,W,2026-11-17
+kapper_uk:22400:0,401915382,Fenerbahce,Liverpool,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22405:0,401915306,RB Leipzig,Manchester City,1X2:A:,П2,,FT,W,2026-11-17
+kapper_uk:22417:0,401915536,Levski Sofia,Jagiellonia Bialystok,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+kapper_uk:22420:0,401915537,Real Sociedad,Lyon,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,L,2026-11-17
+kapper_uk:22496:0,401882816,Atlético Madrid,Barcelona,DC:X2:|TOT:O:2.5,X2 + ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22520:0,,,,,,матч не найден,,,
+kapper_uk:22566:0,401861151,Italy,France,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+kapper_uk:22584:0,401861159,Netherlands,Greece,1X2:H:,П1,,FT,W,2026-11-17
+kapper_uk:22586:0,401861160,Slovakia,Faroe Islands,TOT:U:4.5,ТМ4.5,,FT,W,2026-11-17
+kapper_uk:22587:0,,,,,,нет данных,,,
+kapper_uk:22588:0,401861156,Slovenia,Switzerland,TOT:O:2.0,ТБ2,,FT,L,2026-11-17
+kapper_uk:22592:0,,,,,,нет данных,,,
+kapper_uk:22594:0,401861167,Portugal,Denmark,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+kapper_uk:22595:1,401861165,Norway,Wales,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
+kapper_uk:22599:0,401861165,Norway,Wales,AH:A:0.0,Ф2(+0),,FT,L,2026-11-17
+kapper_uk:22604:0,401861170,Austria,Republic of Ireland,DC:1X:|TOT:O:1.5,1X + ТБ1.5,,FT,L,2026-11-17
+kapper_uk:22605:0,401861166,Sweden,Bosnia-Herzegovina,AH:H:-1.0,Ф1(-1),,FT,P,2026-11-17
+kapper_uk:22606:0,401861169,Northern Ireland,Ukraine,TOT:O:1.5,ТБ1.5,,FT,L,2026-11-17
+kapper_uk:22611:0,401861175,Spain,England,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+kapper_uk:22612:0,401861178,Croatia,Czechia,DC:1X:|TOT:U:3.5,1X + ТМ3.5,,FT,W,2026-11-17
+kapper_uk:22613:0,401861175,Spain,England,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+kapper_uk:22614:0,,,,,,нет данных,,,
+stavki_na_sport_betting1:19123:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19187:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19402:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19402:1,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19462:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19470:1,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19719:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:337266601:0,401879267,Coventry City,Newcastle United,AH:A:0.0,Ф2(+0),,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:337390778:0,401879267,Coventry City,Newcastle United,IT2:O:1.5,ИТ2 Б1.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:338458118:0,401915435,Galatasaray,Barcelona,TOT:O:2.5|BTTS:Y:,ТБ2.5 + ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:338565176:0,401915434,RB Leipzig,PSV Eindhoven,IT1:O:2.0,ИТ1 Б2,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:338714548:0,,,,,,нет данных,,,
+stavki_na_sport_betting1:slip:338813280:0,401915412,Atlético Madrid,Manchester United,BTTS:Y:,ОЗ да,,FT,L,2026-11-17
+stavki_na_sport_betting1:19051:s0,401915417,Arsenal,Lille,TOT:U:4.0,ТМ4,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:339197711:0,401915411,Viking FK,Bayern Munich,AH:A:-1.0,Ф2(-1),,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:340213277:0,401915415,LASK Linz,Liverpool,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:340375447:0,401915414,AS Roma,Real Madrid,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:340546486:0,401915409,Aston Villa,Fenerbahce,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:340729930:0,401915393,Bodo/Glimt,Borussia Dortmund,TOT:O:3.0,ТБ3,,FT,L,2026-11-17
+stavki_na_sport_betting1:19085:s0,401915407,Manchester City,Paris Saint-Germain,IT2:O:0.5,ИТ2 Б0.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:340828490:0,,,,,,нет данных,,,
+stavki_na_sport_betting1:slip:342105310:0,401915568,RB Salzburg,AC Milan,AH:A:0.0,Ф2(+0),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:342191438:0,401915563,TSG Hoffenheim,Besiktas,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:342297580:0,401915562,Benfica,Celtic,TOT:O:3.0,ТБ3,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:342468084:0,401915560,Celta Vigo,Juventus,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:343884799:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19136:s0,401882846,Real Betis,Barcelona,1X2:A:|BTTS:Y:,П2 + ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:345390921:0,401879262,Brentford,Liverpool,DC:12:,12,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:347097487:0,401876435,Lorient,AS Monaco,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:347241332:0,401882839,Real Madrid,Sevilla,TOT:O:3.0,ТБ3,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:347241332:1,401882839,Real Madrid,Sevilla,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:347555545:0,401874978,AC Milan,Atalanta,IT2:O:0.5,ИТ2 Б0.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:347920190:0,401882839,Real Madrid,Sevilla,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:350346796:0,401915399,Paris Saint-Germain,Barcelona,IT2:O:1.5,ИТ2 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:350346955:0,401915397,Liverpool,Villarreal,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:350353095:0,401915399,Paris Saint-Germain,Barcelona,DC:12:,12,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:350944557:0,401915400,Napoli,Bodo/Glimt,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:350945070:0,401915399,Paris Saint-Germain,Barcelona,TOT:O:3.5,ТБ3.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:352280337:0,401915391,Sporting CP,LASK Linz,TOT:O:3.0,ТБ3,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:352548506:0,401915395,Como,Manchester United,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:352696095:0,401915313,Real Madrid,RB Leipzig,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:354785022:0,401915552,AFC Bournemouth,AC Milan,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:354864802:0,401915557,SK Sturm Graz,Marseille,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:354863625:0,401915553,Besiktas,Crystal Palace,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:355129585:0,401915837,Ajax Amsterdam,Atalanta,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:356517087:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:357283582:0,401878768,Arsenal,Everton,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:357500411:0,401878768,Arsenal,Everton,AH:H:-1.0,Ф1(-1),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:358316153:0,401878767,Chelsea,Tottenham Hotspur,TOT:O:0.5,ТБ0.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:359571226:0,401884759,SC Freiburg,Bayern Munich,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:359665287:0,401878765,Liverpool,Brighton & Hove Albion,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:359955169:0,401882832,Barcelona,Real Madrid,IT1:O:2.0,ИТ1 Б2,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:361235138:0,401888264,Besiktas,Istanbul Basaksehir,AH:H:-1.0,Ф1(-1),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:363013221:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:363252089:0,401874780,AS Roma,Cagliari,AH:H:-1.0,Ф1(-1),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:363827041:0,401921835,Fleetwood Town,Arsenal,IT2:O:1.5,ИТ2 Б1.5,,ET,P,2026-11-17
+stavki_na_sport_betting1:slip:363945524:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:364836918:0,401921842,Liverpool,Chelsea,DC:1X:,1X,,ET,W,2026-11-17
+stavki_na_sport_betting1:slip:366503096:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:368501733:0,401876420,Lille,Lens,DC:1X:,1X,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:369313510:0,401884754,Bayern Munich,Borussia Dortmund,TOT:O:3.0,ТБ3,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:369723624:0,401879245,Manchester City,Brighton & Hove Albion,BTTS:Y:,ОЗ да,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:369906461:0,401882822,Barcelona,Alavés,IT1:O:2.5,ИТ1 Б2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:371666700:0,401882819,Racing Santander,Real Madrid,AH:A:-1.5,Ф2(-1.5),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:371803999:0,401879246,Liverpool,Arsenal,IT1:O:1.0,ИТ1 Б1,,FT,L,2026-11-17
+stavki_na_sport_betting1:19463:s0,401882819,Racing Santander,Real Madrid,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:375129977:0,401915308,Manchester United,AS Roma,DC:12:,12,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:375506136:0,401915387,Barcelona,Aston Villa,BTTS:Y:,ОЗ да,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:375755519:0,401915386,Atlético Madrid,Bayern Munich,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:375784436:0,401915387,Barcelona,Aston Villa,TOT:O:2.5|BTTS:Y:,ТБ2.5 + ОЗ да,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:375875573:0,401915308,Manchester United,AS Roma,IT2:O:1.5,ИТ2 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:19498:s0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:19498:s1,401915387,Barcelona,Aston Villa,IT2:O:0.5,ИТ2 Б0.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:377340720:0,401915305,Lens,Como,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:377456747:0,401915306,RB Leipzig,Manchester City,TOT:O:3.0,ТБ3,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:378193243:0,401915383,AEK Athens,Real Madrid,AH:A:-1.0,Ф2(-1),,FT,P,2026-11-17
+stavki_na_sport_betting1:slip:379988117:0,401915526,Crystal Palace,TSG Hoffenheim,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:380134868:0,401915533,Bayer Leverkusen,Marseille,AH:H:-1.0,Ф1(-1),,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:380214934:0,401915525,Benfica,Lech Poznan,IT1:O:2.5,ИТ1 Б2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:380263373:0,401915528,Sparta Prague,AFC Bournemouth,IT2:O:1.5,ИТ2 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:19552:s0,,,,,,нет данных,,,
+stavki_na_sport_betting1:slip:382273133:0,401882809,Sevilla,Alavés,TOT:O:1.5,ТБ1.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:383522350:0,401874803,AS Roma,Sassuolo,AH:H:-1.0,Ф1(-1),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:383762934:0,401878757,Nottingham Forest,Manchester City,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:383768100:0,401878758,Leeds United,Tottenham Hotspur,TOT:O:1.5,ТБ1.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:384719186:0,401876407,Paris Saint-Germain,Troyes,TOT:O:3.0,ТБ3,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:386034558:0,401874808,Internazionale,Como,BTTS:Y:,ОЗ да,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:386168807:0,401882816,Atlético Madrid,Barcelona,TOT:O:2.5|BTTS:Y:,ТБ2.5 + ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:386640624:0,401882816,Atlético Madrid,Barcelona,AH:A:0.0,Ф2(+0),,FT,W,2026-11-17
+stavki_na_sport_betting1:19600:s0,401876404,Lens,Marseille,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
+stavki_na_sport_betting1:slip:390176509:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:390986717:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:391194223:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:392105947:0,401861149,San Marino,Belarus,IT2:O:2.0,ИТ2 Б2,,FT,P,2026-11-17
+stavki_na_sport_betting1:slip:392165534:0,401861148,Czechia,Spain,IT2:O:2.0,ИТ2 Б2,,FT,P,2026-11-17
+stavki_na_sport_betting1:slip:392248376:0,401930962,Uzbekistan,Russia,TOT:O:2.0,ТБ2,,FT,W,2026-11-17
+stavki_na_sport_betting1:19649:s0,401861150,England,Croatia,1X2:H:,П1,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:392649668:0,401861151,Italy,France,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:393629331:0,401861159,Netherlands,Greece,BTTS:Y:,ОЗ да,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:393724554:0,401861161,Scotland,North Macedonia,IT1:O:2.0,ИТ1 Б2,,FT,P,2026-11-17
+stavki_na_sport_betting1:slip:393836813:0,401861158,Serbia,Germany,AH:A:-1.5,Ф2(-1.5),,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:394015366:0,401861159,Netherlands,Greece,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:394069870:0,401861156,Slovenia,Switzerland,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:395315010:0,401861166,Sweden,Bosnia-Herzegovina,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:395474514:0,,,,,,нет данных,,,
+stavki_na_sport_betting1:slip:395766800:0,401861165,Norway,Wales,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:396070106:0,401861168,Romania,Poland,IT2:O:1.5,ИТ2 Б1.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:397197748:0,401861175,Spain,England,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:397384212:0,401861176,Belgium,Italy,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:397649685:0,401861177,France,Türkiye,IT1:O:2.5,ИТ1 Б2.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:397714633:0,,,,,,нет данных,,,
+xs_stavkii:8029:0,401861184,Lithuania,Liechtenstein,IT1:O:2.0,ИТ1 Б2,,FT,P,2026-11-17
+xs_stavkii:8029:2,401861187,North Macedonia,Slovenia,1X2:A:,П2,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:398624828:0,401861186,Switzerland,Scotland,TOT:O:2.0,ТБ2,,FT,W,2026-11-17
+kapper_uk:22622:0,401861185,Germany,Netherlands,TOT:O:3.0,ТБ3,,FT,W,2026-11-17
+kapper_uk:22621:0,401861181,Kazakhstan,Slovakia,TOT:O:2.0,ТБ2,,FT,W,2026-11-17
+kapper_uk:22620:0,,,,,,нет данных,,,
+kapper_uk:22623:0,401861185,Germany,Netherlands,BTTS:Y:|TOT:U:5.5,ОЗ да + ТМ5.5,,FT,L,2026-11-17
+stavki_na_sport_betting1:slip:398788458:0,401861185,Germany,Netherlands,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:398905064:0,401861188,Greece,Serbia,AH:H:-1.0,Ф1(-1),,FT,P,2026-11-17
+kapper_uk:22629:0,401861186,Switzerland,Scotland,TOT:O:2.0,ТБ2,,FT,W,2026-11-17
+kapper_uk:22627:0,401861185,Germany,Netherlands,DC:1X:|BTTS:Y:,1X + ОЗ да,,FT,L,2026-11-17
+kapper_uk:22626:0,401861186,Switzerland,Scotland,1X2:H:,П1,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:399037160:0,,,,,,нет данных,,,
+kapper_uk:22630:0,401861186,Switzerland,Scotland,IT2:O:0.5,ИТ2 Б0.5,,FT,L,2026-11-17
+kapper_uk:22646:0,401861190,Ukraine,Georgia,TOT:O:2.0,ТБ2,,,,
+kapper_uk:22645:0,401861192,Republic of Ireland,Kosovo,IT1:O:1.0,ИТ1 Б1,,,,
+kapper_uk:22644:0,,,,,,матч не найден,,,
+kapper_uk:22643:1,401861189,Wales,Portugal,1X2:A:,П2,,,,
+kapper_uk:22642:0,401861194,Denmark,Norway,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,,,
+kapper_uk:22641:0,401861189,Wales,Portugal,TOT:U:3.5,ТМ3.5,,,,
+xs_stavkii:8031:0,,,,,,нет данных,,,
+xs_stavkii:8031:1,401861195,Poland,Sweden,AH:H:0.0,Ф1(+0),,,,
+stavki_na_sport_betting1:slip:400255830:0,401861189,Wales,Portugal,BTTS:Y:,ОЗ да,,,,
+stavki_na_sport_betting1:slip:400455357:0,401930978,Russia,Venezuela,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-17
+stavki_na_sport_betting1:slip:400535581:0,401861194,Denmark,Norway,TOT:O:2.5,ТБ2.5,,,,
+kapper_uk:22651:0,401861194,Denmark,Norway,DC:1X:|BTTS:Y:,1X + ОЗ да,,,,
+kapper_uk:22650:0,401861195,Poland,Sweden,DC:X2:,X2,,,,
+kapper_uk:22649:0,401931495,Saudi Arabia,Uzbekistan,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22648:0,401931495,Saudi Arabia,Uzbekistan,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
+stavki_na_sport_betting1:slip:400744138:0,,,,,,нет данных,,,

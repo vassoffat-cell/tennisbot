@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parent
 BOOK = ROOT / 'football' / 'data' / 'tips' / 'book.csv'
 WIDE = ROOT / 'football' / 'data' / 'tips' / 'tips_all.csv'
 HK = ROOT / 'hockey' / 'data' / 'tips.csv'
+IND = ROOT / 'football' / 'data' / 'tips' / 'book_ind.csv'   # 18.11 К13: независимая сверка строк книги с табло ESPN
 SRC = {'stavki_na_sport_betting1': 'Green Line', 'stavki': 'Прогнозы', 'xs_stavkii': 'Хитрости', 'groznyi_ruslan': 'Грозный',
        'kapper_uk': 'Каппер UK', 'nb-bet': 'nb-bet'}
 SPORT = {'tennis': ('🎾', 'Теннис', 'по теннису'), 'hockey': ('🏒', 'Хоккей', 'по хоккею'), 'football': ('⚽', 'Футбол', 'по футболу')}
@@ -51,30 +52,37 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
     if len(b):
         b = b[(b.sport == sport) & (b.a != '')]
         hk = _read(HK).set_index('uid') if sport == 'hockey' and HK.exists() else pd.DataFrame()
+        ind = _read(IND).set_index('uid') if sport == 'football' and IND.exists() else pd.DataFrame()
         for r in b.itertuples(index=False):
             if getattr(r, 'seen', '') == 'post':                 # купон, показанный после матча, — не прогноз
                 continue
             if str(r.pick).startswith('❔'):                     # 15.11: не разобранный пост (страховочная сеть) — в статистику не идёт
                 continue
-            res, rel, ind, live = r.self if r.self in MARK else '', '', '', ''
+            res, rel, ind_, live, eid, lab = r.self if r.self in MARK else '', '', '', '', '', ''
+            if len(ind) and r.uid in ind.index:                     # К13: итог по табло важнее отметки самого канала
+                x = ind.loc[r.uid]
+                if x.result in ('W', 'L', 'P'):
+                    res, ind_ = x.result, x.result
+                eid, lab = str(x.espn_id), str(x.label)
             if len(hk) and r.uid in hk.index:
                 h = hk.loc[r.uid]
-                ind = h.result if h.result in MARK else ''
-                res = res or ind
+                ind_ = h.result if h.result in MARK else ''
+                res = res or ind_
                 rel = str(h.rel)
                 live = '1' if str(h.get('live', '')) == '1' else ''
-            out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.a} — {r.b}', pick=str(r.pick)[:40], k=r.k, res=res, rel=rel, ind=ind, live=live,
-                            post=str(getattr(r, 'post_id', '')), wide=0))
+            out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.a} — {r.b}', pick=str(r.pick)[:40], k=r.k, res=res, rel=rel, ind=ind_, live=live,
+                            post=str(getattr(r, 'post_id', '')), wide=0, eid=eid, lab=lab))
     if sport == 'football':
         w = _read(WIDE)
         for r in w.itertuples(index=False) if len(w) else []:
             live = '1' if pd.to_datetime(r.post_ts, errors='coerce') > pd.to_datetime(r.start_utc, errors='coerce') else ''
             out.append(dict(ts=r.post_ts, src=r.src, match=f'{r.home} — {r.away}', pick=str(r.label or r.raw)[:40], k=r.k,
                             res=r.result if r.result in MARK else '', rel='', ind=r.result if r.result in MARK else '', live=live,
-                            post=(str(r.uid).split(':')[2] if str(r.uid).startswith('tg:') and str(r.uid).count(':') >= 2 else ''), wide=1))
+                            post=(str(r.uid).split(':')[2] if str(r.uid).startswith('tg:') and str(r.uid).count(':') >= 2 else ''), wide=1,
+                            eid=str(r.espn_id), lab=str(r.label)))
     # 14.11 20:38 (решение пользователя): прогноз, опубликованный после начала матча (live = '1'), учитывается в статистике
     # и самообучении, но помечен 🔴
-    df = pd.DataFrame(out, columns=['ts', 'src', 'match', 'pick', 'k', 'res', 'rel', 'ind', 'live', 'post', 'wide'])
+    df = pd.DataFrame(out, columns=['ts', 'src', 'match', 'pick', 'k', 'res', 'rel', 'ind', 'live', 'post', 'wide', 'eid', 'lab'])
     if not len(df):
         return df
     loc = pd.to_datetime(df.ts, errors='coerce') + pd.Timedelta(hours=tz) - pd.Timedelta(hours=day_start)
@@ -96,10 +104,14 @@ def rows(sport: str, d0: dt.date, d1: dt.date, day_start: int = 8, tz: int = 5) 
         if nw and len(bk) and len(bk) <= nw:
             drop += list(bk.index)
     df = df.drop(index=drop)
+    # К13: строка книги и строка сверки — одна и та же ставка (тот же канал, матч ESPN и запись ставки) → остаётся сверка
+    wk = {(s, e, l) for s, e, l, w in zip(df.src, df.eid, df.lab, df.wide) if w == 1 and e}
+    dup = pd.Series([(s, e, l) in wk for s, e, l in zip(df.src, df.eid, df.lab)], index=df.index)
+    df = df[~((df.wide == 0) & dup)]
     # прогноз старше суток без итога — не «ждёт», а «итог не найден» (рынок без данных: угловые, карточки; матч не опознан)
     old = pd.to_datetime(df.ts, errors='coerce') < pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=STALE_H)
     df.loc[(df.res == '') & old, 'res'] = 'N'
-    return df.drop(columns=['has', 'post', 'wide']).sort_values('ts')        # ind — итог по независимому табло (ESPN / наша база), не отметка канала
+    return df.drop(columns=['has', 'post', 'wide', 'eid', 'lab']).sort_values('ts')        # ind — итог по независимому табло (ESPN / наша база), не отметка канала
 
 
 def report(sport: str, d0: dt.date, d1: dt.date, title: str, day_start: int = 8) -> str:

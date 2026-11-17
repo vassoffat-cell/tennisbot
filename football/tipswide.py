@@ -38,7 +38,8 @@ COUNTRY = {
     'португалия': 'portugal', 'нидерланды': 'netherlands', 'голландия': 'netherlands', 'греция': 'greece', 'турция': 'turkiye',
     'польша': 'poland', 'чехия': 'czechia', 'швейцария': 'switzerland', 'австрия': 'austria', 'дания': 'denmark',
     'швеция': 'sweden', 'норвегия': 'norway', 'финляндия': 'finland', 'шотландия': 'scotland', 'уэльс': 'wales',
-    'ирландия': 'republic of ireland', 'северная ирландия': 'northern ireland', 'хорватия': 'croatia', 'сербия': 'serbia',
+    'ирландия': 'republic of ireland', 'россия': 'russia', 'мадагаскар': 'madagascar', 'гвинея-бисау': 'guinea bissau',
+    'венесуэла': 'venezuela', 'гамбия': 'gambia', 'узбекистан': 'uzbekistan', 'северная ирландия': 'northern ireland', 'хорватия': 'croatia', 'сербия': 'serbia',
     'словения': 'slovenia', 'словакия': 'slovakia', 'венгрия': 'hungary', 'румыния': 'romania', 'болгария': 'bulgaria',
     'украина': 'ukraine', 'беларусь': 'belarus', 'грузия': 'georgia', 'армения': 'armenia', 'азербайджан': 'azerbaijan',
     'казахстан': 'kazakhstan', 'узбекистан': 'uzbekistan', 'исландия': 'iceland', 'израиль': 'israel', 'кипр': 'cyprus',
@@ -115,6 +116,15 @@ def match_pair(a: str, b: str, events: list[dict], when: int | None = None) -> t
             hits[e['id']] = (e, False)
         elif _same(ra, w) and _same(rb, h):
             hits.setdefault(e['id'], (e, True))
+    if len(hits) > 1:                                              # 18.11: «Атлетико — Барселона» — несколько «Атлетико …»:
+        def sc(v):                                                 # берём событие, где совпало больше слов названий
+            e, fl = v
+            h, w = (e['_a'], e['_h']) if fl else (e['_h'], e['_a'])
+            return sum(any(T._like(x, y) for y in h[1]) for x in ra[1]) + sum(any(T._like(x, y) for y in w[1]) for x in rb[1])
+        best = max(sc(v) for v in hits.values())
+        top = {k: v for k, v in hits.items() if sc(v) == best}
+        if len(top) == 1:
+            hits = top
     if len(hits) > 1 and when is not None:
         def mins(e):
             t = pd.Timestamp(e['start'])
@@ -441,3 +451,135 @@ def report_block() -> str:
                      for r in st.itertuples(index=False) if r.nk > 1)
     return ('👥 <b>Каперы · все матчи</b>\n' + rtable.render(rows, ('Источник (кф)', 'Кол-во', '%'))
             + (f'\nROI: {roi}' if roi else ''))
+
+
+# ------------------------------------------------------------------ 18.11 независимая сверка строк книги (К13)
+# Книга каналов (tipsbook) знает пару команд и текст ставки, но итог ставила только по отметке ✅/❌ самого канала. Здесь каждая
+# футбольная строка книги сверяется с табло ESPN: пара → событие, ставка (форматы Каппер UK и проза → обычная запись) → итог по
+# счёту 90 минут. Файл data/tips/book_ind.csv (uid книги → событие, ноги, итог); отчёт каперов (caprep) берёт итог отсюда.
+BOOK = T.DIR / 'book.csv'
+BOOK_IND = T.DIR / 'book_ind.csv'
+IND_COLS = ['uid', 'espn_id', 'home', 'away', 'legs', 'label', 'why', 'status', 'result', 'settled']
+NICK = {'горожан': 'манчестер сити', 'шмел': 'боруссия', 'сине-гранатов': 'барселона', 'сливочн': 'реал', 'канонир': 'арсенал',
+        'красных дьявол': 'манчестер юнайтед', 'матрасник': 'атлетико', 'нерадзурри': 'интер', 'россонери': 'милан',
+        'парижан': 'псж', 'баварц': 'бавария', 'подводник': 'вильярреал', 'бьянконер': 'ювентус', 'старой синьор': 'ювентус',
+        'аспирин': 'байер', 'фармацевт': 'байер', 'вилланов': 'астон вилла', 'аристократ': 'челси', 'пенсионер': 'челси',
+        'красных': 'ливерпуль', 'ирискин': 'эвертон', 'чаек': 'брайтон', 'чаёк': 'брайтон', 'сорок': 'ньюкасл', 'шпор': 'тоттенхэм'}
+NUM = {'один': 1, 'одного': 1, 'два': 2, 'двух': 2, 'три': 3, 'трёх': 3, 'трех': 3, 'четыре': 4, 'четырёх': 4, 'четырех': 4, 'пять': 5}
+MKT = r'\bт[бм]\b|\bит[12]?[бм]|ф\d?\(|\bф[12]\b|победа|не проиграет|обе забьют|\bп[12]\b|\b1x\b|\bx2\b|\b12\b'
+NODATA = re.compile(r'тайм|углов|карточ|жёлт|желт|фол|удар|офсайд|\bxg\b|сейв|сэйв|вброс|🟨|🚩|🥅|🎯', re.I)
+
+
+def _n(x: str) -> str:
+    return str(NUM.get(x, x))
+
+
+def norm_pick(sel: str) -> str:
+    """Форматы Каппер UK («Тотал. (2) Б кф 1.965», «Фора. 1 (-1.5)», «1Х2. П1») и проза («минимум три гола», «победа
+    «горожан» минимум в два мяча», «не больше 4 голов») → запись, которую понимает tips.parse_legs."""
+    s = ' ' + sel.lower().replace('ё', 'е').replace('«', ' ').replace('»', ' ').replace('—', '-').replace('–', '-') + ' '
+    s = re.split(r'\.\s*для ставки|\bкф\b|@|логичн|рабоч|основн(?:ой)? сценар|считаю', s)[0]
+    s = re.sub(r'\btb\b', 'тб', re.sub(r'\btm\b', 'тм', s))                  # «TB (1.5)» с картинки (латиница)
+    s = re.sub(r'[^.]*(?:дома|на выезде) слабее\.?', ' ', s)          # «Вилла на выезде слабее. Победа …»
+    s = re.sub(r'\s+', ' ', s)
+    s = re.sub(r'(\b1x|\bx2|\b12|\bп1|\bп2|\bх2|\b1х)\s*и(тм|тб)\b', r'\1 и \2', s)   # «1X иТМ (3.5)» (не «ИТБ»)
+    s = re.sub(r'ничья или победа (\S+)', r' \1 не проиграет ', s)       # «Ничья или победа «Хоффенхайма»» — X2/1X, не П
+    s = re.sub(r'тотал и обе команды забьют,?\s*(больше|меньше)\s*([\d.,]+)\s*и\s*да',
+               lambda m: f" т{'б' if m.group(1) == 'больше' else 'м'} {m.group(2)} и обе забьют да ", s)   # купон Green Line
+    s = re.sub(r'результат и обе команды забьют,?\s*(.+?)\s+и\s+обе забьют', r' победа \1 и обе забьют да ', s)
+    s = re.sub(r'результат основного времени,?\s*', ' победа ', s)
+    s = re.sub(r'(?:первый|второй),\s*результат\s*\+\s*тотал\.?', ' ', s)
+    s = re.sub(r'(?:двойной шанс|тотал)\s*(?:и|\+)\s*обе забьют\.?', ' ', s)
+    s = re.sub(r'индивидуальный тотал\s*([12])-го\.?\s*\(([\d.,]+)\)\s*([бм])', lambda m: f' ит{m.group(1)}{m.group(3)}({m.group(2)}) ', s)
+    s = re.sub(r'тотал\.?\s*\(([\d.,]+)\)\s*([бм])', lambda m: f' т{m.group(2)}({m.group(1)}) ', s)
+    s = re.sub(r'фора\.?\s*([12])\s*\(([-+\d.,]+)\)', r' ф\1(\2) ', s)
+    s = re.sub(r'1x2\.?\s*|1х2\.?\s*', ' ', s)
+    s = re.sub(r'обе забьют\.?\s*да', ' обе забьют да', s)
+    s = re.sub(r'минимум (\w+) гол\w*', lambda m: f' тб {int(_n(m.group(1))) - 0.5} ' if _n(m.group(1)).isdigit() else m.group(0), s)
+    s = re.sub(r'не больше (\w+) гол\w*', lambda m: f' тм {int(_n(m.group(1))) + 0.5} ' if _n(m.group(1)).isdigit() else m.group(0), s)
+    for k, v in NICK.items():
+        s = re.sub(k + r'\w*', v, s)
+    s = re.sub(r'победа (.+?) минимум в (\w+) мяч\w*', lambda m: f' {m.group(1)} ф(-{int(_n(m.group(2))) - 0.5}) '
+               if _n(m.group(2)).isdigit() else m.group(0), s)
+    seg = [x for x in re.split(r'\.\s', s) if re.search(MKT, x)]   # несколько предложений — только те, где есть ставка
+    if seg and len(seg) < len(re.split(r'\.\s', s)):                   # («Вердер дома не всегда побеждает. Ничья или победа …»)
+        s = ' . '.join(seg)
+    if 'победа' in s and 'тб' not in s and 'тм' not in s:          # «Вилла на выезде слабее. Победа …» — важна только победа
+        s = s[s.index('победа'):]
+    return re.sub(r'\s+', ' ', s).strip()
+
+
+def _stems(name: str) -> set[str]:
+    return {w[:5] for w in T._words(name.lower().replace('ё', 'е')) if len(w) >= 3}
+
+
+def _side_ru(s: str, a: str, b: str) -> bool | None:
+    """Команда, названная в ставке: True — первая в паре поста, False — вторая, None — не названа / обе."""
+    ws = {w[:5] for w in T._words(s) if len(w) >= 3}
+    ia, ib = bool(ws & _stems(a)), bool(ws & _stems(b))
+    return True if ia and not ib else False if ib and not ia else None
+
+
+def _ind_load() -> pd.DataFrame:
+    if BOOK_IND.exists():
+        return pd.read_csv(BOOK_IND, dtype=str, keep_default_na=False).reindex(columns=IND_COLS, fill_value='')
+    return pd.DataFrame(columns=IND_COLS)
+
+
+def book_ind(log: list[str], days: int = 45) -> int:
+    """Сверка строк книги с табло: новые и ещё не рассчитанные (не старше days дней)."""
+    try:
+        b = pd.read_csv(BOOK, dtype=str, keep_default_na=False)
+    except Exception:
+        return 0
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
+    b = b[(b.sport == 'football') & (b.a != '') & (b.seen != 'post') & ~b.pick.str.startswith('❔')
+          & (pd.to_datetime(b.post_ts, errors='coerce') > now - pd.Timedelta(days=days))]
+    ind = _ind_load()
+    done = {u for u, r, w in zip(ind.uid, ind.result, ind.why) if r in ('W', 'L', 'P') or w in ('нет данных', 'не разобрано')}
+    rows = {u: i for i, u in enumerate(ind.uid)}
+    cache: dict = {}
+    out = ind.to_dict('records')
+    n = 0
+    for r in b.itertuples(index=False):
+        if r.uid in done:
+            continue
+        sel = str(r.pick)
+        rec = dict(uid=r.uid, espn_id='', home='', away='', legs='', label='', why='', status='', result='', settled='')
+        if NODATA.search(sel):
+            rec['why'] = 'нет данных'
+        else:
+            ts = pd.Timestamp(r.post_ts)
+            hit = match_pair(r.a, r.b, _events_around(ts, cache), msk_time(str(r.raw)))
+            if not hit:
+                rec['why'] = 'матч не найден'
+            else:
+                e, flip = hit
+                tm = (e['away'], e['home']) if flip else (e['home'], e['away'])
+                s = norm_pick(sel)
+                legs = T.parse_legs(s, _side_ru(s, r.a, r.b), tm, True)
+                parts = len(re.findall(r'\s(?:и|\+)\s', ' ' + s + ' ')) + 1
+                if 'победа' in s and re.search(r'\bт[бм]\b', s) and ' и ' not in s:   # «не больше 4 голов. Победа «шмелей»»
+                    pw = s[s.index('победа'):]
+                    lw = T.parse_legs(pw, _side_ru(pw, r.a, r.b), tm, True)
+                    legs = (legs or []) + [x for x in (lw or []) if x[0] == '1X2' and not any(y[0] == '1X2' for y in (legs or []))]
+                    parts = 2
+                if not legs or len(legs) < parts:
+                    rec.update(espn_id=str(e['id']), home=e['home'], away=e['away'], why='не разобрано')
+                else:
+                    legs = _flip(legs) if flip else legs
+                    rec.update(espn_id=str(e['id']), home=e['home'], away=e['away'], legs=T._enc(legs),
+                               label=' + '.join(T.leg_label(lg) for lg in legs))
+                    if e.get('kind'):
+                        ft = e['kind'] == 'FT'
+                        rec.update(status=e['kind'], result=T.settle_legs(legs, e['kind'], int(e['hg']) if ft else None,
+                                                                        int(e['ag']) if ft else None), settled=f'{now:%Y-%m-%d}')
+                        n += 1
+        if r.uid in rows:
+            out[rows[r.uid]] = rec
+        else:
+            rows[r.uid] = len(out)
+            out.append(rec)
+    pd.DataFrame(out, columns=IND_COLS).to_csv(BOOK_IND, index=False)
+    log.append(f'👥 книга × табло: рассчитано {n}, строк {len(out)}')
+    return n
