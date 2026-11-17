@@ -225,7 +225,7 @@ tg:xs_stavkii:8008:401878757,xs_stavkii,Хитрости,2026-11-07 11:00,202611
 tg:xs_stavkii:8010:401878945,xs_stavkii,Хитрости,2026-11-08 11:23,20261108,401878945,2026-11-08 15:00,KAA Gent,KV Kortrijk,1X2:H:,П1,1.55,победа Гента — кф. 1.55✅,FT,W,2026-11-11
 tg:xs_stavkii:8017:401861149,xs_stavkii,Хитрости,2026-11-12 12:41,20261112,401861149,2026-11-12 19:45,San Marino,Belarus,IT2:O:2.0,ИТ2 Б2,1.51,Беларусь ИТБ(2) — кф. 1.51,FT,P,2026-11-12
 tg:xs_stavkii:8020:401861161,xs_stavkii,Хитрости,2026-11-13 11:18,20261113,401861161,2026-11-13 19:45,Scotland,North Macedonia,1X2:H:|TOT:U:4.5,П1 + ТМ4.5,1.52,победа Шотландии + ТМ 4.5 — кф. 1.52✅,FT,W,2026-11-13
-tg:xs_stavkii:8031:401861195,xs_stavkii,Хитрости,2026-11-17 12:56,20261117,401861195,2026-11-17 19:45,Poland,Sweden,AH:H:0.0,Ф1(+0),,Фора 1 (0) - 1.60,,,
+tg:xs_stavkii:8031:401861195,xs_stavkii,Хитрости,2026-11-17 12:56,20261117,401861195,2026-11-17 19:45,Poland,Sweden,AH:H:0.0,Ф1(+0),,Фора 1 (0) - 1.60,FT,P,2026-11-17
 tg:groznyi_ruslan:12902:401874763,groznyi_ruslan,Грозный,2026-10-12 07:42,20261012,401874763,2026-10-12 18:45,Torino,Udinese,TOT:O:2.0,ТБ2,,ТБ (2),FT,W,2026-11-17
 tg:groznyi_ruslan:12924:401880218,groznyi_ruslan,Грозный,2026-10-16 15:34,20261016,401880218,2026-10-16 19:00,Burnley,Wolverhampton Wanderers,DC:X2:|TOT:U:4.5,X2 + ТМ4.5,,2X и ТМ (4.5),FT,W,2026-11-17
 tg:groznyi_ruslan:12928:401874953,groznyi_ruslan,Грозный,2026-10-17 07:37,20261017,401874953,2026-10-17 16:00,Bologna,Internazionale,TOT:O:2.5,ТБ2.5,,"ТБ (2,5)",FT,W,2026-11-17
@@ -353,5 +353,5 @@ tg:stavki_na_sport_betting1:s3973842120:401861176,stavki_na_sport_betting1,Green
 tg:stavki_na_sport_betting1:s3986248280:401861186,stavki_na_sport_betting1,Green Line,2026-11-16 12:03,20261116,401861186,2026-11-16 19:45,Switzerland,Scotland,TOT:O:2.0,ТБ2,1.44,ТБ(2.0) кф. 1.44,FT,W,2026-11-16
 tg:stavki_na_sport_betting1:s3987884580:401861185,stavki_na_sport_betting1,Green Line,2026-11-16 14:18,20261116,401861185,2026-11-16 19:45,Germany,Netherlands,TOT:O:2.5,ТБ2.5,1.41,ТБ(2.5) кф. 1.41,FT,W,2026-11-16
 tg:stavki_na_sport_betting1:s3989050640:401861188,stavki_na_sport_betting1,Green Line,2026-11-16 15:35,20261116,401861188,2026-11-16 19:45,Greece,Serbia,AH:A:-1.0,Ф2(-1),1.68,греция фора (-1) кф. 1.68,FT,L,2026-11-16
-tg:stavki_na_sport_betting1:s4002558300:401861189,stavki_na_sport_betting1,Green Line,2026-11-17 12:15,20261117,401861189,2026-11-17 19:45,Wales,Portugal,BTTS:Y:,ОЗ да,1.67,обе забьют да кф. 1.67,,,
-tg:stavki_na_sport_betting1:s4005355810:401861194,stavki_na_sport_betting1,Green Line,2026-11-17 15:38,20261117,401861194,2026-11-17 19:45,Denmark,Norway,TOT:O:2.5,ТБ2.5,1.45,ТБ(2.5) кф. 1.45,,,
+tg:stavki_na_sport_betting1:s4002558300:401861189,stavki_na_sport_betting1,Green Line,2026-11-17 12:15,20261117,401861189,2026-11-17 19:45,Wales,Portugal,BTTS:Y:,ОЗ да,1.67,обе забьют да кф. 1.67,FT,W,2026-11-17
+tg:stavki_na_sport_betting1:s4005355810:401861194,stavki_na_sport_betting1,Green Line,2026-11-17 15:38,20261117,401861194,2026-11-17 19:45,Denmark,Norway,TOT:O:2.5,ТБ2.5,1.45,ТБ(2.5) кф. 1.45,FT,W,2026-11-17

@@ -317,19 +317,19 @@ kapper_uk:22627:0,401861185,Germany,Netherlands,DC:1X:|BTTS:Y:,1X + ОЗ да,,F
 kapper_uk:22626:0,401861186,Switzerland,Scotland,1X2:H:,П1,,FT,W,2026-11-17
 stavki_na_sport_betting1:slip:399037160:0,,,,,,нет данных,,,
 kapper_uk:22630:0,401861186,Switzerland,Scotland,IT2:O:0.5,ИТ2 Б0.5,,FT,L,2026-11-17
-kapper_uk:22646:0,401861190,Ukraine,Georgia,TOT:O:2.0,ТБ2,,,,
-kapper_uk:22645:0,401861192,Republic of Ireland,Kosovo,IT1:O:1.0,ИТ1 Б1,,,,
+kapper_uk:22646:0,401861190,Ukraine,Georgia,TOT:O:2.0,ТБ2,,FT,L,2026-11-17
+kapper_uk:22645:0,401861192,Republic of Ireland,Kosovo,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-17
 kapper_uk:22644:0,,,,,,матч не найден,,,
-kapper_uk:22643:1,401861189,Wales,Portugal,1X2:A:,П2,,,,
-kapper_uk:22642:0,401861194,Denmark,Norway,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,,,
-kapper_uk:22641:0,401861189,Wales,Portugal,TOT:U:3.5,ТМ3.5,,,,
+kapper_uk:22643:1,401861189,Wales,Portugal,1X2:A:,П2,,FT,W,2026-11-17
+kapper_uk:22642:0,401861194,Denmark,Norway,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22641:0,401861189,Wales,Portugal,TOT:U:3.5,ТМ3.5,,FT,L,2026-11-17
 xs_stavkii:8031:0,,,,,,нет данных,,,
-xs_stavkii:8031:1,401861195,Poland,Sweden,AH:H:0.0,Ф1(+0),,,,
-stavki_na_sport_betting1:slip:400255830:0,401861189,Wales,Portugal,BTTS:Y:,ОЗ да,,,,
+xs_stavkii:8031:1,401861195,Poland,Sweden,AH:H:0.0,Ф1(+0),,FT,P,2026-11-17
+stavki_na_sport_betting1:slip:400255830:0,401861189,Wales,Portugal,BTTS:Y:,ОЗ да,,FT,W,2026-11-17
 stavki_na_sport_betting1:slip:400455357:0,401930978,Russia,Venezuela,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-17
-stavki_na_sport_betting1:slip:400535581:0,401861194,Denmark,Norway,TOT:O:2.5,ТБ2.5,,,,
-kapper_uk:22651:0,401861194,Denmark,Norway,DC:1X:|BTTS:Y:,1X + ОЗ да,,,,
-kapper_uk:22650:0,401861195,Poland,Sweden,DC:X2:,X2,,,,
+stavki_na_sport_betting1:slip:400535581:0,401861194,Denmark,Norway,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
+kapper_uk:22651:0,401861194,Denmark,Norway,DC:1X:|BTTS:Y:,1X + ОЗ да,,FT,L,2026-11-17
+kapper_uk:22650:0,401861195,Poland,Sweden,DC:X2:,X2,,FT,W,2026-11-17
 kapper_uk:22649:0,401931495,Saudi Arabia,Uzbekistan,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
 kapper_uk:22648:0,401931495,Saudi Arabia,Uzbekistan,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-17
 stavki_na_sport_betting1:slip:400744138:0,,,,,,нет данных,,,
