@@ -337,3 +337,38 @@ def settle(store: J.Store, sheet: str = 'day_pick') -> int:
         upd.append(i)
     store.update(sheet, dp.loc[upd], ['status', 'result', 'settled'])
     return len(upd)
+
+
+def shadow_settle(store: J.Store, folder) -> int:
+    """ТЗ-007 §3 (17.11): итог бумажных ставок теневого портфеля (<data>/shadow/*.csv) — тем же правилом и счётом, что ставки дня.
+    Разбор (engine/research/shadow_eval.py) читает только файлы репозитория — без таблиц."""
+    from pathlib import Path
+    files = sorted(Path(folder, 'shadow').glob('*.csv'))[-2:]           # текущий и прошлый месяц
+    if not files:
+        return 0
+    af = store.read('auto_forecasts')
+    res_af = {str(J.num(e)): (str(st), hg, ag, se) for e, st, hg, ag, se in zip(af.espn_id, af.status, af.hg, af.ag, af.settled)
+              if str(se).strip() not in ('', 'nan')}
+    n = 0
+    for f in files:
+        df = pd.read_csv(f, dtype=str, keep_default_na=False)
+        for c in ('result', 'settled'):
+            if c not in df:
+                df[c] = ''
+        k = 0
+        for i, r in df.iterrows():
+            x = None if str(r.result).strip() else res_af.get(str(J.num(r.espn_id)))
+            if not x:
+                continue
+            st, hg, ag, se = x
+            ft = st == 'FT'
+            try:
+                res = FL.settle(str(r.market), str(r.pick), r.line, st, int(J.num(hg)) if ft else None, int(J.num(ag)) if ft else None)
+            except Exception:
+                continue
+            df.at[i, 'result'], df.at[i, 'settled'] = res, str(se)
+            k += 1
+        if k:
+            df.to_csv(f, index=False)
+            n += k
+    return n

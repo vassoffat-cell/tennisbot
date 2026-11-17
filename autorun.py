@@ -758,6 +758,12 @@ def run(dry: bool = False) -> str:
             daypick.settle(store, "dp_changes")
         except Exception as ex_:
             print(f"dp_changes: {ex_}")
+        try:                                                       # ТЗ-007 §3: итоги теневого портфеля
+            ns_ = daypick.shadow_settle(store, C.DATA)
+            if ns_:
+                log.append(f"🗂 теневой портфель: рассчитано {ns_}")
+        except Exception as ex_:
+            log.append(f"🗂 теневой портфель: сбой {ex_.__class__.__name__}: {ex_}")
         log.append(f'рассчитано линий {nl}, ставок дня {nd}')
         auto, ldf = store.read('auto_forecasts'), store.read('auto_lines')
     kcal, kprev, knote = daily_k(rt, auto, ldf, daily_due and not dry)

@@ -106,7 +106,7 @@ def snap_prices(rt: dict, cur: dict, cands: list[dict], now) -> None:
 
 SHADOW_COLS = ['key', 'date', 'espn_id', 'start_utc', 'match', 'market', 'pick', 'line', 'label', 'p', 'p_model', 'p_mkt', 'mkt_src',
                'k', 'k_src', 'k_best', 'book_best', 'ev', 'tier', 'group', 'fire', 'clash',
-               'first_at', 'k_first', 'p_first', 'last_at', 'p_mkt_last']
+               'first_at', 'k_first', 'p_first', 'last_at', 'p_mkt_last', 'result', 'settled']   # итог — daypick.shadow_settle
 
 
 def shadow(cands: list[dict], now, folder, match_fn: Callable) -> int:
