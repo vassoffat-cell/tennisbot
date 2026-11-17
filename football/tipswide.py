@@ -24,12 +24,13 @@ import fespn
 import tips as T
 
 FILE = T.DIR / 'tips_all.csv'
-VERSION = 3                                         # версия разбора: смена → история каналов пересчитывается
+VERSION = 4                                         # версия разбора: смена → история каналов пересчитывается (18.11: матч по разбору)
 ESPN_DIR = T.DIR / 'espn'
 ALL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates={d:%Y%m%d}&limit=1000'
 COLS = ['uid', 'src', 'author', 'post_ts', 'edate', 'espn_id', 'start_utc', 'home', 'away', 'legs', 'label', 'k', 'raw',
         'status', 'result', 'settled']
 TRUST_NK, TRUST_T = 50, 1.64
+EXOT = re.compile(r'углов|карточ|жёлт|желт|фол|удар|офсайд|аут[ыо]|\bxg\b|сэйв|сейв|вброс|🟨|🚩|🥅', re.I)   # 18.11: рынки без счёта
 YOUTH = re.compile(r'\bu-?\d{2}\b|\(ж\)|\bжен|\bwomen\b|\(w\)|\bmolod|\bмолод|\bii\b|\bb\b', re.I)
 
 COUNTRY = {
@@ -191,30 +192,40 @@ def _row(src, author, ts, e, flip, legs, k, raw, uid) -> dict | None:
 
 def from_post(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict]:
     out = []
-    txt = p['text']
+    # 18.11: «✅ПРОГНОЗ НА МАТЧ:» отдельной строкой, ставка — на следующих (до пустой строки) → одна строка (как tipsbook v7)
+    txt = re.sub(r'(прогноз[^\n:]{0,20}:)[ \t]*\n+((?:[^\n]+\n?){1,2})', lambda m: m.group(1) + ' ' + m.group(2).replace('\n', ' ') + '\n',
+                 p['text'], flags=re.I)
+    p = dict(p, text=txt)
     ps = pairs(txt)
     if not ps:                                                     # пары нет («Прогноз: Фора Бари (0)») — одна команда в ставке
         return _single(src, name, p, cache, have)
     evs = _events_around(p['ts'], cache)
-    for n, (pos, a, b) in enumerate(ps):
-        frag0 = txt[pos:ps[n + 1][0] if n + 1 < len(ps) else len(txt)]
+    found = []                                                     # 18.11: «пара» из прозы разбора («… — Рандалем Коло-Муани»)
+    for n, (pos, a, b) in enumerate(ps):                           # обрезала текст до прогноза → фрагмент ставки тянется
+        frag0 = txt[pos:ps[n + 1][0] if n + 1 < len(ps) else len(txt)]   # до следующей НАЙДЕННОЙ на табло пары
         hit = match_pair(a, b, evs, msk_time(frag0))
+        if hit or (len(a.split()) <= 4 and len(b.split()) <= 4):   # заголовок матча (короткие названия) — граница фрагмента,
+            found.append((pos, hit))                               # даже если матча нет на табло; длинная «пара» из прозы — нет
+    for n, (pos, hit) in enumerate(found):
         if not hit:
             continue
         e, flip = hit
         uid = f"tg:{src}:{p['id']}:{e['id']}"
         if uid in have:
             continue
-        frag = txt[pos:ps[n + 1][0] if n + 1 < len(ps) else len(txt)]
+        frag = txt[pos:found[n + 1][0] if n + 1 < len(found) else len(txt)]
         tm = (e['away'], e['home']) if flip else (e['home'], e['away'])
         side, legs, sel = None, [], ''
         row = dict(home=tm[0], away=tm[1])
         side = T._side_before(frag, row)
         for cand, nat in T._pick_lines(frag):
+            if EXOT.search(cand) or len(cand) > 90:               # 18.11: угловые / карточки / фолы / удары — не голы;
+                continue                                           # длинная строка — проза разбора, а не ставка
             legs = T.parse_legs(cand, side, tm, nat)
-            if legs:
+            if legs and all(not (mk in ('TOT', 'IT1', 'IT2') and isinstance(L, float) and L > 7.5) for mk, _, L in legs):
                 sel = cand
                 break
+            legs = []
         r = _row(src, name, p['ts'], e, flip, legs, T.odds_in(sel), sel, uid)
         if r:
             out.append(r); have.add(uid)
@@ -226,10 +237,14 @@ def _single(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict]:
     sel = next((c for c, nat in T._pick_lines(p['text']) if nat), '')
     if not sel or T.SKIP.search(sel.lower()):
         return []
-    ws = [w for w in T._words(sel) if len(w) >= 5 or T._alias(w)]
-    if not ws:
-        return []
+    # 18.11: пост одной строкой — «строка ставки» захватывала весь разбор, и обычные слова («команда» → Richmond) становились
+    # «командой». Ставка — до конца фразы ставки; командой считается только слово с заглавной буквы (имя собственное).
+    sel = re.split(r'☑|✔|\s{2,}|\.\s+[А-ЯЁA-Z]|!|\n|(?<=\d)\s+[А-ЯЁA-Z][а-яё]+,', sel)[0].strip()
+    caps = {w.lower() for w in re.findall(r'\b[А-ЯЁA-Z][а-яёa-z\-]{3,}', sel)}
+    ws = [w for w in T._words(sel) if (w in caps and len(w) >= 5) or T._alias(w)]
     evs = _events_around(p['ts'], cache)
+    if not ws:                                                     # «Прогноз: ТБ (2.5)» — команд в ставке нет: ищем в разборе
+        return _prose(src, name, p, cache, have, sel, evs)
     hits = {}
     for w in ws:
         ru = _ru_info(w)
@@ -240,12 +255,45 @@ def _single(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict]:
             if _same(ru, h) or _same(ru, a):
                 hits[e['id']] = e
     if len(hits) != 1:
+        return _prose(src, name, p, cache, have, sel, evs)
+    e = next(iter(hits.values()))
+    uid = f"tg:{src}:{p['id']}:{e['id']}"
+    if uid in have:
+        return []
+    legs = T.parse_legs(sel, None, (e['home'], e['away']), True)
+    r = _row(src, name, p['ts'], e, False, legs, T.odds_in(sel), sel, uid)
+    if r:
+        have.add(uid)
+        return [r]
+    return []
+
+
+def _prose(src: str, name: str, p: dict, cache: dict, have: set, sel: str, evs: list[dict]) -> list[dict]:
+    """18.11 (пользователь: «не может быть, что Грозный ничего не угадывает»): Грозный пишет «Лига. ✅ Прогноз: ТБ (2.5).
+    ☑️ Ювентус дома силён против Наполи…» — пары в строке нет, команда в ставке не названа → 29 из 36 прогнозов ноября не
+    попадали в статистику. Матч ищется по тексту разбора: ОБЕ команды события названы в посте и такое событие в окне одно
+    (прошлые соперники из разбора отсекаются требованием обеих команд и единственности)."""
+    words = [w for w in T._words(p['text']) if len(w) >= 4 or T._alias(w)]
+    info = [_ru_info(w) for w in dict.fromkeys(words)]
+    info = [(x[0], [], x[2]) for x in info if x[0]]                # только команды из справочника (без транслита: проверка 18.11 —
+    #                                                                 «Ребят…» давало Richmond — Fordham, «сборные» — Chapecoense)
+    if not info or not evs:
+        return []
+    hits = {}
+    for e in evs:
+        h, a = e.setdefault('_h', _en_info(e['home'])), e.setdefault('_a', _en_info(e['away']))
+        if any(_same(x, h) for x in info) and any(_same(x, a) for x in info):
+            hits[e['id']] = e
+    if len(hits) != 1:
         return []
     e = next(iter(hits.values()))
     uid = f"tg:{src}:{p['id']}:{e['id']}"
     if uid in have:
         return []
     legs = T.parse_legs(sel, None, (e['home'], e['away']), True)
+    parts = len(re.findall(r'\s(?:и|\+)\s', ' ' + sel.lower() + ' ')) + 1
+    if len(legs or []) < parts:                                    # «не проиграет и ТБ (1.5)» разобрано наполовину — не считать
+        return []
     r = _row(src, name, p['ts'], e, False, legs, T.odds_in(sel), sel, uid)
     if r:
         have.add(uid)

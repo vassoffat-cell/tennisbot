@@ -216,6 +216,7 @@ def parse_legs(sel: str, home_first: bool | None = None, teams: tuple[str, str] 
     """Ноги ставки из фрагмента текста. home_first: команда, названная перед ставкой (True — хозяева, False — гости) —
     для «ИТБ(1)», «Ф(−1)», «победа». Пусто — не распознано или рынок не наш."""
     s = sel.lower().replace('х', 'x').replace('–', '-').replace('—', '-').replace('−', '-')
+    s = s.replace('обе команды забьют', 'обе забьют')               # 18.11: «Прогнозы» — «Обе команды забьют - Да»
     if SKIP.search(s):
         return []
     legs: list[tuple[str, str, object]] = []
