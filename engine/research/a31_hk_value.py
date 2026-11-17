@@ -26,6 +26,9 @@ from hockey import hdata as HD, hmodel as HM          # noqa: E402
 import odds as OD                                      # noqa: E402
 import pick as PK                                      # noqa: E402
 
+REG_TOTALS = {'onexbet', 'marathonbet'}           # тоталы основного времени (engine/research/hk_book_rules.py, 17.11)
+
+
 def _utc(x) -> pd.Timestamp:
     """Время в UTC без пояса: история пишет ts без пояса (UTC), кэш и The Odds API — с «Z» (17.11: tz_convert падал на наивном ts)."""
     t = pd.Timestamp(x)
@@ -108,13 +111,14 @@ def probs(M, lam, s: dict) -> dict[tuple, tuple[float, float]]:
                     pp = sum(v for x, v in fm.items() if sgn * x + pt == 0)
                     out[(book, m, n, pt)] = (pw, pp)
                 elif m == 'totals' and pt is not None:
-                    po = HM.over_final(P, float(pt))
+                    # 17.11 hk_book_rules.py: 1xBet и Marathon считают тотал НХЛ по ОСНОВНОМУ времени (Pinnacle и др. — с ОТ)
+                    po = float(P[(i + j) > float(pt)].sum()) if book in REG_TOTALS else HM.over_final(P, float(pt))
                     pe = float(P[((i + j) == pt) & (i != j)].sum() + P[(i == j) & ((i + j + 1) == pt)].sum()) if float(pt).is_integer() else 0.0
                     out[(book, m, n, pt)] = ((po if n == 'Over' else 1 - po - pe), pe)
     return out
 
 
-def settle(m: str, n: str, pt, g, home_name: str) -> str:
+def settle(m: str, n: str, pt, g, home_name: str, book: str = '') -> str:
     """W / L / P форы и тотала по итогу с ОТ (ESPN hg/ag); исходы h2h решаются в main (2 или 3 исхода)."""
     hg, ag = float(g.hg), float(g.ag)
     home = n == home_name
@@ -123,7 +127,7 @@ def settle(m: str, n: str, pt, g, home_name: str) -> str:
         v = x + float(pt)
         return 'W' if v > 0 else 'P' if v == 0 else 'L'
     if m == 'totals':
-        t = hg + ag
+        t = (float(g.hg_reg) + float(g.ag_reg)) if book in REG_TOTALS else hg + ag   # 17.11: тотал осн. времени — счёт осн. времени
         v = (t - float(pt)) if n == 'Over' else (float(pt) - t)
         return 'W' if v > 0 else 'P' if v == 0 else 'L'
     return ''
@@ -169,7 +173,7 @@ def main(t_min: float = 0.0) -> None:
                     else:
                         res = 'W' if ((g.hg > g.ag) if n == first['home'] else (g.ag > g.hg)) else 'L'
                 else:
-                    res = settle(m, n, pt, g, first['home'])
+                    res = settle(m, n, pt, g, first['home'], book)
             c = p1.get((book, m, n, pt))
             clv = (c[0] * k + c[1] - 1) if c and last is not first else np.nan
             rows.append(dict(ev_id=eid, start=st, match=f"{first['home']} — {first['away']}", book=book, market=m, pick=n, line=pt, k=k,
