@@ -142,3 +142,4 @@ espn_id,date,location,event,round,ridx,major,winner_id,loser_id,winner,loser,sco
 187511,2026-11-16,Turin,Nitto ATP Finals,Group Stage,1,0,207989,126207,Carlos Alcaraz,Frances Tiafoe,6-2 6-2,STATUS_FINAL
 187512,2026-11-16,Turin,Nitto ATP Finals,Group Stage,1,0,106421,207925,Daniil Medvedev,Flavio Cobolli,7-6 6-3,STATUS_FINAL
 187508,2026-11-17,Turin,Nitto ATP Finals,Group Stage,1,0,209950,212588,Arthur Fils,Rafael Jodar,4-6 6-2 6-2,STATUS_FINAL
+187503,2026-11-17,Turin,Nitto ATP Finals,Group Stage,1,0,100644,210097,Alexander Zverev,Ben Shelton,6-2 7-6,STATUS_FINAL
