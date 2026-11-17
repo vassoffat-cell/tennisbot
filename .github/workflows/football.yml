@@ -61,6 +61,10 @@ jobs:
           since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
           # ключевые часы (ставка дня 08, отчёты 11/12): считается только прогон ПОСЛЕ начала часа — иначе работа часа не сделана
           h=$(TZ=Asia/Tashkent date +%H); case " 08 11 " in *" $h "*) since2=$(date -u -d "$(TZ=Asia/Tashkent date '+%Y-%m-%d %H:00') +0500" +%Y-%m-%dT%H:%M:%SZ);; *) since2=$since;; esac
+          # 17.11 ТЗ-007 шаг 2: окно плана по матчам открыто или откроется ≤ 15 мин — считается только полный прогон ПОСЛЕ начала окна
+          # (окно в будущем → since2 в будущем → не пропускаем: Apps Script planTick_ засчитает этот запуск, значит он должен быть полным)
+          pa=$(gh api "repos/${{ github.repository }}/contents/football/data/plan.json" -H 'Accept: application/vnd.github.raw' 2>/dev/null | jq -r --arg n "$(date -u -d '+15 min' '+%Y-%m-%d %H:%M')" --arg m "$(date -u -d '-10 min' '+%Y-%m-%d %H:%M')" '[.groups[]|select(.at <= $n and .hi >= $m)|.at]|max // empty' 2>/dev/null || true)
+          if [ -n "$pa" ]; then s3=$(date -u -d "$pa" +%Y-%m-%dT%H:%M:%SZ); [[ "$s3" > "$since2" ]] && since2=$s3; echo "📅 окно плана с $pa UTC (или откроется ≤ 15 мин) — пропуск только после полного прогона в окне"; fi
           n=$(gh api "repos/${{ github.repository }}/actions/workflows/football.yml/runs?status=success&created=>=$since&per_page=20" -q "[.workflow_runs[]|select(.id != ${{ github.run_id }} and .run_started_at >= \"$since2\" and (.display_title|test(\"rehearse|research\")|not) and ((.updated_at|fromdate) - (.run_started_at|fromdate)) > 40)]|length" || echo 0)
           if [ "${n:-0}" -gt 0 ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; echo "⏭ экономия: полный успешный прогон за 35 мин ($n) — пропуск (пропуски не считаются: > 40 с)"; fi
         env:
