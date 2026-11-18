@@ -258,13 +258,16 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         cur['screenshots'] = int(cur.get('screenshots', 0)) + 1
 
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
-    cands = offers_fn(items, off, day, log) + [_revive(o) for o in cur.get('shots', []) if pd.Timestamp(o['start_utc']) > now]
-    cands = [o for o in PK.choose(_dedupe(cands)) if o['market'] not in off]
+    raw = _dedupe(offers_fn(items, off, day, log) + [_revive(o) for o in cur.get('shots', []) if pd.Timestamp(o['start_utc']) > now])
+    cands = [o for o in PK.choose(raw) if o['market'] not in off]
     cands = SL.reorder(_sk(), cands)                            # 🧠 пониженные сегменты — в конец очереди
     snap_prices(rt, cur, cands, now)                            # 📈 последняя цена рынка до начала — для CLV
     if not dry:
         try:
-            shadow(cands, now, C.DATA, match_fn)               # 17.11 ТЗ-007 §3: теневой портфель — все кандидаты с ценой
+            # 19.11 (взгляд со стороны): раньше сюда шли только прошедшие фильтр ⭐ (P ≥ 0,60, EV ≥ −3%) — за 17–18.11 одна строка тенниса,
+            # ворота n ≥ 300 недостижимы, новые сегменты 💰 (форы, тоталы, P < 0,60) не видны. Теперь — каждая сторона с ценой конторы.
+            shadow([PK.finish(dict(o)) for o in raw if o.get('k') and o.get('k_src') in ('api', 'screenshot') and o['market'] not in off],
+                   now, C.DATA, match_fn)
         except Exception as e:
             log.append(f'теневой портфель: сбой {e.__class__.__name__}: {e}')
     for c in cands:
