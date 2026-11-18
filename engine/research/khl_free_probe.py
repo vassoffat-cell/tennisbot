@@ -24,8 +24,12 @@ def main() -> None:
     khl = [x for x in lg if 'KHL' in (x.get('strLeague') or '') or 'Kontinental' in (x.get('strLeague') or '')
            or 'KHL' in (x.get('strLeagueAlternate') or '')]
     print('лиг хоккея:', len(lg), '| КХЛ:', [(x['idLeague'], x['strLeague'], x.get('strCurrentSeason')) for x in khl])
-    for x in khl[:2]:
-        lid = x['idLeague']
+    ids = [x['idLeague'] for x in khl] or ['4920']           # 4920 — Russian KHL (thesportsdb.com/league/4920)
+    for lid in ids[:2]:
+        try:
+            print('  лига:', [(x.get('strLeague'), x.get('strCurrentSeason')) for x in (get(f'lookupleague.php?id={lid}').get('leagues') or [])])
+        except Exception as e:
+            print('  лига: ошибка', e)
         for s in ('2024-2025', '2025-2026', '2026-2027'):
             try:
                 ev = get(f'eventsseason.php?id={lid}&s={s}').get('events') or []
@@ -36,6 +40,11 @@ def main() -> None:
             print(f'  {s}: матчей {len(ev)}, со счётом {len(sc)}, даты {d[:1]}…{d[-1:]}',
                   '| пример:', [(e.get('dateEvent'), e.get('strHomeTeam'), e.get('intHomeScore'), e.get('intAwayScore'),
                                 e.get('strAwayTeam'), e.get('strStatus')) for e in sc[-2:]])
+        try:
+            day = get('eventsday.php?d=2026-11-17&l=4920').get('events') or []
+            print('  матчи 17.11.2026:', len(day), [(e.get('strEvent'), e.get('intHomeScore'), e.get('intAwayScore')) for e in day[:3]])
+        except Exception as e:
+            print('  день: ошибка', e)
         try:
             past = get(f'eventspastleague.php?id={lid}').get('events') or []
             print('  последние результаты:', len(past), [(e.get('dateEvent'), e.get('strEvent'), e.get('intHomeScore'),
