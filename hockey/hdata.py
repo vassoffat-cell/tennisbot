@@ -496,6 +496,67 @@ def espn_odds_probe(log: list[str]) -> None:
         time.sleep(0.2)
 
 
+# ---------------------------------------------------------------- КХЛ: бесплатная история (TheSportsDB) — 19.11.2026
+# Бесплатный план API-Sports даёт КХЛ только ±1 день → в базе не было сезона 2025/26 и начала 2026/27 (силы — от 2024/25, Л7).
+# TheSportsDB — открытый JSON API (thesportsdb.com/documentation, бесплатный ключ «123»): eventsday.php по лиге 4920 — до 3 матчей
+# в день (ограничение бесплатного ключа; в КХЛ ≈ 3–5 матчей в день → ≈ 60–80% матчей, выборка случайная — силам команд достаточно).
+# Статусы: FT — основное время; AOT — овертайм; AP — буллиты. Счёт основного времени при AOT/AP — ничья min(h, a).
+TSDB = 'https://www.thesportsdb.com/api/v1/json/123/'
+TSDB_KHL = 4920
+TSDB_NAMES = [(r'barys', 'Barys Astana'), (r'tra[ck]tor', 'Tractor Chelyabinsk'), (r'dynamo mos|dinamo mos', 'Dynamo Moscow'),
+              (r'severstal|cherepovets', 'Cherepovets'), (r'shanghai|kunlun', 'Shanghai'), (r'admiral|vladivostok', 'Vladivostok'),
+              (r'amur|khabarovsk', 'Khabarovsk'), (r'ak bars|kazan', 'Bars Kazan'), (r'salavat', 'Salavat Ufa'),
+              (r'avtomobilist|yekaterinburg', 'Yekaterinburg'), (r'sibir|novosibirsk', 'Novosibirsk'), (r'neftekhimik|nizhnekamsk', 'Niznekamsk'),
+              (r'dinamo minsk|dynamo minsk', 'Dinamo Minsk'), (r'torpedo|nizhny', 'Nizhny Novgorod'), (r'metallurg|magnitogorsk', 'Magnitogorsk'),
+              (r'lada|togliatti', 'Lada'), (r'sochi', 'Sochi'), (r'\bska\b', 'SKA St. Petersburg'), (r'lokomotiv', 'Lokomotiv Yaroslavl'),
+              (r'cska', 'CSKA Moscow'), (r'spartak', 'Spartak Moscow'), (r'vityaz', 'Vityaz Balashikha'), (r'avangard', 'Avangard Omsk')]
+
+
+def _tsdb_name(n: str) -> str | None:
+    import re as _re
+    low = str(n).lower()
+    return next((v for r, v in TSDB_NAMES if _re.search(r, low)), None)
+
+
+def tsdb_rows(d: dt.date) -> list[dict]:
+    import urllib.request
+    req = urllib.request.Request(f'{TSDB}eventsday.php?d={d}&l={TSDB_KHL}', headers={'User-Agent': 'standing-in-motion/1.0'})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        evs = (json.loads(r.read().decode('utf-8') or '{}') or {}).get('events') or []
+    out = []
+    for e in evs:
+        h, a = _tsdb_name(e.get('strHomeTeam')), _tsdb_name(e.get('strAwayTeam'))
+        st = str(e.get('strStatus') or '')
+        if not h or not a or e.get('intHomeScore') in (None, '') or st not in ('FT', 'AOT', 'AP'):
+            continue
+        hg, ag = int(e['intHomeScore']), int(e['intAwayScore'])
+        end = {'FT': 'REG', 'AOT': 'OT', 'AP': 'SO'}[st]
+        hr, ar = (hg, ag) if end == 'REG' else (min(hg, ag), min(hg, ag))
+        ts = pd.Timestamp(e.get('strTimestamp') or f"{e.get('dateEvent')} {e.get('strTime') or '16:00:00'}")
+        ssn = str(e.get('strSeason') or '')
+        out.append(dict(id=f"khl:tsdb:{e.get('idEvent')}", league='KHL', start=ts.strftime('%Y-%m-%d %H:%M'), home=h, away=a,
+                        hg=hg, ag=ag, hg_reg=hr, ag_reg=ar, end=end, hs='', as_='', state='post',
+                        season=int(ssn[:4]) if ssn[:4].isdigit() else (ts.year if ts.month >= 8 else ts.year - 1)))
+    return out
+
+
+def khl_tsdb_backfill(log: list[str], d0: dt.date = dt.date(2025, 9, 1), d1: dt.date = dt.date(2026, 11, 9), pause: float = 2.2) -> int:
+    """Разовая догрузка истории КХЛ (дни межсезонья 01.06–31.08 пропускаются). Дни ≥ 10.11.2026 — у API-Sports (полные)."""
+    rows, d, asked, err = [], d0, 0, 0
+    while d <= d1:
+        if not (6 <= d.month <= 8):
+            try:
+                rows += tsdb_rows(d); asked += 1
+            except Exception:
+                err += 1
+            time.sleep(pause)
+        d += dt.timedelta(days=1)
+    if rows:
+        save(pd.concat([load(), pd.DataFrame(rows)], ignore_index=True))
+    log.append(f'🏒 КХЛ TheSportsDB: дней {asked}, ошибок {err}, матчей {len(rows)} (сезоны {sorted({r["season"] for r in rows})})')
+    return len(rows)
+
+
 if __name__ == '__main__':
     import sys as _s
     lg: list[str] = []
@@ -507,6 +568,8 @@ if __name__ == '__main__':
         espn_odds_probe(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'box_probe':
         summary_probe(lg)
+    elif len(_s.argv) > 1 and _s.argv[1] == 'khl_tsdb':            # 19.11: история КХЛ 2025/26–2026/27 из TheSportsDB
+        khl_tsdb_backfill(lg)
     elif len(_s.argv) > 1 and _s.argv[1] == 'khl':                 # КХЛ: окно ±1 день + застрявшие по номеру (догрузка дат закрыта планом)
         update_khl(lg)
     else:
