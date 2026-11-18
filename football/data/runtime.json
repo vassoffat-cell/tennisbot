@@ -1,7 +1,7 @@
 {
  "list_messages": [],
  "list_match_ids": [],
- "last_daily": "2026-11-17",
+ "last_daily": "2026-11-18",
  "last_files": "2026-11-06",
  "last_reminder": "2026-11-10",
  "uefa_backfill": "2026-11-06 09:13",
@@ -71,7 +71,7 @@
    35
   ]
  },
- "kcal_date": "2026-11-17",
+ "kcal_date": "2026-11-18",
  "breaker": {
   "BTTS": "2026-11-08"
  },
@@ -710,7 +710,7 @@
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-18T06:31:23",
- "chk_run": "2026-11-18T04:04:39",
+ "chk_run": "2026-11-18T06:32:10",
  "plan_at": [],
  "plan_sig": []
 }
