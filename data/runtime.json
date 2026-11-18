@@ -1,8 +1,11 @@
 {
  "list_messages": [],
- "list_match_ids": [],
+ "list_match_ids": [
+  "187509",
+  "187514"
+ ],
  "last_daily": "2026-11-17",
- "last_retrain": "2026-11-17",
+ "last_retrain": "2026-11-18",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -56,11 +59,11 @@
  "kcal_date": "2026-11-17",
  "breaker": {},
  "day_pick": {
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "msgs": [
    [
     570704006,
-    645
+    697
    ]
   ],
   "changes": 0,
@@ -74,55 +77,9 @@
   "sep": true,
   "hdr2": true,
   "hdr3": true,
-  "scan": "🔎 Сутки: 2 матча · 43 линии · на ставку дня — 2\nATP Finals, хард 2 · 🔏 4180d91f",
-  "espn_id": "187503",
-  "slot": 1,
-  "key": [
-   "187503",
-   "ML",
-   "1",
-   ""
-  ],
-  "p": 0.6371445596418307,
-  "tier": 2,
-  "label": "П1 Zverev",
-  "start_utc": "2026-11-17 19:30",
-  "match": "Alexander Zverev — Ben Shelton",
-  "best": {
-   "espn_id": "187503",
-   "tour": "ATP",
-   "event": "Nitto ATP Finals",
-   "start_utc": "2026-11-17 19:30",
-   "start_local": "18.11 00:30",
-   "player1": "Alexander Zverev",
-   "player2": "Ben Shelton",
-   "market": "ML",
-   "pick": "1",
-   "line": null,
-   "label": "П1 Zverev",
-   "p": 0.6371445596418307,
-   "p_src": "pinnacle",
-   "p_model": 0.6469161133140668,
-   "p_push": 0.0,
-   "k": 1.53,
-   "k_src": "api",
-   "source": "api",
-   "k_best": 1.53,
-   "book_best": "onexbet",
-   "p_pin": 0.6381181403378962,
-   "p_mkt": 0.6381181403378962,
-   "mkt_src": "pinnacle",
-   "edge": -0.0236792452830189,
-   "group": "fallback",
-   "sl_pen": 0,
-   "slot": 1
-  },
-  "first_label": "П1 Zverev",
-  "first_match": "Alexander Zverev — Ben Shelton",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 43 линии · на ставку дня — 2\nATP Finals, хард 2 · 🔏 4180d91f\n🏆 ATP · Nitto ATP Finals · 🕒 00:30\n<b>Alexander Zverev — Ben Shelton</b>\n<b>П1 Zverev</b> — 64% · честный кф 1,57\n💵 1xBet 1,53 · EV −2,5% · ставка ¼ ед.",
-  "vol": 2,
-  "played": true,
-  "hdr4": true
+  "hdr4": true,
+  "scan": "🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 2518ffbc",
+  "text": "🎾1 <b>Теннис · ставка дня</b>\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 2518ffbc\nСегодня ставки дня нет: подходящей линии пока нет (кф ≥ 1,35 и вероятность ≥ 60%) — появится, объявлю."
  },
  "model_version": 4,
  "reported": [
@@ -3555,13 +3512,21 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-18T02:01:57",
+ "chk_run": "2026-11-18T03:14:35",
  "plan_at": [
+  "2026-11-18 10:00",
+  "2026-11-18 12:00",
+  "2026-11-18 16:30",
+  "2026-11-18 18:30",
   "2026-11-18 21:30",
   "2026-11-19 00:00",
   "2026-11-19 02:00"
  ],
  "plan_sig": [
+  "2026-11-18 10:00|2026-11-18 11:10",
+  "2026-11-18 12:00|2026-11-18 12:35",
+  "2026-11-18 16:30|2026-11-18 17:40",
+  "2026-11-18 18:30|2026-11-18 19:05",
   "2026-11-18 21:30|2026-11-18 22:40",
   "2026-11-19 00:00|2026-11-19 00:05",
   "2026-11-19 02:00|2026-11-19 02:35"
