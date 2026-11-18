@@ -602,7 +602,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     import tipswide as W
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     sent = set(rt.get('tips_alerted', [])) | set(rt.get('gl_alerted', []))
-    fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=6)
+    fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=14)   # 19.11 Г0б: посты тихого окна 03–15 приходят в 15:22
     d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
     d = d.assign(pick=d.pick.astype(str).map(lambda x: AD_TAIL.sub('', x).strip()))   # 14.11 20:40: рекламный хвост срезается, прогноз остаётся
     slip_posts = set(df[(df.slip != '') & (df.slip != '-')].apply(lambda r: f'{r.src}:{r.post_id}', axis=1)) if len(df) else set()

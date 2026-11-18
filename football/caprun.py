@@ -23,7 +23,7 @@ ROUTE = {'football': 'football.yml', 'tennis': 'daily.yml', 'hockey': 'daily.yml
 SCHED_MIN = {'daily.yml': 7, 'football.yml': 37}       # плановые прогоны: :07 / :37
 SCHED_H = {'daily.yml': {1, 3, 5, 6, 7, 9, 13, 17, 21},             # часы UTC (18.11 шаг 2б: резерв 4 ч + ключевые; = config.DAILY_CRON_H)
            'football.yml': {6, 7, 11, 15, 19}}                    # 18.11 шаг 2б
-CAP_HOURS = set(range(2, 23))                         # 17.11 Г0а: часы UTC запусков каперов (тихое окно 04:00–07:00 Ташкента)
+CAP_HOURS = set(range(10, 22))                        # 19.11 Г0б: часы UTC запусков каперов 15:22…02:22 Ташкента (тихое окно 03:00–15:00)
 MAX_EXTRA = 8                                         # внеплановых запусков в сутки на бота (кредиты API, квота таблиц)
 SOON = pd.Timedelta(minutes=30)
 

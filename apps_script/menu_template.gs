@@ -450,7 +450,7 @@ function capTick() {
   const runs = JSON.parse(r.getContentText()).workflow_runs || [];
   const last = runs.length ? new Date(runs[0].created_at).getTime() : 0;
   const hh = Number(Utilities.formatDate(new Date(), 'Asia/Tashkent', 'H'));
-  const quiet = hh >= 4 && hh < 8;                     // 17.11 Г0а: тихое окно каналов 04:00–07:59 — без страховочных запусков
+  const quiet = hh >= 3 && hh < 15;                    // 19.11 Г0б: тихое окно каналов 03:00–14:59 — без страховочных запусков
   if (!quiet && Date.now() - last >= 62 * 60 * 1000) { // 16.11: проверка каждые 10 мин → перерыв ≤ ≈ 75 мин
     const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
       payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });

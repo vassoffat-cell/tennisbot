@@ -82,7 +82,7 @@ def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
                 for wf in ('cappers.yml',) for r in runs(wf, since - timedelta(hours=2)) if r['conclusion'] == 'success')
     ts = [t for t in ts if t >= since - timedelta(hours=2)] + [datetime.now(timezone.utc)]
     gaps = [(b - a, a) for a, b in zip(ts, ts[1:]) if b >= since
-            and not 3 <= (a + TZ).hour <= 7]                     # 17.11 Г0а: перерыв, начатый в 03–07 Ташкента (тихое окно), не ошибка
+            and not 2 <= (a + TZ).hour <= 14]                    # 19.11 Г0б: перерыв, начатый в 02–14 Ташкента (тихое окно 03–15), не ошибка
     g, at = max(gaps) if gaps else (timedelta(0), since)
     out.append(('каперы: перерыв между чтениями каналов', '≤ 75 мин', f'макс {int(g.total_seconds() // 60)} мин (с {(at + TZ):%d.%m %H:%M})',
                 '✅' if g <= timedelta(minutes=75) else '❌'))
