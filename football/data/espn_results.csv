@@ -865,3 +865,6 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932736,fra.coupe_de_france,cup,FRA,F1,2026-11-15 14:00,Atlas Paillade,AS Cannes,,,0,2,FT,seventh-round,0
 401933096,fra.coupe_de_france,cup,FRA,F1,2026-11-15 14:45,Saint-Pauloise FC,La Tamponnaise,,,1,2,FT,seventh-round,0
 401928497,esp.copa_del_rey,cup,ESP,SP1,2026-11-18 18:00,Utebo,CD Sabadell,,Sabadell,0,3,FT,first-round,0
+401928518,esp.copa_del_rey,cup,ESP,SP1,2026-11-18 18:00,Portugalete,Real Unión Irun,,,0,0,ET,first-round,0
+401928505,esp.copa_del_rey,cup,ESP,SP1,2026-11-18 19:00,Alcoyano,Mallorca,,Mallorca,1,3,ET,first-round,0
+401928532,esp.copa_del_rey,cup,ESP,SP1,2026-11-18 19:00,Badajoz,Tenerife,,Tenerife,2,5,FT,first-round,0
