@@ -3446,7 +3446,8 @@
   "notes": [],
   "hdr2": true,
   "hdr3": true,
-  "hdr4": true
+  "hdr4": true,
+  "vol": 8
  },
  "resend_done": "2026-11-13",
  "hk_resend_done": "2026-11-13",
@@ -3475,7 +3476,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-18T07:11:51",
+ "chk_run": "2026-11-18T07:47:09",
  "plan_at": [
   "2026-11-18 10:00",
   "2026-11-18 12:00",
