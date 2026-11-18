@@ -20,6 +20,7 @@ import pandas as pd
 import config as C
 import journal as J
 import notify
+import pick as PK
 import selflearn as SL
 from hockey import hlines as HL
 
@@ -95,7 +96,7 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
                     c = dict(id=row['id'], league=row['league'], start_utc=row['start_utc'], start_local=row['start_local'],
                              home=row['home'], away=row['away'], slot=v['slot'], market=v['market'], pick=v['pick'], line=v['line'],
                              label=v['label'], p=round(v['p'], 4), p_low=round(v['p'], 4), tier=TIER_PRICED,
-                             k=round(v['k'], 2), ev=round(v['ev'], 4))
+                             k=round(v['k'], 2), ev=round(v['ev'], 4), book=v.get('book', 'onexbet'))
                     c['fire'], c['clash'], c['fire_i'], c['clash_i'] = _syn(c, tp)
                     priced.append(c)
             except Exception as ex:                           # цена — улучшение, а не условие работы ставки дня
@@ -151,7 +152,7 @@ def _ev_line(c: dict) -> str:
     if not HK_LADDER:
         return ''
     if c.get('k') not in (None, '') and c.get('ev') not in (None, ''):
-        s = f"💵 1xBet {float(c['k']):.2f} · EV {float(c['ev']) * 100:+.1f}%".replace('.', ',').replace('-', '−')
+        s = f"💵 {PK.book_ru(c)} {float(c['k']):.2f} · EV {float(c['ev']) * 100:+.1f}%".replace('.', ',').replace('-', '−')
     else:
         s = '💵 цены 1xBet нет'
     return s + ' · ставка ¼ ед.'

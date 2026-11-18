@@ -18,6 +18,7 @@ from hockey import hmodel as HM
 
 P_MIN = 0.55
 BOOK = 'onexbet'
+BOOKS = ('onexbet', 'marathonbet')          # 19.11 С25а: конторы с тоталом/1X2 основного времени (hk_book_rules.py)
 SLOT = {('1X2', 'H'): 20, ('1X2', 'D'): 21, ('1X2', 'A'): 22, ('TOT', 'O'): 23, ('TOT', 'U'): 24}
 
 
@@ -70,27 +71,38 @@ def candidates(M, row: dict, evs: list[dict]) -> list[dict]:
     ev = _match(row, evs)
     if ev is None or M is None:
         return []
-    ob = _books(ev).get(BOOK)
+    bks = _books(ev)
     lam = lambdas(M, ev)
-    if not ob or lam is None:
+    if lam is None:
         return []
     P = M.matrix(*lam)
     i, j = np.indices(P.shape)
     ph, pd_, pa = float(P[i > j].sum()), float(np.trace(P)), float(P[i < j].sum())
     out = []
-    for n, pt, k in ob.get('h2h', []):
-        pk = 'H' if n == ev['home_team'] else 'A' if n == ev['away_team'] else 'D' if n == 'Draw' else None
-        if pk is None or not any(x[0] == 'Draw' for x in ob['h2h']):        # 1xBet НХЛ — 3 исхода основного времени
+    # 19.11 С25а: лучшая цена среди контор с правилом основного времени (1xBet, Marathon — С24); у остальных тотал с ОТ
+    for book in BOOKS if getattr(PK, 'BEST_PRICE', False) else (BOOK,):
+        ob = bks.get(book)
+        if not ob:
             continue
-        p = {'H': ph, 'D': pd_, 'A': pa}[pk]
-        out.append(dict(market='1X2', pick=pk, line='', label={'H': 'П1', 'D': 'Х', 'A': 'П2'}[pk], p=p, k=k))
-    for n, pt, k in ob.get('totals', []):
-        if pt is None or float(pt).is_integer():
-            continue
-        po = float(P[(i + j) > float(pt)].sum())                       # основное время (правило 1xBet)
-        pk = 'O' if n == 'Over' else 'U'
-        out.append(dict(market='TOT', pick=pk, line=float(pt), label=f'Т{"Б" if pk == "O" else "М"}{float(pt):g}',
-                        p=po if pk == 'O' else 1 - po, k=k))
+        for n, pt, k in ob.get('h2h', []):
+            pk = 'H' if n == ev['home_team'] else 'A' if n == ev['away_team'] else 'D' if n == 'Draw' else None
+            if pk is None or not any(x[0] == 'Draw' for x in ob['h2h']):        # 3 исхода основного времени
+                continue
+            p = {'H': ph, 'D': pd_, 'A': pa}[pk]
+            out.append(dict(market='1X2', pick=pk, line='', label={'H': 'П1', 'D': 'Х', 'A': 'П2'}[pk], p=p, k=k, book=book))
+        for n, pt, k in ob.get('totals', []):
+            if pt is None or float(pt).is_integer():
+                continue
+            po = float(P[(i + j) > float(pt)].sum())                       # основное время (правило 1xBet / Marathon)
+            pk = 'O' if n == 'Over' else 'U'
+            out.append(dict(market='TOT', pick=pk, line=float(pt), label=f'Т{"Б" if pk == "O" else "М"}{float(pt):g}',
+                            p=po if pk == 'O' else 1 - po, k=k, book=book))
+    top: dict = {}
+    for c in out:                                                       # одна линия — лучшая цена
+        kk = (c['market'], c['pick'], c['line'])
+        if kk not in top or c['k'] > top[kk]['k']:
+            top[kk] = c
+    out = list(top.values())
     res = []
     for c in out:
         c['ev'] = c['p'] * c['k'] - 1

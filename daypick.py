@@ -116,8 +116,11 @@ def api_offers(m, row, ev: dict, flip: bool, r: float) -> list[dict]:
             k1x = sides[n].get('onexbet')
             k, ksrc = (k1x, 'api') if k1x else ((round(r * pin[i], 3), 'est') if pin[i] else (None, None))
             kb, bb = OD.best(sides[n])                      # 16.11: лучшая цена среди 10 букмекеров (HANDOFF з.2)
+            book = 'onexbet' if k1x else ''
+            if PK.BEST_PRICE and kb and (ksrc != 'api' or kb > k):     # 19.11 С25а: ставка — по лучшей цене контор
+                k, ksrc, book = kb, 'api', bb
             out.append(dict(_base(m, row), market=mk, pick=n, line=line, label=label(mk, n, line, p1n, p2n), p=float(p),
-                            p_src=src, p_model=pm, p_push=pp, k=k, k_src=ksrc, source='api', k_best=kb, book_best=bb,
+                            p_src=src, p_model=pm, p_push=pp, k=k, k_src=ksrc, source='api', k_best=kb, book_best=bb, book=book, k_1x=k1x,
                             p_pin=float(fair[i]) if fair else None,
                             p_mkt=float(fair[i]) if fair else (float(fair_x[i]) if fair_x else None),   # 14.11: снимок цены → CLV
                             mkt_src='pinnacle' if fair else ('blend' if fair_x else '')))
@@ -176,7 +179,7 @@ def ev_line(c: dict) -> str:
     st = ''
     if getattr(PK, 'DP_LADDER', False) and c.get('tier') not in (None, ''):          # 17.11 лестница: ставка 1 / ¼ ед.
         st = ' · ставка ' + ('1 ед.' if PK.stake(c) >= 1 else '¼ ед.')
-    return (f"💵 1xBet {pre}{float(k):.2f} · EV {v * 100:+.1f}%".replace('.', ',').replace('-', '−') + st)
+    return (f"💵 {PK.book_ru(c)} {pre}{float(k):.2f} · EV {v * 100:+.1f}%".replace('.', ',').replace('-', '−') + st)
 
 # ------------------------------------------------------------------ текст и публикация
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:

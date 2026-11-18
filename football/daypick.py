@@ -87,7 +87,11 @@ def _offer(m, row, market, pick, line, p, p_src, k, k_src, source, books: dict |
         p = PK.blend(pm, p)                                # 1xBet без маржи: рынок 1,08, модель −0,09
     if p != p:
         return None
-    return dict(_base(m, row), market=market, pick=pick, line=line, label=label(market, pick, line), p=float(p), p_src=p_src,
+    kb, bb = OD.best(books)
+    k1x, book = (k if k_src == 'api' else None), ('onexbet' if k_src == 'api' else '')
+    if PK.BEST_PRICE and kb and (k_src != 'api' or not k or kb > k):  # 19.11 С25а: ставка — по лучшей цене контор
+        k, k_src, book = kb, 'api', bb
+    return dict(_base(m, row), market=market, pick=pick, line=line, label=label(market, pick, line), p=float(p), p_src=p_src, book=book, k_1x=k1x,
                 p_model=pm, p_push=pp, k=k, k_src=k_src, source=source, sigma=C.SIGMA.get(market), p_mkt=p_mkt,
                 mkt_src=p_src if p_mkt is not None else '',
                 **dict(zip(('k_best', 'book_best'), OD.best(books))))      # 16.11: лучшая цена среди 10 букмекеров
@@ -236,7 +240,7 @@ def ev_line(c: dict) -> str:
     st = ''
     if getattr(PK, 'DP_LADDER', False) and c.get('tier') not in (None, ''):          # 17.11 лестница: ставка 1 / ¼ ед.
         st = ' · ставка ' + ('1 ед.' if PK.stake(c) >= 1 else '¼ ед.')
-    return (f"💵 1xBet {pre}{float(k):.2f} · EV {v * 100:+.1f}%".replace('.', ',').replace('-', '−') + st)
+    return (f"💵 {PK.book_ru(c)} {pre}{float(k):.2f} · EV {v * 100:+.1f}%".replace('.', ',').replace('-', '−') + st)
 
 # ------------------------------------------------------------------ текст и публикация
 def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> str:

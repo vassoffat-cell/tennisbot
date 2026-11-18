@@ -45,6 +45,16 @@ EV_FLOOR = -0.03            # R5 мягкий: 🎯 только при EV ≥ �
 # История тенниса, одна ⭐ в сутки, ⭐ в 92% дней: max P −6,2% (2019–22) / −4,5% (2023–25); лестница по EV 1xBet −0,2% / −0,7%;
 # + ставки 1 / ¼ ед. +3,1% / +5,3%; 🎯 по лучшей из Bet365/Pinnacle +2,7% / +1,2% (+ ставки +5,1% / +6,7%).
 DP_LADDER = True
+# 19.11 (решение пользователя: «считай, что у меня несколько контор, которые ты предложил»; заменяет С25 «только 1xBet»):
+# кф ставки = лучшая цена среди контор The Odds API (биржи — за вычетом комиссии); EV, 💰, лестница, банк — по ней
+BEST_PRICE = True
+BOOK_RU = {'onexbet': '1xBet', 'pinnacle': 'Pinnacle', 'marathonbet': 'Marathon', 'williamhill': 'William Hill',
+           'unibet_eu': 'Unibet', 'betsson': 'Betsson', 'sport888': '888sport', 'betclic': 'Betclic',
+           'betfair_ex_eu': 'Betfair', 'matchbook': 'Matchbook'}
+
+
+def book_ru(o: dict) -> str:
+    return BOOK_RU.get(str(o.get('book') or 'onexbet'), str(o.get('book') or '1xBet'))
 STAKE_MONEY, STAKE_SAFE = 1.0, 0.25
 
 
