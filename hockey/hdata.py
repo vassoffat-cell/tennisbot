@@ -540,23 +540,26 @@ def tsdb_rows(d: dt.date) -> list[dict]:
     return out
 
 
-def khl_tsdb_backfill(log: list[str], d0: dt.date = dt.date(2025, 9, 1), d1: dt.date = dt.date(2026, 11, 9), pause: float = 3.0) -> int:
+def khl_tsdb_backfill(log: list[str], d0: dt.date = dt.date(2025, 9, 1), d1: dt.date = dt.date(2026, 11, 9), pause: float = 6.0,
+                      cap: int = 170) -> int:
     """Разовая догрузка истории КХЛ (дни межсезонья 01.06–31.08 пропускаются). Дни ≥ 10.11.2026 — у API-Sports (полные)."""
     rows, d, asked, err = [], d0, 0, 0
     db = load()
     t = db[db.id.astype(str).str.startswith('khl:tsdb:')]
     have = set(pd.to_datetime(t.start).dt.strftime('%Y-%m-%d')) if len(t) else set()   # дни, уже загруженные прошлым проходом
     while d <= d1:
-        if not (6 <= d.month <= 8) and str(d) not in have:
+        if not (6 <= d.month <= 8) and str(d) not in have and asked + err < cap:   # ≤ cap дней за прогон (лимит 40 мин)
             for t in range(3):                       # 19.11: бесплатный ключ ограничивает частоту (1-й проход: 193 ошибки из 343) → пауза и повтор
                 try:
                     rows += tsdb_rows(d); asked += 1
                     break
                 except Exception:
-                    time.sleep(20 * (t + 1))
+                    time.sleep(30 * (t + 1))
             else:
                 err += 1
             time.sleep(pause)
+            if asked and asked % 25 == 0 and rows:          # 19.11: промежуточное сохранение — обрыв по времени не теряет загруженное
+                save(pd.concat([load(), pd.DataFrame(rows)], ignore_index=True))
         d += dt.timedelta(days=1)
     if rows:
         save(pd.concat([load(), pd.DataFrame(rows)], ignore_index=True))
