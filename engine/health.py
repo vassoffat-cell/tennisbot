@@ -216,7 +216,7 @@ def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
     rows = []
-    for wf, per_day in (('daily.yml', 15), ('football.yml', 15), ('cappers.yml', 21)):
+    for wf, per_day in (('daily.yml', 12), ('football.yml', 15), ('cappers.yml', 21)):
         rs = runs(wf, since)
         bad = [r for r in rs if r['conclusion'] not in ('success', None)]
         exp = int(per_day * hours / 24)

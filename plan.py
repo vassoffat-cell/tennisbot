@@ -21,7 +21,7 @@ from typing import Iterable
 import pandas as pd
 
 PLAN_ON = True
-LIVE = False                    # 🔒 «далее» по плану — после того, как Apps Script с planTick_ установлен и проверен
+LIVE = True                     # 18.11 шаг 2б: 🔒 «далее ЧЧ:ММ» — ближайшее из плана и cron (проверка: окон 7, без прогона 0)
 WINDOWS = ((180, 110, 'T−3ч'), (60, 25, 'T−40м'))    # минут до начала: окно [начало − a, начало − b]
 HORIZON_H = 30
 KEEP_H = 72

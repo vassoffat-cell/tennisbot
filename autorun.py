@@ -65,7 +65,7 @@ def _check(rt: dict) -> dict:
     """15.11 (решение пользователя): 🔒 контрольная точка каждого прогона — «проверка ✓, {what}», пропуск прошлой — ⚠️."""
     import datetime as _d
     now = _d.datetime.now(_d.timezone.utc).replace(tzinfo=None)
-    m, hrs = 7, range(1, 24, 2)
+    m, hrs = 7, C.DAILY_CRON_H                                         # 18.11 шаг 2б: резерв 4 ч + ключевые часы
     last = rt.get('chk_run')
     prev = notify.slot(now - _d.timedelta(minutes=45), m, hrs, back=True)
     missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
