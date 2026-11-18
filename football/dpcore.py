@@ -84,7 +84,7 @@ def category(c: dict | None) -> str:
 
 
 def _syn(c: dict) -> str:
-    return ' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''
+    return ' 🔥' if c.get('fire_i', c.get('fire')) else ' ⚔️' if c.get('clash_i', c.get('clash')) else ''
 
 
 def snap_prices(rt: dict, cur: dict, cands: list[dict], now) -> None:
@@ -390,7 +390,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         if mine and r > 1:                                      # ступень и синтез ⭐2/⭐3 — по свежему расчёту
             for x in cur.get('extras') or []:
                 if int(x['rank']) == r:
-                    x.update(tier=mine['tier'], fire=mine.get('fire'), clash=mine.get('clash'))
+                    x.update(tier=mine['tier'], fire=mine.get('fire'), clash=mine.get('clash'), fire_i=mine.get('fire_i'), clash_i=mine.get('clash_i'))
         top = same[0]
         why = 'исправление' if (fix and r == 1) else better(top, mine or _pick_view(pk)) if key(top) != list(pk['key']) else ''
         if not why:

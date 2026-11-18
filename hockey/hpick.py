@@ -44,16 +44,18 @@ def _num(x):
         return float('nan')
 
 
-def _syn(c: dict, tp: pd.DataFrame) -> tuple[int, int]:
-    """(🔥, ⚔️) для линии: капер на тот же матч и рынок — тот же выбор / противоположный."""
+def _syn(c: dict, tp: pd.DataFrame) -> tuple[int, int, int, int]:
+    """(🔥, ⚔️ доказанных ✔ — двигают выбор ⭐; 🔥, ⚔️ всех не-⛔ — значок в тексте) для линии:
+    капер на тот же матч и рынок — тот же выбор / противоположный (19.11, решение пользователя п.1)."""
     if tp is None or not len(tp):
-        return 0, 0
+        return 0, 0, 0, 0
     t = tp[(tp.game_id.astype(str) == str(c['id'])) & (tp.market.astype(str) == str(c['market']))]
     if len(t) and 'src' in t.columns:                       # 🧠 ⛔ слабый капер (selflearn) — его 🔥/⚔️ не учитываются
         t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) != 'weak')]
     fire = int((t.pick.astype(str) == str(c['pick'])).any())
     clash = int((t.pick.astype(str) != str(c['pick'])).any())
-    return fire, clash
+    tt = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) == 'proven')] if len(t) and 'src' in t.columns else t.iloc[0:0]
+    return int((tt.pick.astype(str) == str(c['pick'])).any()), int((tt.pick.astype(str) != str(c['pick'])).any()), fire, clash
 
 
 def stale(games: pd.DataFrame | None, row: dict) -> bool:
@@ -69,6 +71,9 @@ def stale(games: pd.DataFrame | None, row: dict) -> bool:
 
 HK_LADDER = True                  # 17.11 С23 для хоккея: сначала линии с ценой 1xBet (hvalue, по EV), затем линии модели без цены
 TIER_PRICED = 4                   # выше ступеней модели (1–3)
+HK_NEED_PRICE = True              # 19.11 (решение пользователя, «взгляд со стороны» п.4): ⭐ хоккея только с ценой 1xBet; нет цены —
+                                  # «ставки нет» (линия модели без цены: перевес неизвестен, кф обычно < 1,35)
+NO_PRICE_TEXT = '🏒 Хоккей · ставка дня\nСегодня ставки нет: у 1xBet нет цены на линии с перевесом.'
 
 
 def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: tuple, lo: pd.Timestamp, hi: pd.Timestamp,
@@ -91,7 +96,7 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
                              home=row['home'], away=row['away'], slot=v['slot'], market=v['market'], pick=v['pick'], line=v['line'],
                              label=v['label'], p=round(v['p'], 4), p_low=round(v['p'], 4), tier=TIER_PRICED,
                              k=round(v['k'], 2), ev=round(v['ev'], 4))
-                    c['fire'], c['clash'] = _syn(c, tp)
+                    c['fire'], c['clash'], c['fire_i'], c['clash_i'] = _syn(c, tp)
                     priced.append(c)
             except Exception as ex:                           # цена — улучшение, а не условие работы ставки дня
                 if skipped is not None:
@@ -103,7 +108,7 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
             c = dict(id=row['id'], league=row['league'], start_utc=row['start_utc'], start_local=row['start_local'],
                      home=row['home'], away=row['away'], slot=int(x['slot']), market=x['market'], pick=x['pick'],
                      line=x['line'], label=x['label'], p=round(p, 4), p_low=float(x['p_low']), tier=tier_fn(x, row['league']))
-            c['fire'], c['clash'] = _syn(c, tp)
+            c['fire'], c['clash'], c['fire_i'], c['clash_i'] = _syn(c, tp)
             out.append(c)
     model = SL.reorder('hockey', sorted(out, key=lambda c: (-c['fire'], c['clash'], -c['tier'], -c['p_low'], -c['p'])))
     return sorted(priced, key=lambda c: (-c['fire'], c['clash'], -c['ev'])) + model   # лестница: цена 1xBet → модель
@@ -136,7 +141,7 @@ def _better(a: dict, b: dict | None) -> str:
 
 
 def _line(c: dict, e) -> str:
-    syn = (' 🔥' if c['fire'] else '') + (' ⚔️' if c['clash'] else '')
+    syn = (' 🔥' if c.get('fire_i', c['fire']) else '') + (' ⚔️' if c.get('clash_i', c['clash']) else '')
     return (f"🕒 {e(c['start_local'])} · {e(c['home'])} — {e(c['away'])}\n"
             f"<b>{e(c['label'])}{'' if c.get('market') == 'ML' else ' (осн. время)'} — {c['p'] * 100:.0f}%</b> · {notify.fair(c['p'])}{syn}")
 
@@ -213,12 +218,15 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         cands = candidates(items, tp, leagues, lo, hi, now, tier_fn)
     if skipped:
         log.append(f'⭐🏒 КХЛ мало свежих матчей (< 5 за 60 дн.) — вне ставки дня: {len(set(skipped))} матч.')
+    all_cands = cands
+    if HK_LADDER and HK_NEED_PRICE:
+        cands = [c for c in cands if int(c['tier']) == TIER_PRICED]
     scan = ''
     try:                                                     # 🔏 15.11: печать прогнозов суток (снимок в репозитории каждый прогон)
         import seal as SEAL
         info = SEAL.seal('hockey', [it for it in items if it[0].get('league') in leagues], lo, hi, now, HD_DATA, str(day),
-                         SEAL.cand_rows(cands, 'id'))
-        scan = SEAL.text(info, len({str(c['id']) for c in cands}))
+                         SEAL.cand_rows(all_cands, 'id'))
+        scan = SEAL.text(info, len({str(c['id']) for c in all_cands}))
     except Exception as ex:
         log.append(f'⭐🏒 печать: сбой {ex.__class__.__name__}: {ex}')
     if st.get('date') != str(day):                           # новые сутки: снять закрепы прошлых, убрать уведомления
@@ -230,7 +238,10 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         rt['hk_dp'] = st
         first = next((c for c in cands if not c['clash']), cands[0] if cands else None)
         if not first:
-            log.append(f'⭐🏒 {day:%d.%m}: нет уверенных кандидатов')
+            log.append(f'⭐🏒 {day:%d.%m}: нет уверенных кандидатов' + (' с ценой 1xBet' if HK_NEED_PRICE else ''))
+            if HK_NEED_PRICE and all_cands:                 # 19.11 п.4: одно тихое сообщение «ставки нет» (без закрепа)
+                st['notes'] = [list(m) for m in notify.send_blocks([NO_PRICE_TEXT], silent=True, queue=False)]
+                CHANGED[0] = True
             return
         st['picks'] = [_publish(day, dict(first, scan=scan), 1, [])]
         store.append('hk_day_pick', [_row(day, 1, first)])
@@ -262,6 +273,8 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
     if not picks:                                            # утром кандидатов не было — первая появившаяся = ⭐1
         first = next((c for c in cands if not c['clash']), None)
         if first:
+            if st.get('notes'):                              # 19.11 п.4: «ставки нет» снимается, когда появилась цена
+                notify.delete([tuple(m) for m in st['notes']]); st['notes'] = []
             st['picks'] = [_publish(day, dict(first, scan=scan), 1, [f'➕ появилась в {loc:%H:%M}'])]
             store.append('hk_day_pick', [_row(day, 1, first, reason='новая: появилась линия')])
             log.append(f"⭐🏒 ⭐1 появилась: {first['label']}")
@@ -277,6 +290,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         mine = next((c for c in same if int(c['slot']) == int(x['slot'])), None)
         if mine:
             x['fire'], x['clash'] = mine['fire'], mine['clash']
+            x['fire_i'], x['clash_i'] = mine.get('fire_i', mine['fire']), mine.get('clash_i', mine['clash'])
         top = same[0]
         why = better(top, mine or x) if int(top['slot']) != int(x['slot']) else ''
         if not why:

@@ -210,9 +210,12 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
         import tips
         keep = []
         for o in out:
-            good, bad_any, bad = tips.relation(o['espn_id'], DISTS.get(o['espn_id']), o['market'], o['pick'], o['line'])
+            good, bad_any, bad, good_t = tips.relation(o['espn_id'], DISTS.get(o['espn_id']), o['market'], o['pick'], o['line'])
             o['tips_for'] = good
-            o['fire'], o['clash'] = bool(good and not bad_any), bool(bad_any)      # 🔥 синтез / ⚔️ конфликт
+            # 19.11 (решение пользователя, «взгляд со стороны» п.1): выбор ⭐ двигают только ✔ доказанные каналы (fire/clash);
+            # 🔥/⚔️ остальных — только значок в тексте (fire_i/clash_i)
+            o['fire_i'], o['clash_i'] = bool(good and not bad_any), bool(bad_any)
+            o['fire'], o['clash'] = bool(good_t and not bad), bool(bad)
             if bad:
                 log.append(f"👥 вето: {o['home']} — {o['away']} {o['label']} (против надёжного капера)")
             else:
@@ -246,7 +249,7 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
     # 12.11 (решение пользователя): после «честный кф» — ничего лишнего; только отметки правок (✏️) и новой линии (➕);
     # 16.11 (решение пользователя): + одна строка «💵 1xBet кф · EV ±x%», если кф известен
     out = [head, f"🏆 {e(c['comp_name'])} · 🕒 {e(str(c['start_local'])[6:])}", f"<b>{e(c['home'])} — {e(c['away'])}</b>",
-           f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''} — {c['p'] * 100:.0f}% · {notify.fair(c['p'])}"]
+           f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire_i', c.get('fire')) else ' ⚔️' if c.get('clash_i', c.get('clash')) else ''} — {c['p'] * 100:.0f}% · {notify.fair(c['p'])}"]
     if ev_line(c):
         out.append(ev_line(c))
     out += [e(h) for h in hist]

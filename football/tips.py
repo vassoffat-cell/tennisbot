@@ -581,17 +581,17 @@ def match_line(espn_id: str, trust: set[str] | None = None) -> str:
     return '👥 ' + ' | '.join(parts[:4])
 
 
-def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int, int]:
+def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int, int, int]:
     """Синтез модели и каперов по линии (market, pick, line) матча: (🔥 поддержка, ⚔️ конфликт, ⚔️ конфликт надёжных).
     Поддержка — их ставка делает нашу линию вероятнее: P(наша | их) ≥ P(наша) + 0,10 или ≥ 0,95 (ТБ2.5 у них → наш ТБ1.5);
     конфликт — совместная P по матрице счёта < 5% (их ТМ2.5 против нашего ТБ2.5)."""
     d = for_match(espn_id)
     if d.empty or P is None:
-        return 0, 0, 0
+        return 0, 0, 0, 0
     trust = trusted()
     ours = masks(P, (market, pick, '' if line in (None, '') or str(line) in ('nan', 'None') else float(line)))[0]
     p0 = float(P[ours].sum())
-    good = bad = bad_t = 0
+    good = bad = bad_t = good_t = 0
     try:                                                     # 🧠 самообучение: ⛔ слабый канал не учитывается, ✔ доказанный — вето
         import selflearn as SL
         trust = trust | {s for s in set(d.src) if SL.capper('football', s) == 'proven'}
@@ -611,18 +611,19 @@ def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple
             bad_t += int(r.src in trust)
         elif joint / pt >= min(0.95, p0 + 0.10):
             good += 1
-    return good, bad, bad_t
+            good_t += int(r.src in trust)
+    return good, bad, bad_t, good_t
 
 
 def conflicts(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int]:
     """(против надёжных — вето, поддержка любых) — для ставки дня."""
-    good, _, bad_t = relation(espn_id, P, market, pick, line)
+    good, _, bad_t, _ = relation(espn_id, P, market, pick, line)
     return bad_t, good
 
 
 def mark(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> str:
     """🔥 — модель и капер за одно (линия уверенная), ⚔️ — конфликт (публикуется, итог покажет, кто прав), '' — каперов нет."""
-    good, bad, _ = relation(espn_id, P, market, pick, line)
+    good, bad, _, _ = relation(espn_id, P, market, pick, line)
     return '🔥' if good and not bad else '⚔️' if bad else ''
 
 

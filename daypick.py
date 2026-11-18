@@ -190,7 +190,7 @@ def text(c: dict | None, day, hist: list[str], score: str, reason: str = '') -> 
     # 16.11 (решение пользователя): + одна строка «💵 1xBet кф · EV ±x%», если кф известен
     out = [head, f"🏆 {e(c['tour'])} · {e(c['event'])} · 🕒 {e(str(c['start_local'])[6:])}",
            f"<b>{e(c['player1'])} — {e(c['player2'])}</b>",
-           f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire') else ' ⚔️' if c.get('clash') else ''} — {c['p'] * 100:.0f}% · {notify.fair(c['p'])}"]
+           f"<b>{e(c['label'])}</b>{' 🔥' if c.get('fire_i', c.get('fire')) else ' ⚔️' if c.get('clash_i', c.get('clash')) else ''} — {c['p'] * 100:.0f}% · {notify.fair(c['p'])}"]
     if ev_line(c):
         out.append(ev_line(c))
     out += [e(h) for h in hist]
