@@ -21,7 +21,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 12                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 13                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -128,9 +128,14 @@ def _real_pair(s: str) -> bool:
     return any(not MARKET.search(m.group(1)) and not MARKET.search(m.group(2)) for m in W.PAIR.finditer(s))
 
 
+REVIEW_POST = re.compile(r'(?i)^\s*(?:отзывы? клиент|видео-?отч[её]т|отч[её]т (?:по )?экспресс|всех с победой)')
+
+
 def tips_of(src: str, p: dict) -> list[dict]:
     """Все прогнозы поста: по парам «A — B» (фрагмент до следующей пары) или одна ставка без пары."""
     import tipswide as W
+    if REVIEW_POST.search(p.get('text') or ''):                 # 19.11: отзывы / отчёты о выигрыше — скрины прошлых ставок, не прогноз
+        return []
     if src in OCR_CH and p.get('ocr'):
         rows = slip_rows(src, p)
         if rows:
