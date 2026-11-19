@@ -1,17 +1,19 @@
 uid,src,post_ts,league,game_id,start,home,away,market,pick,line,label,k,self,ours,result,p_model,p_imp,rel,raw,live
-kapper_uk:22522:r,kapper_uk,2026-11-10 16:21,KHL,khl:430663,2026-11-10 16:30,Niznekamsk,Salavat Ufa,ML,A,,П2 ОТ,,,L,L,0.641,,,❔ Хоккей | КХЛ Нефтехимик — Салават Салават Юлаев уже 6 раз подряд выигрывал очн,
-kapper_uk:22593:0,kapper_uk,2026-11-14 11:53,KHL,khl:430679,2026-11-14 11:00,Niznekamsk,Avangard Omsk,ML,A,,П2 ОТ,1.68,,W,W,0.5878,0.5952,,Победа в матче. П2 кф 1.675,1
-kapper_uk:22610:0,kapper_uk,2026-11-15 11:02,KHL,khl:430682,2026-11-15 14:00,Nizhny Novgorod,Dinamo Minsk,ML,H,,П1 ОТ,1.67,,W,W,0.2545,0.5988,,Победа в матче. П1 кф 1.67,
+kapper_uk:22522:r,kapper_uk,2026-11-10 16:21,KHL,khl:430663,2026-11-10 16:30,Niznekamsk,Salavat Ufa,ML,A,,П2 ОТ,,,L,L,0.5783,,1,❔ Хоккей | КХЛ Нефтехимик — Салават Салават Юлаев уже 6 раз подряд выигрывал очн,
+kapper_uk:22593:0,kapper_uk,2026-11-14 11:53,KHL,khl:430679,2026-11-14 11:00,Niznekamsk,Avangard Omsk,ML,A,,П2 ОТ,1.68,,W,W,0.6458,0.5952,,Победа в матче. П2 кф 1.675,1
+kapper_uk:22610:0,kapper_uk,2026-11-15 11:02,KHL,khl:430682,2026-11-15 14:00,Nizhny Novgorod,Dinamo Minsk,ML,H,,П1 ОТ,1.67,,W,W,0.4329,0.5988,-1,Победа в матче. П1 кф 1.67,
+stavki_na_sport_betting1:slip:355879697:0,stavki_na_sport_betting1,2026-10-23 09:56,KHL,khl:tsdb:2506745,2026-10-23 16:30,Spartak Moscow,Cherepovets,TOT,O,4.5,ТБ4.5,1.55,,L,L,0.6262,0.6452,,ТБ(4.5),
 stavki_na_sport_betting1:slip:356517087:0,stavki_na_sport_betting1,2026-10-23 19:39,NHL,nhl:401892565,2026-10-24 01:00,Colorado Avalanche,Tampa Bay Lightning,TOT,O,5.0,ТБ5,1.4,,W,W,0.6804,0.7143,1,ТБ(5.0),
 stavki_na_sport_betting1:slip:363945524:0,stavki_na_sport_betting1,2026-10-27 22:12,NHL,nhl:401892587,2026-10-28 00:00,Chicago Blackhawks,Los Angeles Kings,TOT,O,5.0,ТБ5,1.48,,L,L,0.5255,0.6757,0,ТБ(5.0),
-stavki_na_sport_betting1:slip:389719189:0,stavki_na_sport_betting1,2026-11-10 12:25,KHL,khl:430664,2026-11-10 14:00,Tractor Chelyabinsk,Shanghai,TOT,O,4.5,ТБ4.5,1.64,W,W,W,0.7303,0.6098,,ТБ(4.5),
-stavki_na_sport_betting1:19622:s0,stavki_na_sport_betting1,2026-11-10 15:58,KHL,khl:430664,2026-11-10 14:00,Tractor Chelyabinsk,Shanghai,IT1,O,2.0,ИТ1 Б2,1.42,W,W,W,0.8885,0.7042,,трактор челябинск ИТБ(2.0),1
-stavki_na_sport_betting1:slip:389933959:0,stavki_na_sport_betting1,2026-11-10 16:02,KHL,khl:430662,2026-11-10 16:10,Dinamo Minsk,Avangard Omsk,IT2,O,2.0,ИТ2 Б2,1.45,,L,L,0.588,0.6897,,авангард ИТБ(2.0),
+stavki_na_sport_betting1:slip:388378029:0,stavki_na_sport_betting1,2026-11-09 10:35,KHL,khl:tsdb:2506811,2026-11-09 16:00,Bars Kazan,Nizhny Novgorod,IT1,O,2.0,ИТ1 Б2,1.53,W,W,W,0.704,0.6536,1,ак барс ИТБ(2.0),
+stavki_na_sport_betting1:slip:389719189:0,stavki_na_sport_betting1,2026-11-10 12:25,KHL,khl:430664,2026-11-10 14:00,Tractor Chelyabinsk,Shanghai,TOT,O,4.5,ТБ4.5,1.64,W,W,W,0.6807,0.6098,,ТБ(4.5),
+stavki_na_sport_betting1:19622:s0,stavki_na_sport_betting1,2026-11-10 15:58,KHL,khl:430664,2026-11-10 14:00,Tractor Chelyabinsk,Shanghai,IT1,O,2.0,ИТ1 Б2,1.42,W,W,W,0.8161,0.7042,,трактор челябинск ИТБ(2.0),1
+stavki_na_sport_betting1:slip:389933959:0,stavki_na_sport_betting1,2026-11-10 16:02,KHL,khl:430662,2026-11-10 16:10,Dinamo Minsk,Avangard Omsk,IT2,O,2.0,ИТ2 Б2,1.45,,L,L,0.6734,0.6897,,авангард ИТБ(2.0),
 stavki_na_sport_betting1:19631:s0,stavki_na_sport_betting1,2026-11-10 22:00,NHL,nhl:401892688,2026-11-11 00:00,Winnipeg Jets,New Jersey Devils,IT1,O,2.5,ИТ1 Б2.5,1.64,,W,W,0.5376,0.6098,0,виннипег джетс ИТБ(2.5),
-stavki_na_sport_betting1:slip:390986717:0,stavki_na_sport_betting1,2026-11-11 12:48,KHL,khl:430667,2026-11-11 16:30,CSKA Moscow,Nizhny Novgorod,TOT,O,4.0,ТБ4,1.44,,W,W,0.7373,0.6944,,ТБ(4.0),
-stavki_na_sport_betting1:slip:391194223:0,stavki_na_sport_betting1,2026-11-11 16:12,KHL,khl:430665,2026-11-11 16:30,Sochi,Lada,IT1,O,2.0,ИТ1 Б2,1.47,W,W,W,0.5566,0.6803,,хк сочи ИТБ(2.0),
-stavki_na_sport_betting1:slip:390986117:0,stavki_na_sport_betting1,2026-11-11 17:51,KHL,khl:430667,2026-11-11 16:30,CSKA Moscow,Nizhny Novgorod,TOT,O,4.0,ТБ4,1.44,W,W,W,0.7373,0.6944,,ТБ(4.0),1
-kapper_uk:22619:0,kapper_uk,2026-11-16 12:39,KHL,khl:430685,2026-11-16 16:30,CSKA Moscow,Khabarovsk,AH,H,-1.0,Ф1(-1),1.65,,L,L,0.5594,0.6061,,Фора. 1 (-1) кф 1.65,
-kapper_uk:22640:0,kapper_uk,2026-11-17 10:43,KHL,khl:430688,2026-11-17 14:00,Yekaterinburg,Spartak Moscow,ML,H,,П1 ОТ,,,W,W,0.5746,,,Победа в матче. П1 1775,
-kapper_uk:22660:0,kapper_uk,2026-11-18 10:31,KHL,khl:430696,2026-11-18 14:00,Salavat Ufa,Barys Astana,ML,H,,П1 ОТ,1.53,,W,W,0.7309,0.6536,,Победа в матче. П1 кф 1.53,
-kapper_uk:22665:0,kapper_uk,2026-11-18 15:13,KHL,khl:430697,2026-11-18 16:30,Shanghai,Khabarovsk,DC,X2,,X2,1.7,,W,W,0.6993,0.5882,,Двойной шанс. 2X кф 1.695,
+stavki_na_sport_betting1:slip:390986717:0,stavki_na_sport_betting1,2026-11-11 12:48,KHL,khl:430667,2026-11-11 16:30,CSKA Moscow,Nizhny Novgorod,TOT,O,4.0,ТБ4,1.44,,W,W,0.622,0.6944,1,ТБ(4.0),
+stavki_na_sport_betting1:slip:391194223:0,stavki_na_sport_betting1,2026-11-11 16:12,KHL,khl:430665,2026-11-11 16:30,Sochi,Lada,IT1,O,2.0,ИТ1 Б2,1.47,W,W,W,0.5025,0.6803,0,хк сочи ИТБ(2.0),
+stavki_na_sport_betting1:slip:390986117:0,stavki_na_sport_betting1,2026-11-11 17:51,KHL,khl:430667,2026-11-11 16:30,CSKA Moscow,Nizhny Novgorod,TOT,O,4.0,ТБ4,1.44,W,W,W,0.622,0.6944,,ТБ(4.0),1
+kapper_uk:22619:0,kapper_uk,2026-11-16 12:39,KHL,khl:430685,2026-11-16 16:30,CSKA Moscow,Khabarovsk,AH,H,-1.0,Ф1(-1),1.65,,L,L,0.5223,0.6061,0,Фора. 1 (-1) кф 1.65,
+kapper_uk:22640:0,kapper_uk,2026-11-17 10:43,KHL,khl:430688,2026-11-17 14:00,Yekaterinburg,Spartak Moscow,ML,H,,П1 ОТ,,,W,W,0.6369,,1,Победа в матче. П1 1775,
+kapper_uk:22660:0,kapper_uk,2026-11-18 10:31,KHL,khl:430696,2026-11-18 14:00,Salavat Ufa,Barys Astana,ML,H,,П1 ОТ,1.53,,W,W,0.7015,0.6536,1,Победа в матче. П1 кф 1.53,
+kapper_uk:22665:0,kapper_uk,2026-11-18 15:13,KHL,khl:430697,2026-11-18 16:30,Shanghai,Khabarovsk,DC,X2,,X2,1.7,,W,W,0.62,0.5882,1,Двойной шанс. 2X кф 1.695,
