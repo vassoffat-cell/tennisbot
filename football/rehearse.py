@@ -64,11 +64,12 @@ def main(arg: str) -> None:
     for s in skipped[:12]:
         print('  пропуск:', s)
     log: list[str] = []
-    cands = daypick.offers(items, off, day, log)
-    cands = [o for o in dpcore.PK.choose(dpcore._dedupe(cands)) if o['market'] not in off]
+    raw = [o for o in dpcore._dedupe(daypick.offers(items, off, day, log)) if o['market'] not in off]
+    cands = [o for o in dpcore.PK.choose(raw)]
     print('\n'.join(log))
     n_k = sum(1 for c in cands if c.get('k'))
-    print(f'кандидатов ставки дня: {len(cands)}, с кф 1xBet {n_k}; 🔥 {sum(1 for c in cands if c.get("fire"))}, '
+    # 19.11: без кф (вечерняя репетиция, экономия кредитов) ⭐ невозможна по правилу С19 «только с ценой» → проверяются линии-кандидаты модели
+    print(f'линий-кандидатов модели: {len(raw)}; кандидатов ставки дня: {len(cands)}, с кф {n_k}; 🔥 {sum(1 for c in cands if c.get("fire"))}, '
           f'⚔️ {sum(1 for c in cands if c.get("clash"))}; ⛔ рынки: {", ".join(off) or "нет"}')
     for c in cands[:10]:
         ev = OD.ev(c['p'], c.get('k'))
@@ -81,7 +82,8 @@ def main(arg: str) -> None:
     n_pre = int((days == day).sum()) if len(days) else 0
     probs = ([f'ESPN: ошибок запросов {len(errs)}'] if errs else []) \
         + ([f'в расписании {n_pre} матчей, а прогноз — 0'] if n_pre and not items else []) \
-        + ([f'прогноз {len(items)} матчей, а кандидатов ставки дня 0'] if items and not cands else []) \
+        + ([f'прогноз {len(items)} матчей, а линий-кандидатов 0'] if items and not raw else []) \
+        + ([f'прогноз {len(items)} матчей, а кандидатов ставки дня с ценой 0'] if use_odds and items and not cands else []) \
         + ([f'не опознано {len(skipped)} из {len(skipped) + len(items)} матчей'] if len(skipped) > max(5, len(items)) else [])
     print('🎬 итог:', '; '.join(probs) if probs else 'проблем нет')
     if auto and probs:
