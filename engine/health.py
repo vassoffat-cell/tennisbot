@@ -212,6 +212,37 @@ def capper_check() -> list[tuple[str, str, str, str]]:
     return rows
 
 
+def shadow_check(since: datetime) -> list[tuple[str, str, str, str]]:
+    """С21 (19.11, «взгляд со стороны»): теневой портфель растёт — за окно добавлены стороны с ценой, если у вида были матчи
+    (снимок суток С16 непустой). Дважды находили «тихую» пустоту: портфель получал только кандидатов ⭐ (1 строка за 2 суток)."""
+    import pandas as pd
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    edge = since.astimezone(timezone.utc).replace(tzinfo=None).strftime('%Y-%m-%d %H:%M')
+    rows = []
+    for sport, folder in (('tennis', 'data'), ('football', 'football/data')):
+        fs = sorted((root / folder / 'shadow').glob(f'{sport}_*.csv'))[-2:]
+        try:
+            d = pd.concat([pd.read_csv(f, dtype=str, keep_default_na=False) for f in fs]) if fs else pd.DataFrame(columns=['first_at', 'market'])
+        except Exception as e:
+            rows.append((f'теневой портфель ({sport})', 'растёт', f'нет данных ({e.__class__.__name__})', '❌')); continue
+        new = d[d.first_at >= edge]
+        seal = 0
+        for f in sorted((root / folder / 'seal').glob(f'{sport}_*.csv'))[-2:]:
+            if f.stem.split('_')[1] >= edge[:10] or f.stat().st_mtime >= since.timestamp():
+                try:
+                    seal += max(0, sum(1 for _ in open(f, encoding='utf-8')) - 1)
+                except Exception:
+                    pass
+        mk = new.market.value_counts().to_dict() if len(new) else {}
+        if len(new):
+            rows.append((f'теневой портфель ({sport}): новых сторон с ценой', '> 0', f'{len(new)} ({", ".join(f"{k} {v}" for k, v in mk.items())})', '✅'))
+        else:
+            rows.append((f'теневой портфель ({sport}): новых сторон с ценой', '> 0', 'матчей не было' if not seal else f'0 при снимке {seal} линий',
+                         '✅' if not seal else '❌'))
+    return rows
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -263,6 +294,7 @@ def main(hours: int = 26) -> None:
     rows += seal_today()
     rows += plan_check(since)
     rows += capper_check()
+    rows += shadow_check(since)
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:

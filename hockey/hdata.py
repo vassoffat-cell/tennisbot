@@ -242,6 +242,24 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
         rows += r
         if d < today and r and all(x['state'] in ('post', 'void') for x in r):
             done.add(str(d))
+    # 19.11: запасной путь — API-Sports упёрся в лимит / ошибки, а матчи КХЛ без итога остались → итог из TheSportsDB
+    # (бесплатно, до 3 матчей в день, ≤ 2 дат за прогон); id матча API-Sports сохраняется — дублей нет
+    got = {x['id'] for x in rows if x.get('end') in ('REG', 'OT', 'SO')}
+    left = k[~k.id.isin(got)]
+    tsdb_fix = 0
+    if len(left) and (st['used'] >= DAY_CAP or errs):
+        for day_ in sorted({str(pd.Timestamp(x).date()) for x in left.start}, reverse=True)[:2]:
+            try:
+                tr = tsdb_rows(dt.date.fromisoformat(day_))
+            except Exception as e:
+                errs.append(f'TheSportsDB {day_}: {str(e)[:60]}'); continue
+            for g in left[pd.to_datetime(left.start).dt.strftime('%Y-%m-%d') == day_].itertuples(index=False):
+                m = next((x for x in tr if x['home'] == g.home and x['away'] == g.away), None)
+                if m:
+                    rows.append(dict(g._asdict(), **{c: m[c] for c in ('hg', 'ag', 'hg_reg', 'ag_reg', 'end', 'state')}))
+                    tsdb_fix += 1
+    if tsdb_fix:
+        errs.append(f'итоги из TheSportsDB: {tsdb_fix}')
     if rows:
         save(pd.concat([load(), pd.DataFrame(rows)], ignore_index=True))
     st['done'] = sorted(done)
