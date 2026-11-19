@@ -227,7 +227,7 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
         out = keep
     except Exception as e:
         log.append(f'👥 каперы в ставке дня: сбой {e.__class__.__name__}')
-    return PK.choose(out)
+    return out          # 19.11: без фильтра — отбор ⭐ (PK.choose) в dpcore; теневой портфель получает все стороны с ценой
 
 
 def ev_line(c: dict) -> str:

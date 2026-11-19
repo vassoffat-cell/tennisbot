@@ -166,7 +166,7 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
             out += api_offers(m, row, ev, flip, r)
         out += model_offers(m, row)
     out = [o for o in out if o['market'] not in off]
-    return PK.choose(out)
+    return out          # 19.11: без фильтра — отбор ⭐ (PK.choose) в dpcore; теневой портфель получает все стороны с ценой
 
 
 def ev_line(c: dict) -> str:
