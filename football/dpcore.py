@@ -106,7 +106,7 @@ def snap_prices(rt: dict, cur: dict, cands: list[dict], now) -> None:
 
 SHADOW_COLS = ['key', 'date', 'espn_id', 'start_utc', 'match', 'market', 'pick', 'line', 'label', 'p', 'p_model', 'p_mkt', 'mkt_src',
                'k', 'k_src', 'k_best', 'book_best', 'ev', 'tier', 'group', 'fire', 'clash',
-               'first_at', 'k_first', 'p_first', 'last_at', 'p_mkt_last', 'result', 'settled']   # итог — daypick.shadow_settle
+               'first_at', 'k_first', 'p_first', 'last_at', 'p_mkt_last', 'result', 'settled', 'k_1x', 'book']   # итог — daypick.shadow_settle; 19.11 С25а: кф 1xBet и контора ставки
 
 
 def shadow(cands: list[dict], now, folder, match_fn: Callable) -> int:
@@ -132,10 +132,11 @@ def shadow(cands: list[dict], now, folder, match_fn: Callable) -> int:
                    mkt_src=c.get('mkt_src', ''), k=c['k'], k_src=c.get('k_src', ''), k_best=c.get('k_best') or '',
                    book_best=c.get('book_best') or '', ev='' if c.get('ev') is None else round(float(c['ev']), 4),
                    tier=c.get('tier', ''), group=c.get('group', ''), fire=int(bool(c.get('fire'))), clash=int(bool(c.get('clash'))),
-                   last_at=at, p_mkt_last='' if not c.get('p_mkt') else round(float(c['p_mkt']), 4))
+                   last_at=at, p_mkt_last='' if not c.get('p_mkt') else round(float(c['p_mkt']), 4),
+                   k_1x=c.get('k_1x') or '', book=c.get('book') or '')
         if kk in idx:
             i = idx[kk]
-            for col in ('p', 'p_mkt', 'k', 'k_best', 'book_best', 'ev', 'tier', 'group', 'fire', 'clash', 'last_at', 'p_mkt_last'):
+            for col in ('p', 'p_mkt', 'k', 'k_best', 'book_best', 'ev', 'tier', 'group', 'fire', 'clash', 'last_at', 'p_mkt_last', 'k_1x', 'book'):
                 old.at[i, col] = str(rec[col])
         else:
             rec.update(first_at=at, k_first=rec['k'], p_first=rec['p'])

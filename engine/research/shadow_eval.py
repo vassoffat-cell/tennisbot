@@ -30,11 +30,11 @@ def load() -> pd.DataFrame:
     if not parts:
         return pd.DataFrame()
     df = pd.concat(parts, ignore_index=True)
-    for c in ('result', 'settled', 'k_best', 'book_best', 'group', 'market'):
+    for c in ('result', 'settled', 'k_best', 'book_best', 'group', 'market', 'k_1x', 'book'):
         if c not in df:
             df[c] = ''
     df = df.fillna('')
-    for c in ('k', 'k_first', 'p_first', 'p_mkt', 'p_mkt_last', 'ev', 'k_best'):
+    for c in ('k', 'k_first', 'p_first', 'p_mkt', 'p_mkt_last', 'ev', 'k_best', 'k_1x'):
         df[c] = pd.to_numeric(df[c], errors='coerce')
     df['result'] = df.result.astype(str).str.strip()
     df['ev_first'] = df.p_first * df.k_first - 1
@@ -101,9 +101,12 @@ def main(min_n: int = 1) -> None:
             print(f'{name:<44} {st["n"]:>5} {pct(st["win"]):>6} {pct(st["p"]):>6} {pct(st["roi"], st["roi_se"]):>15} '
                   f'{st["z"]:>5.1f} {pct(st["clv"], st["clv_se"]):>15} {st["t"]:>5.1f}  {gate(st)}'.replace('nan', '  —'))
         print()
-    b = df.dropna(subset=['k_best', 'k'])
+    # 19.11 С25а: k — уже лучшая цена; сравнение — с кф 1xBet (k_1x; старые строки до 19.11 — k = 1xBet)
+    old = df.first_at.astype(str) < '2026-11-18 22:30'          # до С25а k = кф 1xBet; позже без k_1x — неизвестно
+    df['k1x'] = df.k_1x.where(df.k_1x.notna(), df.k.where(old | (df.book == 'onexbet')))
+    b = df.dropna(subset=['k_best', 'k1x'])
     if len(b):
-        gain = (b.k_best / b.k - 1)
+        gain = (b.k_best / b.k1x - 1)
         print(f'Лучшая цена из 10 книг против 1xBet: в среднем +{gain.mean() * 100:.1f}% к кф (n {len(b)}), '
               f'лучше у {(gain > 0.001).mean() * 100:.0f}% кандидатов; книги: '
               + ', '.join(f'{k} {v}' for k, v in b.book_best.value_counts().head(5).items()))
