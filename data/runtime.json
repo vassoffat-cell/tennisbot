@@ -125,7 +125,9 @@
   },
   "first_label": "П1 Shelton",
   "first_match": "Ben Shelton — Rafael Jodar",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 a9349aba\n🏆 ATP · Nitto ATP Finals · 🕒 18:00\n<b>Ben Shelton — Rafael Jodar</b>\n<b>П1 Shelton</b> — 68% · честный кф 1,47\n💵 1xBet 1,50 · EV +2,0% · ставка ¼ ед."
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 a9349aba\n🏆 ATP · Nitto ATP Finals · 🕒 18:00\n<b>Ben Shelton — Rafael Jodar</b>\n<b>П1 Shelton</b> — 68% · честный кф 1,47\n💵 1xBet 1,50 · EV +2,0% · ставка ¼ ед.",
+  "vol": 2,
+  "played": false
  },
  "model_version": 4,
  "reported": [
@@ -3524,12 +3526,18 @@
    "src": "pinnacle",
    "at": "2026-11-17 18:31",
    "key": "187503|ML|1|"
+  },
+  "2026-11-19|1": {
+   "p": 0.6712,
+   "src": "pinnacle",
+   "at": "2026-11-19 04:00",
+   "key": "187507|ML|1|"
   }
  },
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-19T03:14:00",
+ "chk_run": "2026-11-19T04:00:45",
  "plan_at": [
   "2026-11-19 10:00",
   "2026-11-19 12:00",

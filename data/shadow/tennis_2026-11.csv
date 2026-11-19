@@ -1,4 +1,4 @@
 key,date,espn_id,start_utc,match,market,pick,line,label,p,p_model,p_mkt,mkt_src,k,k_src,k_best,book_best,ev,tier,group,fire,clash,first_at,k_first,p_first,last_at,p_mkt_last,result,settled
 187503|ML|1|,2026-11-17,187503,2026-11-17 19:30,Alexander Zverev — Ben Shelton,ML,1,,П1 Zverev,0.637,0.6486,0.6381,pinnacle,1.53,api,1.53,onexbet,-0.0255,2,fallback,0,0,2026-11-17 07:39,1.53,0.637,2026-11-17 18:31,0.6381,W,2026-11-17
-187507|ML|1|,2026-11-19,187507,2026-11-19 13:00,Ben Shelton — Rafael Jodar,ML,1,,П1 Shelton,0.68,0.5867,0.6712,pinnacle,1.5,api,1.5,onexbet,0.02,2,fallback,0,0,2026-11-19 03:13,1.5,0.68,2026-11-19 03:13,0.6712,,
-187504|ML|1|,2026-11-19,187504,2026-11-19 19:30,Alexander Zverev — Arthur Fils,ML,1,,П1 Zverev,0.7108,0.697,0.7094,pinnacle,1.41,api,1.41,onexbet,0.0022,2,fallback,0,0,2026-11-19 03:13,1.41,0.7108,2026-11-19 03:13,0.7094,,
+187507|ML|1|,2026-11-19,187507,2026-11-19 13:00,Ben Shelton — Rafael Jodar,ML,1,,П1 Shelton,0.68,0.5867,0.6712,pinnacle,1.5,api,1.5,onexbet,0.02,2,fallback,0,0,2026-11-19 03:13,1.5,0.68,2026-11-19 04:00,0.6712,,
+187504|ML|1|,2026-11-19,187504,2026-11-19 19:30,Alexander Zverev — Arthur Fils,ML,1,,П1 Zverev,0.7108,0.697,0.7094,pinnacle,1.41,api,1.41,onexbet,0.0022,2,fallback,0,0,2026-11-19 03:13,1.41,0.7108,2026-11-19 04:00,0.7094,,
