@@ -306,10 +306,13 @@ def update(store, sport: str, kc: dict | None = None, last: dict | None = None) 
             cv = result_of(pc, k)
             dp.loc[i, 'clv'] = cv if cv == cv else ''
             got += 1
+    # 19.11: старые ⭐ без цены рынка (линия модели, p_src = model) цену закрытия не получат никогда — считаются отдельно
+    nomkt = sum(1 for i, r in todo.iterrows() if str(dp.loc[i, 'p_close']).strip() in ('', 'nan', 'None')
+                and str(r.get('p_src', '')) == 'model')
     ix = [i for i in todo.index if str(dp.loc[i, 'p_close']).strip() not in ('', 'nan', 'None')]
     if ix:
         store.update(sheet, dp.loc[ix], ['p_close', 'clv'])
-    return f'📈 CLV {sport}: цена закрытия найдена {got}/{len(todo)}'
+    return f'📈 CLV {sport}: цена закрытия найдена {got}/{len(todo) - nomkt}' + (f' (без цены рынка {nomkt})' if nomkt else '')
 
 
 def summary(dp: pd.DataFrame) -> dict:

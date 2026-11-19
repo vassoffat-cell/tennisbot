@@ -212,7 +212,8 @@ def update_khl(log: list[str], backfill: int = 0, fresh: bool = True) -> int:
     # 14.11: самопроверка — матчи КХЛ старше 4 ч без итога (застряли) → запрос по номеру матча, не по дате (до 8 за прогон)
     db = load()
     k = db[(db.league == 'KHL') & ~db.end.astype(str).isin(['REG', 'OT', 'SO']) & (db.state.astype(str) != 'void')
-           & (pd.to_datetime(db.start) < pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=4))]
+           & (pd.to_datetime(db.start) < pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=4))
+           & (pd.to_datetime(db.start) > pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(days=14))]   # 19.11: 2 матча 2023 г. «в игре» съедали 2 запроса каждый прогон
     for gid in list(k.sort_values('start', ascending=False).id)[:8]:
         if st['used'] >= DAY_CAP:
             break
