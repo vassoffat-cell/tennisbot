@@ -201,7 +201,8 @@ def frame_dp(dp: pd.DataFrame, ch: pd.DataFrame | None) -> tuple[pd.DataFrame, p
             P.append(dict(date=str(r.date)[:10], rank=_rank(getattr(r, 'rank', 1)), market=str(r.market), label=str(r.label),
                           p=_num(r.p), tier=_num(getattr(r, 'tier', '')), fire=_flag(getattr(r, 'fire', 0)),
                           clash=_flag(getattr(r, 'clash', 0)), result=res, final=True,
-                          group=str(getattr(r, 'group', '') or 'fallback').strip() or 'fallback', clv=_num(getattr(r, 'clv', ''))))
+                          group=str(getattr(r, 'group', '') or 'fallback').strip() or 'fallback', clv=_num(getattr(r, 'clv', '')),
+                          k=_num(getattr(r, 'k', ''))))
     fin = {(x['date'], x['rank']): x['result'] for x in P}
     if ch is not None and len(ch):
         for r in ch.itertuples(index=False):
@@ -224,7 +225,7 @@ def frame_hk(dp: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
             continue
         P.append(dict(date=str(r.date)[:10], rank=_rank(r.rank), market=str(r.market), label=str(r.label), p=_num(r.p),
                       tier=_num(getattr(r, 'tier', '')), fire=_flag(r.fire), clash=_flag(r.clash), result=res, final=True,
-                      group='fallback', clv=_num(getattr(r, 'clv', ''))))
+                      group='fallback', clv=_num(getattr(r, 'clv', '')), k=_num(getattr(r, 'k', ''))))
     fin = {(x['date'], x['rank']): x['result'] for x in P}
     for r in dp.itertuples(index=False):
         if str(r.status).strip() == 'правка' and str(r.result) in ('W', 'L'):
@@ -473,10 +474,8 @@ def day_block(sport: str, P: pd.DataFrame, E: pd.DataFrame, day: dt.date, res: d
                           else ' — ниже ожидания, под наблюдением' if s['z'] <= -1.0 else ' — в норме, ожидаемый риск'))
         else:
             verdict = 'данных по рынку мало — копим'
-        cv = _num(r.get('clv'))
-        if cv == cv:                                              # цена закрытия: была ли ставка верной по цене
-            verdict += f"; CLV {_pc(cv)} — " + ('по цене ставка верная, проигрыш — разброс' if cv > 0 else 'рынок закрылся против нас')
-        out.append(f"❌ {e(r['label'])} (P {p * 100:.0f}%): {e(verdict)}")
+        cause, note = classify(r, st)                              # 20.11 Ц12: промах ⭐ — инцидент с причиной
+        out.append(f"🔴 {e(r['label'])} (P {p * 100:.0f}%): {e(cause)} — {e(note)}; {e(verdict)}")
     if len(E):
         for r in E[(E.date == ds) & E.new.isin(['W', 'L']) & (E.new != E.old)].to_dict('records'):
             v = (st.get('edits') or {}).get(r['cls'], {})
@@ -485,6 +484,8 @@ def day_block(sport: str, P: pd.DataFrame, E: pd.DataFrame, day: dt.date, res: d
     if not out:
         won = P[(P.date == ds)] if len(P) else P
         out.append('ошибок за сутки нет' if len(won) else 'рассчитанных ставок за сутки нет')
+    if len(P):
+        out.append(f'⭐ серия без промаха: {streak(P)}')
     dd = P[(P.date == ds)] if len(P) else P
     cvd = [c for c in (dd.clv.map(_num) if len(dd) and 'clv' in dd.columns else []) if c == c]
     if cvd:
@@ -585,6 +586,72 @@ def to_learning(store, sport_ru: str, res: dict) -> int:
     return len(rows)
 
 
+
+# ───────────────────────────── 🔴 инциденты: каждый промах ⭐ (решение пользователя 20.11, CONTROL Ц12) ─────────────────────────────
+INC_COLS = ['date', 'rank', 'label', 'market', 'p', 'k', 'clv', 'cause', 'note', 'at']
+
+
+def _inc_path(sport: str) -> Path:
+    return PATH[sport].parent / 'incidents.csv'
+
+
+def classify(r: dict, st: dict) -> tuple[str, str]:
+    """Причина промаха ⭐ — первая подходящая: системная (без цены, рынок против, сегмент ниже ожидания, против капера) или разброс."""
+    p, k, cv = r.get('p'), r.get('k'), r.get('clv')
+    seg = (st.get('segments') or {}).get(f"market:{r.get('market')}") or {}
+    if not (k == k and k):
+        return 'без цены рынка', 'ставка без проверки ценой конторы — перевес неизвестен (С19/С26а: такие ⭐ больше не выпускаются)'
+    if cv == cv and cv < -0.02:
+        return 'рынок против', f'цена закрытия против нас (CLV {cv * 100:+.1f}%) — рынок знал больше: новости, состав, травма'
+    if seg.get('n', 0) >= 5 and seg.get('z', 0) <= -1.0:
+        return 'сегмент ниже ожидания', f"рынок «{MKT.get(r.get('market'), r.get('market'))}» {seg.get('w')}/{seg.get('n')} при ожидании {_fmt(seg.get('e', 0))}"
+    if r.get('clash'):
+        return 'против капера', 'ставка шла против прогноза капера (⚔️) — проверить его итог'
+    return 'разброс', f"обещано {p * 100:.0f}% — промах ожидаем в {100 - p * 100:.0f}% таких ставок" + (f'; CLV {cv * 100:+.1f}% — по цене ставка верная' if cv == cv else '')
+
+
+def incidents(sport: str, sport_ru: str, P: pd.DataFrame, store, log: list[str] | None = None) -> list[dict]:
+    """Каждый новый промах ⭐ → incidents.csv вида + лист learning (kind «инцидент»). Возвращает новые инциденты."""
+    if P is None or not len(P):
+        return []
+    f = _inc_path(sport)
+    old = pd.read_csv(f, dtype=str, keep_default_na=False) if f.exists() else pd.DataFrame(columns=INC_COLS)
+    seen = set(zip(old.date, old['rank'].astype(str), old.label))
+    st = load(sport)
+    now = (pd.Timestamp.now(tz='UTC').tz_localize(None) + pd.Timedelta(hours=5)).strftime('%Y-%m-%d %H:%M')
+    new = []
+    for r in P[P.result == 'L'].to_dict('records'):
+        if (str(r['date']), str(r['rank']), str(r['label'])) in seen:
+            continue
+        cause, note = classify(r, st)
+        new.append(dict(date=r['date'], rank=r['rank'], label=r['label'], market=r['market'], p=round(float(r['p']), 4) if r['p'] == r['p'] else '',
+                        k='' if r.get('k') != r.get('k') else r.get('k'), clv='' if r.get('clv') != r.get('clv') else round(float(r['clv']), 4),
+                        cause=cause, note=note, at=now))
+    if new:
+        pd.concat([old, pd.DataFrame(new, columns=INC_COLS)], ignore_index=True).to_csv(f, index=False)
+        if store is not None:
+            try:
+                store.append('learning', [dict(when=now, kind='инцидент', title=f"{sport_ru}: 🔴 промах ⭐ {x['date'][8:10]}.{x['date'][5:7]} {x['label']}",
+                                               text=f"- причина: {x['cause']}\n- {x['note']}", sent='') for x in new])
+            except Exception:
+                pass
+    if log is not None:
+        log.append(f'🔴 {sport}: инцидентов (промахов ⭐) новых {len(new)}, всего {len(old) + len(new)}')
+    return new
+
+
+def streak(P: pd.DataFrame) -> int:
+    """Текущая серия ⭐ без промаха (по дате и номеру)."""
+    if P is None or not len(P):
+        return 0
+    n = 0
+    for res in P.sort_values(['date', 'rank'], ascending=False).result:
+        if res != 'W':
+            break
+        n += 1
+    return n
+
+
 def cycle(sport: str, sport_ru: str, store, dp: pd.DataFrame, ch: pd.DataFrame | None, today: dt.date,
           log: list[str] | None = None) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     """Один вызов из прогона: данные → правила → лист learning. Сбой не ломает отчёт (пустой результат)."""
@@ -592,6 +659,11 @@ def cycle(sport: str, sport_ru: str, store, dp: pd.DataFrame, ch: pd.DataFrame |
         P, E = frame_hk(dp) if sport == 'hockey' else frame_dp(dp, ch)
         res = learn(sport, P, E, today)
         n = to_learning(store, sport_ru, res) if store is not None else 0
+        try:
+            incidents(sport, sport_ru, P, store, log)               # 20.11 Ц12: каждый промах ⭐ — инцидент с причиной
+        except Exception as ex:
+            if log is not None:
+                log.append(f'🔴 {sport}: инциденты — сбой {ex.__class__.__name__}: {ex}')
         if log is not None:
             log.append(f"🧠 {sport}: правил +{len(res['added'])} −{len(res['removed'])}; в лист learning {n}; действует: {rules_line(sport) or 'нет'}")
         return P, E, res
