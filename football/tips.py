@@ -191,6 +191,9 @@ def _alias(w: str) -> str | None:
     return None
 
 
+EN_ALT = {'koln': ('cologne',), 'munchen': ('munich',), 'sevilla': ('seville',)}
+
+
 def find_teams(text: str, teams: list[str]) -> dict[str, int]:
     """Позиции (номер слова) упоминаний команд ESPN в русском тексте: псевдонимы, затем транслит (сходство ≥ 0,84)."""
     ws = _words(text)
@@ -201,8 +204,9 @@ def find_teams(text: str, teams: list[str]) -> dict[str, int]:
             al = _alias(' '.join(ws[i:i + n]))
             if not al:
                 continue
+            alts = (al,) + EN_ALT.get(al, ())                     # 20.11: ESPN пишет по-английски («FC Cologne»)
             for t, k in keys.items():
-                if t not in out and al in k and not (al == 'real madrid' and 'madrid' not in k):
+                if t not in out and any(x in k for x in alts) and not (al == 'real madrid' and 'madrid' not in k):
                     out[t] = i
     tw = [(i, _tr(w)) for i, w in enumerate(ws) if len(w) >= 4]
     for t, k in keys.items():

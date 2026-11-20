@@ -339,6 +339,45 @@ def apply_pinnacle(m, row: dict, lns: list[dict], P: np.ndarray) -> int:
     return hit
 
 
+DISTS_FILE = C.DATA / 'tips' / 'dists.json'
+DISTS_HOURS = 48
+
+
+def save_dists(matches: list, mp, world, sched, log: list[str]) -> None:
+    """20.11 (вопрос пользователя «почему все вне базы»): матрицы счёта модели наших матчей на 48 ч вперёд → файл.
+    Прогон каперов (cappers.yml) не считает модель — по этому файлу даёт вердикт 🔥/⚔️ и время начала каждому прогнозу
+    капера на наш матч. Окно прогноза (до 08:00) — те же матрицы (daypick.DISTS); дальше — модель без поправки «мёртвых» матчей."""
+    now = _now()
+    try:
+        old = json.loads(DISTS_FILE.read_text()) if DISTS_FILE.exists() else {}
+    except ValueError:
+        old = {}
+    keep = {k: v for k, v in old.items() if pd.Timestamp(v.get('start', '2000-01-01')) > now - pd.Timedelta(hours=3)}
+    n = 0
+    for m in matches:
+        if m.state != 'pre' or not (now < m.start <= now + pd.Timedelta(hours=DISTS_HOURS)):
+            continue
+        P = daypick.DISTS.get(str(m.id))
+        if P is None:
+            try:
+                name, country, div, kind = C.COMPETITIONS[m.comp]
+                h, a = mp(m.home, m.comp), mp(m.away, m.comp)
+                lam = world.lambdas(m.comp, h, a, m.neutral) if (h and a) else None
+                if lam is None:
+                    continue
+                fh, fa = (sched.features(h, m.start), sched.features(a, m.start)) if kind in LEAGUE_KINDS else ({}, {})
+                lh, la = FF.adjust(*lam, fh, fa) if fh else lam
+                P = dc.score_matrix(lh, la, C.RHO)
+            except Exception:
+                continue
+        keep[str(m.id)] = dict(home=m.home, away=m.away, start=m.start.strftime('%Y-%m-%d %H:%M'), comp=m.comp,
+                               P=np.round(np.asarray(P, float), 5).tolist())
+        n += 1
+    DISTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    DISTS_FILE.write_text(json.dumps(keep, separators=(',', ':')))
+    log.append(f'👥 матрицы для вердиктов каперов: {n} матчей на {DISTS_HOURS} ч')
+
+
 # ======================================================================== прогноз (модель + A2)
 def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched: FF.Schedule, train: pd.DataFrame,
              auto: pd.DataFrame, kcal: dict) -> tuple[list[tuple], list[str]]:
@@ -820,6 +859,11 @@ def run(dry: bool = False) -> str:
     kcal, kprev, knote = daily_k(rt, ld, daily_due and not dry)
     off, bmsg = R.breaker(ld, rt.get('breaker', {}))
     items, skipped = forecast(matches, mp, world, sched, train, af, kcal)
+    if not dry:
+        try:
+            save_dists(matches, mp, world, sched, log)
+        except Exception as ex:
+            log.append(f'👥 матрицы для вердиктов: сбой {ex.__class__.__name__}: {ex}')
     log.append(f'A2 Pinnacle: {A2_HITS[0]} из {A2_HITS[1]} матчей')
     if not dry:                                                        # 👥 каперы: итоги прошлых, новые посты (ТЗ-005)
         try:

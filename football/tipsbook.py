@@ -16,6 +16,7 @@ import json
 import re
 import time
 
+import numpy as np
 import pandas as pd
 
 import tips as T
@@ -579,6 +580,55 @@ def _hockey_rel(d: pd.DataFrame, rel: dict) -> dict:
     return out
 
 
+def _football_rel(d: pd.DataFrame, rel: dict) -> tuple[dict, dict]:
+    """20.11 (пользователь: «почему все матчи вне системы?»): вердикт прогнозу капера на наш футбольный матч — сразу,
+    в прогоне каперов. Раньше вердикт давал только tips.csv прогона футбола — по тексту поста (ставка Каппер UK на картинке
+    туда не попадала) → «вне базы» даже у Баварии и Атлетика. Матрицы счёта модели — data/tips/dists.json (пишет run.py,
+    наши матчи на 48 ч). Возвращает (uid → вердикт, uid → начало матча UTC)."""
+    import json
+    import tipswide as W
+    rel_o, st_o = {}, {}
+    f = T.DIR / 'dists.json'
+    if d.empty or not f.exists():
+        return rel_o, st_o
+    try:
+        fx = json.loads(f.read_text())
+    except ValueError:
+        return rel_o, st_o
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
+    g = d[~d.sport.isin(['hockey', 'tennis']) & (d.a != '') & (d.b != '') & ~d.uid.isin(list(rel)) & ~d.pick.astype(str).str.startswith('❔')]
+    for r in g.itertuples(index=False):
+        hit = None
+        for e in fx.values():
+            pos = T.find_teams(f'{r.a} — {r.b}', [e['home'], e['away']])
+            if len(pos) == 2:
+                hit = (e, pos[e['home']] > pos[e['away']])
+                break
+        if hit is None:
+            continue
+        e, flip = hit
+        start = pd.Timestamp(e['start'])
+        st_o[r.uid] = start
+        if start < now:                                           # после начала — не оценивается (К8)
+            continue
+        P = np.asarray(e['P'], float)
+        tm = (e['home'], e['away'])
+        if flip:                                                  # в посте гости названы первыми: «1» — первая названная
+            P, tm = P.T, tm[::-1]
+        pick = str(r.pick)
+        if W.EXOT.search(pick) or T.SKIP.search(pick.lower()):  # таймы, фолы, угловые — не счёт матча
+            legs = []
+        else:                                                     # «Фора. 2 (3.5)» (картинка Каппер UK) → «Ф2(+3.5)»
+            legs = T.parse_legs(pick, None, tm, True) or T.parse_legs(_pick_short(pick, r.a, r.b, 'football'), None, tm, True)
+        if not legs:
+            rel_o[r.uid] = '⬜ наш матч, рынок вне модели (таймы, фолы, угловые…)'
+            continue
+        p = T.p_legs(P, legs)
+        rel_o[r.uid] = (f'🔥 система согласна (P {p * 100:.0f}%)' if p >= 0.55 else
+                        f'⚔️ система против (P {p * 100:.0f}%)' if p <= 0.45 else f'· система нейтральна (P {p * 100:.0f}%)')
+    return rel_o, st_o
+
+
 def _when(uid: str, post_ts: str, starts: dict, now) -> str:
     """Строка времени: ⏰ начало / ⚠️ матч уже идёт / 🔴 опубликован после начала (время — Ташкент)."""
     s = starts.get(uid)
@@ -615,6 +665,13 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     if len(d):                                                    # 15.11: «❔» поста, у которого есть разобранная ставка (картинка распознана) — не нужен
         parsed = set(df[~df.pick.astype(str).str.startswith('❔')].apply(lambda r: f'{r.src}:{r.post_id}', axis=1))
         d = d[~(d.pick.str.startswith('❔') & d.apply(lambda r: f'{r.src}:{r.post_id}' in parsed, axis=1))]
+    if len(d):                                                    # 20.11: один пост — одна ставка: дубль (строки «h» и «0» одного поста) не шлём
+        key = lambda x: x.src.astype(str) + ':' + x.post_id.astype(str) + ':' + x.pick.astype(str).str.lower().str.strip()
+        done = set(key(df[df.uid.isin(sent)])) if len(sent) else set()
+        kd = key(d)
+        dup = d[kd.isin(done) | kd.duplicated()]
+        sent |= set(dup.uid)
+        d = d[~d.uid.isin(dup.uid)]
     d = d[((d.a != '') | (d.pick != ''))                             # 14.11: и без распознанной пары команд (матч — из текста поста)
           & ~d.pick.str.lower().str.contains('реклам|подписат', regex=True)]   # все, кроме рекламы
     nb = pd.DataFrame()                                           # 14.11 19:35: nb-bet отключён пользователем (мусор)
@@ -628,7 +685,11 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     st = W.stats()
     rel = _relations()
     rel.update(_hockey_rel(d, rel))
+    frel, fst = _football_rel(d, rel)
+    rel.update(frel)
     starts = _starts(d)
+    for u, s0 in fst.items():
+        starts.setdefault(u, s0)
     n = 0
     for bot in (['main', 'tennis'] if test else sorted({ROUTE.get(x, 'main') for x in d.sport} | ({'main'} if len(nb) else set()))):
         g = d[d.sport.map(lambda x: ROUTE.get(x, 'main')) == bot]
