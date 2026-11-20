@@ -1,8 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "187513"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-20",
  "last_retrain": "2026-11-20",
  "last_files": "2026-11-05",
@@ -98,7 +96,7 @@
   "scan": "🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 969382fb",
   "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 969382fb\n🏆 ATP · Nitto ATP Finals · 🕒 00:30\n<b>Daniil Medvedev — Frances Tiafoe</b>\n<b>П1 Medvedev</b> — 68% · честный кф 1,47\n💵 888sport 1,44 · EV −1,8% · ставка ¼ ед.",
   "vol": 2,
-  "played": false,
+  "played": true,
   "espn_id": "187513",
   "slot": 1,
   "key": [
@@ -3520,7 +3518,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-20T18:31:53",
+ "chk_run": "2026-11-20T20:18:13",
  "plan_at": [],
  "plan_sig": []
 }
