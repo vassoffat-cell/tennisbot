@@ -1,8 +1,11 @@
 {
  "list_messages": [],
- "list_match_ids": [],
+ "list_match_ids": [
+  "187510",
+  "187513"
+ ],
  "last_daily": "2026-11-19",
- "last_retrain": "2026-11-19",
+ "last_retrain": "2026-11-20",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -56,11 +59,11 @@
  "kcal_date": "2026-11-19",
  "breaker": {},
  "day_pick": {
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "msgs": [
    [
     570704006,
-    755
+    816
    ]
   ],
   "changes": 0,
@@ -75,56 +78,8 @@
   "hdr2": true,
   "hdr3": true,
   "hdr4": true,
-  "scan": "🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 a9349aba",
-  "espn_id": "187507",
-  "slot": 1,
-  "key": [
-   "187507",
-   "ML",
-   "1",
-   ""
-  ],
-  "p": 0.6799965998634535,
-  "tier": 2,
-  "label": "П1 Shelton",
-  "start_utc": "2026-11-19 13:00",
-  "match": "Ben Shelton — Rafael Jodar",
-  "best": {
-   "espn_id": "187507",
-   "tour": "ATP",
-   "event": "Nitto ATP Finals",
-   "start_utc": "2026-11-19 13:00",
-   "start_local": "19.11 18:00",
-   "player1": "Ben Shelton",
-   "player2": "Rafael Jodar",
-   "market": "ML",
-   "pick": "1",
-   "line": null,
-   "label": "П1 Shelton",
-   "p": 0.6799965998634535,
-   "p_src": "pinnacle",
-   "p_model": 0.5866718144452538,
-   "p_push": 0.0,
-   "k": 1.5,
-   "k_src": "api",
-   "source": "api",
-   "k_best": 1.5,
-   "book_best": "onexbet",
-   "book": "onexbet",
-   "k_1x": 1.5,
-   "p_pin": 0.6712328767123287,
-   "p_mkt": 0.6712328767123287,
-   "mkt_src": "pinnacle",
-   "edge": 0.006849315068492956,
-   "group": "fallback",
-   "sl_pen": 0,
-   "slot": 1
-  },
-  "first_label": "П1 Shelton",
-  "first_match": "Ben Shelton — Rafael Jodar",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 2\nATP Finals, хард 2 · 🔏 a9349aba\n🏆 ATP · Nitto ATP Finals · 🕒 18:00\n<b>Ben Shelton — Rafael Jodar</b>\n<b>П1 Shelton</b> — 68% · честный кф 1,47\n💵 1xBet 1,50 · EV +2,0% · ставка ¼ ед.",
-  "vol": 2,
-  "played": true
+  "scan": "🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 969382fb",
+  "text": "🎾1 <b>Теннис · ставка дня</b>\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 969382fb\nСегодня ставки дня нет: подходящей линии пока нет (кф ≥ 1,35 и вероятность ≥ 60%) — появится, объявлю."
  },
  "model_version": 4,
  "reported": [
@@ -3449,9 +3404,7 @@
   "khl:430702",
   "khl:430703",
   "khl:430704",
-  "khl:430705",
-  "nhl:401892752",
-  "nhl:401892753"
+  "khl:430705"
  ],
  "hk_last_daily": "2026-11-18",
  "hk_dp": {
@@ -3529,7 +3482,17 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-20T02:02:07",
- "plan_at": [],
- "plan_sig": []
+ "chk_run": "2026-11-20T03:13:52",
+ "plan_at": [
+  "2026-11-20 10:00",
+  "2026-11-20 12:00",
+  "2026-11-20 16:30",
+  "2026-11-20 18:30"
+ ],
+ "plan_sig": [
+  "2026-11-20 10:00|2026-11-20 11:10",
+  "2026-11-20 12:00|2026-11-20 12:35",
+  "2026-11-20 16:30|2026-11-20 17:40",
+  "2026-11-20 18:30|2026-11-20 19:05"
+ ]
 }
