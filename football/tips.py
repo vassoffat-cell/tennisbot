@@ -100,6 +100,12 @@ TR = dict(zip('абвгдеёжзийклмнопрстуфхцчшщъыьэю�
                'h', 'ts', 'ch', 'sh', 'sch', '', 'y', '', 'e', 'yu', 'ya']))
 # русское слово (или пара слов) → ключ латиницей, который ищется в названии ESPN
 ALIAS = {
+    # 21.11: РПЛ и сборные/клубы из постов Грозного без пары команд (разбор по тексту — только по справочнику)
+    'ростов': 'rostov', 'крылья советов': 'krylia sovetov', 'крыльев советов': 'krylia sovetov', 'зенит': 'zenit',
+    'спартак москва': 'spartak moscow', 'цска': 'cska moscow', 'локомотив москва': 'lokomotiv moscow', 'краснодар': 'krasnodar',
+    'рубин': 'rubin', 'ахмат': 'akhmat', 'оренбург': 'orenburg', 'акрон': 'akron', 'балтика': 'baltika',
+    'динамо махачкала': 'makhachkala', 'факел': 'fakel', 'кот-д’ивуар': 'ivory coast', "кот-д'ивуар": 'ivory coast',
+    'гамбия': 'gambia', 'алькояно': 'alcoyano', 'северная ирландия': 'northern ireland', 'люксембург': 'luxembourg',
     'мю': 'manchester united', 'ман юнайтед': 'manchester united', 'манчестер юнайтед': 'manchester united',
     'ман сити': 'manchester city', 'манчестер сити': 'manchester city', 'сити': 'manchester city',
     'юнайтед': 'manchester united', 'челси': 'chelsea', 'ливерпуль': 'liverpool', 'арсенал': 'arsenal',

@@ -283,7 +283,9 @@ def _prose(src: str, name: str, p: dict, cache: dict, have: set, sel: str, evs: 
     ☑️ Ювентус дома силён против Наполи…» — пары в строке нет, команда в ставке не названа → 29 из 36 прогнозов ноября не
     попадали в статистику. Матч ищется по тексту разбора: ОБЕ команды события названы в посте и такое событие в окне одно
     (прошлые соперники из разбора отсекаются требованием обеих команд и единственности)."""
-    words = [w for w in T._words(p['text']) if len(w) >= 4 or T._alias(w)]
+    ws0 = T._words(p['text'])
+    words = [w for w in ws0 if len(w) >= 4 or T._alias(w)]
+    words += [f'{a} {b}' for a, b in zip(ws0, ws0[1:]) if T._alias(f'{a} {b}')]   # 21.11: «Крылья Советов», «Северная Ирландия»
     info = [_ru_info(w) for w in dict.fromkeys(words)]
     info = [(x[0], [], x[2]) for x in info if x[0]]                # только команды из справочника (без транслита: проверка 18.11 —
     #                                                                 «Ребят…» давало Richmond — Fordham, «сборные» — Chapecoense)

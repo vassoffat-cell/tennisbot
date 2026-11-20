@@ -790,7 +790,7 @@ def merge_slips(df: pd.DataFrame, rows: list[dict]) -> tuple[pd.DataFrame, int]:
     return df, upd
 
 
-WIDE_CATCHUP = '2026-11-12'                                       # 21.11: посты с этой даты — разово в «все матчи»
+WIDE_CATCHUP = '2026-11-10'                                       # 21.11: посты с этой даты — разово в «все матчи»
 
 
 def wide_feed(rt: dict, chg: dict, log: list[str]) -> int:
@@ -815,7 +815,7 @@ def wide_feed(rt: dict, chg: dict, log: list[str]) -> int:
                 txt = (txt + '\n' + x['ocr']).strip()
             T.LAST_POSTS.append((src, name, dict(id=int(x['id']), ts=pd.Timestamp(x['ts']), text=txt)))
     n = W.collect(log)
-    log[-1] += f' · постов {len(T.LAST_POSTS)}' + (' (догон с 12.11)' if since is not None else '')
+    log[-1] += f' · постов {len(T.LAST_POSTS)}' + (f' (догон с {WIDE_CATCHUP})' if since is not None else '')
     rt['wide_catchup'] = WIDE_CATCHUP
     return n
 
