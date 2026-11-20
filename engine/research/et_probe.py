@@ -1,21 +1,20 @@
-"""21.11: проба ESPN — есть ли у матчей с доп. временем (AET/PEN) счёт по таймам (linescores) → счёт 90 минут.
-Запуск в облаке: daily.yml inputs[research]=engine/research/et_probe.py. Только чтение, без записи."""
-import json, sys
+"""21.11: проба ESPN — счёт 90 минут у матчей с доп. временем (AET/PEN): scoreboard не даёт счёт по таймам (linescores пусто),
+проверяем summary (keyEvents: голы с минутой и периодом). Запуск: daily.yml inputs[research]=engine/research/et_probe.py. Только чтение."""
+import sys
 sys.path.insert(0, 'football')
 import fespn
-BASE = fespn.BASE
-for comp, d in [('esp.copa_del_rey', '20261107'), ('esp.copa_del_rey', '20261108'), ('ger.dfb_pokal', '20261028'),
-                ('ita.coppa_italia', '20261107'), ('eng.league_cup', '20261028'), ('fra.coupe_de_france', '20261108')]:
-    try:
-        js = fespn._get(BASE.format(comp=comp) + f'scoreboard?dates={d}')
-    except Exception as e:
-        print(comp, d, 'ошибка', e); continue
-    for ev in js.get('events', []):
-        c = ev['competitions'][0]
-        st = c['status']['type']['name']
-        if 'AET' not in st and 'PEN' not in st and 'EXTRA' not in st:
-            continue
-        for x in c['competitors']:
-            print(comp, d, st, x['homeAway'], x['team']['displayName'], 'score', x.get('score'),
-                  'linescores', [l.get('value', l.get('displayValue')) for l in x.get('linescores') or []],
-                  'shootout', x.get('shootoutScore'))
+for comp, eid in [('eng.league_cup', None), ('eng.fa', '401931105')]:
+    if eid is None:
+        js = fespn._get(fespn.BASE.format(comp=comp) + 'scoreboard?dates=20261028')
+        eid = next(ev['id'] for ev in js['events'] if 'PEN' in ev['competitions'][0]['status']['type']['name'])
+    s = fespn._get(fespn.BASE.format(comp=comp) + f'summary?event={eid}')
+    print(comp, eid, 'ключи', list(s.keys())[:20])
+    for k in s.get('keyEvents', []) or []:
+        t = (k.get('type') or {}).get('text', '')
+        if 'oal' in t or k.get('scoringPlay'):
+            print('  ', t, 'период', (k.get('period') or {}).get('number'), 'минута', (k.get('clock') or {}).get('displayValue'),
+                  'команда', (k.get('team') or {}).get('displayName'), 'scoringPlay', k.get('scoringPlay'), 'shootout', k.get('shootout'))
+    hdr = (s.get('header') or {}).get('competitions', [{}])[0]
+    for x in hdr.get('competitors', []):
+        print('  header', x.get('homeAway'), x.get('team', {}).get('displayName'), 'score', x.get('score'),
+              'linescores', [l.get('displayValue') for l in x.get('linescores') or []])
