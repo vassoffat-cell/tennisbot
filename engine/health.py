@@ -243,6 +243,49 @@ def shadow_check(since: datetime) -> list[tuple[str, str, str, str]]:
     return rows
 
 
+def ours_check(since: datetime) -> list[tuple[str, str, str, str]]:
+    """20.11 (пользователь: «все матчи вне системы» — журнал «каперы × наши матчи» был пуст 5 суток незаметно):
+    каждый прогноз капера на НАШ матч (матрица модели есть) до начала — в журнале tips.csv и с вердиктом 🔥/⚔️/·,
+    кроме рынков вне модели (таймы, фолы, угловые). Пустой журнал при прогнозах на наши матчи = ❌ сразу."""
+    import sys
+    import pandas as pd
+    from pathlib import Path
+    fb = Path(__file__).resolve().parent.parent / 'football'
+    if str(fb) not in sys.path:
+        sys.path.insert(0, str(fb))
+    try:
+        import tipsbook as B
+        import tips as T
+        fx = B._dists()
+        b = B.load()
+        t = T.load()
+    except Exception as e:
+        return [('каперы × наши матчи: вердикт и журнал (К15)', 'файлы', f'нет: {e.__class__.__name__}', '❌')]
+    if not fx:
+        return [('каперы × наши матчи: матрицы модели (dists.json)', 'есть', 'нет файла', '❌')]
+    edge = since.astimezone(timezone.utc).replace(tzinfo=None)
+    d = b[((b.slip == '') | (b.seen == 'pre')) & (b.a != '') & (pd.to_datetime(b.post_ts, errors='coerce') >= edge)]
+    same = {(u.split(':')[1], u.split(':')[2], u.split(':')[-1]) for u in t.uid if u.startswith('tg:') and u.count(':') >= 3}
+    n = out = miss = 0
+    lost = []
+    for r in d.itertuples(index=False):
+        hit = B.ours(r, fx)
+        if hit is None:
+            continue
+        eid, e, legs = hit
+        if pd.to_datetime(r.post_ts, errors='coerce') >= pd.Timestamp(e['start']):
+            continue
+        n += 1
+        if not legs:
+            out += 1
+        elif (r.src, str(r.post_id), eid) not in same:
+            miss += 1
+            lost.append(f"{e['home']} {str(r.pick)[:20]}")
+    return [('каперы × наши матчи: в журнале и с вердиктом (К15)', 'все',
+             f'наших {n}: в журнале {n - out - miss}, рынок вне модели {out}, потеряно {miss}' + (f' ({"; ".join(lost[:3])})' if lost else ''),
+             '✅' if not miss else '❌')]
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -272,6 +315,8 @@ def main(hours: int = 26) -> None:
               ('daily.yml', (0, 24), r'🔒 заглушка: [1-9]', 'теннис/хоккей: 🔒 контрольная точка (В3а, последний полный прогон)'),
               ('football.yml', (0, 24), r'🔒 заглушка: [1-9]', 'футбол: 🔒 контрольная точка (В3а, последний полный прогон)'),
               ('cappers.yml', (0, 24), r'🔒 контрольная точка: 2', 'каперы: 🔒 контрольная точка в оба бота (В3а, последний прогон)'),
+              ('football.yml', (0, 24), r'👥 матрицы для вердиктов каперов: \d+', 'футбол: матрицы модели для вердиктов каперов (К15)'),
+              ('cappers.yml', (0, 24), r'👥 каперы → наши матчи: на наши', 'каперы → наши матчи: журнал (К15, последний прогон)'),
               ('daily.yml', (0, 24), r'Traceback|сбой', 'теннис/хоккей: сбои внутри прогонов (последний прогон)'),
               ('football.yml', (0, 24), r'Traceback|сбой', 'футбол: сбои внутри прогонов (последний прогон)')]
     cache: dict[int, str] = {}
@@ -295,6 +340,7 @@ def main(hours: int = 26) -> None:
     rows += plan_check(since)
     rows += capper_check()
     rows += shadow_check(since)
+    rows += ours_check(since)
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:

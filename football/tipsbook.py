@@ -580,52 +580,61 @@ def _hockey_rel(d: pd.DataFrame, rel: dict) -> dict:
     return out
 
 
+def _dists() -> dict:
+    """Матрицы счёта модели наших матчей (run.save_dists, data/tips/dists.json): espn_id → home, away, start, comp, P."""
+    f = T.DIR / 'dists.json'
+    try:
+        return json.loads(f.read_text()) if f.exists() else {}
+    except ValueError:
+        return {}
+
+
+def ours(r, fx: dict) -> tuple | None:
+    """20.11: строка книги каперов → наш матч. (espn_id, матч, ноги в порядке хозяева/гости или [] — рынок вне модели).
+    None — матча нет в нашей базе (лига вне охвата, другой вид спорта, пара не распознана)."""
+    import tipswide as W
+    if r.sport in ('hockey', 'tennis') or not r.a or not r.b or str(r.pick).startswith('❔'):
+        return None
+    for eid, e in fx.items():
+        pos = T.find_teams(f'{r.a} — {r.b}', [e['home'], e['away']])
+        if len(pos) != 2:
+            continue
+        flip = pos[e['home']] > pos[e['away']]                   # в посте гости названы первыми: «1» — первая названная
+        tm = (e['away'], e['home']) if flip else (e['home'], e['away'])
+        pick = str(r.pick)
+        legs = []
+        if not (W.EXOT.search(pick) or T.SKIP.search(pick.lower())):   # таймы, фолы, угловые — не счёт матча
+            legs = T.parse_legs(pick, None, tm, True) or T.parse_legs(_pick_short(pick, r.a, r.b, 'football'), None, tm, True)
+        if legs and any(mk in ('TOT', 'IT1', 'IT2') and isinstance(L, float) and L > 7.5 for mk, _, L in legs):
+            legs = []
+        return eid, e, (W._flip(legs) if flip and legs else legs)
+    return None
+
+
+def _verdict(p: float) -> str:
+    return (f'🔥 система согласна (P {p * 100:.0f}%)' if p >= 0.55 else
+            f'⚔️ система против (P {p * 100:.0f}%)' if p <= 0.45 else f'· система нейтральна (P {p * 100:.0f}%)')
+
+
 def _football_rel(d: pd.DataFrame, rel: dict) -> tuple[dict, dict]:
     """20.11 (пользователь: «почему все матчи вне системы?»): вердикт прогнозу капера на наш футбольный матч — сразу,
-    в прогоне каперов. Раньше вердикт давал только tips.csv прогона футбола — по тексту поста (ставка Каппер UK на картинке
-    туда не попадала) → «вне базы» даже у Баварии и Атлетика. Матрицы счёта модели — data/tips/dists.json (пишет run.py,
-    наши матчи на 48 ч). Возвращает (uid → вердикт, uid → начало матча UTC)."""
-    import json
-    import tipswide as W
+    в прогоне каперов, по матрицам модели (dists.json). Раньше — только tips.csv прогона футбола по тексту поста
+    (ставка Каппер UK на картинке туда не попадала) → «вне базы» даже у Баварии. Возвращает (uid → вердикт, uid → начало UTC)."""
     rel_o, st_o = {}, {}
-    f = T.DIR / 'dists.json'
-    if d.empty or not f.exists():
-        return rel_o, st_o
-    try:
-        fx = json.loads(f.read_text())
-    except ValueError:
+    fx = _dists()
+    if d.empty or not fx:
         return rel_o, st_o
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
-    g = d[~d.sport.isin(['hockey', 'tennis']) & (d.a != '') & (d.b != '') & ~d.uid.isin(list(rel)) & ~d.pick.astype(str).str.startswith('❔')]
-    for r in g.itertuples(index=False):
-        hit = None
-        for e in fx.values():
-            pos = T.find_teams(f'{r.a} — {r.b}', [e['home'], e['away']])
-            if len(pos) == 2:
-                hit = (e, pos[e['home']] > pos[e['away']])
-                break
+    for r in d[~d.uid.isin(list(rel))].itertuples(index=False):
+        hit = ours(r, fx)
         if hit is None:
             continue
-        e, flip = hit
+        _, e, legs = hit
         start = pd.Timestamp(e['start'])
         st_o[r.uid] = start
         if start < now:                                           # после начала — не оценивается (К8)
             continue
-        P = np.asarray(e['P'], float)
-        tm = (e['home'], e['away'])
-        if flip:                                                  # в посте гости названы первыми: «1» — первая названная
-            P, tm = P.T, tm[::-1]
-        pick = str(r.pick)
-        if W.EXOT.search(pick) or T.SKIP.search(pick.lower()):  # таймы, фолы, угловые — не счёт матча
-            legs = []
-        else:                                                     # «Фора. 2 (3.5)» (картинка Каппер UK) → «Ф2(+3.5)»
-            legs = T.parse_legs(pick, None, tm, True) or T.parse_legs(_pick_short(pick, r.a, r.b, 'football'), None, tm, True)
-        if not legs:
-            rel_o[r.uid] = '⬜ наш матч, рынок вне модели (таймы, фолы, угловые…)'
-            continue
-        p = T.p_legs(P, legs)
-        rel_o[r.uid] = (f'🔥 система согласна (P {p * 100:.0f}%)' if p >= 0.55 else
-                        f'⚔️ система против (P {p * 100:.0f}%)' if p <= 0.45 else f'· система нейтральна (P {p * 100:.0f}%)')
+        rel_o[r.uid] = _verdict(T.p_legs(np.asarray(e['P'], float), legs)) if legs else '⬜ наш матч, рынок вне модели (таймы, фолы, угловые…)'
     return rel_o, st_o
 
 
@@ -776,33 +785,49 @@ def merge_slips(df: pd.DataFrame, rows: list[dict]) -> tuple[pd.DataFrame, int]:
 
 
 def to_ours(df: pd.DataFrame, log: list[str]) -> int:
-    """Купоны до матча (Green Line) на матчи наших турниров → tips.csv: строка 👥 под матчем с P модели, учёт против модели, вето."""
-    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
-    fx = T.LAST_FIXTURES
+    """Прогнозы каперов на НАШИ матчи → tips.csv (синтез 🔥/⚔️ в выборе ⭐ — Г3а, учёт против модели, вето ✔).
+    20.11: раньше — только купоны Green Line и только при матчах прогона футбола (T.LAST_FIXTURES) → в прогоне каперов
+    0 матчей, журнал пуст с 15.11. Теперь — все строки книги (текст, картинки, купоны до матча) по dists.json."""
+    import config as C
+    fx = _dists()
     if not fx:
+        log.append('👥 каперы → наши матчи: нет матриц модели (dists.json) — ❌')
         return 0
-    d = df[df.src.isin(OCR_CH) & (df.seen == 'pre') & (df.slip != '') & (df.a != '')
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
+    d = df[((df.slip == '') | (df.seen == 'pre')) & (df.a != '')
            & (pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=48))]
     tdf = T.load()
     have = set(tdf.uid)
-    new = []
+    same = {(u.split(':')[1], u.split(':')[2], u.split(':')[-1]) for u in tdf.uid if u.startswith('tg:') and u.count(':') >= 3}
+    new, nours, nout = [], 0, 0
     for r in d.itertuples(index=False):
-        for f in fx:
-            m, row = f
-            if len(T.find_teams(f'{r.a} — {r.b}', [row['home'], row['away']])) != 2:
-                continue
-            uid = f'tg:{r.src}:{r.uid.split(":", 1)[1]}:{m.id}'
-            if uid in have:
-                break
-            legs = T.parse_legs(r.pick, None, (row['home'], row['away']), True)
-            k = float(r.k) if r.k else None
-            x = T._row(r.src, T.TG.get(r.src, r.src), r.post_ts, f, legs, k, f'📷 {r.pick}', uid)
-            if x:
-                new.append(x); have.add(uid)
-            break
+        hit = ours(r, fx)
+        if hit is None:
+            continue
+        eid, e, legs = hit
+        nours += 1
+        if not legs:
+            nout += 1
+            continue
+        if pd.to_datetime(r.post_ts, errors='coerce') >= pd.Timestamp(e['start']):   # опубликован после начала — не прогноз
+            continue
+        uid = f'tg:{r.src}:{r.uid.split(":", 1)[1]}:{eid}'
+        if uid in have or (r.src, str(r.post_id), eid) in same:   # тот же пост на тот же матч уже записан (tips.collect)
+            continue
+        same.add((r.src, str(r.post_id), eid))
+        P = np.asarray(e['P'], float)
+        p = T.p_legs(P, legs)
+        k = float(r.k) if r.k else None
+        new.append(dict(uid=uid, src=r.src, author=T.TG.get(r.src, r.src), post_ts=r.post_ts,
+                        seen_ts=now.strftime('%Y-%m-%d %H:%M'), espn_id=eid, comp_name=C.COMPETITIONS.get(e['comp'], [e['comp']])[0],
+                        start_utc=e['start'], home=e['home'], away=e['away'], legs=T._enc(legs),
+                        label=' + '.join(T.leg_label(lg) for lg in legs), k=f'{k:.2f}' if k else '', p_model=f'{p:.4f}',
+                        agree='1' if ((p * k >= 1) if k else (p >= 0.5)) else '0', raw=str(r.pick)[:160], status='', result='', settled=''))
+        have.add(uid)
     if new:
         T.save(pd.concat([tdf, pd.DataFrame(new)], ignore_index=True))
-    log.append(f'👥 купоны → наши матчи: +{len(new)}')
+    log.append(f'👥 каперы → наши матчи: на наши матчи {nours} (рынок вне модели {nout}), в журнал +{len(new)}, '
+               f'журнал {len(tdf) + len(new)} · матриц {len(fx)}')
     return len(new)
 
 

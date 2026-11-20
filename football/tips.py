@@ -475,7 +475,8 @@ def collect(items: list[tuple], log: list[str]) -> int:
                         sel = cand
                         break
                 uid = f"tg:{ch}:{p['id']}:{fx[0].id}"
-                r = _row(ch, name, p['ts'], fx, legs, odds_in(sel), sel or frag, uid) if uid not in have else None
+                dup = any(u.startswith(f"tg:{ch}:{p['id']}:") and u.endswith(f":{fx[0].id}") for u in have)   # 20.11: уже из книги (tipsbook.to_ours)
+                r = _row(ch, name, p['ts'], fx, legs, odds_in(sel), sel or frag, uid) if not dup else None
                 if r:
                     new.append(r); have.add(uid); got += 1
         if posts:

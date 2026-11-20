@@ -352,7 +352,7 @@ def save_dists(matches: list, mp, world, sched, log: list[str]) -> None:
         old = json.loads(DISTS_FILE.read_text()) if DISTS_FILE.exists() else {}
     except ValueError:
         old = {}
-    keep = {k: v for k, v in old.items() if pd.Timestamp(v.get('start', '2000-01-01')) > now - pd.Timedelta(hours=3)}
+    keep = {k: v for k, v in old.items() if pd.Timestamp(v.get('start', '2000-01-01')) > now - pd.Timedelta(hours=30)}   # 30 ч после начала — для проверки health за сутки
     n = 0
     for m in matches:
         if m.state != 'pre' or not (now < m.start <= now + pd.Timedelta(hours=DISTS_HOURS)):
