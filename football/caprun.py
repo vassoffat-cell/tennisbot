@@ -82,7 +82,7 @@ def main() -> None:
     rt = runtime.load()
     log: list[str] = []
     before = set(tipsbook.load().uid)
-    for name, fn in (('все матчи', lambda: (tipswide.collect(log), tipswide.settle(log))),
+    for name, fn in (('все матчи', lambda: tipswide.settle(log)),            # 21.11: сбор «все матчи» — в tipsbook.run (wide_feed)
                      ('книга', lambda: (tipsbook.run(rt, log), tipswide.settle(log), tipswide.book_ind(log)))):   # 18.11 К13
         try:
             fn()

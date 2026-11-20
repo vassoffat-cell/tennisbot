@@ -268,9 +268,11 @@ def run(rt: dict, log: list[str]) -> None:
     rt['tips_book_v'] = VERSION
     idx = {u: i for i, u in enumerate(df.uid)}
     add, upd, stat, req = [], 0, [], 0
+    chg: dict[str, list[int]] = {}
     for src, name in T.TG.items():
         try:
             changed, r = scan(src, days, pages)
+            chg[src] = [int(p['id']) for p in changed]
         except Exception as e:
             stat.append(f'{name} ✖ {e.__class__.__name__}')
             continue
@@ -303,6 +305,10 @@ def run(rt: dict, log: list[str]) -> None:
     T.DIR.mkdir(parents=True, exist_ok=True)
     df.to_csv(BOOK, index=False)
     rt['tips_book'] = pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M')
+    try:                                                           # 21.11: «все матчи» (tips_all, независимая сверка с табло)
+        wide_feed(rt, chg, log)
+    except Exception as e:
+        log.append(f'👥 все матчи: сбой {e.__class__.__name__}: {e}')
     try:
         to_ours(df, log)
     except Exception as e:
@@ -782,6 +788,36 @@ def merge_slips(df: pd.DataFrame, rows: list[dict]) -> tuple[pd.DataFrame, int]:
         if r['pick'] and not re.search(r'ИТ|Т[БМ]|фора|победа|обе|ничья|1X|X2|12', df.at[i, 'pick']):
             df.at[i, 'pick'] = r['pick']
     return df, upd
+
+
+WIDE_CATCHUP = '2026-11-12'                                       # 21.11: посты с этой даты — разово в «все матчи»
+
+
+def wide_feed(rt: dict, chg: dict, log: list[str]) -> int:
+    """21.11 (проверка «все ли журналы заполняются»): «все матчи» (tipswide → tips_all.csv, сверка каждого прогноза с табло ESPN)
+    брал посты из T.LAST_POSTS, а их заполнял только tips.collect прогона футбола; с 14.11 18:50 tipswide.collect вызывается
+    в прогоне каперов, где LAST_POSTS пуст → журнал стоял (Грозный с 13.11, Каппер UK с 12.11). Теперь — посты, прочитанные
+    этим прогоном (текст + распознанная картинка; купоны Green Line идут своим путём — wide_rows), и разово — архив с WIDE_CATCHUP."""
+    import tipswide as W
+    since = None if rt.get('wide_catchup') == WIDE_CATCHUP else pd.Timestamp(WIDE_CATCHUP)
+    T.LAST_POSTS.clear()
+    for src, name in T.TG.items():
+        a = _arch(src)
+        ids = set(chg.get(src, []))
+        if since is not None:
+            ids |= {k for k, x in a.items() if pd.Timestamp(x['ts']) >= since}
+        for k in sorted(ids):
+            x = a.get(k)
+            if not x or REVIEW_POST.search(x.get('text') or ''):
+                continue
+            txt = x.get('text') or ''
+            if src not in OCR_CH and x.get('ocr'):               # Каппер UK: ставка на картинке под разбором
+                txt = (txt + '\n' + x['ocr']).strip()
+            T.LAST_POSTS.append((src, name, dict(id=int(x['id']), ts=pd.Timestamp(x['ts']), text=txt)))
+    n = W.collect(log)
+    log[-1] += f' · постов {len(T.LAST_POSTS)}' + (' (догон с 12.11)' if since is not None else '')
+    rt['wide_catchup'] = WIDE_CATCHUP
+    return n
 
 
 def to_ours(df: pd.DataFrame, log: list[str]) -> int:

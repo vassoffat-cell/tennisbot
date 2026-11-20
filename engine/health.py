@@ -286,6 +286,24 @@ def ours_check(since: datetime) -> list[tuple[str, str, str, str]]:
              '✅' if not miss else '❌')]
 
 
+def wide_check() -> list[tuple[str, str, str, str]]:
+    """21.11 (CODEX 2а): «все матчи» (tips_all.csv — сверка каждого прогноза с табло ESPN) растёт, если в книге есть футбольные
+    прогнозы каналов: журнал стоял с 13–15.11 незаметно (посты не передавались в прогон каперов)."""
+    import pandas as pd
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent / 'football' / 'data' / 'tips'
+    try:
+        b = pd.read_csv(root / 'book.csv', dtype=str, keep_default_na=False)
+        w = pd.read_csv(root / 'tips_all.csv', dtype=str, keep_default_na=False)
+    except Exception as e:
+        return [('каперы: «все матчи» растёт', 'файлы', f'нет: {e.__class__.__name__}', '❌')]
+    edge = (pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=72)).strftime('%Y-%m-%d %H:%M')
+    nb = int(((b.sport == 'football') & ~b.pick.str.startswith('❔') & (b.post_ts >= edge)).sum())
+    nw = int(((w.src != 'nb-bet') & (w.post_ts >= edge)).sum())
+    return [('каперы: «все матчи» (tips_all) за 72 ч растёт', '≥ 15% книги', f'книга {nb} → все матчи {nw}',
+             '✅' if nb < 5 or nw >= 0.15 * nb else '❌')]
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
@@ -341,6 +359,7 @@ def main(hours: int = 26) -> None:
     rows += capper_check()
     rows += shadow_check(since)
     rows += ours_check(since)
+    rows += wide_check()
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:
