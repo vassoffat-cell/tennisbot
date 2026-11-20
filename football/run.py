@@ -460,7 +460,8 @@ def settle(store: J.Store, res: dict) -> tuple[int, int]:
     today = dt.date.today().isoformat()
     af = store.read('auto_forecasts')
     upd = []
-    for i, r in af[af.settled.map(_blank).astype(bool)].iterrows():
+    reopen = lambda d: (d.status.astype(str) == 'ET') & d.espn_id.map(lambda e: (res.get(_id(e)) or ('',))[0] == 'FT')   # 21.11: ET → счёт 90'
+    for i, r in af[af.settled.map(_blank).astype(bool) | reopen(af)].iterrows():
         x = res.get(_id(r.espn_id))
         if x is None:
             continue
@@ -485,7 +486,7 @@ def settle(store: J.Store, res: dict) -> tuple[int, int]:
     store.update('auto_forecasts', af.loc[upd], J.AUTO_RESULT_COLS)
     ld = store.read('auto_lines')
     lu = []
-    for i, r in ld[ld.settled.map(_blank).astype(bool)].iterrows():
+    for i, r in ld[ld.settled.map(_blank).astype(bool) | reopen(ld)].iterrows():
         x = res.get(_id(r.espn_id))
         if x is None:
             continue
@@ -812,6 +813,35 @@ def reminder_text(rt: dict) -> str:
 
 
 # ======================================================================== цикл
+def et90(st: pd.DataFrame, rt: dict, log: list[str], limit: int = 30) -> pd.DataFrame:
+    """21.11 (решение пользователя «да»): кубковые матчи с доп. временем / пенальти хранились статусом ET без счёта 90 минут →
+    линии и прогнозы по ним считались возвратом. Теперь счёт 90 минут берётся из карточки матча ESPN (fespn.score90) и матч
+    становится FT с этим счётом (исход — ничья, тоталы и форы — по 90 минутам, как у букмекера). Найденный счёт хранится в
+    rt['et90'] (повторных запросов нет); не найден — остаётся ET (возврат, как раньше)."""
+    cache = rt.setdefault('et90', {})
+    tried = set(rt.get('et90_tried', []))
+    edge = _now() - pd.Timedelta(days=60)
+    n_new = n_req = 0
+    for i, r in st[(st.status.astype(str) == 'ET') & (pd.to_datetime(st.date) >= edge)].iterrows():
+        eid = str(r.id)
+        if eid not in cache and eid not in tried and n_req < limit:
+            n_req += 1
+            tried.add(eid)
+            try:
+                sc = fespn.score90(str(r.comp), eid)
+            except Exception:
+                sc = None
+            if sc is not None:
+                cache[eid] = list(sc)
+                n_new += 1
+        if eid in cache:
+            st.loc[i, ['hg', 'ag', 'status']] = [cache[eid][0], cache[eid][1], 'FT']
+    rt['et90_tried'] = sorted(tried)[-500:]
+    if n_req:
+        log.append(f'⚽ доп. время: счёт 90 минут найден {n_new} из {n_req} (всего {len(cache)})')
+    return st
+
+
 def run(dry: bool = False) -> str:
     t0 = time.time()
     store, rt = J.Store(), runtime.load()
@@ -826,6 +856,11 @@ def run(dry: bool = False) -> str:
     af, ld = store.read('auto_forecasts'), store.read('auto_lines')
     matches, errs = fespn.fetch(plan(base, st, af, rt))
     st = persist(st, matches, mp)
+    if not dry:
+        try:
+            st = et90(st, rt, log)
+        except Exception as ex:
+            log.append(f'⚽ доп. время: сбой {ex.__class__.__name__}: {ex}')
     st, n_remap = remap(st, mp)
     if n_remap:
         log.append(f'досопоставлено сохранённых результатов: {n_remap}')

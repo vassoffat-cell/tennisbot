@@ -211,3 +211,22 @@ def lineups(comp: str, event_id: str, js: dict | None = None) -> list[dict]:
                             pos=(p.get('position') or {}).get('abbreviation', ''), sub_in=bool(p.get('subbedIn')),
                             sub_out=bool(p.get('subbedOut'))))
     return out
+
+
+def score90(comp: str, eid: str) -> tuple[int, int] | None:
+    """21.11: счёт 90 минут матча с доп. временем / пенальти. Табло (scoreboard) даёт только итог 120 минут; карточка матча
+    (summary, header.competitions[0].competitors[].linescores) — по периодам: 1-й тайм, 2-й тайм, доп. время, пенальти.
+    Проверено на 2 матчах (engine/research/et_probe.py): Fleetwood — Rochdale 1:2 после ДВ → 1:1 за 90 минут."""
+    js = _get(BASE.format(comp=comp) + f'summary?event={eid}')
+    c = ((js.get('header') or {}).get('competitions') or [{}])[0]
+    sc = {}
+    for x in c.get('competitors') or []:
+        ls = x.get('linescores') or []
+        if len(ls) < 2:
+            return None
+        try:
+            sc[x.get('homeAway')] = int(float(ls[0].get('displayValue', ls[0].get('value')))) + int(float(ls[1].get('displayValue', ls[1].get('value'))))
+        except (TypeError, ValueError):
+            return None
+    return (sc['home'], sc['away']) if 'home' in sc and 'away' in sc else None
+
