@@ -681,11 +681,11 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401931101,eng.fa,cup,ENG,E0,2026-11-07 15:00,Gillingham,Barrow,Gillingham,Barrow,0,1,FT,first-round,0
 401931102,eng.fa,cup,ENG,E0,2026-11-07 15:00,Colchester United,Worcester City,Colchester,,1,0,FT,first-round,0
 401931103,eng.fa,cup,ENG,E0,2026-11-07 15:00,Barnet,Tranmere Rovers,Barnet,Tranmere,3,0,FT,first-round,0
-401931105,eng.fa,cup,ENG,E0,2026-11-07 15:00,Fleetwood Town,Rochdale,Fleetwood Town,Rochdale,1,2,ET,first-round,0
+401931105,eng.fa,cup,ENG,E0,2026-11-07 15:00,Fleetwood Town,Rochdale,Fleetwood Town,Rochdale,1,1,FT,first-round,0
 401931106,eng.fa,cup,ENG,E0,2026-11-07 15:00,Kidderminster Harriers,Doncaster Rovers,Kidderminster,Doncaster,3,0,FT,first-round,0
 401931107,eng.fa,cup,ENG,E0,2026-11-07 15:00,Dover Athletic,Wealdstone,Dover Athletic,Wealdstone,2,0,FT,first-round,0
 401931110,eng.fa,cup,ENG,E0,2026-11-07 15:00,Leyton Orient,Harborough Town,Leyton Orient,,5,1,FT,first-round,0
-401931116,eng.fa,cup,ENG,E0,2026-11-07 15:00,AFC Hornchurch,Blackpool,Hornchurch,Blackpool,1,2,ET,first-round,0
+401931116,eng.fa,cup,ENG,E0,2026-11-07 15:00,AFC Hornchurch,Blackpool,Hornchurch,Blackpool,1,1,FT,first-round,0
 401931117,eng.fa,cup,ENG,E0,2026-11-07 15:00,Newport County,Walsall,Newport County,Walsall,3,1,FT,first-round,0
 401931118,eng.fa,cup,ENG,E0,2026-11-07 15:00,Bradford City,Marine,Bradford,,7,0,FT,first-round,0
 401931119,eng.fa,cup,ENG,E0,2026-11-07 15:00,Accrington Stanley,Wycombe Wanderers,Accrington,Wycombe,0,2,FT,first-round,0
@@ -703,7 +703,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401878757,eng.1,league,ENG,E0,2026-11-07 17:30,Nottingham Forest,Manchester City,Nott'm Forest,Man City,3,1,FT,2026-27-english-premier-league,0
 401882811,esp.1,league,ESP,SP1,2026-11-07 17:30,Osasuna,Athletic Club,Osasuna,Ath Bilbao,1,1,FT,2026-27-laliga,0
 401884743,ger.1,league,GER,D1,2026-11-07 17:30,VfB Stuttgart,Werder Bremen,Stuttgart,Werder Bremen,1,0,FT,2026-27-german-bundesliga,0
-401931097,eng.fa,cup,ENG,E0,2026-11-07 17:30,Altrincham,Notts County,Altrincham,Notts County,2,2,ET,first-round,0
+401931097,eng.fa,cup,ENG,E0,2026-11-07 17:30,Altrincham,Notts County,Altrincham,Notts County,2,2,FT,first-round,0
 401875552,ned.1,league,NED,N1,2026-11-07 17:45,ADO Den Haag,Sparta Rotterdam,Den Haag,Sparta Rotterdam,3,1,FT,regular-season,0
 401878344,sco.1,league,SCO,SC0,2026-11-07 17:45,Aberdeen,Hibernian,Aberdeen,Hibernian,0,4,FT,first-phase,0
 401876411,fra.1,league,FRA,F1,2026-11-07 18:00,AJ Auxerre,Paris FC,Auxerre,Paris FC,0,1,FT,2026-27-ligue-1,0
@@ -721,7 +721,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879814,rus.1,league,RUS,RUS,2026-11-08 11:00,Krylia Sovetov,Gazovik Orenburg,Krylya Sovetov,Orenburg,2,0,FT,2026-27-russian-premier-league,0
 401875551,ned.1,league,NED,N1,2026-11-08 11:15,Heerenveen,Feyenoord Rotterdam,Heerenveen,Feyenoord,5,3,FT,regular-season,0
 401874810,ita.1,league,ITA,I1,2026-11-08 11:30,Napoli,Lazio,Napoli,Lazio,1,1,FT,2026-27-italian-serie-a,0
-401931079,eng.fa,cup,ENG,E0,2026-11-08 12:00,Stafford Rangers,Grimsby Town,,Grimsby,3,3,ET,first-round,0
+401931079,eng.fa,cup,ENG,E0,2026-11-08 12:00,Stafford Rangers,Grimsby Town,,Grimsby,2,2,FT,first-round,0
 401882814,esp.1,league,ESP,SP1,2026-11-08 13:00,Elche,Real Betis,Elche,Betis,0,2,FT,2026-27-laliga,0
 401888372,tur.1,league,TUR,T1,2026-11-08 13:00,Çorum FK,Fenerbahce,Corum,Fenerbahce,0,5,FT,2026-27-turkish-super-lig,0
 401879815,rus.1,league,RUS,RUS,2026-11-08 13:15,Spartak Moscow,Akron Tolyatti,Spartak Moscow,Akron Togliatti,2,1,FT,2026-27-russian-premier-league,0
@@ -733,7 +733,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879239,eng.1,league,ENG,E0,2026-11-08 14:00,Sunderland,Chelsea,Sunderland,Chelsea,1,0,FT,2026-27-english-premier-league,0
 401879243,eng.1,league,ENG,E0,2026-11-08 14:00,Crystal Palace,Liverpool,Crystal Palace,Liverpool,1,3,FT,2026-27-english-premier-league,0
 401879244,eng.1,league,ENG,E0,2026-11-08 14:00,Brighton & Hove Albion,Brentford,Brighton,Brentford,2,0,FT,2026-27-english-premier-league,0
-401931080,eng.fa,cup,ENG,E0,2026-11-08 14:15,Cray Wanderers,Stockport County,,Stockport,2,3,ET,first-round,0
+401931080,eng.fa,cup,ENG,E0,2026-11-08 14:15,Cray Wanderers,Stockport County,,Stockport,2,2,FT,first-round,0
 401884738,ger.1,league,GER,D1,2026-11-08 14:30,FC Cologne,Bayer Leverkusen,FC Koln,Leverkusen,1,2,FT,2026-27-german-bundesliga,0
 401931093,eng.fa,cup,ENG,E0,2026-11-08 15:00,Wimborne Town,Crawley Town,,Crawley Town,2,0,FT,first-round,0
 401882810,esp.1,league,ESP,SP1,2026-11-08 15:15,Real Sociedad,Rayo Vallecano,Sociedad,Vallecano,1,0,FT,2026-27-laliga,0
@@ -751,7 +751,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879240,eng.1,league,ENG,E0,2026-11-08 16:30,Manchester United,Aston Villa,Man United,Aston Villa,4,4,FT,2026-27-english-premier-league,0
 401884741,ger.1,league,GER,D1,2026-11-08 16:30,SC Freiburg,1. FC Union Berlin,Freiburg,Union Berlin,2,0,FT,2026-27-german-bundesliga,0
 401874808,ita.1,league,ITA,I1,2026-11-08 17:00,Internazionale,Como,Inter,Como,2,0,FT,2026-27-italian-serie-a,0
-401931108,eng.fa,cup,ENG,E0,2026-11-08 17:15,Oldham Athletic,Sheffield Wednesday,Oldham,Sheffield Weds,2,1,ET,first-round,0
+401931108,eng.fa,cup,ENG,E0,2026-11-08 17:15,Oldham Athletic,Sheffield Wednesday,Oldham,Sheffield Weds,1,1,FT,first-round,0
 401882807,esp.1,league,ESP,SP1,2026-11-08 17:30,Villarreal,Getafe,Villarreal,Getafe,2,0,FT,2026-27-laliga,0
 401882815,esp.1,league,ESP,SP1,2026-11-08 17:30,Celta Vigo,Levante,Celta,Levante,0,0,FT,2026-27-laliga,0
 401879813,rus.1,league,RUS,RUS,2026-11-08 17:45,FC Baltika Kaliningrad,Dynamo Makhachkala,Baltika,Dynamo Makhachkala,0,1,FT,2026-27-russian-premier-league,0
@@ -764,7 +764,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401882816,esp.1,league,ESP,SP1,2026-11-08 20:00,Atlético Madrid,Barcelona,Ath Madrid,Barcelona,1,2,FT,2026-27-laliga,0
 401885397,por.1,league,POR,P1,2026-11-08 20:30,Rio Ave,Braga,Rio Ave,Sp Braga,0,1,FT,2026-27-portuguese-primeira-liga,0
 401885401,por.1,league,POR,P1,2026-11-08 20:30,Estrela,Benfica,Estrela,Benfica,2,3,FT,2026-27-portuguese-primeira-liga,0
-401931098,eng.fa,cup,ENG,E0,2026-11-09 19:30,Plymouth Parkway,Berkhamsted,,,2,1,ET,first-round,0
+401931098,eng.fa,cup,ENG,E0,2026-11-09 19:30,Plymouth Parkway,Berkhamsted,,,1,1,FT,first-round,0
 401928514,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 18:00,Anaitasuna,Alavés,,Alaves,1,6,FT,first-round,0
 401928516,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 18:00,CD Pamplona,Eibar,,Eibar,0,3,FT,first-round,0
 401928519,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 19:00,Amorebieta,UD Logroñés,Amorebieta,Logrones,1,0,FT,first-round,0
@@ -772,31 +772,31 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401928550,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 19:00,Trival Valderas,Leganés,,Leganes,0,1,FT,first-round,0
 401928504,esp.copa_del_rey,cup,ESP,SP1,2026-11-10 20:00,Tavernes de la Valldigna,Valencia,,Valencia,0,6,FT,first-round,0
 401928506,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 17:30,CS Puertollano,Albacete,,Albacete,0,3,FT,first-round,0
-401928527,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 18:00,CD Tarancon,Levante,,Levante,1,2,ET,first-round,0
-401928551,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 18:00,CD Artistico Navalcarnero,Real Betis,,Betis,2,3,ET,first-round,0
+401928527,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 18:00,CD Tarancon,Levante,,Levante,1,1,FT,first-round,0
+401928551,esp.copa_del_rey,cup,ESP,SP1,2026-11-12 18:00,CD Artistico Navalcarnero,Real Betis,,Betis,2,2,FT,first-round,0
 401932846,fra.coupe_de_france,cup,FRA,F1,2026-11-12 18:00,Chambéry Savoie,Grenoble,,Grenoble,0,2,FT,seventh-round,0
 401932838,fra.coupe_de_france,cup,FRA,F1,2026-11-13 19:00,Dijon FCO,Orléans,,Orleans,1,2,FT,seventh-round,0
-401932841,fra.coupe_de_france,cup,FRA,F1,2026-11-13 19:00,Neuvillette-Jamin,Valenciennes,,Valenciennes,2,2,ET,seventh-round,0
+401932841,fra.coupe_de_france,cup,FRA,F1,2026-11-13 19:00,Neuvillette-Jamin,Valenciennes,,Valenciennes,2,2,FT,seventh-round,0
 401932845,fra.coupe_de_france,cup,FRA,F1,2026-11-13 19:00,US Saint-Philbert-de-Grand-Lieu,La Roche-sur-Yon,,,1,3,FT,seventh-round,0
 401928487,esp.copa_del_rey,cup,ESP,SP1,2026-11-13 20:00,Salamanca UDS,Celta Vigo,,Celta,0,5,FT,first-round,0
 401932840,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Tourcoing,Stade de Reims,,,0,1,FT,seventh-round,0
 401932856,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Versailles 78,Rodez Aveyron,,,3,2,FT,seventh-round,0
 401932857,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Le Puy,Diables Noirs,,,4,0,FT,seventh-round,0
 401932858,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:00,Balagne,Montpellier,,Montpellier,0,5,FT,seventh-round,0
-401932843,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:30,CA Boulay,Sochaux,,Sochaux,2,2,ET,seventh-round,0
+401932843,fra.coupe_de_france,cup,FRA,F1,2026-11-14 13:30,CA Boulay,Sochaux,,Sochaux,0,0,FT,seventh-round,0
 401932776,fra.coupe_de_france,cup,FRA,F1,2026-11-14 14:00,Rhone Crussol Foot,Frejus,,,0,3,FT,seventh-round,0
 401932777,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Choisy Au Bac,Caen,,Caen,0,2,FT,seventh-round,0
 401932833,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Fontenay Foot,Clermont Foot,,,0,5,FT,seventh-round,0
 401932836,fra.coupe_de_france,cup,FRA,F1,2026-11-14 15:00,Chalon-sur-Saone,Hauts Lyonnais,,,0,3,FT,seventh-round,0
 401932758,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Saint Sebastien,La Baule-Le Pouliguen,,,0,2,FT,seventh-round,0
-401932778,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Firminy,Annecy,,Annecy,1,1,ET,seventh-round,0
+401932778,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Firminy,Annecy,,Annecy,1,1,FT,seventh-round,0
 401932803,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Le Poire SV,Vertou,,,2,1,FT,seventh-round,0
 401932832,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,IC Croix,ES Thaon,,,1,2,FT,seventh-round,0
 401932834,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Pont-de-Cheruy,Bourg-Peronnas,,,1,5,FT,seventh-round,0
 401932844,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:00,Tinteniac St Domineuc,Concarneau,,Concarneau,1,4,FT,seventh-round,0
 401932757,fra.coupe_de_france,cup,FRA,F1,2026-11-14 16:30,Koetzingue,Biesheim,,,1,3,FT,seventh-round,0
 401932737,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Grau-Du-Roi,Riviera,,,2,4,FT,seventh-round,0
-401932738,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Cournon,Chassieu Declines FC,,,2,2,ET,seventh-round,0
+401932738,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Cournon,Chassieu Declines FC,,,2,2,FT,seventh-round,0
 401932740,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Lyon-la-Duchere,US Feurs,,,1,4,FT,seventh-round,0
 401932765,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Vitre,Saint-Pierre Milizac,,,1,2,FT,seventh-round,0
 401932768,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Caen,FC Chambly,Caen,Chambly,2,3,FT,seventh-round,0
@@ -804,39 +804,39 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932802,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Amneville,Sundhoffen,,,0,1,FT,seventh-round,0
 401932808,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Contres,ESA Linas-Montlhery,,,0,4,FT,seventh-round,0
 401932811,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,US Cheminots Paray-Foot,Villefranche,,,0,3,FT,seventh-round,0
-401932812,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Pays de Saint-Omer,AF Virois,,,2,2,ET,seventh-round,0
-401932813,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Stade Béthunois,AS Nancy Lorraine,,,3,3,ET,seventh-round,0
+401932812,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Pays de Saint-Omer,AF Virois,,,0,0,FT,seventh-round,0
+401932813,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Stade Béthunois,AS Nancy Lorraine,,,0,0,FT,seventh-round,0
 401932814,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Racing Besancon,Am. du Personnel Municipal Metz,,,4,1,FT,seventh-round,0
 401932818,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Sag Cestas,Bayonne,,,0,1,FT,seventh-round,0
 401932822,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Asptt Dijon,Selongey,,,0,2,FT,seventh-round,0
 401932829,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Le Touquet,Avranches,,,2,3,FT,seventh-round,0
 401932830,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,St-Ouen L'Aumone,Boulogne,,Boulogne,1,0,FT,seventh-round,0
-401932831,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Saint-Brieuc,Rouen,,,0,0,ET,seventh-round,0
-401932835,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,GSI Pontivy,Rennes TA,,,2,2,ET,seventh-round,0
+401932831,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Saint-Brieuc,Rouen,,,0,0,FT,seventh-round,0
+401932835,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,GSI Pontivy,Rennes TA,,,0,0,FT,seventh-round,0
 401932839,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Dunkerque,US Quevilly,Dunkerque,,0,3,FT,seventh-round,0
-401932842,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Vesoul,FC Fleury 91,,,2,2,ET,seventh-round,0
+401932842,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Vesoul,FC Fleury 91,,,0,0,FT,seventh-round,0
 401933060,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:00,Chateaubriant,Horizon Patho,,,5,0,FT,seventh-round,0
-401932806,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:30,Balma,Castanet,,,1,1,ET,seventh-round,0
+401932806,fra.coupe_de_france,cup,FRA,F1,2026-11-14 17:30,Balma,Castanet,,,0,0,FT,seventh-round,0
 401932760,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Avenir Foot Lozere,Entente Crest-Aouste,,,1,0,FT,seventh-round,0
 401932804,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Bressuire,FC Challans,,,3,1,FT,seventh-round,0
-401932809,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Boulazac,Anglet Genets,,,3,3,ET,seventh-round,0
-401932810,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Claira / St Laurent,Puissalicon Magalas,,,2,2,ET,seventh-round,0
+401932809,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Boulazac,Anglet Genets,,,0,0,FT,seventh-round,0
+401932810,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Claira / St Laurent,Puissalicon Magalas,,,0,0,FT,seventh-round,0
 401932815,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,ES Buxerolles,Sablé FC,,,0,7,FT,seventh-round,0
-401932816,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Stade Bordelais,Mazeres Uzos Rontignon,,,1,1,ET,seventh-round,0
+401932816,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Stade Bordelais,Mazeres Uzos Rontignon,,,0,0,FT,seventh-round,0
 401932817,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Brive,Angouleme,,,0,3,FT,seventh-round,0
 401932825,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Cercle Paul Bert Brequigny Football,Montlucon Football,,,0,1,FT,seventh-round,0
 401932826,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,St Andre St Macaire,Nueillaubiers,,,0,2,FT,seventh-round,0
 401932827,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Chauny,Le Pays Du Valois,,,0,2,FT,seventh-round,0
-401932828,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Lannion,Guingamp,,Guingamp,0,0,ET,seventh-round,0
+401932828,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,Lannion,Guingamp,,Guingamp,0,0,FT,seventh-round,0
 401932837,fra.coupe_de_france,cup,FRA,F1,2026-11-14 18:00,FC Lourdes,Pau,,Pau FC,0,4,FT,seventh-round,0
 401932824,fra.coupe_de_france,cup,FRA,F1,2026-11-14 19:00,Olympique des Membres de Cambrai Amerique,SC Amiens,,Amiens,0,3,FT,seventh-round,0
 401933039,fra.coupe_de_france,cup,FRA,F1,2026-11-15 04:00,AS Tefana,Thionville,,,0,0,FT,seventh-round,0
 401932739,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Veauche,St Paul en Jarez,,,1,3,FT,seventh-round,0
 401932741,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Riom,FC Limonest,,,0,4,FT,seventh-round,0
-401932755,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Massay,Montlouis,,,2,2,ET,seventh-round,0
+401932755,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Massay,Montlouis,,,0,0,FT,seventh-round,0
 401932756,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Violaines,Vermelles,,,0,1,FT,seventh-round,0
-401932759,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Racing Chambery,Chamois Niortais FC,,,2,2,ET,seventh-round,0
-401932766,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Val Yerres Crosne,Union Cosnoise,,,2,2,ET,seventh-round,0
+401932759,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Racing Chambery,Chamois Niortais FC,,,0,0,FT,seventh-round,0
+401932766,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Val Yerres Crosne,Union Cosnoise,,,0,0,FT,seventh-round,0
 401932767,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Montreuil FC,Loon Plage FC,,,0,3,FT,seventh-round,0
 401932769,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Verson,Calais,,,1,5,FT,seventh-round,0
 401932770,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Neslois,Furiani-Agliani,,,1,4,FT,seventh-round,0
@@ -844,23 +844,23 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401932772,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Montigny-Les-Metz,Pontarlier,,,0,5,FT,seventh-round,0
 401932773,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,ESAP Metz,Reipertswiller,,,0,1,FT,seventh-round,0
 401932775,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Talange,Baume-Les-Dames,,,2,0,FT,seventh-round,0
-401932795,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Stade Pontivy,Plabennec,,,0,0,ET,seventh-round,0
+401932795,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Stade Pontivy,Plabennec,,,0,0,FT,seventh-round,0
 401932796,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Tremblay,Maisons-Alfort,,,2,0,FT,seventh-round,0
 401932797,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Paris 13 Atletico,Red Star FC 93,,,0,2,FT,seventh-round,0
 401932798,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Sedan,Bourges Foot,,,2,0,FT,seventh-round,0
 401932800,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Olympique Charleville Prix AM,Olympique Marcquois,,,2,0,FT,seventh-round,0
-401932805,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Rochefort FC,Juventus Papus,,,2,2,ET,seventh-round,0
+401932805,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Rochefort FC,Juventus Papus,,,0,0,FT,seventh-round,0
 401932807,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Senlis,Saint-Pryvé Saint Hilaire,,,0,2,FT,seventh-round,0
 401932819,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Rives 82,Trelissac FC,,,2,1,FT,seventh-round,0
 401932820,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,US Marseille Endoume,SC Toulon,,,2,1,FT,seventh-round,0
 401932821,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Seyssinet,Nimes,,Nimes,0,2,FT,seventh-round,0
-401932823,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Chatou,Les Ulis,,,0,0,ET,seventh-round,0
+401932823,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Chatou,Les Ulis,,,0,0,FT,seventh-round,0
 401932855,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Stade Castelbourgeois,Nantes,,Nantes,1,9,FT,seventh-round,0
 401932859,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Saint-Die Kellermann,Metz,,Metz,1,0,FT,seventh-round,0
 401932860,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,Saint-Renan,Stade Laval,,,1,2,FT,seventh-round,0
 401933040,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:00,St Martin Tatinghem,Racing Club de France,,,1,2,FT,seventh-round,0
 401932774,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:30,Perros-Louannec,Vannes OC,,,0,7,FT,seventh-round,0
-401932799,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:30,Stade Sotteville,USF Fecamp,,,0,0,ET,seventh-round,0
+401932799,fra.coupe_de_france,cup,FRA,F1,2026-11-15 13:30,Stade Sotteville,USF Fecamp,,,0,0,FT,seventh-round,0
 401932735,fra.coupe_de_france,cup,FRA,F1,2026-11-15 14:00,Rumilly Vallières,Saint-Étienne,,St Etienne,1,2,FT,seventh-round,0
 401932736,fra.coupe_de_france,cup,FRA,F1,2026-11-15 14:00,Atlas Paillade,AS Cannes,,,0,2,FT,seventh-round,0
 401933096,fra.coupe_de_france,cup,FRA,F1,2026-11-15 14:45,Saint-Pauloise FC,La Tamponnaise,,,1,2,FT,seventh-round,0
