@@ -66,7 +66,7 @@ def _match(row: dict, evs: list[dict]) -> dict | None:
     return best if sc >= 0.5 else None
 
 
-def candidates(M, row: dict, evs: list[dict]) -> list[dict]:
+def candidates(M, row: dict, evs: list[dict], keep_all: bool = False) -> list[dict]:
     """Линии 1xBet матча с P ≥ P_MIN, кф ≥ 1,35, EV ≥ пола: dict(market, pick, line, label, p, k, ev, slot)."""
     ev = _match(row, evs)
     if ev is None or M is None:
@@ -107,6 +107,6 @@ def candidates(M, row: dict, evs: list[dict]) -> list[dict]:
     for c in out:
         c['ev'] = c['p'] * c['k'] - 1
         c['slot'] = SLOT[(c['market'], c['pick'])]
-        if c['p'] >= P_MIN and c['k'] >= PK.MIN_K and c['ev'] >= PK.EV_FLOOR:
+        if keep_all or (c['p'] >= P_MIN and c['k'] >= PK.MIN_K and c['ev'] >= PK.EV_FLOOR):   # 21.11: keep_all — теневой портфель
             res.append(c)
     return sorted(res, key=lambda c: -c['ev'])

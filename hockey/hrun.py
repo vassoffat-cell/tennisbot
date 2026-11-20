@@ -668,11 +668,19 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     dp = None
     try:                                                  # ⭐ ставка дня хоккея (hpick.py)
         HP.settle(store, games)
+        try:
+            HP.shadow_settle(games, log)                  # 21.11: теневой портфель хоккея — итоги
+        except Exception as ex_:
+            log.append(f'🗂 теневой портфель 🏒: сбой итогов {ex_.__class__.__name__}: {ex_}')
         HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log, games=games,
                    evs=evs, M=models.get('NHL'))
         dp = store.read('hk_day_pick')
     except Exception as ex:
         log.append(f'⭐🏒 сбой {ex.__class__.__name__}: {ex}')
+    try:                                                  # 21.11: теневой портфель хоккея — стороны с ценой этого прогона
+        HP.shadow(pd.Timestamp(now), log)
+    except Exception as ex:
+        log.append(f'🗂 теневой портфель 🏒: сбой {ex.__class__.__name__}: {ex}')
     gf, ld = store.read('hk_games'), store.read('hk_lines')
     kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
     if due:

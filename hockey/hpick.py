@@ -77,6 +77,67 @@ HK_NEED_PRICE = True              # 19.11 (решение пользовател
 NO_PRICE_TEXT = '🏒 Хоккей · ставка дня\nСегодня ставки нет: у 1xBet нет цены на линии с перевесом.'
 
 
+SHADOW_ROWS: list[dict] = []      # 21.11: стороны с ценой этого прогона (все, без фильтра P/кф/EV) → теневой портфель
+SHADOW_COLS = ['key', 'date', 'id', 'league', 'start_utc', 'match', 'market', 'pick', 'line', 'label', 'p', 'k', 'ev', 'book',
+               'first_at', 'k_first', 'p_first', 'last_at', 'p_last', 'result', 'settled']
+
+
+def shadow(now: pd.Timestamp, log: list[str]) -> int:
+    """21.11 (решение пользователя «да»: у хоккея не было теневого портфеля, С21 — только теннис и футбол): каждая сторона НХЛ
+    с ценой конторы основного времени (1xBet / Marathon, С25а) — бумажная ставка в hockey/data/shadow/hockey_ГГГГ-ММ.csv.
+    p — справедливая P рынка (инверсия Pinnacle, A21): первая (p_first, k_first) и последняя до начала (p_last = закрытие → CLV).
+    Итог — shadow_settle (то же правило, что у ⭐: HL.settle, основное время)."""
+    rows = [c for c in SHADOW_ROWS if pd.Timestamp(c['start_utc']) > now]
+    SHADOW_ROWS.clear()
+    if not rows:
+        return 0
+    f = HD_DATA / 'shadow' / f'hockey_{now:%Y-%m}.csv'
+    old = pd.read_csv(f, dtype=str, keep_default_na=False) if f.exists() else pd.DataFrame(columns=SHADOW_COLS)
+    idx = {k: i for i, k in enumerate(old.key)} if len(old) else {}
+    at, add = f'{now:%Y-%m-%d %H:%M}', []
+    for c in rows:
+        line = '' if c['line'] in (None, '') else f"{float(c['line']):g}"
+        kk = f"{c['id']}|{c['market']}|{c['pick']}|{line}"
+        rec = dict(key=kk, date=str((pd.Timestamp(c['start_utc']) + pd.Timedelta(hours=C.TZ_OFFSET_HOURS - 12)).date()),
+                   id=str(c['id']), league=str(c['id']).split(':')[0].upper(), start_utc=str(c['start_utc'])[:16], match=c['match'],
+                   market=c['market'], pick=c['pick'], line=line, label=c['label'], p=round(float(c['p']), 4), k=round(float(c['k']), 3),
+                   ev=round(float(c['ev']), 4), book=c['book'], last_at=at, p_last=round(float(c['p']), 4))
+        if kk in idx:
+            for col in ('p', 'k', 'ev', 'book', 'last_at', 'p_last'):
+                old.at[idx[kk], col] = str(rec[col])
+        else:
+            rec.update(first_at=at, k_first=rec['k'], p_first=rec['p'], result='', settled='')
+            idx[kk] = -1
+            add.append(rec)
+    out = pd.concat([old, pd.DataFrame(add, columns=SHADOW_COLS)], ignore_index=True).reindex(columns=SHADOW_COLS)
+    f.parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(f, index=False)
+    log.append(f'🗂 теневой портфель 🏒: сторон с ценой {len(rows)}, новых {len(add)}')
+    return len(rows)
+
+
+def shadow_settle(games: pd.DataFrame, log: list[str]) -> int:
+    """Итог бумажных ставок хоккея (текущий и прошлый месяц) — тем же правилом и счётом, что ⭐ (HL.settle, основное время)."""
+    res = {str(r.id): r for r in games[games.end.astype(str).isin(['REG', 'OT', 'SO'])].itertuples(index=False)}
+    n = 0
+    for f in sorted((HD_DATA / 'shadow').glob('hockey_*.csv'))[-2:]:
+        d = pd.read_csv(f, dtype=str, keep_default_na=False)
+        ix = []
+        for i, r in d[d.settled == ''].iterrows():
+            x = res.get(str(r.id))
+            if x is None:
+                continue
+            d.loc[i, ['result', 'settled']] = [HL.settle(str(r.market), str(r.pick), r.line if r.line != '' else None, x.end, x.hg, x.ag,
+                                                         x.hg_reg, x.ag_reg), pd.Timestamp.now().strftime('%Y-%m-%d')]
+            ix.append(i)
+        if ix:
+            d.to_csv(f, index=False)
+            n += len(ix)
+    if n:
+        log.append(f'🗂 теневой портфель 🏒: рассчитано {n}')
+    return n
+
+
 def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: tuple, lo: pd.Timestamp, hi: pd.Timestamp,
                now: pd.Timestamp, tier_fn, games: pd.DataFrame | None = None, skipped: list | None = None,
                evs: list | None = None, M=None) -> list[dict]:
@@ -92,6 +153,10 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
         if HK_LADDER and evs and M is not None and row['league'] == 'NHL':
             try:
                 from hockey import hvalue as HV
+                for v in HV.candidates(M, row, evs, keep_all=True):    # 21.11: каждая сторона с ценой — в теневой портфель
+                    SHADOW_ROWS.append(dict(id=row['id'], start_utc=row['start_utc'], match=f"{row['home']} — {row['away']}",
+                                            market=v['market'], pick=v['pick'], line=v['line'], label=v['label'], p=v['p'],
+                                            k=v['k'], ev=v['ev'], book=v.get('book', '')))
                 for v in HV.candidates(M, row, evs):
                     c = dict(id=row['id'], league=row['league'], start_utc=row['start_utc'], start_local=row['start_local'],
                              home=row['home'], away=row['away'], slot=v['slot'], market=v['market'], pick=v['pick'], line=v['line'],

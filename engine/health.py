@@ -220,7 +220,7 @@ def shadow_check(since: datetime) -> list[tuple[str, str, str, str]]:
     root = Path(__file__).resolve().parent.parent
     edge = since.astimezone(timezone.utc).replace(tzinfo=None).strftime('%Y-%m-%d %H:%M')
     rows = []
-    for sport, folder in (('tennis', 'data'), ('football', 'football/data')):
+    for sport, folder in (('tennis', 'data'), ('football', 'football/data'), ('hockey', 'hockey/data')):   # 21.11: + хоккей
         fs = sorted((root / folder / 'shadow').glob(f'{sport}_*.csv'))[-2:]
         try:
             d = pd.concat([pd.read_csv(f, dtype=str, keep_default_na=False) for f in fs]) if fs else pd.DataFrame(columns=['first_at', 'market'])
