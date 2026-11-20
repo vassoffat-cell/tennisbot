@@ -1,7 +1,6 @@
 {
  "list_messages": [],
  "list_match_ids": [
-  "187510",
   "187513"
  ],
  "last_daily": "2026-11-20",
@@ -71,7 +70,25 @@
   "shots": [],
   "screenshots": 0,
   "extras": [],
-  "log": [],
+  "log": [
+   {
+    "date": "2026-11-20",
+    "time": "19:19",
+    "reason": "новая: появилась линия",
+    "rank": 1,
+    "espn_id": "187513",
+    "market": "ML",
+    "pick": "1",
+    "line": "",
+    "label": "П1 Medvedev",
+    "match": "Daniil Medvedev — Frances Tiafoe",
+    "p": 0.6822,
+    "k": 1.44,
+    "to_label": "—",
+    "to_key": "187513|ML|1|",
+    "slot": 1
+   }
+  ],
   "notes": [],
   "nokb": true,
   "sep": true,
@@ -79,9 +96,55 @@
   "hdr3": true,
   "hdr4": true,
   "scan": "🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 969382fb",
-  "text": "🎾1 <b>Теннис · ставка дня</b>\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 969382fb\nСегодня ставки дня нет: подходящей линии пока нет (кф ≥ 1,35 и вероятность ≥ 60%) — появится, объявлю.",
+  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 0\nATP Finals, хард 2 · 🔏 969382fb\n🏆 ATP · Nitto ATP Finals · 🕒 00:30\n<b>Daniil Medvedev — Frances Tiafoe</b>\n<b>П1 Medvedev</b> — 68% · честный кф 1,47\n💵 888sport 1,44 · EV −1,8% · ставка ¼ ед.",
   "vol": 2,
-  "played": false
+  "played": false,
+  "espn_id": "187513",
+  "slot": 1,
+  "key": [
+   "187513",
+   "ML",
+   "1",
+   ""
+  ],
+  "p": 0.6821668286255332,
+  "tier": 2,
+  "label": "П1 Medvedev",
+  "start_utc": "2026-11-20 19:30",
+  "match": "Daniil Medvedev — Frances Tiafoe",
+  "best": {
+   "espn_id": "187513",
+   "tour": "ATP",
+   "event": "Nitto ATP Finals",
+   "start_utc": "2026-11-20 19:30",
+   "start_local": "21.11 00:30",
+   "player1": "Daniil Medvedev",
+   "player2": "Frances Tiafoe",
+   "market": "ML",
+   "pick": "1",
+   "line": null,
+   "label": "П1 Medvedev",
+   "p": 0.6821668286255332,
+   "p_src": "pinnacle",
+   "p_model": 0.6770257946535749,
+   "p_push": 0.0,
+   "k": 1.44,
+   "k_src": "api",
+   "source": "api",
+   "k_best": 1.44,
+   "book_best": "sport888",
+   "book": "sport888",
+   "k_1x": 1.43,
+   "p_pin": 0.6816593083149374,
+   "p_mkt": 0.6816593083149374,
+   "mkt_src": "pinnacle",
+   "edge": -0.0184105960264902,
+   "group": "fallback",
+   "sl_pen": 0,
+   "slot": 1
+  },
+  "first_label": "П1 Medvedev",
+  "first_match": "Daniil Medvedev — Frances Tiafoe"
  },
  "model_version": 4,
  "reported": [
@@ -3404,9 +3467,7 @@
  },
  "hk_list": [],
  "hk_list_ids": [
-  "khl:430701",
   "khl:430702",
-  "khl:430703",
   "khl:430704",
   "khl:430705"
  ],
@@ -3457,7 +3518,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-20T12:02:01",
+ "chk_run": "2026-11-20T14:20:10",
  "plan_at": [
   "2026-11-20 16:30",
   "2026-11-20 18:30"
