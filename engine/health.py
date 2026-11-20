@@ -230,8 +230,8 @@ def shadow_check(since: datetime) -> list[tuple[str, str, str, str]]:
         seal = 0
         for f in sorted((root / folder / 'seal').glob(f'{sport}_*.csv'))[-2:]:
             if f.stem.split('_')[1] >= edge[:10] or f.stat().st_mtime >= since.timestamp():
-                try:
-                    seal += max(0, sum(1 for _ in open(f, encoding='utf-8')) - 1)
+                try:                                       # 21.11: хоккей — цена только у НХЛ (КХЛ без цены, С26а)
+                    seal += sum(1 for ln in list(open(f, encoding='utf-8'))[1:] if sport != 'hockey' or ln.startswith('nhl:'))
                 except Exception:
                     pass
         mk = new.market.value_counts().to_dict() if len(new) else {}
