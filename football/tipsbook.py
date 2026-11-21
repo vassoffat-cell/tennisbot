@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import re
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -22,7 +23,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 15                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 16                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -50,7 +51,7 @@ MARKET = re.compile(r'шайб|минимум|забь[её]т|забьют|об
 
 
 EXPLICIT = [('hockey', r'🏒|хокке|\bкхл\b|\bнхл\b|\bвхл\b|\bмхл\b|шайб|\bnhl\b|\bkhl\b'),
-            ('tennis', r'🎾|теннис|\batp\b|\bwta\b|\bitf\b|тай-?брейк'),
+            ('tennis', r'🎾|теннис|\batp\b|\bwta\b|\bitf\b|тай-?брейк|по геймам|\bгейм'),
             ('basketball', r'🏀|баскет|\bnba\b|\bнба\b'),
             ('volleyball', r'🏐|волейб'),
             ('esports', r'кибер|\bcs ?2\b|\bdota\b|дота|valorant'),
@@ -866,8 +867,14 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     rel.update(_hockey_rel(d, rel))
     frel, fst = _football_rel(d, rel, df)
     rel.update(frel)
+    try:                                                          # 21.11: теннис — вердикт по нашим линиям матча
+        trel, tst = _tennis_rel(d, df)
+    except Exception as ex:
+        trel, tst = {}, {}
+        log.append(f'👥 теннис: вердикт — сбой {ex.__class__.__name__}: {ex}')
+    rel.update(trel)
     starts = _starts(d)
-    for u, s0 in fst.items():
+    for u, s0 in list(fst.items()) + list(tst.items()):
         starts.setdefault(u, s0)
     n = 0
     for bot in (['main', 'tennis'] if test else sorted({ROUTE.get(x, 'main') for x in d.sport} | ({'main'} if len(nb) else set()))):
@@ -918,6 +925,100 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     log.append(f'👥 сигнал каперов: {n}')
 
 
+_TN: dict = {}
+
+
+def _tennis_book() -> tuple[dict, pd.DataFrame]:
+    """Имена игроков и линии наших матчей тенниса (снимок суток С16: data/seal/tennis_*.csv + tennis_names.json)."""
+    if 'b' not in _TN:
+        import importlib.util
+        root = Path(__file__).resolve().parent.parent
+        try:
+            nm = json.loads((root / 'data/seal/tennis_names.json').read_text(encoding='utf-8'))
+        except Exception:
+            nm = {}
+        fs = sorted((root / 'data/seal').glob('tennis_20*.csv'))[-3:]
+        ln = pd.concat([pd.read_csv(f, dtype=str, keep_default_na=False) for f in fs]) if fs else pd.DataFrame(
+            columns=['match_id', 'start_utc', 'group', 'market', 'pick', 'line', 'p'])
+        spec = importlib.util.spec_from_file_location('tennis_names', root / 'names.py')
+        NM = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(NM)
+        _TN.update(b=(nm, ln), NM=NM)
+    return _TN['b']
+
+
+def _tennis_match(a: str, b: str) -> tuple[str, bool, list] | None:
+    """21.11: пара игроков (по-русски) → наш матч тенниса: (match_id, перевёрнуто, [игрок 1, игрок 2, начало]). Совпасть должны ОБА."""
+    if not a or not b:
+        return None
+    try:
+        nm, _ = _tennis_book()
+        NM = _TN['NM']
+    except Exception:
+        return None
+    def sim(ru: str, la: str) -> float:
+        return NM._sim(NM.translit(ru.split()[-1]), NM._plain(la.split()[-1])) if ru.split() and la.split() else 0.0
+    best = None
+    for mid, (p1, p2, st) in nm.items():
+        for flip, (x, y) in ((False, (p1, p2)), (True, (p2, p1))):
+            sc = min(sim(a, x), sim(b, y))
+            if sc >= 0.7 and (best is None or sc > best[0]):
+                best = (sc, mid, flip, [p1, p2, st])
+    return (best[1], best[2], best[3]) if best else None
+
+
+def _tennis_rel(d: pd.DataFrame, df: pd.DataFrame) -> tuple[dict, dict]:
+    """21.11: вердикт прогнозу капера по теннису — по нашим линиям матча (снимок суток): исход, фора и тоталы по геймам."""
+    rel, st = {}, {}
+    t = d[d.sport == 'tennis'] if len(d) else d
+    if not len(t):
+        return rel, st
+    _, ln = _tennis_book()
+    for r in t.itertuples(index=False):
+        a, b = pair_of(r, df)
+        hit = _tennis_match(a, b)
+        if hit is None:
+            rel[r.uid] = '⬜ матч не найден среди наших матчей тенниса'
+            continue
+        mid, flip, (p1, p2, start) = hit
+        try:
+            st[r.uid] = pd.Timestamp(start)
+        except ValueError:
+            pass
+        pk = str(r.pick).lower().replace(',', '.')
+        nums = re.findall(r'[-+]?\d+(?:\.\d+)?', pk)
+        name_a, name_b = a.split()[-1].lower(), b.split()[-1].lower()
+        side = '1' if name_a in pk or re.search(r'(?:ф|фора|п)\s*1\b|\bфора 1', pk) else '2' if name_b in pk or re.search(r'(?:ф|фора|п)\s*2\b', pk) else ''
+        if side and flip:
+            side = {'1': '2', '2': '1'}[side]
+        if 'фор' in pk and side and nums:
+            key = ('HCP', side, f'{float(nums[-1]):g}')
+        elif re.search(r'тотал|\bт[бм]', pk) and nums:
+            ou = 'O' if re.search(r'больше|\bб\b|тб', pk) else 'U'
+            it = re.search(r'инд|\bит', pk)
+            key = ((f'IT{side}' if it and side else 'TOTAL'), ou, f'{float(nums[-1]):g}')
+        elif side and re.search(r'побед|выигра|\bп[12]\b|исход', pk):
+            key = ('ML', side, '')
+        else:
+            rel[r.uid] = '⬜ наш матч тенниса, рынок вне модели'
+            continue
+        m = ln[(ln.match_id.astype(str) == str(mid)) & (ln.market == key[0]) & (ln.pick == key[1])]
+        hitp = m[m.line.map(lambda v: f'{float(v):g}' if str(v) not in ('', 'nan') else '') == key[2]]
+        if not len(hitp) and key[2] and not float(key[2]).is_integer():   # противоположная сторона той же линии: P = 1 − P
+            opp = {'1': '2', '2': '1', 'O': 'U', 'U': 'O'}.get(key[1])
+            ol = f'{-float(key[2]):g}' if key[0] == 'HCP' else key[2]
+            mo = ln[(ln.match_id.astype(str) == str(mid)) & (ln.market == key[0]) & (ln.pick == opp)]
+            mo = mo[mo.line.map(lambda v: f'{float(v):g}' if str(v) not in ('', 'nan') else '') == ol]
+            if len(mo):
+                hitp = mo.assign(p=1 - mo.p.astype(float))
+        if len(hitp):
+            rel[r.uid] = _verdict(float(hitp.p.iloc[-1]))
+        else:
+            near = '; '.join(f"{key[0]} {x.line} P {float(x.p) * 100:.0f}%" for x in m.itertuples(index=False))[:60]
+            rel[r.uid] = '⬜ наш матч тенниса, такой линии нет в модели' + (f' (есть {near})' if near else '')
+    return rel, st
+
+
 def slip_rows(src: str, p: dict) -> list[dict]:
     """Купоны 1WIN на картинках поста → строки книги (одна на событие купона)."""
     import slips as S
@@ -928,7 +1029,11 @@ def slip_rows(src: str, p: dict) -> list[dict]:
             continue
         for i, e in enumerate(c['events']):
             key = f"slip:{c['id']}:{i}" if c['id'] else f"{p['id']}:s{i}"
-            sp = e['sport'] or next((x for x in (sport_of(e['a'] + ' ' + e['b']), sport_of(part)) if x != 'other'), 'football')
+            sp = e['sport'] or next((x for x in (sport_of(e['a'] + ' ' + e['b']), sport_of(part), sport_of(p.get('text') or ''))
+                                     if x != 'other'), '')
+            if sp in ('', 'football') and _tennis_match(e['a'], e['b']):   # 21.11: «Карлос Алькарас — Бен Шелтон» без слова «теннис»
+                sp = 'tennis'
+            sp = sp or 'football'
             st = '' if c['status'] == 'open' else c['status']
             out.append(dict(uid=f'{src}:{key}', src=src, post_id=str(p['id']), post_ts=str(p['ts'])[:16], sport=sp, a=e['a'], b=e['b'],
                             pick=e['short'][:100], k=f"{c['k']:.2f}" if c['k'] else '', self=st,

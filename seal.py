@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from collections import Counter
 from pathlib import Path
 
@@ -28,6 +29,9 @@ def _short_event(ev: str) -> str:
     return ev.strip()[:24]
 
 
+NAMES: dict[str, list] = {}       # 21.11: match_id → [игрок 1, игрок 2, начало UTC] — вердикты каперов по теннису (tipsbook._tennis_rel)
+
+
 def rows(sport: str, items: list) -> list[dict]:
     """Линии прогона → строки печати. Теннис/футбол: items = [(m, row, lines)], хоккей: [(row, lines)]."""
     out = []
@@ -39,6 +43,7 @@ def rows(sport: str, items: list) -> list[dict]:
             m, row, lns = it
             mid = str(getattr(m, 'id', row.get('espn_id', '')))
             if sport == 'tennis':
+                NAMES[mid] = [str(row.get('player1', '')), str(row.get('player2', '')), str(row.get('start_utc', ''))[:16]]
                 x0 = lns[0] if lns else {}
                 surf = SURF.get(str(x0.get('surface', row.get('surface', ''))).lower(), str(x0.get('surface', '')).lower())
                 grp = f"{_short_event(str(x0.get('event', getattr(m, 'event', ''))))}, {surf}".strip(', ')
@@ -85,6 +90,15 @@ def seal(sport: str, items: list, lo, hi, now, folder: Path, day, extra: list[di
     f.parent.mkdir(parents=True, exist_ok=True)
     body = snap.to_csv(index=False)
     f.write_text(body, encoding='utf-8')
+    if sport == 'tennis' and NAMES:                              # 21.11: имена игроков матчей снимка (≤ 3 суток)
+        nf = Path(folder) / 'seal' / 'tennis_names.json'
+        try:
+            nm = json.loads(nf.read_text(encoding='utf-8')) if nf.exists() else {}
+        except Exception:
+            nm = {}
+        nm.update(NAMES)
+        edge = (now - pd.Timedelta(days=3)).strftime('%Y-%m-%d')
+        nf.write_text(json.dumps({k: v for k, v in nm.items() if v[2][:10] >= edge}, ensure_ascii=False), encoding='utf-8')
     per = snap.drop_duplicates('match_id')
     return dict(n=int(len(per)), lines=int(len(snap)), groups=Counter(per.group), code=hashlib.sha256(body.encode()).hexdigest()[:8])
 
