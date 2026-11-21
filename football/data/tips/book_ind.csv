@@ -147,7 +147,7 @@ kapper_uk:22061:0,401915404,Sabah FK,Borussia Dortmund,BTTS:Y:|TOT:O:2.5,ОЗ д
 kapper_uk:22079:0,401915313,Real Madrid,RB Leipzig,AH:H:-1.5,Ф1(-1.5),,FT,W,2026-11-17
 kapper_uk:22080:0,401915312,Bayern Munich,Arsenal,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
 kapper_uk:22081:0,401915313,Real Madrid,RB Leipzig,BTTS:Y:|TOT:O:2.5,ОЗ да + ТБ2.5,,FT,W,2026-11-17
-kapper_uk:22109:0,,,,,,матч не найден,,,
+kapper_uk:22109:0,401915835,FC Midtjylland,Sint-Truidense,TOT:O:3.5,ТБ3.5,,FT,L,2026-11-21
 kapper_uk:22114:0,401915845,Iberia 1999,Mjällby AIF,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-17
 kapper_uk:22116:0,401915556,Dinamo Zagreb,NEC Nijmegen,TOT:O:3.5,ТБ3.5,,FT,W,2026-11-17
 kapper_uk:22138:0,401882836,Alavés,Málaga,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-17
@@ -372,7 +372,7 @@ kapper_uk:22305:0,401879251,AFC Bournemouth,Leeds United,,,не разобран
 kapper_uk:22311:0,401879245,Manchester City,Brighton & Hove Albion,1X2:H:,П1,,FT,L,2026-11-21
 kapper_uk:22329:0,401879246,Liverpool,Arsenal,DC:X2:,X2,,FT,W,2026-11-21
 kapper_uk:22424:0,401915531,Celta Vigo,Union St.-Gilloise,DC:X2:,X2,,FT,W,2026-11-21
-xs_stavkii:8038:1,,,,,,матч не найден,,,
+xs_stavkii:8038:1,401878940,Royal Charleroi SC,Sint-Truidense,DC:1X:|TOT:O:1.5,1X + ТБ1.5,,,,
 kapper_uk:22714:0,401878754,Tottenham Hotspur,Ipswich Town,TOT:O:2.5,ТБ2.5,,,,
 kapper_uk:22711:0,401879232,Newcastle United,Arsenal,BTTS:Y:,ОЗ да,,,,
 kapper_uk:22710:0,401884728,SV Elversberg,SC Freiburg,DC:X2:|BTTS:Y:,X2 + ОЗ да,,,,
@@ -383,3 +383,4 @@ stavki_na_sport_betting1:slip:406244206:0,,,,,,матч не найден,,,
 stavki_na_sport_betting1:slip:406668250:0,401876398,Nice,Paris Saint-Germain,TOT:O:3.0,ТБ3,,,,
 kapper_uk:22719:0,,,,,,нет данных,,,
 kapper_uk:22718:0,401882797,Sevilla,Real Betis,IT2:O:1.5,ИТ2 Б1.5,,,,
+stavki_na_sport_betting1:slip:406978412:0,401882798,Real Madrid,Celta Vigo,IT1:O:2.5,ИТ1 Б2.5,,,,
