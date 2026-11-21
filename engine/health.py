@@ -213,7 +213,7 @@ def capper_check() -> list[tuple[str, str, str, str]]:
     return rows
 
 
-def shadow_check(since: datetime) -> list[tuple[str, str, str, str]]:
+def shadow_check(since: datetime, cache: dict | None = None) -> list[tuple[str, str, str, str]]:
     """С21 (19.11, «взгляд со стороны»): теневой портфель растёт — за окно добавлены стороны с ценой, если у вида были матчи
     (снимок суток С16 непустой). Дважды находили «тихую» пустоту: портфель получал только кандидатов ⭐ (1 строка за 2 суток)."""
     import pandas as pd
@@ -235,6 +235,14 @@ def shadow_check(since: datetime) -> list[tuple[str, str, str, str]]:
                     seal += sum(1 for ln in list(open(f, encoding='utf-8'))[1:] if sport != 'hockey' or ln.startswith('nhl:'))
                 except Exception:
                     pass
+        if sport == 'hockey' and not len(new) and seal and cache is not None:   # 21.11: цены НХЛ берутся за 3 ч до матчей —
+            priced = 0                                                       # пусто без цен — не сбой
+            for r in [r for r in runs('daily.yml', since) if r['conclusion'] == 'success' and _dur(r) > 25 and not _special(r)]:
+                cache.setdefault(r['id'], log(r['id']))
+                priced = max([priced] + [int(x) for x in re.findall(r'линий с ценой 1xBet (\d+)', cache[r['id']])])
+            if priced == 0:
+                rows.append((f'теневой портфель ({sport}): новых сторон с ценой', '> 0', 'цен НХЛ за окно не было (прогоны за 3 ч до матчей ещё впереди)', '✅'))
+                continue
         mk = new.market.value_counts().to_dict() if len(new) else {}
         if len(new):
             rows.append((f'теневой портфель ({sport}): новых сторон с ценой', '> 0', f'{len(new)} ({", ".join(f"{k} {v}" for k, v in mk.items())})', '✅'))
@@ -242,6 +250,61 @@ def shadow_check(since: datetime) -> list[tuple[str, str, str, str]]:
             rows.append((f'теневой портфель ({sport}): новых сторон с ценой', '> 0', 'матчей не было' if not seal else f'0 при снимке {seal} линий',
                          '✅' if not seal else '❌'))
     return rows
+
+
+def rules_check() -> list[tuple[str, str, str, str]]:
+    """21.11 (проверка «без лазеек»): ⭐ текущих суток по правилам — 🎯 не больше 3 (С23а), каждая ⭐ — свой матч, начала ⭐ не ближе 2 ч
+    (С14; снятые не считаются), у каждой ⭐ есть цена (С19, С17), EV не выше 20% (правило Sonego). Источник — состояние ботов в репозитории."""
+    from pathlib import Path
+    import pandas as pd
+    root = Path(__file__).resolve().parent.parent
+    out = []
+    for name, fn, key in (('теннис', 'data/runtime.json', 'day_pick'), ('футбол', 'football/data/runtime.json', 'day_pick'),
+                          ('хоккей', 'data/runtime.json', 'hk_dp')):
+        try:
+            st = json.loads((root / fn).read_text(encoding='utf-8')).get(key) or {}
+        except Exception as e:
+            out.append((f'⭐ правила суток ({name})', 'по правилам', f'нет данных ({e.__class__.__name__})', '❌')); continue
+        picks = list(st.get('picks') or []) if key == 'hk_dp' else ([st] if st.get('espn_id') else []) + list(st.get('extras') or [])
+        live = [x for x in picks if not x.get('off')]
+        if not live:
+            out.append((f'⭐ правила суток ({name})', 'по правилам', f"{st.get('date', '—')}: ставок нет", '✅')); continue
+        bad = []
+        n_t = sum(1 for x in live if str(x.get('tier', '')).split('.')[0] != '0')
+        if n_t > 3:
+            bad.append(f'🎯 {n_t} > 3')
+        ids = [str(x.get('espn_id') or x.get('game_id') or x.get('match')) for x in live]
+        if len(set(ids)) < len(ids):
+            bad.append('два ⭐ на один матч')
+        ts = sorted(pd.Timestamp(x['start_utc']) for x in live if x.get('start_utc'))
+        if any((b - a).total_seconds() < 2 * 3600 for a, b in zip(ts, ts[1:])):
+            bad.append('отрезок < 2 ч')
+        for x in live:
+            k = x.get('k') or (x.get('best') or {}).get('k')
+            if not k:
+                bad.append(f"нет цены: {x.get('label')}")
+            ev = x.get('ev') if x.get('ev') not in (None, '') else (x.get('best') or {}).get('ev')
+            if ev not in (None, '') and float(ev) > 0.20:
+                bad.append(f"EV {float(ev) * 100:.0f}% > 20%: {x.get('label')}")
+        out.append((f'⭐ правила суток ({name}): ≤ 3 🎯, свой матч, отрезок 2 ч, цена', 'по правилам',
+                    f"{st.get('date', '—')}: ⭐ {len(live)} (🎯 {n_t})" + (' · ' + '; '.join(bad) if bad else ''), '❌' if bad else '✅'))
+    return out
+
+
+def halves_check() -> list[tuple[str, str, str, str]]:
+    """К17 (21.11): ставки каперов на таймы получают итог — у сыгранных > 30 ч назад нет «висящих» без итога."""
+    from pathlib import Path
+    import pandas as pd
+    root = Path(__file__).resolve().parent.parent
+    try:
+        d = pd.read_csv(root / 'football/data/tips/tips_all.csv', dtype=str, keep_default_na=False)
+    except Exception as e:
+        return [('каперы: ставки на таймы с итогом (К17)', 'все', f'нет данных ({e.__class__.__name__})', '❌')]
+    h = d[d.legs.str.contains('@|WBH|HTFT|GBH', regex=True)]
+    old = h[pd.to_datetime(h.start_utc, errors='coerce') < pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=30)]
+    hang = old[old.settled == '']
+    return [('каперы: ставки на таймы с итогом (К17)', 'все', f'на таймы {len(h)}, сыграны {len(old)}, без итога {len(hang)}',
+             '✅' if not len(hang) else '❌')]
 
 
 def ours_check(since: datetime) -> list[tuple[str, str, str, str]]:
@@ -336,6 +399,10 @@ def main(hours: int = 26) -> None:
               ('cappers.yml', (0, 24), r'🔒 контрольная точка: 2', 'каперы: 🔒 контрольная точка в оба бота (В3а, последний прогон)'),
               ('football.yml', (0, 24), r'👥 матрицы для вердиктов каперов: \d+', 'футбол: матрицы модели для вердиктов каперов (К15)'),
               ('cappers.yml', (0, 24), r'👥 каперы → наши матчи: на наши', 'каперы → наши матчи: журнал (К15, последний прогон)'),
+              ('daily.yml', (0, 24), r"parse entities|can't parse", 'теннис/хоккей: сбои разметки скрытого текста (В3б)'),
+              ('football.yml', (0, 24), r"parse entities|can't parse", 'футбол: сбои разметки скрытого текста (В3б)'),
+              ('daily.yml', (11, 15), r'инциденты — сбой', 'теннис/хоккей: сбои журнала инцидентов ⭐ (Ц12)'),
+              ('football.yml', (11, 15), r'инциденты — сбой', 'футбол: сбои журнала инцидентов ⭐ (Ц12)'),
               ('daily.yml', (0, 24), r'Traceback|сбой', 'теннис/хоккей: сбои внутри прогонов (последний прогон)'),
               ('football.yml', (0, 24), r'Traceback|сбой', 'футбол: сбои внутри прогонов (последний прогон)')]
     cache: dict[int, str] = {}
@@ -358,7 +425,9 @@ def main(hours: int = 26) -> None:
     rows += seal_today()
     rows += plan_check(since)
     rows += capper_check()
-    rows += shadow_check(since)
+    rows += shadow_check(since, cache)
+    rows += rules_check()
+    rows += halves_check()
     rows += ours_check(since)
     rows += wide_check()
     w = max(len(r[0]) for r in rows)

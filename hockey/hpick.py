@@ -194,7 +194,8 @@ def candidates(items: list[tuple[dict, list[dict]]], tp: pd.DataFrame, leagues: 
             c['fire'], c['clash'], c['fire_i'], c['clash_i'] = _syn(c, tp)
             out.append(c)
     model = SL.reorder('hockey', sorted(out, key=lambda c: (-c['fire'], c['clash'], -c['tier'], -c['p_low'], -c['p'])))
-    return sorted(priced, key=lambda c: (-c['fire'], c['clash'], -c['ev'])) + model   # лестница: цена 1xBet → модель
+    priced = SL.reorder('hockey', sorted(priced, key=lambda c: (-c['fire'], c['clash'], -c['ev'])))   # 21.11: + понижения самообучения
+    return priced + model   # лестница: цена 1xBet → модель
 
 
 def better(a: dict, b: dict | None) -> str:
@@ -448,7 +449,9 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
                 break
     if HK_LADDER and picks:                                  # 21.11 С23а (решение пользователя): 🏒 до 3 ⭐ в сутки — лучшие по EV, с ценой
         used = {str(x['id']) for x in picks}
-        pool = sorted([c for c in cands if int(c['tier']) == TIER_PRICED and c.get('ev') is not None], key=lambda c: -float(c['ev']))
+        # 21.11 (проверка синтеза): тот же порядок, что у 🏒1 — самообучение → 🔥 / ⚔️ каперов → EV (раньше — только EV)
+        pool = [c for c in cands if int(c['tier']) == TIER_PRICED and c.get('ev') is not None
+                and not SL.penalty('hockey', dict(c, rank=2))]      # О2: пониженный сегмент — не в новую ⭐
         for c in pool:
             if sum(1 for x in picks if not x.get('off')) >= TARGET_MAX:
                 break

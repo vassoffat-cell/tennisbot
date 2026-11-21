@@ -150,10 +150,13 @@ def finish(o: dict) -> dict:
 
 
 def choose(offers: Iterable[dict]) -> list[dict]:
-    """Подходящие предложения по порядку выбора: ступень, затем максимум P, затем уверенность, затем раньше матч."""
+    """Порядок выбора: 💰 → 🔥 каперов → без ⚔️ → (лестница: EV; иначе ступень, P) → уверенность → раньше матч."""
     ok = [finish(dict(o)) for o in offers]
     ok = [o for o in ok if o['tier'] < 9]
-    ok.sort(key=lambda o: (o['tier'], 0 if o.get('fire') else 1, 1 if o.get('clash') else 0,   # 🔥 синтез с каперами — выше
+    # 21.11 (проверка синтеза, Г3б): 💰 — всегда первой; дальше 🔥 каперов поднимает, ⚔️ опускает — ВЫШЕ ступени (как в хоккее);
+    # раньше ступень (уверенность в выгоде) стояла выше каперов → ⚔️-кандидат ступени 1 обходил 🔥-кандидата ступени 2.
+    ok.sort(key=lambda o: (0 if o['tier'] == 0 else 1, 0 if o.get('fire') else 1, 1 if o.get('clash') else 0,
+                           0 if DP_V2 and DP_LADDER else o['tier'],                       # лестница: 🎯 — по EV (С23), ступень не важна
                            -(o['edge'] or 0) if o['tier'] == 0 else                              # 💰 — по перевесу
                            -(o['ev'] if o['ev'] is not None else -9) if DP_V2 and DP_LADDER else    # 🎯 — по EV (лестница R5)
                            -o['p'], -(o['conf'] or 0), str(o.get('start_utc', ''))))

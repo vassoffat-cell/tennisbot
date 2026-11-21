@@ -192,7 +192,10 @@ def _better(a: dict, b: dict | None) -> str:
         return 'сравнение (ступень выше)'
     if ta == tb and ta != 0 and getattr(PK, 'DP_V2', False) and getattr(PK, 'DP_LADDER', False):   # 17.11 лестница: 🎯 — по EV
         try:
-            ea, eb = pa * float(a['k']) - 1, pb * float(b['k']) - 1
+            # 21.11: тот же EV, что в выборе — (1 − P возврата)·(P·K − 1); раньше здесь P·K − 1 (целые линии — без учёта возврата)
+            ea = a['ev'] if a.get('ev') is not None else PK.ev(pa, float(a['k']), float(a.get('p_push') or 0))
+            eb = b['ev'] if b.get('ev') not in (None, '') else PK.ev(pb, float(b['k']), float(b.get('p_push') or 0))
+            ea, eb = float(ea), float(eb)
         except (KeyError, TypeError, ValueError):
             return ''
         if ea >= eb + C.DAY_PICK_SWITCH + SL.switch_extra(_sk()):
@@ -494,8 +497,10 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         if getattr(PK, 'DP_LADDER', False) and picks:            # 21.11 С23а: 🎯 до TARGET_MAX в сутки — лучшие по EV, разные матчи и отрезки
             n_t = sum(1 for x in picks if str(x.get('tier', '')).split('.')[0] != '0' and not x.get('off'))
             starts = [x.get('start_utc') for x in picks if not x.get('off')]   # С2а: отрезок снятой ⭐ свободен
-            pool = sorted([c for c in cands if int(c.get('tier', 9)) not in (0, 9) and c.get('ev') is not None],
-                          key=lambda c: -float(c['ev']))
+            # 21.11 (проверка синтеза): порядок — тот же, что у ⭐1 (cands = SL.reorder(PK.choose)): понижение самообучения →
+            # ступень → 🔥 / ⚔️ каперов → EV. Раньше доп. 🎯 сортировались только по EV — каперы и самообучение не влияли на ⭐2/⭐3.
+            pool = [c for c in cands if int(c.get('tier', 9)) not in (0, 9) and c.get('ev') is not None
+                    and not SL.penalty(_sk(), dict(c, rank=2))]     # О2: пониженный сегмент (в т.ч. «новые линии») — не в новую ⭐
             for c in pool:
                 if n_t >= TARGET_MAX or len(picks) >= MAX_V2:
                     break
