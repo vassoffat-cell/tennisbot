@@ -106,6 +106,8 @@ ALIAS = {
     'рубин': 'rubin', 'ахмат': 'akhmat', 'оренбург': 'orenburg', 'акрон': 'akron', 'балтика': 'baltika',
     'динамо махачкала': 'makhachkala', 'факел': 'fakel', 'кот-д’ивуар': 'ivory coast', "кот-д'ивуар": 'ivory coast',
     'гамбия': 'gambia', 'алькояно': 'alcoyano', 'северная ирландия': 'northern ireland', 'люксембург': 'luxembourg',
+    'аль-наср': 'al nassr', 'аль наср': 'al nassr', 'аль-ахли': 'al ahli', 'аль ахли': 'al ahli', 'аль-хиляль': 'al hilal',
+    'аль хиляль': 'al hilal', 'аль-иттихад': 'al ittihad', 'аль иттихад': 'al ittihad', 'андорра': 'andorra', 'леганес': 'leganes',
     'мю': 'manchester united', 'ман юнайтед': 'manchester united', 'манчестер юнайтед': 'manchester united',
     'ман сити': 'manchester city', 'манчестер сити': 'manchester city', 'сити': 'manchester city',
     'юнайтед': 'manchester united', 'челси': 'chelsea', 'ливерпуль': 'liverpool', 'арсенал': 'arsenal',

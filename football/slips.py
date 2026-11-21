@@ -57,6 +57,8 @@ def parse(ocr: str) -> dict | None:
     sid = re.search(r'id\s*(\d{7,})', low)
     head = '\n'.join(ln for ln in low.split('\n')[:4] if re.search(r'ординар|экспресс', ln)) or low
     status = next((s for s, rx in STATUS if re.search(rx, head)), '') or next((s for s, rx in STATUS if re.search(rx, low)), '')
+    if not status and re.search(r'продать за|возможный выигрыш', low):   # 21.11: открытый купон 1WIN без слова «открыта»
+        status = 'open'                                                   # (Green Line 19831: «Продать за 30 000» → был «после матча»)
     kind = 'express' if 'экспресс' in low else 'single'
     lines = [x.strip() for x in ocr.split('\n') if x.strip()]
     # кф: «50 000,00 RUB » 72 500,00 RUB» или «Сумма ставки … / (Возможный) выигрыш …»
@@ -94,7 +96,7 @@ def parse(ocr: str) -> dict | None:
             if len(parts) == 2 and all(len(re.findall(r'[а-яёa-z]', x.lower())) >= 3 for x in parts) and n + 1 < len(lines):
                 a, b = (re.sub(r'^\W+', '', parts[0]).strip(), parts[1].strip())
                 mk = re.sub(r'\b\d\.\d{2}\b', '', lines[n + 1]).strip(' ,|[]')
-                if re.search(r'тотал|фора|победа|исход|забьют|шанс|больше|меньше', mk.lower()):
+                if re.search(r'тотал|фора|победа|исход|забьют|шанс|больше|меньше|выигра|тайм|ничья', mk.lower()):   # 21.11: «Выиграет оба тайма»
                     events.append(dict(sport=sport, a=a, b=b, market=mk, short=_market(mk, a, b)))
     if not events:
         return None

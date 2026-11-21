@@ -67,7 +67,7 @@ def day_events(d: dt.date, fresh_min: int = 90) -> list[dict]:
         if done or now - c['t'] < fresh_min * 60:
             return c['ev']
     ev = [dict(id=m.id, start=m.start.strftime('%Y-%m-%d %H:%M'), home=m.home, away=m.away, kind=m.result_kind,
-               hg=m.hg, ag=m.ag) for m in fespn.parse(fespn._get(ALL.format(d=d)), 'all')]
+               hg=m.hg, ag=m.ag, odds=m.odds or {}) for m in fespn.parse(fespn._get(ALL.format(d=d)), 'all')]   # 21.11: + цены DK
     f.write_text(json.dumps(dict(t=now, ev=ev), ensure_ascii=False))
     return ev
 
