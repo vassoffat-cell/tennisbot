@@ -23,7 +23,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 16                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 17                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -967,6 +967,31 @@ def _tennis_match(a: str, b: str) -> tuple[str, bool, list] | None:
     return (best[1], best[2], best[3]) if best else None
 
 
+def _tennis_players(a: str, b: str) -> bool:
+    """21.11: оба имени — игроки тенниса 2025–26 (Sackmann ATP/WTA): совпадают и фамилия, и имя одного игрока (по транслиту).
+    Для купонов без слова «теннис» вне наших текущих матчей; команды («Реал Мадрид», «ЦСКА Москва») не проходят."""
+    if 'people' not in _TN:
+        root = Path(__file__).resolve().parent.parent
+        people = set()
+        for t in ('atp', 'wta'):
+            for y in (2025, 2026):
+                f = root / f'data/sackmann/{t}_matches_{y}.csv'
+                if f.exists():
+                    x = pd.read_csv(f, usecols=['winner_name', 'loser_name'], dtype=str).stack().dropna()
+                    people |= {(v.split()[0], v.split()[-1]) for v in map(str, x) if len(v.split()) >= 2}
+        _tennis_book()
+        NM = _TN['NM']
+        _TN['people'] = [(NM._plain(f), NM._plain(l)) for f, l in people]
+    NM, people = _TN['NM'], _TN['people']
+    def ok(ru: str) -> bool:
+        w = ru.split()
+        if len(w) < 2 or not all(re.fullmatch(r'[А-ЯЁа-яё\-]{2,}', x) for x in (w[0], w[-1])):
+            return False
+        fv, lv = NM.translit(w[0]), NM.translit(w[-1])
+        return any(NM._sim(lv, l) >= 0.7 and NM._sim(fv, f) >= 0.7 for f, l in people)
+    return ok(a) and ok(b)
+
+
 def _tennis_rel(d: pd.DataFrame, df: pd.DataFrame) -> tuple[dict, dict]:
     """21.11: вердикт прогнозу капера по теннису — по нашим линиям матча (снимок суток): исход, фора и тоталы по геймам."""
     rel, st = {}, {}
@@ -1031,7 +1056,7 @@ def slip_rows(src: str, p: dict) -> list[dict]:
             key = f"slip:{c['id']}:{i}" if c['id'] else f"{p['id']}:s{i}"
             sp = e['sport'] or next((x for x in (sport_of(e['a'] + ' ' + e['b']), sport_of(part), sport_of(p.get('text') or ''))
                                      if x != 'other'), '')
-            if sp in ('', 'football') and _tennis_match(e['a'], e['b']):   # 21.11: «Карлос Алькарас — Бен Шелтон» без слова «теннис»
+            if sp in ('', 'football') and (_tennis_match(e['a'], e['b']) or _tennis_players(e['a'], e['b'])):   # 21.11: «Алькарас — Шелтон» без «теннис»
                 sp = 'tennis'
             sp = sp or 'football'
             st = '' if c['status'] == 'open' else c['status']
