@@ -273,7 +273,7 @@ def rules_check() -> list[tuple[str, str, str, str]]:
         n_t = sum(1 for x in live if str(x.get('tier', '')).split('.')[0] != '0')
         if n_t > 3:
             bad.append(f'🎯 {n_t} > 3')
-        ids = [str(x.get('espn_id') or x.get('game_id') or x.get('match')) for x in live]
+        ids = [str(x.get('espn_id') or x.get('id') or x.get('game_id') or x.get('match')) for x in live]   # хоккей: номер матча — поле id
         if len(set(ids)) < len(ids):
             bad.append('два ⭐ на один матч')
         ts = sorted(pd.Timestamp(x['start_utc']) for x in live if x.get('start_utc'))
