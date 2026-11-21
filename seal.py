@@ -99,6 +99,18 @@ def seal(sport: str, items: list, lo, hi, now, folder: Path, day, extra: list[di
         nm.update(NAMES)
         edge = (now - pd.Timedelta(days=3)).strftime('%Y-%m-%d')
         nf.write_text(json.dumps({k: v for k, v in nm.items() if v[2][:10] >= edge}, ensure_ascii=False), encoding='utf-8')
+        pf = Path(folder) / 'seal' / 'tennis_people.json'           # 21.11: игроки ATP/WTA 2025–26 (имя, фамилия) — прогону каперов
+        if not pf.exists() or pd.Timestamp(pf.stat().st_mtime, unit='s') < now - pd.Timedelta(days=1):
+            ppl = set()
+            for t in ('atp', 'wta'):
+                for y in (now.year - 1, now.year):
+                    f = Path(folder) / 'sackmann' / f'{t}_matches_{y}.csv'
+                    if f.exists():
+                        x = pd.read_csv(f, usecols=['winner_name', 'loser_name'], dtype=str).stack().dropna()
+                        ppl |= {str(v) for v in x if len(str(v).split()) >= 2}
+            ppl |= {n for v in nm.values() for n in v[:2] if len(str(n).split()) >= 2}
+            if ppl:
+                pf.write_text(json.dumps(sorted(ppl), ensure_ascii=False), encoding='utf-8')
     per = snap.drop_duplicates('match_id')
     return dict(n=int(len(per)), lines=int(len(snap)), groups=Counter(per.group), code=hashlib.sha256(body.encode()).hexdigest()[:8])
 

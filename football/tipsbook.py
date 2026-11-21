@@ -973,12 +973,15 @@ def _tennis_players(a: str, b: str) -> bool:
     if 'people' not in _TN:
         root = Path(__file__).resolve().parent.parent
         people = set()
-        for t in ('atp', 'wta'):
-            for y in (2025, 2026):
-                f = root / f'data/sackmann/{t}_matches_{y}.csv'
-                if f.exists():
-                    x = pd.read_csv(f, usecols=['winner_name', 'loser_name'], dtype=str).stack().dropna()
-                    people |= {(v.split()[0], v.split()[-1]) for v in map(str, x) if len(v.split()) >= 2}
+        try:                                                      # прогон каперов скачивает только data/seal (sparse checkout)
+            people = {(v.split()[0], v.split()[-1]) for v in json.loads((root / 'data/seal/tennis_people.json').read_text(encoding='utf-8'))}
+        except Exception:
+            for t in ('atp', 'wta'):
+                for y in (2025, 2026):
+                    f = root / f'data/sackmann/{t}_matches_{y}.csv'
+                    if f.exists():
+                        x = pd.read_csv(f, usecols=['winner_name', 'loser_name'], dtype=str).stack().dropna()
+                        people |= {(v.split()[0], v.split()[-1]) for v in map(str, x) if len(v.split()) >= 2}
         _tennis_book()
         NM = _TN['NM']
         _TN['people'] = [(NM._plain(f), NM._plain(l)) for f, l in people]
