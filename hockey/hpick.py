@@ -59,11 +59,11 @@ def _syn(c: dict, tp: pd.DataFrame) -> tuple[int, int, int, int]:
         return 0, 0, 0, 0
     t = tp[(tp.game_id.astype(str) == str(c['id'])) & (tp.market.astype(str) == str(c['market']))]
     if len(t) and 'src' in t.columns:                       # 🧠 ⛔ слабый капер (selflearn) — его 🔥/⚔️ не учитываются
-        t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) != 'weak')]
+        t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) != 'weak').astype(bool)]
     fire = int((t.pick.astype(str) == str(c['pick'])).any())
     clash = int((t.pick.astype(str) != str(c['pick'])).any())
     # 21.11 Г3б: выбор ⭐ двигают ✔ доказанные И близкие к ✔ (n ≥ 50, z ≥ 1,0, ROI > 0) каналы
-    tt = t[t.src.astype(str).map(lambda s: SL.capper_soft('hockey', s))] if len(t) and 'src' in t.columns else t.iloc[0:0]
+    tt = t[t.src.astype(str).map(lambda s: SL.capper_soft('hockey', s)).astype(bool)] if len(t) and 'src' in t.columns else t.iloc[0:0]
     return int((tt.pick.astype(str) == str(c['pick'])).any()), int((tt.pick.astype(str) != str(c['pick'])).any()), fire, clash
 
 
@@ -72,7 +72,9 @@ def _proven_clash(c: dict, tp: pd.DataFrame) -> bool:
     if tp is None or not len(tp) or 'src' not in tp.columns:
         return False
     t = tp[(tp.game_id.astype(str) == str(c['id'])) & (tp.market.astype(str) == str(c['market']))]
-    t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) == 'proven')]
+    if not len(t):                                          # 21.11: пустая выборка — фильтр по пустому Series терял столбцы (AttributeError)
+        return False
+    t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) == 'proven').astype(bool)]
     return bool((t.pick.astype(str) != str(c['pick'])).any())
 
 
