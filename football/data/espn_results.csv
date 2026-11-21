@@ -877,3 +877,6 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401888247,tur.1,league,TUR,T1,2026-11-21 10:30,Genclerbirligi,Gaziantep FK,Genclerbirligi,Gaziantep,1,0,FT,2026-27-turkish-super-lig,0
 401931813,por.taca.portugal,cup,POR,P1,2026-11-21 11:00,Atlético CP,Casa Pia,,Casa Pia,1,0,FT,4th-round,0
 401879233,eng.1,league,ENG,E0,2026-11-21 12:30,Manchester City,Fulham,Man City,Fulham,1,1,FT,2026-27-english-premier-league,0
+401882806,esp.1,league,ESP,SP1,2026-11-21 13:00,Alavés,Deportivo,Alaves,La Coruna,3,1,FT,2026-27-laliga,0
+401888245,tur.1,league,TUR,T1,2026-11-21 13:00,Galatasaray,Samsunspor,Galatasaray,Samsunspor,2,1,FT,2026-27-turkish-super-lig,0
+401888369,tur.1,league,TUR,T1,2026-11-21 13:00,Amed SFK,Caykur Rizespor,Amedspor,Rizespor,0,2,FT,2026-27-turkish-super-lig,0
