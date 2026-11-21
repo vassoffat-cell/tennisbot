@@ -199,7 +199,8 @@ def _alias(w: str) -> str | None:
     return None
 
 
-EN_ALT = {'koln': ('cologne',), 'munchen': ('munich',), 'sevilla': ('seville',)}
+EN_ALT = {'koln': ('cologne',), 'munchen': ('munich',), 'sevilla': ('seville',),
+          'sint truiden': ('sint truidense',)}   # 21.11: ESPN «Sint-Truidense» (Шарлеруа — Сент-Трюйден не находился)
 
 
 def find_teams(text: str, teams: list[str]) -> dict[str, int]:

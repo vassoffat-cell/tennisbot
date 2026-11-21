@@ -31,8 +31,8 @@ SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'т�
 SPORTS = [
     ('hockey', r'🏒|хокке|\bкхл\b|\bнхл\b|\bвхл\b|\bмхл\b|шайб|\bnhl\b|\bkhl\b|авангард|ак барс|салават|барыс|трактор|северсталь|'
                r'\bамур\b|адмирал|куньлунь|драконы|нефтехимик|автомобилист|'
-               # 18.11: купоны Green Line с НХЛ/КХЛ уходили в футбол — только однозначные (нет одноимённых футбольных клубов)
-               r'\bхк\b|\bска\b(?!-? ?хабаровск)|торпедо нн|торпедо н\.? ?новгород|\bлада\b|металлург мг|'
+               # 18.11: купоны Green Line с НХЛ/КХЛ уходили в футбол — только однозначные (нет одноимённых футбольных клубов)  21.11: «Локомотив Ярославль» (купон 402008542 ушёл в ⚽)
+               r'\bхк\b|\bска\b(?!-? ?хабаровск)|локомотив ярославль|торпедо нн|торпедо н\.? ?новгород|\bлада\b|металлург мг|'
                r'эвеланш|лайтнинг|блэкхокс|\bкингз|кэпиталз|пингвинз|флайерз|айлендерс|девилз|брюинз|сэйбрз|канадиенс|'
                r'сенаторз|мейпл ?лифс|ред ?уингз|пантерз|харрикейнз|блю ?джекетс|предаторз|ойлерз|флэймз|кэнакс|кракен|'
                r'голден ?найтс|\bдакс\b|шаркс|\bджетс\b|\bуайлд\b|мамонтс'),
@@ -661,6 +661,25 @@ def _pair_text(raw: str, events) -> tuple[str, str]:
     return hits[0] if len(set(hits)) == 1 else ('', '')
 
 
+LIVE = re.compile(r'(?<![A-Za-z])LIVE(?![A-Za-z])|(?<![а-яё])лайв(?![а-яё])', re.I)   # 21.11: «🔴 ПРОГНОЗ LIVE» — пост во время матча
+
+
+BET_WORDS = {'победа', 'победитель', 'тотал', 'фора', 'обе', 'ставка', 'индивидуальный', 'двойной', 'первый', 'второй', 'исход',
+             'матч', 'экспресс', 'ординар', 'больше', 'меньше', 'да', 'нет', 'ничья'}
+
+
+def _person(pick: str) -> list[tuple[str, str]]:
+    """21.11 (Green Line 19845 «Победитель, Александр Топурия» — UFC привязался к «Crewe Alexandra» по транслиту одного слова):
+    два подряд слова с заглавной вне справочника команд и вне слов ставки — имя и фамилия (или название из двух слов).
+    Такая пара совпадает с командой табло, только если ОБА слова совпали с одной командой."""
+    out = []
+    for m in re.finditer(r'(?<![А-ЯЁа-яё])([А-ЯЁ][а-яё\-]{2,})\s+([А-ЯЁ][а-яё\-]{2,})(?![А-ЯЁа-яё])', pick):
+        x, y = m.group(1).lower(), m.group(2).lower()
+        if not ({x, y} & BET_WORDS or T._alias(x) or T._alias(y) or T._alias(f'{x} {y}')):
+            out.append((x, y))
+    return out
+
+
 def _event_of(a: str, b: str, pick: str, ts, cache: dict, raw: str = '') -> tuple[dict, bool] | None:
     """Событие табло ESPN (все лиги): по паре команд, иначе — по единственной команде в ставке («Эспаньол, ТБ (0.5)»)."""
     import tipswide as W
@@ -674,7 +693,9 @@ def _event_of(a: str, b: str, pick: str, ts, cache: dict, raw: str = '') -> tupl
         if ha:
             return next(((e, False) for e in evs if e['home'] == ha and e['away'] == hb), None)
     caps = {w.lower() for w in re.findall(r'\b[А-ЯЁA-Z][а-яёa-z\-]{3,}', pick)}
-    ws = [w for w in T._words(pick) if (w in caps and len(w) >= 5) or T._alias(w)]
+    pairs = _person(pick)
+    pers = {w for pr in pairs for w in pr}
+    ws = [w for w in T._words(pick) if ((w in caps and len(w) >= 5) or T._alias(w)) and w not in pers]
     ws += [f'{x} {y}' for x, y in zip(T._words(pick), T._words(pick)[1:]) if T._alias(f'{x} {y}')]
     hits = {}
     for w in ws:
@@ -687,6 +708,12 @@ def _event_of(a: str, b: str, pick: str, ts, cache: dict, raw: str = '') -> tupl
             h, aw = e.setdefault('_h', W._en_info(e['home'])), e.setdefault('_a', W._en_info(e['away']))
             if W._same(ru, h) or W._same(ru, aw):
                 hits[e['id']] = (e, False)
+    for x, y in pairs:                                            # пара слов — одна команда: совпасть должны оба слова
+        rx, ry = W._ru_info(x), W._ru_info(y)
+        for e in evs:
+            for t in (e.setdefault('_h', W._en_info(e['home'])), e.setdefault('_a', W._en_info(e['away']))):
+                if W._same(rx, t) and W._same(ry, t):
+                    hits[e['id']] = (e, False)
     if len(hits) > 1:                                             # несколько событий команды — ближайшее по времени к посту
         near = sorted(hits.values(), key=lambda v: abs((pd.Timestamp(v[0]['start']) - pd.Timestamp(ts)).total_seconds()))
         return near[0]
@@ -766,7 +793,10 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
         except Exception:
             hit = None
         if hit is None:
-            rel_o[r.uid] = '⬜ матч не найден на табло'
+            raw = str(getattr(r, 'raw', '') or '')
+            rel_o[r.uid] = ('🔴 LIVE — опубликован во время матча, не оценивается' if not (a and b) and LIVE.search(raw) else
+                            '⬜ вид спорта вне модели (ставка на спортсмена)' if re.match(r'\s*победитель\b', pick, re.I) and _person(pick) else
+                            '⬜ матч не найден на табло')
             continue
         e, flip = hit
         st_o[r.uid] = pd.Timestamp(e['start'])
