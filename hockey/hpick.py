@@ -32,6 +32,12 @@ J.SHEETS.setdefault('hk_day_pick', DP_COLS)
 P_MIN, P_MAX = 0.65, 0.80
 MAX_PICKS = 3                   # 14.11: запасное значение — лимит динамический (selflearn.max_picks)
 TARGET_MAX = 3                  # 21.11 (решение пользователя, С23а): ⭐ с ценой — до 3 в сутки, лучшие по EV
+WITHDRAW = True                 # 21.11 С2а (решение пользователя): ⭐, переставшая проходить порог, — правка или «снята — рынок против»
+
+
+def HV_P_MIN() -> float:
+    from hockey import hvalue as HV
+    return HV.P_MIN
 LMARK = {'W': '✅', 'L': '❌', 'P': '⚪'}
 
 
@@ -225,6 +231,8 @@ def _ev_line(c: dict) -> str:
 
 
 def _text(day, c: dict, rank: int, hist: list[str]) -> str:
+    if c.get('off_text'):                                    # 21.11 С2а: снятая ⭐ — текст «снята» не перезаписывается
+        return c['off_text']
     e = notify.esc
     out = [f"🏒{rank} <b>Хоккей · ставка дня</b> · 🎯 уверенная"] + ([e(c['scan'])] if c.get('scan') else []) + [_line(c, e)]  # 15.11: 🔎 печать суток
     if _ev_line(c):
@@ -328,13 +336,15 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
             if x.get('msgs'):
                 notify.delete([tuple(m) for m in x['msgs']])
             x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True, queue=False)]
-            notify.pin([tuple(m) for m in x['msgs']])
+            if not x.get('off'):                             # С2а: снятая ⭐ не закрепляется
+                notify.pin([tuple(m) for m in x['msgs']])
         CHANGED[0] = True
         log.append(f'⭐🏒 ставки на сутки: прислано заново {len(picks)}')
     for x in picks:                                          # 12.11: удалённые пользователем ставки — заново, с закрепом
         if not x.get('msgs') or not notify.alive([tuple(m) for m in x['msgs']]):    # 14.11: и не доставленные вовсе
             x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True, queue=False)]
-            notify.pin([tuple(m) for m in x['msgs']])
+            if not x.get('off'):                             # С2а: снятая ⭐ не закрепляется
+                notify.pin([tuple(m) for m in x['msgs']])
             CHANGED[0] = True
             log.append(f"⭐🏒 🏒{x['rank']} возвращена (была удалена)")
     if not picks:                                            # утром кандидатов не было — первая появившаяся = ⭐1
@@ -348,18 +358,45 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         rt['hk_dp'] = st
         return
     dp = store.read('hk_day_pick')
+    fresh = {(str(c['id']), c['market'], c['pick'], '' if c['line'] in (None, '') else f"{float(c['line']):g}"): c for c in SHADOW_ROWS}
     for x in picks:                                          # правки: лучшая линия того же матча, до начала матча
-        if pd.Timestamp(x['start_utc']) <= now:
+        if x.get('off') or pd.Timestamp(x['start_utc']) <= now:
             continue
         same = [c for c in cands if str(c['id']) == str(x['id'])]
-        if not same:
-            continue
-        mine = next((c for c in same if int(c['slot']) == int(x['slot'])), None)
-        if mine:
-            x['fire'], x['clash'] = mine['fire'], mine['clash']
-            x['fire_i'], x['clash_i'] = mine.get('fire_i', mine['fire']), mine.get('clash_i', mine['clash'])
-        top = same[0]
-        why = better(top, mine or x) if int(top['slot']) != int(x['slot']) else ''
+        f0 = fresh.get((str(x['id']), x['market'], x['pick'], '' if x.get('line') in (None, '') else f"{float(x['line']):g}"))
+        fails = (WITHDRAW and f0 is not None and not any(int(c['slot']) == int(x['slot']) for c in same)
+                 and (f0['p'] < HV_P_MIN() or f0['k'] < PK.MIN_K or f0['ev'] < PK.EV_FLOOR))
+        if fails:                                            # 21.11 С2а: ⭐ больше не проходит порог при свежей цене
+            was = (f"P {float(x['p']) * 100:.0f}% → {f0['p'] * 100:.0f}%, кф {f0['k']:.2f}".replace('.', ',')
+                   + (f", EV {float(x['ev']) * 100:+.1f}% → {f0['ev'] * 100:+.1f}%".replace('.', ',') if x.get('ev') not in (None, '') else ''))
+            r = int(x['rank'])
+            if not same:
+                ix = [i for i, q in dp.iterrows() if str(q.date) == str(day) and str(q.id) == str(x['id'])
+                      and int(_num(q.slot)) == int(x['slot']) and _blank(q.status)] if len(dp) else []
+                if ix:
+                    dp.loc[ix, ['status', 'reason']] = ['снята', f'рынок против ({was})']
+                    store.update('hk_day_pick', dp.loc[ix], ['status', 'reason'])
+                t = (f"🏒{r} <b>Хоккей · ставка дня снята</b> ❌\n{notify.esc(x['home'])} — {notify.esc(x['away'])}\n"
+                     f"<s>{notify.esc(x['label'])}</s> — рынок против: {notify.esc(was)} (в {loc:%H:%M})")
+                x.update(off=True, off_text=t)
+                if x.get('msgs'):
+                    notify.edit([tuple(m) for m in x['msgs']], t, None)
+                    notify.pin([tuple(m) for m in x['msgs']], on=False)
+                st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_blocks([t])]
+                CHANGED[0] = True
+                log.append(f'⭐🏒 ⭐{r} снята: {was}')
+                continue
+            top, why = same[0], f'рынок против: {was}'
+            mine = None
+        else:
+            if not same:
+                continue
+            mine = next((c for c in same if int(c['slot']) == int(x['slot'])), None)
+            if mine:
+                x['fire'], x['clash'] = mine['fire'], mine['clash']
+                x['fire_i'], x['clash_i'] = mine.get('fire_i', mine['fire']), mine.get('clash_i', mine['clash'])
+            top = same[0]
+            why = better(top, mine or x) if int(top['slot']) != int(x['slot']) else ''
         if not why:
             continue
         r = int(x['rank'])
@@ -399,12 +436,12 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         used = {str(x['id']) for x in picks}
         pool = sorted([c for c in cands if int(c['tier']) == TIER_PRICED and c.get('ev') is not None], key=lambda c: -float(c['ev']))
         for c in pool:
-            if len(picks) >= TARGET_MAX:
+            if sum(1 for x in picks if not x.get('off')) >= TARGET_MAX:
                 break
-            if str(c['id']) in used or pd.Timestamp(c['start_utc']) <= now or busy(c['start_utc'], [x['start_utc'] for x in picks]):
+            if str(c['id']) in used or pd.Timestamp(c['start_utc']) <= now or busy(c['start_utc'], [x['start_utc'] for x in picks if not x.get('off')]):
                 continue
             r = len(picks) + 1
-            why = f"EV {float(c['ev']) * 100:+.1f}% · {r}-я из {TARGET_MAX}".replace('.', ',')
+            why = f"EV {float(c['ev']) * 100:+.1f}% · {sum(1 for x in picks if not x.get('off')) + 1}-я из {TARGET_MAX}".replace('.', ',')
             picks.append(_publish(day, c, r, [f'➕ новая линия дня в {loc:%H:%M}: {why}']))
             store.append('hk_day_pick', [_row(day, r, c, reason=f'новая: {why}')])
             log.append(f"⭐🏒 ⭐{r} новая: {c['label']} ({why})")
@@ -450,6 +487,8 @@ def rows(dp: pd.DataFrame, d0, d1) -> dict:
     x['won'] = (x.result.astype(str) == 'W').astype(int)
     x['p'] = x.p.map(_num)
     act = x[wl & x.status.map(_blank)]
+    off_ = x[(st == 'снята') & wl]                           # 21.11 С2а: снятые ⭐ — снятие право, если ставка проиграла
+    out['off'] = (int((off_.result.astype(str) == 'L').sum()), len(off_), int((st == 'снята').sum()))
     for k, v in (('main', act[act['rank'].map(_num) == 1]), ('extra', act[act['rank'].map(_num) > 1])):
         out[k] = (int(v.won.sum()), len(v), float(v.p.mean()) if len(v) else 0.0)
     good = bad = 0                                           # первая версия против итоговой (где исходы разные)

@@ -549,6 +549,11 @@ def dp_report(dp: pd.DataFrame, title: str, day: dt.date, d0: dt.date | None = N
     g, b = rr.get('who', (0, 0))
     if g + b:
         T.append(RT.row(' права итоговая', g, g + b))
+    ow, on, oall = rr.get('off', (0, 0, 0))
+    if oall:                                              # 21.11 С2а: снятые ⭐ (рынок против) — права ли система
+        T.append(('❌ снятые ⭐', str(oall), '', ''))
+        if on:
+            T.append(RT.row(' снятие право (L)', ow, on))
     try:                                                  # 14.11: цена закрытия — рынок пошёл к нам (+) или от нас (−)
         import clv as CLV
         fin = dp[dp.status.map(_blank)] if 'status' in dp.columns else dp

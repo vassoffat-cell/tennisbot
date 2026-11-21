@@ -38,6 +38,7 @@ PRIORITY = {'screenshot': 0, 'api': 1, 'model': 2}
 SEGMENT_H = 2.0                 # 14.11 (решение пользователя): одна ставка дня на игровой отрезок — начала не ближе 2 ч
 MAX_PICKS = 3                   # 14.11: только запасное значение — лимит динамический (selflearn.max_picks)
 MAX_V2 = 8                      # 17.11 ТЗ-007 R4: защитный потолок ⭐ в сутки на вид (лимита количества нет — С7а)
+WITHDRAW = True                 # 21.11 С2а (решение пользователя): ⭐, переставшая проходить порог, — правка или «снята — рынок против»
 TARGET_MAX = 3                  # 21.11 (решение пользователя, С23а): 🎯 — до 3 в сутки, лучшие по EV (раньше одна), отрезок 2 ч — как С14
 REASON = {'исправление': 'исправлена ошибка кф скриншота', 'отказ': 'по вашему отказу', 'скриншот': 'по скриншоту', 'лучше': 'найдена лучше',
           'каперы': 'по каперам (🔥/⚔️)'}
@@ -288,6 +289,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         return 'dry'
 
     def main_text() -> str:
+        if cur.get('off_text'):                                 # 21.11 С2а: снятая ⭐ — текст «снята» не перезаписывается
+            return cur['off_text']
         best = next((c for c in cands if key(c) == list(cur.get('key', []))), None) or \
             (_revive(cur['best']) if cur.get('best') else None)
         t = _titled(text_fn(best, day, cur.get('history', []), score_fn(dp),
@@ -298,6 +301,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         return t
 
     def extra_text(x: dict) -> str:
+        if x.get('off_text'):
+            return x['off_text']
         c = next((o for o in cands if key(o) == list(x['key'])), None) or _revive(x)
         return _titled(text_fn(c, day, x.get('hist', []), ''), int(x['rank']))
 
@@ -365,7 +370,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     for h in [cur] + list(cur.get('extras') or []):
         if h.get('text') and (not h.get('msgs') or not notify.alive(h['msgs'])):   # 14.11: и не доставленные вовсе
             h['msgs'] = [list(m) for m in notify.send_markup(h['text'], None, silent=True)]
-            notify.pin(h['msgs'])
+            if not h.get('off'):                                # С2а: снятая ⭐ не закрепляется
+                notify.pin(h['msgs'])
             back += 1
     if back:
         log.append(f'возвращено удалённых ставок: {back}')
@@ -383,18 +389,50 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         events.append('⭐1 появилась')
     # 2a. правки: лучшая линия того же матча (каждая ставка — до начала своего матча)
     picks = ([dict(cur, rank=1)] if cur.get('espn_id') else []) + [dict(x) for x in (cur.get('extras') or [])]
+    fresh = {tuple(key(o)): o for o in (PK.finish(dict(o)) for o in raw) if o.get('k') and o.get('k_src') in ('api', 'screenshot')}
     for pk in picks:
         r = int(pk['rank'])
-        same = [c for c in cands if str(c['espn_id']) == str(pk['espn_id'])]
-        if pd.Timestamp(pk['start_utc']) <= now or not same:
+        if pk.get('off') or pd.Timestamp(pk['start_utc']) <= now:
             continue
+        same = [c for c in cands if str(c['espn_id']) == str(pk['espn_id'])]
+        f0 = fresh.get(tuple(pk['key']))
+        if WITHDRAW and f0 is not None and int(f0.get('tier', 9)) == 9 and not any(key(c) == list(pk['key']) for c in same):
+            # 21.11 С2а (решение пользователя): ⭐ должна проходить порог на КАЖДОЙ проверке. Свежая цена есть, а ⭐ больше не проходит
+            # (P < 0,60, кф < 1,35 или EV < −3%) → правка на лучшую линию того же матча, а если её нет — «⭐ снята — рынок против».
+            b0 = pk.get('best') or pk
+            p0 = float(pk.get('p') or 0)
+            ev0 = PK.ev(p0, b0.get('k'), b0.get('p_push') or 0.0) if b0.get('k') else None
+            was = (f"P {p0 * 100:.0f}% → {float(f0['p']) * 100:.0f}%" + (f", кф {f0['k']:.2f}".replace('.', ',') if f0.get('k') else '')
+                   + (f", EV {float(ev0) * 100:+.1f}% → {float(f0['ev']) * 100:+.1f}%".replace('.', ',') if ev0 not in (None, '') and f0.get('ev') is not None else ''))
+            if not same:
+                old_ = dict(pk.get('best') or pk, **{k: pk.get(k) for k in ('espn_id', 'label', 'p', 'match', 'slot')})
+                _log_change(store, cur, loc, f'снята: рынок против ({was})', old_, None, rank=r)
+                off_t = (f"{ICON}{r} <b>{SPORT} · ставка дня снята</b> ❌\n{notify.esc(pk.get('match', ''))}\n"
+                         f"<s>{notify.esc(pk['label'])}</s> — рынок против: {notify.esc(was)} (в {loc:%H:%M})")
+                h = cur if r == 1 else next((x for x in cur.get('extras') or [] if int(x['rank']) == r), None)
+                if h is not None:
+                    h.update(off=True, off_text=off_t, text=off_t)
+                    if h.get('msgs'):
+                        notify.edit(h['msgs'], off_t, None)
+                        notify.pin([tuple(m) for m in h['msgs']], on=False)
+                _sheet_drop(store, dp, dstr, r)
+                cur['notes'] = list(cur.get('notes', [])) + [list(m) for m in notify.send_blocks([off_t])]
+                events.append(f'{ICON}{r} снята ({was})')
+                continue
+            top = same[0]
+            why = f'рынок против: {was}'
+        else:
+            if not same:
+                continue
+            why = None
         mine = next((c for c in same if key(c) == list(pk['key'])), None)
         if mine and r > 1:                                      # ступень и синтез ⭐2/⭐3 — по свежему расчёту
             for x in cur.get('extras') or []:
                 if int(x['rank']) == r:
                     x.update(tier=mine['tier'], fire=mine.get('fire'), clash=mine.get('clash'), fire_i=mine.get('fire_i'), clash_i=mine.get('clash_i'))
-        top = same[0]
-        why = 'исправление' if (fix and r == 1) else better(top, mine or _pick_view(pk)) if key(top) != list(pk['key']) else ''
+        if why is None:
+            top = same[0]
+            why = 'исправление' if (fix and r == 1) else better(top, mine or _pick_view(pk)) if key(top) != list(pk['key']) else ''
         if not why:
             if mine and r == 1 and _changed(mine, cur.get('best') or {}):        # та же ставка, новые цифры — не правка
                 cur.update(best=_plain(mine), p=mine['p'], tier=mine['tier'])
@@ -451,8 +489,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             picks.append(dict(x))
             used.add(str(c['espn_id']))
         if getattr(PK, 'DP_LADDER', False) and picks:            # 21.11 С23а: 🎯 до TARGET_MAX в сутки — лучшие по EV, разные матчи и отрезки
-            n_t = sum(1 for x in picks if str(x.get('tier', '')).split('.')[0] != '0')
-            starts = [x.get('start_utc') for x in picks]
+            n_t = sum(1 for x in picks if str(x.get('tier', '')).split('.')[0] != '0' and not x.get('off'))
+            starts = [x.get('start_utc') for x in picks if not x.get('off')]   # С2а: отрезок снятой ⭐ свободен
             pool = sorted([c for c in cands if int(c.get('tier', 9)) not in (0, 9) and c.get('ev') is not None],
                           key=lambda c: -float(c['ev']))
             for c in pool:
@@ -609,14 +647,16 @@ def changes_rows(store: J.Store, dp: pd.DataFrame) -> list:
     if not days:
         return []
     fin = {(str(d), r): str(x) for d, r, x in zip(dp.date, rk, dp.result) if str(x) in ('W', 'L')}
-    ed = ch[~ch.reason.astype(str).str.startswith('новая') & (ch.reason.astype(str) != 'доп.')] if len(ch) else ch
+    off_ = ch[ch.reason.astype(str).str.startswith('снята')] if len(ch) else ch
+    ed = ch[~ch.reason.astype(str).str.startswith('новая') & ~ch.reason.astype(str).str.startswith('снята')
+            & (ch.reason.astype(str) != 'доп.')] if len(ch) else ch
     erk = ed['rank'].astype(str).str.strip().replace({'': '1', 'nan': '1'}) if len(ed) else pd.Series(dtype=str)
     edays = ed[erk == '1'].date.astype(str).nunique() if len(ed) else 0
     share = edays / days
     rows = [('✏️ Правки первого приговора', '', '', ''),
             rtable.row(' дни с правкой ⭐1', edays, days, mark='🟢' if share <= 0.2 else '🟡' if share <= 0.4 else '🔴')]
     if not len(ed):
-        return rows
+        return rows + _off_rows(off_)
     rows.append((' правок всего', str(len(ed)), '', ''))
     for rs, n in ed.reason.map(_reason).value_counts().items():
         rows.append((f'  {rs}'[:22], str(int(n)), '', ''))
@@ -628,4 +668,16 @@ def changes_rows(store: J.Store, dp: pd.DataFrame) -> list:
     if good + bad:
         rows.append(rtable.row(' права итоговая', good, good + bad))
         rows.append(rtable.row(' права первая', bad, good + bad))
+    return rows + _off_rows(off_)
+
+
+def _off_rows(off_: pd.DataFrame) -> list:
+    """21.11 С2а: «❌ снятые ⭐» — сколько и права ли система: снятая ставка проиграла (L) — снятие право."""
+    import rtable
+    if not len(off_):
+        return []
+    fin = off_[off_.result.astype(str).isin(['W', 'L'])]
+    rows = [('❌ Снятые ⭐ (рынок против)', str(len(off_)), '', '')]
+    if len(fin):
+        rows.append(rtable.row(' снятие право (L)', int((fin.result == 'L').sum()), len(fin)))
     return rows
