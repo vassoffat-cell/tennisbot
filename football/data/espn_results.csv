@@ -880,3 +880,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401882806,esp.1,league,ESP,SP1,2026-11-21 13:00,Alavés,Deportivo,Alaves,La Coruna,3,1,FT,2026-27-laliga,0
 401888245,tur.1,league,TUR,T1,2026-11-21 13:00,Galatasaray,Samsunspor,Galatasaray,Samsunspor,2,1,FT,2026-27-turkish-super-lig,0
 401888369,tur.1,league,TUR,T1,2026-11-21 13:00,Amed SFK,Caykur Rizespor,Amedspor,Rizespor,0,2,FT,2026-27-turkish-super-lig,0
+401874981,ita.1,league,ITA,I1,2026-11-21 14:00,Lazio,Lecce,Lazio,Lecce,3,0,FT,2026-27-italian-serie-a,0
+401875056,ita.1,league,ITA,I1,2026-11-21 14:00,Como,Cagliari,Como,Cagliari,2,0,FT,2026-27-italian-serie-a,0
