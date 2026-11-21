@@ -896,7 +896,7 @@ def merge_slips(df: pd.DataFrame, rows: list[dict]) -> tuple[pd.DataFrame, int]:
     return df, upd
 
 
-WIDE_CATCHUP = '2026-11-10'                                       # 21.11: посты с этой даты — разово в «все матчи»
+WIDE_CATCHUP = '2026-11-09'                # 21.11: повторный догон — формат 1xBet (Каппер UK) и «Кёльн»
 
 
 def wide_feed(rt: dict, chg: dict, log: list[str]) -> int:

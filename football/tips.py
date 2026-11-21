@@ -243,6 +243,7 @@ def parse_legs(sel: str, home_first: bool | None = None, teams: tuple[str, str] 
     для «ИТБ(1)», «Ф(−1)», «победа». Пусто — не распознано или рынок не наш."""
     s = sel.lower().replace('х', 'x').replace('–', '-').replace('—', '-').replace('−', '-')
     s = s.replace('обе команды забьют', 'обе забьют')               # 18.11: «Прогнозы» — «Обе команды забьют - Да»
+    s = re.sub(r'(тотал\w*|фор[аы]|забьют|-го)\.(?=\s)', r'\1', s)   # 21.11: формат 1xBet (Каппер UK) — «Фора. 2 (1.5)», «Тотал. (2) Б»
     if SKIP.search(s):
         return []
     legs: list[tuple[str, str, object]] = []
@@ -297,6 +298,10 @@ def parse_legs(sel: str, home_first: bool | None = None, teams: tuple[str, str] 
             continue
         if side and re.search(r'не\s+проигра', p):                 # «Брага не проиграет» — двойной шанс
             legs.append(('DC', '1X' if side == '1' else 'X2', ''))
+            continue
+        m = re.search(r'обе\s*забьют\s*[-:]?\s*(да|нет)\b', p)        # 21.11: купон 1xBet «Обе забьют. Да» — однозначная запись
+        if m:
+            legs.append(('BTTS', 'N' if m.group(1) == 'нет' else 'Y', ''))
             continue
         if not natural:                                           # строка без пометки «Ставка:» — только краткая запись
             continue

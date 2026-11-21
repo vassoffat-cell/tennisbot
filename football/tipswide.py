@@ -94,7 +94,8 @@ def _same(ru, en) -> bool:
     k, toks, y2 = en
     if y1 != y2:
         return False
-    if al and re.search(r'\b' + re.escape(T._fold(al)) + r'\b', k):
+    if al and any(re.search(r'\b' + re.escape(T._fold(x)) + r'\b', k)
+                  for x in (al,) + T.EN_ALT.get(T._fold(al), ())):       # 21.11: «Кёльн» = «FC Cologne» (EN_ALT, как в tips)
         return True
     return any(T._like(w, x) for w in ws for x in toks)
 
