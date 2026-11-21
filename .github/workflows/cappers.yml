@@ -9,6 +9,10 @@ on:
         description: 'Тест уведомления каперов (1)'
         default: ''
         required: false
+      cap_resend:
+        description: 'Прислать заново прогнозы постов: src:post_id через запятую (21.11)'
+        default: ''
+        required: false
 permissions:
   contents: write
   actions: write
@@ -45,6 +49,7 @@ jobs:
           TENNIS_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
           CAP_TEST: ${{ github.event.inputs.cap_test }}
+          CAP_RESEND: ${{ github.event.inputs.cap_resend }}
           GH_TOKEN: ${{ github.token }}                   # 16.11: сторож ключевых часов читает прогоны daily/football (actions: read)
       - name: Save data
         if: always()

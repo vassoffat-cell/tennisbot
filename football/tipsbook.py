@@ -821,6 +821,13 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     import tipswide as W
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     sent = set(rt.get('tips_alerted', [])) | set(rt.get('gl_alerted', []))
+    import os
+    resend = {x.strip() for x in os.getenv('CAP_RESEND', '').split(',') if x.strip()}   # 21.11: повтор по просьбе пользователя
+    if resend and len(df):
+        ru = set(df.uid[(df.src.astype(str) + ':' + df.post_id.astype(str)).isin(resend)])
+        sent -= ru
+        rt['tips_alerted'] = [u for u in rt.get('tips_alerted', []) if u not in ru]
+        log.append(f'👥 повтор по просьбе: постов {len(resend)}, строк {len(ru)}')
     if len(df):                                                   # 21.11: пересборка книги дала посту новый uid (купон вместо текста) —
         pk = df.src.astype(str) + ':' + df.post_id.astype(str)    # пост уже присылался → новый uid тоже считается присланным
         old = pd.to_datetime(df.post_ts, errors='coerce') < now - pd.Timedelta(hours=14)
