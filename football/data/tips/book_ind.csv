@@ -79,7 +79,7 @@ xs_stavkii:7955:1,,,,,,нет данных,,,
 xs_stavkii:7958:0,,,,,,матч не найден,,,
 xs_stavkii:7958:1,,,,,,матч не найден,,,
 xs_stavkii:7958:2,401878768,Arsenal,Everton,DC:1X:|TOT:U:3.5,1X + ТМ3.5,,FT,W,2026-11-17
-xs_stavkii:7958:4,,,,,,матч не найден,,,
+xs_stavkii:7958:4,401884756,FC Cologne,Schalke 04,AH:H:0.0,Ф1(+0),,FT,P,2026-11-21
 xs_stavkii:7958:6,401880208,Blackburn Rovers,Wrexham,TOT:O:2.0,ТБ2,,FT,P,2026-11-17
 xs_stavkii:7958:8,401874948,Napoli,AS Roma,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
 xs_stavkii:7958:9,,,,,,нет данных,,,
@@ -222,7 +222,7 @@ stavki_na_sport_betting1:slip:342105310:0,401915568,RB Salzburg,AC Milan,AH:A:0.
 stavki_na_sport_betting1:slip:342191438:0,401915563,TSG Hoffenheim,Besiktas,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-17
 stavki_na_sport_betting1:slip:342297580:0,401915562,Benfica,Celtic,TOT:O:3.0,ТБ3,,FT,W,2026-11-17
 stavki_na_sport_betting1:slip:342468084:0,401915560,Celta Vigo,Juventus,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-17
-stavki_na_sport_betting1:slip:343884799:0,,,,,,матч не найден,,,
+stavki_na_sport_betting1:slip:343884799:0,401884770,Eintracht Frankfurt,FC Cologne,TOT:O:3.0,ТБ3,,FT,L,2026-11-21
 stavki_na_sport_betting1:19136:s0,401882846,Real Betis,Barcelona,1X2:A:|BTTS:Y:,П2 + ОЗ да,,FT,W,2026-11-17
 stavki_na_sport_betting1:slip:345390921:0,401879262,Brentford,Liverpool,DC:12:,12,,FT,W,2026-11-17
 stavki_na_sport_betting1:slip:347097487:0,401876435,Lorient,AS Monaco,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-17
@@ -350,7 +350,7 @@ kapper_uk:22694:0,,,,,,нет данных,,,
 kapper_uk:22693:0,401879805,Rostov,Krylia Sovetov,TOT:O:2.0,ТБ2,,FT,W,2026-11-20
 xs_stavkii:8034:1,401879805,Rostov,Krylia Sovetov,TOT:O:2.0,ТБ2,,FT,W,2026-11-20
 xs_stavkii:8034:3,401878937,Cercle Brugge KSV,KVC Westerlo,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-20
-kapper_uk:22703:0,,,,,,матч не найден,,,
+kapper_uk:22703:0,401884736,Bayern Munich,FC Cologne,AH:A:3.5,Ф2(+3.5),,FT,W,2026-11-21
 kapper_uk:22702:0,,,,,,нет данных,,,
 kapper_uk:22705:0,401900905,Al Ahli,Al Nassr,AH:A:0.0,Ф2(+0),,FT,L,2026-11-21
 stavki_na_sport_betting1:slip:345191405:0,,,,,,нет данных,,,

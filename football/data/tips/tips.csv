@@ -1,4 +1,4 @@
 uid,src,author,post_ts,seen_ts,espn_id,comp_name,start_utc,home,away,legs,label,k,p_model,agree,raw,status,result,settled
 tg:kapper_uk:22700:0:401882805,kapper_uk,Каппер UK,2026-11-20 10:22,2026-11-20 17:16,401882805,Ла Лига,2026-11-20 20:00,Athletic Club,Espanyol,AH:A:1.5,Ф2(+1.5),1.59,0.6915,1,Фора. 2 (1.5) кф 1.595,FT,W,2026-11-21
 tg:kapper_uk:22703:0:401884736,kapper_uk,Каппер UK,2026-11-20 13:03,2026-11-20 17:16,401884736,Бундеслига,2026-11-20 19:30,Bayern Munich,FC Cologne,AH:A:3.5,Ф2(+3.5),1.59,0.6896,1,Фора. 2 (3.5) кф 1.594,FT,W,2026-11-21
-tg:stavki_na_sport_betting1:slip:404579577:0:401882805,stavki_na_sport_betting1,Green Line,2026-11-20 10:27,2026-11-21 05:15,401882805,Ла Лига,2026-11-20 20:00,Athletic Club,Espanyol,IT2:O:0.5,ИТ2 Б0.5,1.63,0.5472,0,эспаньол ИТБ(0.5),FT,W,2026-11-21
+tg:stavki_na_sport_betting1:19831:slip_404579577_0:401882805,stavki_na_sport_betting1,Green Line,2026-11-20 10:27,2026-11-21 06:22,401882805,Ла Лига,2026-11-20 20:00,Athletic Club,Espanyol,IT2:O:0.5,ИТ2 Б0.5,1.63,0.5472,0,эспаньол ИТБ(0.5),,,
