@@ -894,3 +894,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401879236,eng.1,league,ENG,E0,2026-11-21 15:00,Chelsea,Leeds United,Chelsea,Leeds,1,4,FT,2026-27-english-premier-league,0
 401879238,eng.1,league,ENG,E0,2026-11-21 15:00,AFC Bournemouth,Nottingham Forest,Bournemouth,Nott'm Forest,2,0,FT,2026-27-english-premier-league,0
 401931805,por.taca.portugal,cup,POR,P1,2026-11-21 15:00,AVS,Tondela,AVS,Tondela,1,5,FT,4th-round,0
+401882799,esp.1,league,ESP,SP1,2026-11-21 15:15,Rayo Vallecano,Valencia,Vallecano,Valencia,0,1,FT,2026-27-laliga,0
+401875541,ned.1,league,NED,N1,2026-11-21 15:30,NEC Nijmegen,PSV Eindhoven,Nijmegen,PSV Eindhoven,1,4,FT,regular-season,0
