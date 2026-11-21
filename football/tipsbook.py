@@ -609,8 +609,9 @@ def ours(r, fx: dict) -> tuple | None:
         tm = (e['away'], e['home']) if flip else (e['home'], e['away'])
         pick = str(r.pick)
         legs = []
-        if not (W.EXOT.search(pick) or T.SKIP.search(pick.lower())):   # таймы, фолы, угловые — не счёт матча
-            legs = T.parse_legs(pick, None, tm, True) or T.parse_legs(_pick_short(pick, r.a, r.b, 'football'), None, tm, True)
+        if not _off_score(pick):                                  # фолы, угловые — не счёт матча (таймы — К17, по счёту таймов)
+            legs = T.parse_legs(pick, None, tm, True) or ([] if 'тайм' in pick.lower() else
+                                                          T.parse_legs(_pick_short(pick, r.a, r.b, 'football'), None, tm, True))
         if legs and any(mk in ('TOT', 'IT1', 'IT2') and isinstance(L, float) and L > 7.5 for mk, _, L in legs):
             legs = []
         return eid, e, (W._flip(legs) if flip and legs else legs)
@@ -657,16 +658,27 @@ def _event_of(a: str, b: str, pick: str, ts, cache: dict) -> tuple[dict, bool] |
 def _legs_for(pick: str, a: str, b: str, tm: tuple[str, str], flip: bool) -> list:
     """Ноги ставки в порядке хозяева/гости; [] — рынок вне модели счёта (таймы, фолы, угловые …)."""
     import tipswide as W
-    if W.EXOT.search(pick) or T.SKIP.search(pick.lower()):
+    if _off_score(pick):
         return []
-    legs = T.parse_legs(pick, None, tm, True) or (T.parse_legs(_pick_short(pick, a, b, 'football'), None, tm, True) if a and b else [])
+    legs = T.parse_legs(pick, None, tm, True) or (T.parse_legs(_pick_short(pick, a, b, 'football'), None, tm, True)
+                                                  if a and b and 'тайм' not in pick.lower() else [])
     if legs and any(mk in ('TOT', 'IT1', 'IT2') and isinstance(L, float) and L > 7.5 for mk, _, L in legs):
         return []
     import tipswide as W2
     return W2._flip(legs) if flip and legs else legs
 
 
+def _off_score(pick: str) -> bool:
+    """Рынок не по счёту голов (фолы, угловые, карточки …). 21.11 К17: таймы — по счёту таймов, не «вне модели»."""
+    import tipswide as W
+    import halves as HV
+    p = str(pick).lower()
+    return bool(W.EXOT.search(p) or HV.OTHER.search(p) or (T.SKIP.search(p) and 'тайм' not in p))
+
+
 def _verdict(p: float, src: str = 'система') -> str:
+    if p != p:                                                    # nan — сочетание таймов, которое модель не считает
+        return '⬜ рынок вне модели'
     tag = {'система': ('🔥 система согласна', '⚔️ система против', '· система нейтральна'),
            'рынок': ('🔥 рынок за', '⚔️ рынок против', '· рынок нейтрален')}[src]
     return (f'{tag[0]} (P {p * 100:.0f}%)' if p >= 0.55 else f'{tag[1]} (P {p * 100:.0f}%)' if p <= 0.45 else f'{tag[2]} (P {p * 100:.0f}%)')
@@ -707,7 +719,7 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
                 st_o[r.uid] = pd.Timestamp(e['start'])
                 if st_o[r.uid] >= now:
                     rel_o[r.uid] = _verdict(T.p_legs(np.asarray(e['P'], float), legs)) if legs else \
-                        '⬜ наш матч, рынок вне модели (таймы, фолы, угловые…)'
+                        '⬜ наш матч, рынок вне модели (фолы, угловые…)'
                 continue
         try:
             hit = _event_of(a, b, pick, ts, cache)
@@ -723,7 +735,7 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
         if str(e['id']) in fx:                                    # ① наш матч, найденный по одной команде
             legs = _legs_for(pick, a, b, (e['away'], e['home']) if flip else (e['home'], e['away']), flip)
             P = np.asarray(fx[str(e['id'])]['P'], float)
-            rel_o[r.uid] = _verdict(T.p_legs(P, legs)) if legs else '⬜ наш матч, рынок вне модели (таймы, фолы, угловые…)'
+            rel_o[r.uid] = _verdict(T.p_legs(P, legs)) if legs else '⬜ наш матч, рынок вне модели (фолы, угловые…)'
             continue
         legs = _legs_for(pick, a, b, (e['away'], e['home']) if flip else (e['home'], e['away']), flip)
         od = e.get('odds') or {}
@@ -731,7 +743,7 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
         if inv is None:
             rel_o[r.uid] = '⬜ лига вне модели, цен нет'
         elif not legs:
-            rel_o[r.uid] = '⬜ рынок вне модели (таймы, фолы, угловые…)'
+            rel_o[r.uid] = '⬜ рынок вне модели (фолы, угловые…)'
         else:
             rel_o[r.uid] = _verdict(T.p_legs(dc.score_matrix(inv['lh'], inv['la'], C_RHO()), legs), 'рынок')
     return rel_o, st_o
@@ -896,7 +908,7 @@ def merge_slips(df: pd.DataFrame, rows: list[dict]) -> tuple[pd.DataFrame, int]:
     return df, upd
 
 
-WIDE_CATCHUP = '2026-11-09'                # 21.11: повторный догон — формат 1xBet (Каппер UK) и «Кёльн»
+WIDE_CATCHUP = '2026-11-08'                # 21.11: догон — ставки на таймы (К17), формат 1xBet, «Кёльн»
 
 
 def wide_feed(rt: dict, chg: dict, log: list[str]) -> int:

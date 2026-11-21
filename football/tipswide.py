@@ -156,8 +156,11 @@ FLIP = {('1X2', 'H'): 'A', ('1X2', 'A'): 'H', ('DC', '1X'): 'X2', ('DC', 'X2'): 
 
 def _flip(legs):
     out = []
+    import halves as HV
     for mk, s, L in legs:
-        if mk in ('IT1', 'IT2'):
+        if HV.is_half(mk):                                         # 21.11 К17: ставки на таймы
+            out.append(HV.flip((mk, s, L), lambda lg: _flip([lg])[0]))
+        elif mk in ('IT1', 'IT2'):
             out.append(('IT2' if mk == 'IT1' else 'IT1', s, L))
         else:
             out.append((mk, FLIP.get((mk, s), s), L))
@@ -406,7 +409,11 @@ def settle(log: list[str], max_days: int = 40) -> int:
                     df.loc[i, ['status', 'result', 'settled']] = ['VOID', 'P', today]   # пропал / не доигран 4 дня — возврат
                 continue
             ft = e['kind'] == 'FT'
-            v = T.settle_legs(T._dec(r.legs), e['kind'], int(e['hg']) if ft else None, int(e['ag']) if ft else None)
+            v = T.settle_legs(T._dec(r.legs), e['kind'], int(e['hg']) if ft else None, int(e['ag']) if ft else None, r.espn_id)
+            if not v:                                              # таймы: счёта таймов ещё нет — следующим прогоном
+                if pd.Timestamp(r.start_utc) >= now - pd.Timedelta(days=4):
+                    continue
+                v = 'P'                                            # 4 дня без счёта таймов — возврат (не висеть вечно)
             df.loc[i, ['status', 'result', 'settled']] = [e['kind'], v, today]
             n += 1
     save(df)
@@ -573,10 +580,10 @@ def book_ind(log: list[str], days: int = 45) -> int:
                     legs = _flip(legs) if flip else legs
                     rec.update(espn_id=str(e['id']), home=e['home'], away=e['away'], legs=T._enc(legs),
                                label=' + '.join(T.leg_label(lg) for lg in legs))
-                    if e.get('kind'):
-                        ft = e['kind'] == 'FT'
-                        rec.update(status=e['kind'], result=T.settle_legs(legs, e['kind'], int(e['hg']) if ft else None,
-                                                                        int(e['ag']) if ft else None), settled=f'{now:%Y-%m-%d}')
+                    v = T.settle_legs(legs, e['kind'], int(e['hg']) if e['kind'] == 'FT' else None,
+                                      int(e['ag']) if e['kind'] == 'FT' else None, e['id']) if e.get('kind') else ''
+                    if v:
+                        rec.update(status=e['kind'], result=v, settled=f'{now:%Y-%m-%d}')
                         n += 1
         if r.uid in rows:
             out[rows[r.uid]] = rec

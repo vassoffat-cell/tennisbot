@@ -244,6 +244,10 @@ def parse_legs(sel: str, home_first: bool | None = None, teams: tuple[str, str] 
     s = sel.lower().replace('х', 'x').replace('–', '-').replace('—', '-').replace('−', '-')
     s = s.replace('обе команды забьют', 'обе забьют')               # 18.11: «Прогнозы» — «Обе команды забьют - Да»
     s = re.sub(r'(тотал\w*|фор[аы]|забьют|-го)\.(?=\s)', r'\1', s)   # 21.11: формат 1xBet (Каппер UK) — «Фора. 2 (1.5)», «Тотал. (2) Б»
+    import halves as HV                                            # 21.11 К17: ставки на таймы — свой разбор
+    hv = HV.parse(s, home_first, teams, natural, parse_legs, find_teams)
+    if hv is not None:
+        return hv
     if SKIP.search(s):
         return []
     legs: list[tuple[str, str, object]] = []
@@ -325,6 +329,9 @@ def odds_in(sel: str) -> float | None:
 
 def leg_label(leg) -> str:
     import daypick
+    import halves as HV
+    if HV.is_half(leg[0]):
+        return HV.label(leg, daypick.label)
     return daypick.label(leg[0], leg[1], leg[2])
 
 
@@ -348,7 +355,11 @@ def masks(P: np.ndarray, leg) -> tuple[np.ndarray, np.ndarray]:
 
 
 def p_legs(P: np.ndarray, legs) -> float:
-    """P выигрыша связки без возвратов: W / (W + L) по матрице счёта (как в расчёте: возврат в точность не входит)."""
+    """P выигрыша связки без возвратов: W / (W + L) по матрице счёта (как в расчёте: возврат в точность не входит).
+    21.11 К17: ставки на таймы — по матрицам таймов (halves.p_legs)."""
+    import halves as HV
+    if HV.any_half(legs):
+        return HV.p_legs(P, legs, p_legs)
     w = np.ones(P.shape, bool)
     lose = np.zeros(P.shape, bool)
     for lg in legs:
@@ -359,7 +370,11 @@ def p_legs(P: np.ndarray, legs) -> float:
     return pw / (pw + pl) if pw + pl > 0 else 0.0
 
 
-def settle_legs(legs, kind: str, hg, ag) -> str:
+def settle_legs(legs, kind: str, hg, ag, eid=None) -> str:
+    """'W'/'L'/'P'; для ставок на таймы '' — счёта таймов пока нет (строку не закрывать, повтор следующим прогоном)."""
+    import halves as HV
+    if HV.any_half(legs):
+        return HV.settle(legs, kind, eid, FL.settle)
     rs = [FL.settle(mk, s, L, kind, hg, ag) for mk, s, L in legs]
     return 'L' if 'L' in rs else 'P' if 'P' in rs else 'W'
 
@@ -539,7 +554,9 @@ def settle(res: dict) -> int:
             continue
         st, hg, ag = x
         ft = st == 'FT'
-        v = settle_legs(_dec(r.legs), st, int(hg) if ft else None, int(ag) if ft else None)
+        v = settle_legs(_dec(r.legs), st, int(hg) if ft else None, int(ag) if ft else None, r.espn_id)
+        if not v:
+            continue
         df.loc[i, ['status', 'result', 'settled']] = [st, v, today]
         n += 1
     save(df)
@@ -620,7 +637,10 @@ def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line, soft: bo
         pass
     softs |= trust
     bad_s = good_s = 0
+    import halves as HV
     for r in d.itertuples(index=False):
+        if HV.any_half(_dec(r.legs)):                        # ставка на тайм — к линиям матча не прикладывается
+            continue
         m = np.ones(P.shape, bool)
         for lg in _dec(r.legs):
             m &= masks(P, lg)[0]
