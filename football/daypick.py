@@ -214,16 +214,17 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
         import tips
         keep = []
         for o in out:
-            good, bad_any, bad, good_t = tips.relation(o['espn_id'], DISTS.get(o['espn_id']), o['market'], o['pick'], o['line'])
+            good, bad_any, bad, good_t, bad_s, good_s = tips.relation(o['espn_id'], DISTS.get(o['espn_id']), o['market'], o['pick'],
+                                                                      o['line'], soft=True)
             o['tips_for'] = good
-            # 19.11 (решение пользователя, «взгляд со стороны» п.1): выбор ⭐ двигают только ✔ доказанные каналы (fire/clash);
-            # 🔥/⚔️ остальных — только значок в тексте (fire_i/clash_i)
+            # 19.11 Г3а: выбор ⭐ двигают ✔ доказанные каналы; 21.11 Г3б (решение пользователя «оба»): и близкие к ✔ (n ≥ 50, z ≥ 1,0,
+            # ROI > 0) — 🔥 поднимает, ⚔️ опускает, без вето; вето — только ✔. 🔥/⚔️ остальных — значок (fire_i/clash_i)
             o['fire_i'], o['clash_i'] = bool(good and not bad_any), bool(bad_any)
-            o['fire'], o['clash'] = bool(good_t and not bad), bool(bad)
-            if bad:
-                log.append(f"👥 вето: {o['home']} — {o['away']} {o['label']} (против надёжного капера)")
-            else:
-                keep.append(o)
+            o['fire'], o['clash'] = bool(good_s and not bad_s), bool(bad_s)
+            o['veto'] = bool(bad)
+            if bad:                                        # 21.11 С2а: вето не выбрасывает сторону — dpcore исключает её из выбора
+                log.append(f"👥 вето: {o['home']} — {o['away']} {o['label']} (против надёжного капера)")   # и снимает объявленную ⭐
+            keep.append(o)
         out = keep
     except Exception as e:
         log.append(f'👥 каперы в ставке дня: сбой {e.__class__.__name__}')

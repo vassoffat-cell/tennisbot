@@ -166,6 +166,18 @@ def capper(sport: str, src: str) -> str:
     return str(((load(sport).get('cappers') or {}).get(str(src)) or {}).get('status', ''))
 
 
+N_SOFT, Z_SOFT = 50, 1.0          # 21.11 Г3б (решение пользователя «оба»): мягкое влияние — канал близко к ✔
+
+
+def capper_soft(sport: str, src: str) -> bool:
+    """Канал влияет на выбор ⭐ (🔥 поднимает, ⚔️ опускает, без вето): ✔ доказан ИЛИ не ⛔ и n ≥ 50, z ≥ 1,0, ROI > 0."""
+    x = (load(sport).get('cappers') or {}).get(str(src)) or {}
+    st = str(x.get('status', ''))
+    if st == 'proven':
+        return True
+    return st != 'weak' and int(x.get('n', 0) or 0) >= N_SOFT and float(x.get('z', 0) or 0) >= Z_SOFT and float(x.get('roi', 0) or 0) > 0
+
+
 # ───────────────────────────── данные ─────────────────────────────
 def _num(x) -> float:
     try:

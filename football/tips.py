@@ -594,23 +594,27 @@ def match_line(espn_id: str, trust: set[str] | None = None) -> str:
     return '👥 ' + ' | '.join(parts[:4])
 
 
-def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int, int, int]:
+def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line, soft: bool = False) -> tuple:
     """Синтез модели и каперов по линии (market, pick, line) матча: (🔥 поддержка, ⚔️ конфликт, ⚔️ конфликт надёжных).
     Поддержка — их ставка делает нашу линию вероятнее: P(наша | их) ≥ P(наша) + 0,10 или ≥ 0,95 (ТБ2.5 у них → наш ТБ1.5);
     конфликт — совместная P по матрице счёта < 5% (их ТМ2.5 против нашего ТБ2.5)."""
     d = for_match(espn_id)
     if d.empty or P is None:
-        return 0, 0, 0, 0
+        return (0, 0, 0, 0, 0, 0) if soft else (0, 0, 0, 0)
     trust = trusted()
+    softs: set = set()
     ours = masks(P, (market, pick, '' if line in (None, '') or str(line) in ('nan', 'None') else float(line)))[0]
     p0 = float(P[ours].sum())
     good = bad = bad_t = good_t = 0
     try:                                                     # 🧠 самообучение: ⛔ слабый канал не учитывается, ✔ доказанный — вето
         import selflearn as SL
         trust = trust | {s for s in set(d.src) if SL.capper('football', s) == 'proven'}
+        softs = {s for s in set(d.src) if SL.capper_soft('football', s)}    # 21.11 Г3б: близкие к ✔ — мягкое влияние
         d = d[d.src.map(lambda s: SL.capper('football', s) != 'weak')]
     except Exception:
         pass
+    softs |= trust
+    bad_s = good_s = 0
     for r in d.itertuples(index=False):
         m = np.ones(P.shape, bool)
         for lg in _dec(r.legs):
@@ -622,10 +626,12 @@ def relation(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple
         if joint < 0.05:
             bad += 1
             bad_t += int(r.src in trust)
+            bad_s += int(r.src in softs)
         elif joint / pt >= min(0.95, p0 + 0.10):
             good += 1
             good_t += int(r.src in trust)
-    return good, bad, bad_t, good_t
+            good_s += int(r.src in softs)
+    return (good, bad, bad_t, good_t, bad_s, good_s) if soft else (good, bad, bad_t, good_t)
 
 
 def conflicts(espn_id: str, P: np.ndarray, market: str, pick: str, line) -> tuple[int, int]:

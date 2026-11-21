@@ -62,8 +62,18 @@ def _syn(c: dict, tp: pd.DataFrame) -> tuple[int, int, int, int]:
         t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) != 'weak')]
     fire = int((t.pick.astype(str) == str(c['pick'])).any())
     clash = int((t.pick.astype(str) != str(c['pick'])).any())
-    tt = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) == 'proven')] if len(t) and 'src' in t.columns else t.iloc[0:0]
+    # 21.11 Г3б: выбор ⭐ двигают ✔ доказанные И близкие к ✔ (n ≥ 50, z ≥ 1,0, ROI > 0) каналы
+    tt = t[t.src.astype(str).map(lambda s: SL.capper_soft('hockey', s))] if len(t) and 'src' in t.columns else t.iloc[0:0]
     return int((tt.pick.astype(str) == str(c['pick'])).any()), int((tt.pick.astype(str) != str(c['pick'])).any()), fire, clash
+
+
+def _proven_clash(c: dict, tp: pd.DataFrame) -> bool:
+    """21.11 Г3б / С2а: против линии стоит ✔ доказанный капер (тот же матч и рынок, другой выбор) — повод снять ⭐."""
+    if tp is None or not len(tp) or 'src' not in tp.columns:
+        return False
+    t = tp[(tp.game_id.astype(str) == str(c['id'])) & (tp.market.astype(str) == str(c['market']))]
+    t = t[t.src.astype(str).map(lambda s: SL.capper('hockey', s) == 'proven')]
+    return bool((t.pick.astype(str) != str(c['pick'])).any())
 
 
 def stale(games: pd.DataFrame | None, row: dict) -> bool:
@@ -364,10 +374,14 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
             continue
         same = [c for c in cands if str(c['id']) == str(x['id'])]
         f0 = fresh.get((str(x['id']), x['market'], x['pick'], '' if x.get('line') in (None, '') else f"{float(x['line']):g}"))
+        vet = WITHDRAW and _proven_clash(x, tp)              # 21.11 Г3б: ✔ капер против объявленной ⭐
         fails = (WITHDRAW and f0 is not None and not any(int(c['slot']) == int(x['slot']) for c in same)
-                 and (f0['p'] < HV_P_MIN() or f0['k'] < PK.MIN_K or f0['ev'] < PK.EV_FLOOR))
+                 and (f0['p'] < HV_P_MIN() or f0['k'] < PK.MIN_K or f0['ev'] < PK.EV_FLOOR)) or vet
+        if vet:
+            same = [c for c in same if int(c['slot']) != int(x['slot']) and not _proven_clash(c, tp)]
+            f0 = f0 or dict(p=float(x['p']), k=float(x.get('k') or 0), ev=float(x.get('ev') or 0))
         if fails:                                            # 21.11 С2а: ⭐ больше не проходит порог при свежей цене
-            was = (f"P {float(x['p']) * 100:.0f}% → {f0['p'] * 100:.0f}%, кф {f0['k']:.2f}".replace('.', ',')
+            was = ('капер ✔ против; ' if vet else '') + (f"P {float(x['p']) * 100:.0f}% → {f0['p'] * 100:.0f}%, кф {f0['k']:.2f}".replace('.', ',')
                    + (f", EV {float(x['ev']) * 100:+.1f}% → {f0['ev'] * 100:+.1f}%".replace('.', ',') if x.get('ev') not in (None, '') else ''))
             r = int(x['rank'])
             if not same:

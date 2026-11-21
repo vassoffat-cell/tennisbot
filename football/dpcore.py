@@ -262,7 +262,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
 
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     raw = _dedupe(offers_fn(items, off, day, log) + [_revive(o) for o in cur.get('shots', []) if pd.Timestamp(o['start_utc']) > now])
-    cands = [o for o in PK.choose(raw) if o['market'] not in off]
+    cands = [o for o in PK.choose(raw) if o['market'] not in off and not o.get('veto')]   # 21.11: вето ✔ капера — вне выбора
     cands = SL.reorder(_sk(), cands)                            # 🧠 пониженные сегменты — в конец очереди
     snap_prices(rt, cur, cands, now)                            # 📈 последняя цена рынка до начала — для CLV
     if not dry:
@@ -396,7 +396,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             continue
         same = [c for c in cands if str(c['espn_id']) == str(pk['espn_id'])]
         f0 = fresh.get(tuple(pk['key']))
-        if WITHDRAW and f0 is not None and int(f0.get('tier', 9)) == 9 and not any(key(c) == list(pk['key']) for c in same):
+        if WITHDRAW and f0 is not None and (int(f0.get('tier', 9)) == 9 or f0.get('veto')) and not any(key(c) == list(pk['key']) for c in same):
             # 21.11 С2а (решение пользователя): ⭐ должна проходить порог на КАЖДОЙ проверке. Свежая цена есть, а ⭐ больше не проходит
             # (P < 0,60, кф < 1,35 или EV < −3%) → правка на лучшую линию того же матча, а если её нет — «⭐ снята — рынок против».
             b0 = pk.get('best') or pk
@@ -404,11 +404,13 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             ev0 = PK.ev(p0, b0.get('k'), b0.get('p_push') or 0.0) if b0.get('k') else None
             was = (f"P {p0 * 100:.0f}% → {float(f0['p']) * 100:.0f}%" + (f", кф {f0['k']:.2f}".replace('.', ',') if f0.get('k') else '')
                    + (f", EV {float(ev0) * 100:+.1f}% → {float(f0['ev']) * 100:+.1f}%".replace('.', ',') if ev0 not in (None, '') and f0.get('ev') is not None else ''))
+            if f0.get('veto'):                                  # 21.11 Г3б: против ⭐ встал ✔ доказанный капер
+                was = f"капер ✔ против · P {float(f0['p']) * 100:.0f}%" + (f", кф {f0['k']:.2f}".replace('.', ',') if f0.get('k') else '')
             if not same:
                 old_ = dict(pk.get('best') or pk, **{k: pk.get(k) for k in ('espn_id', 'label', 'p', 'match', 'slot')})
-                _log_change(store, cur, loc, f'снята: рынок против ({was})', old_, None, rank=r)
+                _log_change(store, cur, loc, f"снята: {was if f0.get('veto') else f'рынок против ({was})'}", old_, None, rank=r)
                 off_t = (f"{ICON}{r} <b>{SPORT} · ставка дня снята</b> ❌\n{notify.esc(pk.get('match', ''))}\n"
-                         f"<s>{notify.esc(pk['label'])}</s> — рынок против: {notify.esc(was)} (в {loc:%H:%M})")
+                         f"<s>{notify.esc(pk['label'])}</s> — {'' if f0.get('veto') else 'рынок против: '}{notify.esc(was)} (в {loc:%H:%M})")
                 h = cur if r == 1 else next((x for x in cur.get('extras') or [] if int(x['rank']) == r), None)
                 if h is not None:
                     h.update(off=True, off_text=off_t, text=off_t)
@@ -420,7 +422,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 events.append(f'{ICON}{r} снята ({was})')
                 continue
             top = same[0]
-            why = f'рынок против: {was}'
+            why = was if f0.get('veto') else f'рынок против: {was}'
+
         else:
             if not same:
                 continue
