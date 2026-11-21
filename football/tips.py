@@ -109,7 +109,7 @@ ALIAS = {
     'аль-наср': 'al nassr', 'аль наср': 'al nassr', 'аль-ахли': 'al ahli', 'аль ахли': 'al ahli', 'аль-хиляль': 'al hilal',
     'аль хиляль': 'al hilal', 'аль-иттихад': 'al ittihad', 'аль иттихад': 'al ittihad', 'андорра': 'andorra', 'леганес': 'leganes',
     'мю': 'manchester united', 'ман юнайтед': 'manchester united', 'манчестер юнайтед': 'manchester united',
-    'ман сити': 'manchester city', 'манчестер сити': 'manchester city', 'сити': 'manchester city',
+    'ман сити': 'manchester city', 'мансити': 'manchester city', 'манюнайтед': 'manchester united', 'манчестер юнайтед': 'manchester united', 'манчестер сити': 'manchester city', 'сити': 'manchester city',
     'юнайтед': 'manchester united', 'челси': 'chelsea', 'ливерпуль': 'liverpool', 'арсенал': 'arsenal',
     'тоттенхэм': 'tottenham', 'тоттенхем': 'tottenham', 'вулверхэмптон': 'wolverhampton', 'вулверхэмптон уондерерс': 'wolverhampton',
     'вулвз': 'wolverhampton', 'брайтон': 'brighton', 'ноттингем': 'nottingham', 'ноттингем форест': 'nottingham',

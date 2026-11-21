@@ -22,7 +22,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
-VERSION = 14                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 15                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -49,12 +49,34 @@ MARKET = re.compile(r'шайб|минимум|забь[её]т|забьют|об
                     re.I)
 
 
+EXPLICIT = [('hockey', r'🏒|хокке|\bкхл\b|\bнхл\b|\bвхл\b|\bмхл\b|шайб|\bnhl\b|\bkhl\b'),
+            ('tennis', r'🎾|теннис|\batp\b|\bwta\b|\bitf\b|тай-?брейк'),
+            ('basketball', r'🏀|баскет|\bnba\b|\bнба\b'),
+            ('volleyball', r'🏐|волейб'),
+            ('esports', r'кибер|\bcs ?2\b|\bdota\b|дота|valorant'),
+            ('football', r'⚽|футбол|премьер[- ]?лиг|\bапл\b|ла лиг|серия a|бундеслиг|лига чемпионов|лига европы|\bрпл\b|\bфнл\b|\bгол')]
+
+
+def _whole(rx: str, low: str) -> bool:
+    """Совпадение целым словом (21.11: «трактористы» — прозвище «Ипсвича» — совпадало с хоккейным «Трактором»)."""
+    for m in re.finditer(rx, low):
+        a, b = m.start(), m.end()
+        if (a == 0 or not low[a - 1].isalpha()) and (b == len(low) or not low[b].isalpha() or not m.group(0)[-1:].isalpha()):
+            return True
+    return False
+
+
 def sport_of(text: str) -> str:
+    """21.11: сначала явные признаки вида (значок ⚽/🏒/🎾, «хоккей», «Премьер-лига», КХЛ …) — один вид → он; затем названия
+    клубов — только целым словом. Раньше клуб по части слова перебивал явный ⚽ (Тоттенхэм — Ипсвич ушёл в хоккей)."""
     low = text.lower()
+    found = [sp for sp, rx in EXPLICIT if re.search(rx, low)]
+    if len(found) == 1:
+        return found[0]
     for sp, rx in SPORTS:
-        if re.search(rx, low):
+        if (sp in found or not found) and (_whole(rx, low) if sp == 'hockey' else re.search(rx, low)):   # клубы НХЛ/КХЛ — целым словом
             return sp
-    return 'other'
+    return found[0] if found else 'other'
 
 
 def self_mark(s: str) -> str:
@@ -627,7 +649,18 @@ def pair_of(r, df: pd.DataFrame) -> tuple[str, str]:
     return (sib.a.iloc[0], sib.b.iloc[0]) if len(sib) else ('', '')
 
 
-def _event_of(a: str, b: str, pick: str, ts, cache: dict) -> tuple[dict, bool] | None:
+def _pair_text(raw: str, events) -> tuple[str, str]:
+    """21.11 (Грозный 13133: «Победа МанСити и ТБ (1.5)», в тексте «Манчестер Сити» и «Фулхэм» без тире): пара команд одного
+    матча, обе названные в тексте поста. Одно событие — пара; несколько или ни одного — пусто (без догадок)."""
+    hits = []
+    for e in events:
+        pos = T.find_teams(raw, [e['home'], e['away']])
+        if len(pos) == 2:
+            hits.append((e['home'], e['away']))
+    return hits[0] if len(set(hits)) == 1 else ('', '')
+
+
+def _event_of(a: str, b: str, pick: str, ts, cache: dict, raw: str = '') -> tuple[dict, bool] | None:
     """Событие табло ESPN (все лиги): по паре команд, иначе — по единственной команде в ставке («Эспаньол, ТБ (0.5)»)."""
     import tipswide as W
     evs = W._events_around(ts, cache)
@@ -635,6 +668,10 @@ def _event_of(a: str, b: str, pick: str, ts, cache: dict) -> tuple[dict, bool] |
         return None
     if a and b:
         return W.match_pair(a, b, evs)
+    if raw:                                                       # 21.11: обе команды названы в тексте поста — это матч
+        ha, hb = _pair_text(raw, evs)
+        if ha:
+            return next(((e, False) for e in evs if e['home'] == ha and e['away'] == hb), None)
     caps = {w.lower() for w in re.findall(r'\b[А-ЯЁA-Z][а-яёa-z\-]{3,}', pick)}
     ws = [w for w in T._words(pick) if (w in caps and len(w) >= 5) or T._alias(w)]
     ws += [f'{x} {y}' for x, y in zip(T._words(pick), T._words(pick)[1:]) if T._alias(f'{x} {y}')]
@@ -705,6 +742,8 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
     for r in d[~d.uid.isin(list(rel)) & ~d.sport.isin(['hockey', 'tennis', 'basketball', 'volleyball', 'esports', 'tabletennis'])
                & ~d.pick.astype(str).str.startswith('❔')].itertuples(index=False):
         a, b = pair_of(r, df)
+        if not (a and b) and fx:                                  # 21.11: пара из текста поста — сначала среди НАШИХ матчей
+            a, b = _pair_text(str(getattr(r, 'raw', '') or ''), list(fx.values()))
         pick = str(r.pick)
         try:
             ts = pd.Timestamp(r.post_ts)
@@ -722,7 +761,7 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
                         '⬜ наш матч, рынок вне модели (фолы, угловые…)'
                 continue
         try:
-            hit = _event_of(a, b, pick, ts, cache)
+            hit = _event_of(a, b, pick, ts, cache, str(getattr(r, 'raw', '') or ''))
         except Exception:
             hit = None
         if hit is None:
@@ -832,6 +871,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             continue
         # 14.11 (замечание пользователя): КАЖДЫЙ прогноз — отдельным сообщением, с вердиктом системы (🔥 / ⚔️ / нейтрально / вне базы)
         msgs = []
+        no_reason: list[str] = []
         for r in g.itertuples(index=False):
             r0 = st[st.src == r.src] if len(st) else st
             roi = (f" · ROI {'+' if r0.roi.iloc[0] > 0 else ''}{rtable.pct(r0.roi.iloc[0], 0)}%" if len(r0) and r0.nk.iloc[0] >= 10 else '')
@@ -844,8 +884,10 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
                             + (f"{notify.esc(r.a)} — {notify.esc(r.b)}\n" if r.a else '')
                             + f"❔ <i>{notify.esc(str(r.pick)[2:220])}</i>" + (f"\n{wh}" if wh else '') + f"\n⬜ ставка не разобрана · {link}")
                 continue
-            verdict = rel.get(r.uid) or ('· после начала — не оценивается' if wh.startswith('🔴') else
-                                         '⬜ без оценки системы' if wh else '⬜ вне базы системы')
+            verdict = rel.get(r.uid) or ('· после начала — не оценивается' if wh.startswith('🔴') else None)
+            if verdict is None:                                   # 21.11 (К16): «без оценки» / «вне базы» без причины — запрещено
+                verdict = '⬜ матч не найден на табло'
+                no_reason.append(r.uid)
             msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n{match}\n"
                         f"<b>{notify.esc(_pick_short(r.pick, r.a, r.b, r.sport) or str(r.pick)[:40])}</b>" + (f' @{k}' if k else '')
                         + (f"\n{wh}" if wh else '') + f"\n{verdict} · {link}")
@@ -859,6 +901,8 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
         for m in msgs:
             notify.send_blocks([('🧪 <b>ТЕСТ</b>\n' if test else '') + m], bot=bot)
         n += len(g)
+        if no_reason:                                             # сторож health: «каперы: сбои вердикта без причины»
+            log.append(f"👥 вердикт без причины (К16): {len(no_reason)} — {', '.join(no_reason[:5])}")
     if test:
         log.append(f'👥 тест доставки: {n} строк в оба бота')
         return
