@@ -1,8 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "187527"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-21",
  "last_retrain": "2026-11-21",
  "last_files": "2026-11-05",
@@ -126,7 +124,7 @@
   "first_match": "Alexander Zverev — Daniil Medvedev",
   "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 2 матча · 14 линий · на ставку дня — 1\nATP Finals, хард 2 · 🔏 70465dde\n🏆 ATP · Nitto ATP Finals · 🕒 00:30\n<b>Alexander Zverev — Daniil Medvedev</b>\n<b>П1 Zverev</b> — 64% · честный кф 1,57\n💵 1xBet 1,56 · EV −0,7% · ставка ¼ ед.",
   "vol": 2,
-  "played": false
+  "played": true
  },
  "model_version": 4,
  "reported": [
@@ -3622,16 +3620,14 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-21T18:32:14",
+ "chk_run": "2026-11-21T20:02:17",
  "plan_at": [
-  "2026-11-21 20:00",
   "2026-11-21 22:00",
   "2026-11-21 23:00",
   "2026-11-22 01:00",
   "2026-11-22 02:00"
  ],
  "plan_sig": [
-  "2026-11-21 20:00|2026-11-21 20:05",
   "2026-11-21 22:00|2026-11-21 22:10",
   "2026-11-21 23:00|2026-11-21 23:35",
   "2026-11-22 01:00|2026-11-22 01:10",
