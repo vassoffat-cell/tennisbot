@@ -770,6 +770,14 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
     import tipswide as W
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     sent = set(rt.get('tips_alerted', [])) | set(rt.get('gl_alerted', []))
+    if len(df):                                                   # 21.11: пересборка книги дала посту новый uid (купон вместо текста) —
+        pk = df.src.astype(str) + ':' + df.post_id.astype(str)    # пост уже присылался → новый uid тоже считается присланным
+        old = pd.to_datetime(df.post_ts, errors='coerce') < now - pd.Timedelta(hours=14)
+        sp = set(pk[df.uid.isin(sent)]) | {':'.join(u.split(':')[:2]) for u in sent if u.count(':') >= 2 and u.split(':')[1].isdigit()}
+        add_ = set(df.uid[old & pk.isin(sp) & ~df.uid.isin(sent)])
+        if add_:
+            sent |= add_
+            rt['tips_alerted'] = list(rt.get('tips_alerted', [])) + sorted(add_)
     fresh = pd.to_datetime(df.post_ts, errors='coerce') >= now - pd.Timedelta(hours=14)   # 19.11 Г0б: посты тихого окна 03–15 приходят в 15:22
     d = df[fresh & ~df.uid.isin(sent) & ((df.slip == '') | ((df.seen == 'pre') & (df.self == '')))]
     d = d.assign(pick=d.pick.astype(str).map(lambda x: AD_TAIL.sub('', x).strip()))   # 14.11 20:40: рекламный хвост срезается, прогноз остаётся
@@ -933,6 +941,10 @@ def to_ours(df: pd.DataFrame, log: list[str]) -> int:
     d = d.assign(**dict(zip(('a', 'b'), zip(*[pair_of(r, df) for r in d.itertuples(index=False)])))) if len(d) else d   # 21.11: пара из купона поста
     d = d[d.a != ''] if len(d) else d
     tdf = T.load()
+    bad = tdf.uid.map(lambda u: u.startswith('tg:') and u.count(':') >= 3 and not u.split(':')[2].isdigit())
+    if bad.any():                                                 # 21.11: старый формат uid купона (tg:src:slip:…) — без номера поста
+        tdf = tdf[~bad].reset_index(drop=True)                    # → переписать в новом (номер поста третьим полем)
+        T.save(tdf)
     have = set(tdf.uid)
     same = {(u.split(':')[1], u.split(':')[2], u.split(':')[-1]) for u in tdf.uid if u.startswith('tg:') and u.count(':') >= 3}
     new, nours, nout = [], 0, 0
@@ -947,7 +959,7 @@ def to_ours(df: pd.DataFrame, log: list[str]) -> int:
             continue
         if pd.to_datetime(r.post_ts, errors='coerce') >= pd.Timestamp(e['start']):   # опубликован после начала — не прогноз
             continue
-        uid = f'tg:{r.src}:{r.uid.split(":", 1)[1]}:{eid}'
+        uid = f'tg:{r.src}:{r.post_id}:{r.uid.split(":", 1)[1].replace(":", "_")}:{eid}'   # 21.11: номер поста — третьим полем
         if uid in have or (r.src, str(r.post_id), eid) in same:   # тот же пост на тот же матч уже записан (tips.collect)
             continue
         same.add((r.src, str(r.post_id), eid))
