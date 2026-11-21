@@ -31,6 +31,7 @@ DP_COLS = ['date', 'rank', 'id', 'league', 'start_utc', 'start_local', 'home', '
 J.SHEETS.setdefault('hk_day_pick', DP_COLS)
 P_MIN, P_MAX = 0.65, 0.80
 MAX_PICKS = 3                   # 14.11: запасное значение — лимит динамический (selflearn.max_picks)
+TARGET_MAX = 3                  # 21.11 (решение пользователя, С23а): ⭐ с ценой — до 3 в сутки, лучшие по EV
 LMARK = {'W': '✅', 'L': '❌', 'P': '⚪'}
 
 
@@ -394,6 +395,20 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
                 store.append('hk_day_pick', [_row(day, r, c, reason=f'новая: {why}')])
                 log.append(f"⭐🏒 ⭐{r} новая: {c['label']} ({why})")
                 break
+    if HK_LADDER and picks:                                  # 21.11 С23а (решение пользователя): 🏒 до 3 ⭐ в сутки — лучшие по EV, с ценой
+        used = {str(x['id']) for x in picks}
+        pool = sorted([c for c in cands if int(c['tier']) == TIER_PRICED and c.get('ev') is not None], key=lambda c: -float(c['ev']))
+        for c in pool:
+            if len(picks) >= TARGET_MAX:
+                break
+            if str(c['id']) in used or pd.Timestamp(c['start_utc']) <= now or busy(c['start_utc'], [x['start_utc'] for x in picks]):
+                continue
+            r = len(picks) + 1
+            why = f"EV {float(c['ev']) * 100:+.1f}% · {r}-я из {TARGET_MAX}".replace('.', ',')
+            picks.append(_publish(day, c, r, [f'➕ новая линия дня в {loc:%H:%M}: {why}']))
+            store.append('hk_day_pick', [_row(day, r, c, reason=f'новая: {why}')])
+            log.append(f"⭐🏒 ⭐{r} новая: {c['label']} ({why})")
+            used.add(str(c['id']))
     st['picks'] = picks
     rt['hk_dp'] = st
 
