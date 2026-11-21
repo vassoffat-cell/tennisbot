@@ -28,6 +28,27 @@ _CNT: dict[str, int] = {}                        # 15.11: сколько соо�
 COVER = '🔒 ·'                                  # не одиночный эмодзи — без крупной анимации
 
 
+HIDE = True                     # 21.11 (решение пользователя): все сообщения ботов — скрытым текстом Telegram (tg-spoiler)
+_KEEP = re.compile(r'(<pre>.*?</pre>|<code>.*?</code>|<blockquote[^>]*>|</blockquote>)', re.S)
+
+
+def hide(text: str) -> str:
+    """HTML → тот же текст под «скрытым» (spoiler): открыл чат — текст под точками, нажал — виден; вышел — снова скрыт.
+    Проба 21.11 (engine/research/spoiler_probe.py): Telegram принимает spoiler вокруг текста, жирного, ссылок и внутри/вокруг
+    свёрнутых списков; таблицу <pre> спрятать нельзя — spoiler вокруг неё Telegram отбрасывает. Поэтому скрывается всё, кроме <pre>/<code>."""
+    if not HIDE or not text or 'tg-spoiler' in text:
+        return text
+    out = []
+    for part in _KEEP.split(text):
+        if not part or _KEEP.fullmatch(part) or not part.strip():
+            out.append(part)
+            continue
+        core = part.strip()
+        a, b = part[:len(part) - len(part.lstrip())], part[len(part.rstrip()):]
+        out.append(f'{a}<tg-spoiler>{core}</tg-spoiler>{b}')
+    return ''.join(out)
+
+
 def _call(method: str, payload: dict | None = None, timeout: int = 30, bot: str = 'main') -> dict:
     """Вызов Bot API. 14.11 (доставка): сеть / таймаут / 429 / 5xx — до 3 попыток с паузой (429 — сколько просит Telegram).
     Ошибка 400 (неверный запрос) не повторяется — её разбирает вызывающий (send_blocks)."""
@@ -35,6 +56,8 @@ def _call(method: str, payload: dict | None = None, timeout: int = 30, bot: str 
         _SENT.add(bot)
         _CNT[bot] = _CNT.get(bot, 0) + 1
     (payload or {}).pop('_cover', None)
+    if method in ('sendMessage', 'editMessageText') and payload and payload.get('parse_mode') == 'HTML':
+        payload = dict(payload, text=hide(payload.get('text', '')))      # 21.11: скрытый текст во всех сообщениях
     data = json.dumps(payload or {}).encode()
     for k in range(TRIES):
         req = urllib.request.Request(API.format(token=BOTS[bot](), method=method), data=data,
@@ -120,8 +143,8 @@ def _send_one(chat: int, m: str, silent: bool, bot: str) -> int | None:
         return _call('sendMessage', p, bot=bot)['result']['message_id']
     except urllib.error.HTTPError as e:
         body = getattr(e, 'tg_body', '')
-        if e.code == 400 and 'parse entities' in body:
-            p = dict(p, text=_plain(m)[:4000]); p.pop('parse_mode')
+        if e.code == 400 and 'parse entities' in body:      # 21.11: и запасной простой текст — скрытым
+            p = dict(p, text=esc(_plain(m)[:3900]))
             return _call('sendMessage', p, bot=bot)['result']['message_id']
         if e.code == 400 and 'too long' in body:
             mid = None
@@ -439,7 +462,8 @@ def cover(path, spec: dict | None = None) -> int:
         cur = []
         for chat in C.ALLOWED_USERS:
             try:
-                r = _call('sendMessage', {'chat_id': chat, 'text': text, 'disable_notification': True, '_cover': 1}, bot=bot)
+                r = _call('sendMessage', {'chat_id': chat, 'text': esc(text), 'parse_mode': 'HTML', 'disable_notification': True, '_cover': 1},
+                          bot=bot)                                   # 21.11: контрольная точка — тоже скрытым текстом
                 cur.append([chat, r['result']['message_id']]); n += 1
             except Exception as e:
                 print(f'Telegram: заглушка не отправлена ({e})')
