@@ -123,7 +123,7 @@ def _special(r: dict) -> bool:
 KEY = [('daily.yml', (8, 0), r'ставка дня: объявлена|ставка дня: тихий режим', '🎾1 / межсезонье'),
        ('football.yml', (8, 0), r'ставка дня: объявлена|ставка дня: тихий режим', '⚽1'),
        ('daily.yml', (11, 0), r'суточный отчёт отправлен|суточный отчёт: тихий режим', 'отчёт тенниса'),
-       ('football.yml', (11, 30), r'суточный отчёт отправлен', 'отчёт футбола'),
+       ('football.yml', (11, 30), r'суточный отчёт отправлен', 'отчёт футбола', (11, 0)),   # 21.11: отчёт уходит любым прогоном с 11:00 (DAILY_HOUR) — ранний не ошибка
        ('daily.yml', (12, 0), r'⭐🏒 .*⭐1|⭐🏒 \d', '🏒1'),
        ('daily.yml', (12, 0), r'🏒 суточный отчёт', 'отчёт хоккея (ждёт итогов НХЛ)')]
 LATE_MIN = 30                                   # A35 (аудит 16.11): опоздание > 30 мин от начала ключевого часа = ❌
@@ -133,13 +133,14 @@ def punctual(cache: dict) -> list[tuple[str, str, str, str]]:
     """A35: во сколько на самом деле пришли ключевые сообщения последних суток — прогон с событием, минут от начала часа."""
     now = datetime.now(timezone.utc)
     out = []
-    for wf, (hh, mm), pat, name in KEY:
+    for wf, (hh, mm), pat, name, *frm in KEY:
         loc = now + TZ
         slot = loc.replace(hour=hh, minute=mm, second=0, microsecond=0)
         if slot > loc:
             slot -= timedelta(days=1)
         s_utc = slot - TZ
-        rs = sorted([r for r in runs(wf, s_utc) if r['conclusion'] == 'success' and _dur(r) > 25],
+        f_utc = s_utc - timedelta(minutes=(hh * 60 + mm) - (frm[0][0] * 60 + frm[0][1])) if frm else s_utc
+        rs = sorted([r for r in runs(wf, f_utc) if r['conclusion'] == 'success' and _dur(r) > 25],
                     key=lambda r: r.get('run_started_at') or r['created_at'])
         hit = None
         for r in rs:
@@ -155,7 +156,7 @@ def punctual(cache: dict) -> list[tuple[str, str, str, str]]:
             out.append((f'вовремя: {name} ({slot:%d.%m %H:%M})', f'≤ {LATE_MIN} мин',
                         'нет' + (f' (прошло {late} мин)' if late < 360 else ''), '❌' if late > LATE_MIN else '⏳'))
             continue
-        late = int((hit - s_utc).total_seconds() // 60)
+        late = max(0, int((hit - s_utc).total_seconds() // 60))
         out.append((f'вовремя: {name} ({slot:%d.%m %H:%M})', f'≤ {LATE_MIN} мин', f'{(hit + TZ):%H:%M} (+{late} мин)',
                     '✅' if late <= LATE_MIN else '❌'))
     return out
