@@ -882,3 +882,15 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401888369,tur.1,league,TUR,T1,2026-11-21 13:00,Amed SFK,Caykur Rizespor,Amedspor,Rizespor,0,2,FT,2026-27-turkish-super-lig,0
 401874981,ita.1,league,ITA,I1,2026-11-21 14:00,Lazio,Lecce,Lazio,Lecce,3,0,FT,2026-27-italian-serie-a,0
 401875056,ita.1,league,ITA,I1,2026-11-21 14:00,Como,Cagliari,Como,Cagliari,2,0,FT,2026-27-italian-serie-a,0
+401884728,ger.1,league,GER,D1,2026-11-21 14:30,SV Elversberg,SC Freiburg,Elversberg,Freiburg,0,1,FT,2026-27-german-bundesliga,0
+401884731,ger.1,league,GER,D1,2026-11-21 14:30,Borussia Mönchengladbach,Borussia Dortmund,M'gladbach,Dortmund,0,1,FT,2026-27-german-bundesliga,0
+401884732,ger.1,league,GER,D1,2026-11-21 14:30,1. FC Union Berlin,RB Leipzig,Union Berlin,RB Leipzig,1,5,FT,2026-27-german-bundesliga,0
+401884734,ger.1,league,GER,D1,2026-11-21 14:30,Eintracht Frankfurt,TSG Hoffenheim,Ein Frankfurt,Hoffenheim,1,0,FT,2026-27-german-bundesliga,0
+401884735,ger.1,league,GER,D1,2026-11-21 14:30,Bayer Leverkusen,SC Paderborn 07,Leverkusen,Paderborn,4,0,FT,2026-27-german-bundesliga,0
+401931809,por.taca.portugal,cup,POR,P1,2026-11-21 14:45,Mafra,Arouca,,Arouca,2,1,FT,4th-round,0
+401878754,eng.1,league,ENG,E0,2026-11-21 15:00,Tottenham Hotspur,Ipswich Town,Tottenham,Ipswich,2,0,FT,2026-27-english-premier-league,0
+401878756,eng.1,league,ENG,E0,2026-11-21 15:00,Aston Villa,Sunderland,Aston Villa,Sunderland,0,0,FT,2026-27-english-premier-league,0
+401879235,eng.1,league,ENG,E0,2026-11-21 15:00,Coventry City,Crystal Palace,Coventry,Crystal Palace,3,2,FT,2026-27-english-premier-league,0
+401879236,eng.1,league,ENG,E0,2026-11-21 15:00,Chelsea,Leeds United,Chelsea,Leeds,1,4,FT,2026-27-english-premier-league,0
+401879238,eng.1,league,ENG,E0,2026-11-21 15:00,AFC Bournemouth,Nottingham Forest,Bournemouth,Nott'm Forest,2,0,FT,2026-27-english-premier-league,0
+401931805,por.taca.portugal,cup,POR,P1,2026-11-21 15:00,AVS,Tondela,AVS,Tondela,1,5,FT,4th-round,0
