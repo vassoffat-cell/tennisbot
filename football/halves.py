@@ -22,15 +22,17 @@ FILE = pathlib.Path(__file__).resolve().parent / 'data' / 'tips' / 'halves.json'
 FETCH_MAX = 40                                  # запросов карточек ESPN за прогон
 _fetched = 0
 
-HALF = re.compile(r'(?:\b([12])\s*-?\s*[a-zа-яё]{0,3}\.?\s*тайм\w*|(перв|втор)\w*\s+тайм\w*|тайм\w*\s*№?\s*([12])\b)', re.I)
-BOTH = re.compile(r'(выигра\w*|побед\w*)\s+(в\s+)?(оба|обоих)\s+тайм', re.I)
+HALF = re.compile(  # в tips.parse_legs кириллическая «х» уже заменена на латинскую x
+    r'(?:\b([12])\s*-?\s*[a-zа-яё]{0,3}\.?\s*тайм\w*|(перв|втор)\w*\s+тайм\w*|тайм\w*\s*№?\s*([12])\b)', re.I)
+GBH = re.compile(r'гол\w*\s+в\s+обои[хx]\s+тайм\w*\.?\s*(да|нет)?', re.I)   # «Гол в обоих таймах. Да»
+BOTH = re.compile(r'(выигра\w*|побед\w*)\s+(в\s+)?(оба|обои[хx])\s+тайм', re.I)
 HTFT = re.compile(r'тайм\s*/\s*матч[\s,:.]+([^/]+?)\s*/\s*([^/\n]+)', re.I)
 OTHER = re.compile(r'углов|карточ|\bжк\b|фол|удар|офсайд|минут|точн\w* сч|период|сет\b|гейм', re.I)
 RES = {'H': 'П1', 'D': 'Х', 'A': 'П2'}
 
 
 def is_half(mk: str) -> bool:
-    return '@' in mk or mk in ('WBH', 'HTFT')
+    return '@' in mk or mk in ('WBH', 'HTFT', 'GBH')
 
 
 def any_half(legs) -> bool:
@@ -50,12 +52,15 @@ def parse(s: str, home_first, teams, natural: bool, parse_legs, find_teams) -> l
             pos = find_teams(txt, list(teams))
             if len(pos) == 1:
                 return 'H' if teams[0] in pos else 'A'
-        if re.search(r'\bп\s*1\b|хозя', txt):
+        if re.search(r'\bп\s*1\b|[хx]озя', txt):
             return 'H'
         if re.search(r'\bп\s*2\b|гост', txt):
             return 'A'
         return None if home_first is None else ('H' if home_first else 'A')
 
+    m = GBH.search(s)
+    if m:
+        return [('GBH', 'N' if m.group(1) == 'нет' else 'Y', '')]
     if BOTH.search(s):
         sd = side_of(s)
         return [('WBH', sd, '')] if sd else []
@@ -77,7 +82,8 @@ def parse(s: str, home_first, teams, natural: bool, parse_legs, find_teams) -> l
         return []
     n = m.group(1) or m.group(3) or ('1' if (m.group(2) or '').startswith('перв') else '2')
     rest = (s[:m.start()] + ' ' + s[m.end():]).replace(' в ', ' ')
-    rest = re.sub(r'\s+', ' ', re.sub(r'(?<=[бм])\.(?=\s)', '', rest)).strip(' .,')
+    rest = re.sub(r'\.(?=\s|$)|,', ' ', rest)                    # «1-й тайм. Тотал, Больше 1.0», «Двойной шанс. 1X.»
+    rest = re.sub(r'\s+', ' ', rest).strip(' .,')
     legs = parse_legs(rest, home_first, teams, natural)
     if not legs or any_half(legs):
         return []
@@ -91,6 +97,8 @@ def label(leg, base_label) -> str:
     if mk == 'HTFT':
         a, b = s.split('/')
         return f'тайм/матч {RES[a]}/{RES[b]}'
+    if mk == 'GBH':
+        return f"гол в обоих таймах {'да' if s == 'Y' else 'нет'}"
     base, n = mk.split('@')
     return f'{base_label(base, s, L)} · {n}-й тайм'
 
@@ -99,6 +107,8 @@ def flip(leg, flip_one):
     mk, s, L = leg
     if mk == 'WBH':
         return (mk, {'H': 'A', 'A': 'H'}[s], L)
+    if mk == 'GBH':
+        return leg
     if mk == 'HTFT':
         f = {'H': 'A', 'A': 'H', 'D': 'D'}
         a, b = s.split('/')
@@ -125,6 +135,9 @@ def p_legs(P: np.ndarray, legs, p_plain) -> float:
         w = [float(M[(np.indices(M.shape)[0] > np.indices(M.shape)[1]) if s == 'H'
                      else (np.indices(M.shape)[0] < np.indices(M.shape)[1])].sum()) for M in H.values()]
         return w[0] * w[1]
+    if len(legs) == 1 and legs[0][0] == 'GBH':
+        y = (1 - float(H['1'][0, 0])) * (1 - float(H['2'][0, 0]))
+        return y if legs[0][1] == 'Y' else 1 - y
     if len(legs) == 1 and legs[0][0] == 'HTFT':
         a, b = legs[0][1].split('/')
         r = lambda x, y: 'H' if x > y else 'D' if x == y else 'A'   # noqa: E731
@@ -138,7 +151,7 @@ def p_legs(P: np.ndarray, legs, p_plain) -> float:
                     p += v1 * v2
         return p
     ns = {lg[0].split('@')[1] for lg in legs if '@' in lg[0]}
-    if len(ns) != 1 or any(lg[0] in ('WBH', 'HTFT') for lg in legs):
+    if len(ns) != 1 or any(lg[0] in ('WBH', 'HTFT', 'GBH') for lg in legs):
         return float('nan')
     n = ns.pop()
     return p_plain(H[n], [(lg[0].split('@')[0], lg[1], lg[2]) for lg in legs])
@@ -197,6 +210,9 @@ def settle(legs, kind: str, eid, settle_one) -> str:
         if mk == 'WBH':
             w = (h1 > a1 and h2 > a2) if s == 'H' else (a1 > h1 and a2 > h2)
             rs.append('W' if w else 'L')
+        elif mk == 'GBH':
+            y = h1 + a1 > 0 and h2 + a2 > 0
+            rs.append('W' if y == (s == 'Y') else 'L')
         elif mk == 'HTFT':
             r = lambda x, y: 'H' if x > y else 'D' if x == y else 'A'   # noqa: E731
             a, b = s.split('/')

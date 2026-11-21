@@ -477,7 +477,7 @@ NICK = {'горожан': 'манчестер сити', 'шмел': 'борус
         'красных': 'ливерпуль', 'ирискин': 'эвертон', 'чаек': 'брайтон', 'чаёк': 'брайтон', 'сорок': 'ньюкасл', 'шпор': 'тоттенхэм'}
 NUM = {'один': 1, 'одного': 1, 'два': 2, 'двух': 2, 'три': 3, 'трёх': 3, 'трех': 3, 'четыре': 4, 'четырёх': 4, 'четырех': 4, 'пять': 5}
 MKT = r'\bт[бм]\b|\bит[12]?[бм]|ф\d?\(|\bф[12]\b|победа|не проиграет|обе забьют|\bп[12]\b|\b1x\b|\bx2\b|\b12\b'
-NODATA = re.compile(r'тайм|углов|карточ|жёлт|желт|фол|удар|офсайд|\bxg\b|сейв|сэйв|вброс|🟨|🚩|🥅|🎯', re.I)
+NODATA = re.compile(r'углов|карточ|жёлт|желт|фол|удар|офсайд|\bxg\b|сейв|сэйв|вброс|🟨|🚩|🥅|🎯', re.I)
 
 
 def _n(x: str) -> str:
@@ -489,6 +489,8 @@ def norm_pick(sel: str) -> str:
     «горожан» минимум в два мяча», «не больше 4 голов») → запись, которую понимает tips.parse_legs."""
     s = ' ' + sel.lower().replace('ё', 'е').replace('«', ' ').replace('»', ' ').replace('—', '-').replace('–', '-') + ' '
     s = re.split(r'\.\s*для ставки|\bкф\b|@|логичн|рабоч|основн(?:ой)? сценар|считаю', s)[0]
+    import halves as HV
+    half = HV.HALF.search(s)
     s = re.sub(r'\btb\b', 'тб', re.sub(r'\btm\b', 'тм', s))                  # «TB (1.5)» с картинки (латиница)
     s = re.sub(r'[^.]*(?:дома|на выезде) слабее\.?', ' ', s)          # «Вилла на выезде слабее. Победа …»
     s = re.sub(r'\s+', ' ', s)
@@ -516,6 +518,8 @@ def norm_pick(sel: str) -> str:
         s = ' . '.join(seg)
     if 'победа' in s and 'тб' not in s and 'тм' not in s:          # «Вилла на выезде слабее. Победа …» — важна только победа
         s = s[s.index('победа'):]
+    if half and 'тайм' not in s:                                    # 21.11 К17: «Тотал. (1) Б. 1-й тайм» — тайм не терять
+        s += ' ' + half.group(0)
     return re.sub(r'\s+', ' ', s).strip()
 
 
@@ -546,7 +550,9 @@ def book_ind(log: list[str], days: int = 45) -> int:
     b = b[(b.sport == 'football') & (b.a != '') & (b.seen != 'post') & ~b.pick.str.startswith('❔')
           & (pd.to_datetime(b.post_ts, errors='coerce') > now - pd.Timedelta(days=days))]
     ind = _ind_load()
-    done = {u for u, r, w in zip(ind.uid, ind.result, ind.why) if r in ('W', 'L', 'P') or w in ('нет данных', 'не разобрано')}
+    retry = set(b.uid[b.pick.str.contains('тайм', case=False)])  # 21.11 К17: ставки на таймы — пересчитать один раз
+    done = {u for u, r, w in zip(ind.uid, ind.result, ind.why)
+            if r in ('W', 'L', 'P') or (w in ('нет данных', 'не разобрано') and not (u in retry and w == 'нет данных'))}
     rows = {u: i for i, u in enumerate(ind.uid)}
     cache: dict = {}
     out = ind.to_dict('records')
