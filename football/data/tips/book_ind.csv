@@ -364,7 +364,7 @@ stavki_na_sport_betting1:slip:404770702:0,401884736,Bayern Munich,FC Cologne,WBH
 xs_stavkii:8036:1,401879803,CSKA Moscow,Akhmat Grozny,DC:1X:|TOT:U:4.5,1X + ТМ4.5,,,,
 xs_stavkii:8037:1,401876402,Lille,Lyon,AH:H:0.0,Ф1(+0),,,,
 stavki_na_sport_betting1:slip:405716696:0,401882798,Real Madrid,Celta Vigo,AH:H:-1.5,Ф1(-1.5),,,,
-stavki:5831:0,401878754,Tottenham Hotspur,Ipswich Town,TOT:O:2.5,ТБ2.5,,,,
+stavki:5831:0,401878754,Tottenham Hotspur,Ipswich Town,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-21
 kapper_uk:21989:0,,,,,,нет данных,,,
 kapper_uk:22003:0,401878769,Nottingham Forest,Arsenal,1X2:A:,П2,,FT,W,2026-11-21
 kapper_uk:22184:0,401878765,Liverpool,Brighton & Hove Albion,DC:X2:,X2,,FT,L,2026-11-21
@@ -372,12 +372,12 @@ kapper_uk:22305:0,401879251,AFC Bournemouth,Leeds United,,,не разобран
 kapper_uk:22311:0,401879245,Manchester City,Brighton & Hove Albion,1X2:H:,П1,,FT,L,2026-11-21
 kapper_uk:22329:0,401879246,Liverpool,Arsenal,DC:X2:,X2,,FT,W,2026-11-21
 kapper_uk:22424:0,401915531,Celta Vigo,Union St.-Gilloise,DC:X2:,X2,,FT,W,2026-11-21
-xs_stavkii:8038:1,401878940,Royal Charleroi SC,Sint-Truidense,DC:1X:|TOT:O:1.5,1X + ТБ1.5,,,,
-kapper_uk:22714:0,401878754,Tottenham Hotspur,Ipswich Town,TOT:O:2.5,ТБ2.5,,,,
+xs_stavkii:8038:1,401878940,Royal Charleroi SC,Sint-Truidense,DC:1X:|TOT:O:1.5,1X + ТБ1.5,,FT,W,2026-11-21
+kapper_uk:22714:0,401878754,Tottenham Hotspur,Ipswich Town,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-21
 kapper_uk:22711:0,401879232,Newcastle United,Arsenal,BTTS:Y:,ОЗ да,,,,
-kapper_uk:22710:0,401884728,SV Elversberg,SC Freiburg,DC:X2:|BTTS:Y:,X2 + ОЗ да,,,,
+kapper_uk:22710:0,401884728,SV Elversberg,SC Freiburg,DC:X2:|BTTS:Y:,X2 + ОЗ да,,FT,L,2026-11-21
 kapper_uk:22709:0,401879233,Manchester City,Fulham,1X2:H:|TOT:O:1.5,П1 + ТБ1.5,,FT,L,2026-11-21
-kapper_uk:22708:0,401879236,Chelsea,Leeds United,TOT@2:O:1.0,ТБ1 · 2-й тайм,,,,
+kapper_uk:22708:0,401879236,Chelsea,Leeds United,TOT@2:O:1.0,ТБ1 · 2-й тайм,,FT,W,2026-11-21
 stavki_na_sport_betting1:slip:406338828:0,401879233,Manchester City,Fulham,AH:H:-1.0,Ф1(-1),,FT,L,2026-11-21
 stavki_na_sport_betting1:slip:406244206:0,,,,,,матч не найден,,,
 stavki_na_sport_betting1:slip:406668250:0,401876398,Nice,Paris Saint-Germain,TOT:O:3.0,ТБ3,,,,
