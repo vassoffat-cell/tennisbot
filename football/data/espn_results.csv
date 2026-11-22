@@ -943,3 +943,6 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401874989,ita.1,league,ITA,I1,2026-11-22 17:00,AC Milan,Frosinone,Milan,Frosinone,5,1,FT,2026-27-italian-serie-a,0
 401882801,esp.1,league,ESP,SP1,2026-11-22 17:30,Osasuna,Málaga,Osasuna,Malaga,1,0,FT,2026-27-laliga,0
 401931804,por.taca.portugal,cup,POR,P1,2026-11-22 18:00,Estrela,Portimonense,Estrela,Portimonense,1,0,FT,4th-round,0
+401875001,ita.1,league,ITA,I1,2026-11-22 19:45,Atalanta,Internazionale,Atalanta,Inter,4,4,FT,2026-27-italian-serie-a,0
+401876400,fra.1,league,FRA,F1,2026-11-22 19:45,Marseille,Le Mans,Marseille,Le Mans,2,3,FT,2026-27-ligue-1,0
+401882803,esp.1,league,ESP,SP1,2026-11-22 20:00,Getafe,Atlético Madrid,Getafe,Ath Madrid,0,3,FT,2026-27-laliga,0
