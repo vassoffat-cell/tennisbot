@@ -1,8 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "187529"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-22",
  "last_retrain": "2026-11-22",
  "last_files": "2026-11-05",
@@ -126,7 +124,7 @@
   "first_match": "Alexander Zverev — Carlos Alcaraz",
   "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 1 матч · 7 линий · на ставку дня — 1\nATP Finals, хард 1 · 🔏 01069765\n🏆 ATP · Nitto ATP Finals · 🕒 22:00\n<b>Alexander Zverev — Carlos Alcaraz</b>\n<b>П2 Alcaraz</b> — 67% · честный кф 1,49\n💵 1xBet 1,47 · EV −1,1% · ставка ¼ ед.",
   "vol": 1,
-  "played": false
+  "played": true
  },
  "model_version": 4,
  "reported": [
@@ -3453,8 +3451,6 @@
  },
  "hk_list": [],
  "hk_list_ids": [
-  "khl:430710",
-  "nhl:401892768",
   "nhl:401892769",
   "nhl:401892770",
   "nhl:401892771",
@@ -3623,7 +3619,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-22T16:32:10",
+ "chk_run": "2026-11-22T17:42:22",
  "plan_at": [
   "2026-11-22 19:00",
   "2026-11-22 21:00",
