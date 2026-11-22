@@ -941,3 +941,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401878755,eng.1,league,ENG,E0,2026-11-22 16:30,Liverpool,Manchester United,Liverpool,Man United,4,0,FT,2026-27-english-premier-league,0
 401884730,ger.1,league,GER,D1,2026-11-22 16:30,Werder Bremen,Hamburg SV,Werder Bremen,Hamburg,4,0,FT,2026-27-german-bundesliga,0
 401874989,ita.1,league,ITA,I1,2026-11-22 17:00,AC Milan,Frosinone,Milan,Frosinone,5,1,FT,2026-27-italian-serie-a,0
+401882801,esp.1,league,ESP,SP1,2026-11-22 17:30,Osasuna,Málaga,Osasuna,Malaga,1,0,FT,2026-27-laliga,0
+401931804,por.taca.portugal,cup,POR,P1,2026-11-22 18:00,Estrela,Portimonense,Estrela,Portimonense,1,0,FT,4th-round,0

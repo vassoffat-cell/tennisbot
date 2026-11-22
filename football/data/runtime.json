@@ -1,10 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "401875001",
-  "401876400",
-  "401882803"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-22",
  "last_files": "2026-11-06",
  "last_reminder": "2026-11-10",
@@ -305,7 +301,7 @@
   "first_match": "Konyaspor — Besiktas",
   "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 25 матчей · 283 линии · на ставку дня — 11\nСерия A 5 · Суперлига Турции 4 · Эредивизи 4 · Ла Лига 4 · ещё 4 · 🔏 ab6ef2b2\n🏆 Суперлига Турции · 🕒 18:00\n<b>Konyaspor — Besiktas</b>\n<b>П2</b> — 63% · честный кф 1,59\n💵 1xBet 1,64 · EV +3,4% · ставка ¼ ед.",
   "vol": 25,
-  "played": false
+  "played": true
  },
  "model_version": 2,
  "reported": [
@@ -1155,7 +1151,7 @@
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-22T20:04:36",
- "chk_run": "2026-11-22T19:04:12",
+ "chk_run": "2026-11-22T20:20:46",
  "plan_at": [],
  "plan_sig": [],
  "wide_catchup": "2026-11-08",
