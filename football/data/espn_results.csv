@@ -923,3 +923,12 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401882804,esp.1,league,ESP,SP1,2026-11-22 13:00,Barcelona,Villarreal,Barcelona,Villarreal,3,2,FT,2026-27-laliga,0
 401888246,tur.1,league,TUR,T1,2026-11-22 13:00,Konyaspor,Besiktas,Konyaspor,Besiktas,2,4,FT,2026-27-turkish-super-lig,0
 401888248,tur.1,league,TUR,T1,2026-11-22 13:00,Kasimpasa,Alanyaspor,Kasimpasa,Alanyaspor,2,1,FT,2026-27-turkish-super-lig,0
+401875540,ned.1,league,NED,N1,2026-11-22 13:30,Sparta Rotterdam,AZ Alkmaar,Sparta Rotterdam,AZ Alkmaar,1,5,FT,regular-season,0
+401875547,ned.1,league,NED,N1,2026-11-22 13:30,Ajax Amsterdam,ADO Den Haag,Ajax,Den Haag,3,0,FT,regular-season,0
+401874960,ita.1,league,ITA,I1,2026-11-22 14:00,Sassuolo,Genoa,Sassuolo,Genoa,0,2,FT,2026-27-italian-serie-a,0
+401875047,ita.1,league,ITA,I1,2026-11-22 14:00,Bologna,Udinese,Bologna,Udinese,1,1,FT,2026-27-italian-serie-a,0
+401876397,fra.1,league,FRA,F1,2026-11-22 14:00,Paris FC,Angers,Paris FC,Angers,4,0,FT,2026-27-ligue-1,0
+401879234,eng.1,league,ENG,E0,2026-11-22 14:00,Hull City,Brighton & Hove Albion,Hull,Brighton,2,0,FT,2026-27-english-premier-league,0
+401931808,por.taca.portugal,cup,POR,P1,2026-11-22 14:00,Vitoria Sernache,Lusitania,,,0,1,FT,4th-round,0
+401931811,por.taca.portugal,cup,POR,P1,2026-11-22 14:00,Vianense,Rio Ave,,Rio Ave,1,0,FT,4th-round,0
+401931812,por.taca.portugal,cup,POR,P1,2026-11-22 14:00,Gil Vicente,Olhanense,Gil Vicente,,3,1,FT,4th-round,0
