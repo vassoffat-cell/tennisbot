@@ -920,3 +920,6 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401931818,por.taca.portugal,cup,POR,P1,2026-11-22 11:00,Sanjoanense,Académica de Coimbra,,,1,2,FT,4th-round,0
 401875545,ned.1,league,NED,N1,2026-11-22 11:15,FC Twente,Willem II,Twente,Willem II,2,1,FT,regular-season,0
 401875008,ita.1,league,ITA,I1,2026-11-22 11:30,Juventus,Venezia,Juventus,Venezia,4,0,FT,2026-27-italian-serie-a,0
+401882804,esp.1,league,ESP,SP1,2026-11-22 13:00,Barcelona,Villarreal,Barcelona,Villarreal,3,2,FT,2026-27-laliga,0
+401888246,tur.1,league,TUR,T1,2026-11-22 13:00,Konyaspor,Besiktas,Konyaspor,Besiktas,2,4,FT,2026-27-turkish-super-lig,0
+401888248,tur.1,league,TUR,T1,2026-11-22 13:00,Kasimpasa,Alanyaspor,Kasimpasa,Alanyaspor,2,1,FT,2026-27-turkish-super-lig,0
