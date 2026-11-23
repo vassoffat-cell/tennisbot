@@ -29,7 +29,7 @@ def runs(wf: str, since: datetime) -> list[dict]:
     key = (wf, since)
     if key not in _RUNS:
         out: list[dict] = []
-        for page in range(1, 8):
+        for page in range(1, 16):                           # 23.11: месяц прогонов (minutes_check) — до 1 500
             js = gh(f'repos/{REPO}/actions/workflows/{wf}/runs?per_page=100&page={page}&created=>={since:%Y-%m-%dT%H:%M:%SZ}')
             got = js.get('workflow_runs', [])
             out += got
@@ -54,6 +54,28 @@ def _dur(r: dict) -> float:
         return (datetime.fromisoformat(r['updated_at'].replace('Z', '+00:00')) - a).total_seconds()
     except Exception:
         return 0.0
+
+
+def minutes_check() -> list[tuple[str, str, str, str]]:
+    """23.11 (ORG IMP-01): минуты GitHub Actions за месяц и прогноз до конца месяца.
+    Оценка по прогонам: каждый прогон — длительность, округлённая вверх до минуты (так считает GitHub); Billing API из облака
+    недоступен, поэтому это [РАСЧЁТ], не [ФАКТ]. Лимит 2 000 — при перерасходе пользователь докупает (23.11 13:44): ⚠️, не ❌."""
+    import math
+    now = datetime.now(timezone.utc)
+    m0 = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    wfs = [w['path'].split('/')[-1] for w in gh(f'repos/{REPO}/actions/workflows?per_page=100').get('workflows', [])]
+    used, last3 = 0, 0
+    for wf in wfs:
+        for r in runs(wf, m0):
+            mins = math.ceil(max(_dur(r), 1) / 60)
+            used += mins
+            if datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) >= now - timedelta(days=3):
+                last3 += mins
+    nxt = (m0 + timedelta(days=32)).replace(day=1)
+    left_days = (nxt - now).total_seconds() / 86400
+    fc = used + last3 / 3 * left_days
+    return [('минуты GitHub: месяц / прогноз (расчёт по прогонам)', '≤ 2 000',
+             f'{used} / ≈ {fc:.0f} (темп {last3 / 3:.0f}/сутки)', '✅' if fc <= 2000 else '⚠️ докупить')]
 
 
 def seal_today() -> list[tuple[str, str, str, str]]:
@@ -456,6 +478,7 @@ def main(hours: int = 26) -> None:
     rows += ours_check(since)
     rows += wide_check()
     rows += alerts_check()
+    rows += minutes_check()
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:
