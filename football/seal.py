@@ -89,6 +89,34 @@ def seal(sport: str, items: list, lo, hi, now, folder: Path, day, extra: list[di
     return dict(n=int(len(per)), lines=int(len(snap)), groups=Counter(per.group), code=hashlib.sha256(body.encode()).hexdigest()[:8])
 
 
+VERIFY_FROM = '2026-11-23'       # 23.11 (ORG IMP-08): сверка ⭐ ↔ снимок — с этих суток (раньше кандидаты в снимок не попадали)
+
+
+def verify(dp: pd.DataFrame, folder: Path, sport: str, id_col: str, days: int = 7) -> str:
+    """23.11 (ORG IMP-08): каждая ставка дня листа (day_pick / hk_day_pick) за `days` суток есть в снимке своих суток
+    (тот же матч, рынок, исход, линия). Снимок пишется ДО выбора ⭐ каждым прогоном (кандидаты — cand_rows), поэтому
+    ⭐ вне снимка = запись задним числом или сбой печати. Строка «🔏 ⭐ не в снимке» — ❌ в health."""
+    if dp is None or dp.empty or not {'date', id_col, 'market', 'pick'} <= set(dp.columns):
+        return f'🔏 ⭐ ↔ снимок ({sport}): журнала нет'
+    ln = lambda v: '' if str(v) in ('', 'nan', 'None') else f'{float(v):g}'
+    edge = max(VERIFY_FROM, str((pd.Timestamp.now() - pd.Timedelta(days=days)).date()))
+    d = dp[(dp.date.astype(str) >= edge) & (dp[id_col].astype(str) != '')]
+    miss, n, cache = [], 0, {}
+    for r in d.itertuples(index=False):
+        day = str(r.date)[:10]
+        if day not in cache:
+            f = Path(folder) / 'seal' / f'{sport}_{day}.csv'
+            s = pd.read_csv(f, dtype=str, keep_default_na=False) if f.exists() else pd.DataFrame(columns=COLS)
+            cache[day] = set(zip(s.match_id, s.market, s.pick, s.line.map(ln)))
+        n += 1
+        k = (str(getattr(r, id_col)), str(r.market), str(r.pick), ln(getattr(r, 'line', '')))
+        if k not in cache[day]:
+            miss.append(f"{day} {k[0]} {k[1]} {k[2]} {k[3]}".strip())
+    if miss:
+        return f'🔏 ⭐ не в снимке ({sport}): {len(miss)} из {n} — ' + '; '.join(miss[:5])
+    return f'🔏 ⭐ ↔ снимок ({sport}): {n} из {n} ✅'
+
+
 def _plural(n: int, one: str, few: str, many: str) -> str:
     n100, n10 = n % 100, n % 10
     return one if n10 == 1 and n100 != 11 else few if 2 <= n10 <= 4 and not 12 <= n100 <= 14 else many

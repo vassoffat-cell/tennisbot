@@ -80,16 +80,18 @@ for path in (HERE.parent / 'notify.py', HERE / 'notify.py'):
 
 # 23.11 · сверка ⭐ ↔ снимок суток (ORG IMP-08): та же линия — ✅, чужая — «⭐ не в снимке»
 import tempfile                    # noqa: E402
-sys.path.insert(0, str(HERE.parent))
-import seal as SEAL                # noqa: E402
-with tempfile.TemporaryDirectory() as tmp:
-    (Path(tmp) / 'seal').mkdir()
-    (Path(tmp) / 'seal' / 'football_2026-11-23.csv').write_text(
-        'match_id,start_utc,group,market,pick,line,p\n401888370,2026-11-23 17:00,Суперлига Турции,TOT,O,2.5,0.61\n', encoding='utf-8')
-    dp = pd.DataFrame([dict(date='2026-11-23', espn_id='401888370', market='TOT', pick='O', line='2.5')])
-    check('снимок: ⭐ в снимке', SEAL.verify(dp, Path(tmp), 'football', 'espn_id').endswith('1 из 1 ✅'), True)
-    dp.loc[0, 'line'] = '3.5'
-    check('снимок: ⭐ вне снимка', SEAL.verify(dp, Path(tmp), 'football', 'espn_id').startswith('🔏 ⭐ не в снимке'), True)
+for seal_path in (HERE.parent / 'seal.py', HERE / 'seal.py'):     # у футбола своя копия seal.py (урок 23.11)
+  spec = importlib.util.spec_from_file_location(f'seal_{seal_path.parent.name}', seal_path)
+  SEAL = importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(SEAL)
+  with tempfile.TemporaryDirectory() as tmp:
+      (Path(tmp) / 'seal').mkdir()
+      (Path(tmp) / 'seal' / 'football_2026-11-23.csv').write_text(
+          'match_id,start_utc,group,market,pick,line,p\n401888370,2026-11-23 17:00,Суперлига Турции,TOT,O,2.5,0.61\n', encoding='utf-8')
+      dp = pd.DataFrame([dict(date='2026-11-23', espn_id='401888370', market='TOT', pick='O', line='2.5')])
+      check(f'{seal_path.parent.name}/seal: ⭐ в снимке', SEAL.verify(dp, Path(tmp), 'football', 'espn_id').endswith('1 из 1 ✅'), True)
+      dp.loc[0, 'line'] = '3.5'
+      check(f'{seal_path.parent.name}/seal: ⭐ вне снимка', SEAL.verify(dp, Path(tmp), 'football', 'espn_id').startswith('🔏 ⭐ не в снимке'), True)
 
 if FAILS:
     print('\n'.join(FAILS))
