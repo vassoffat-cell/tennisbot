@@ -2,7 +2,7 @@
  "list_messages": [],
  "list_match_ids": [],
  "last_daily": "2026-11-22",
- "last_retrain": "2026-11-22",
+ "last_retrain": "2026-11-23",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -56,13 +56,8 @@
  "kcal_date": "2026-11-22",
  "breaker": {},
  "day_pick": {
-  "date": "2026-11-22",
-  "msgs": [
-   [
-    570704006,
-    940
-   ]
-  ],
+  "date": "2026-11-23",
+  "msgs": [],
   "changes": 0,
   "history": [],
   "shots": [],
@@ -74,57 +69,7 @@
   "sep": true,
   "hdr2": true,
   "hdr3": true,
-  "hdr4": true,
-  "scan": "🔎 Сутки: 1 матч · 7 линий · на ставку дня — 1\nATP Finals, хард 1 · 🔏 01069765",
-  "espn_id": "187529",
-  "slot": 2,
-  "key": [
-   "187529",
-   "ML",
-   "2",
-   ""
-  ],
-  "p": 0.6725013277035796,
-  "tier": 2,
-  "label": "П2 Alcaraz",
-  "start_utc": "2026-11-22 17:00",
-  "match": "Alexander Zverev — Carlos Alcaraz",
-  "best": {
-   "espn_id": "187529",
-   "tour": "ATP",
-   "event": "Nitto ATP Finals",
-   "start_utc": "2026-11-22 17:00",
-   "start_local": "22.11 22:00",
-   "player1": "Alexander Zverev",
-   "player2": "Carlos Alcaraz",
-   "market": "ML",
-   "pick": "2",
-   "line": null,
-   "label": "П2 Alcaraz",
-   "p": 0.6725013277035796,
-   "p_src": "pinnacle",
-   "p_model": 0.5967377868821222,
-   "p_push": 0.0,
-   "k": 1.47,
-   "k_src": "api",
-   "source": "api",
-   "k_best": 1.47,
-   "book_best": "onexbet",
-   "book": "onexbet",
-   "k_1x": 1.47,
-   "p_pin": 0.6653108795965939,
-   "p_mkt": 0.6653108795965939,
-   "mkt_src": "pinnacle",
-   "edge": -0.021993006993007103,
-   "group": "fallback",
-   "sl_pen": 0,
-   "slot": 2
-  },
-  "first_label": "П2 Alcaraz",
-  "first_match": "Alexander Zverev — Carlos Alcaraz",
-  "text": "🎾1 <b>Теннис · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 1 матч · 7 линий · на ставку дня — 1\nATP Finals, хард 1 · 🔏 01069765\n🏆 ATP · Nitto ATP Finals · 🕒 22:00\n<b>Alexander Zverev — Carlos Alcaraz</b>\n<b>П2 Alcaraz</b> — 67% · честный кф 1,49\n💵 1xBet 1,47 · EV −1,1% · ставка ¼ ед.",
-  "vol": 1,
-  "played": true
+  "hdr4": true
  },
  "model_version": 4,
  "reported": [
@@ -3630,7 +3575,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-23T02:17:10",
+ "chk_run": "2026-11-23T03:14:50",
  "plan_at": [
   "2026-11-23 21:30",
   "2026-11-23 23:30",
@@ -3642,5 +3587,6 @@
   "2026-11-23 23:30|2026-11-23 23:35",
   "2026-11-24 00:00|2026-11-24 00:50",
   "2026-11-24 02:00|2026-11-24 02:15"
- ]
+ ],
+ "quiet_on": "2026-11-23"
 }
