@@ -75,7 +75,7 @@ def minutes_check() -> list[tuple[str, str, str, str]]:
     left_days = (nxt - now).total_seconds() / 86400
     fc = used + last3 / 3 * left_days
     return [('минуты GitHub: месяц / прогноз (расчёт по прогонам)', '≤ 2 000',
-             f'{used} / ≈ {fc:.0f} (темп {last3 / 3:.0f}/сутки)', '✅' if fc <= 2000 else '⚠️ докупить')]
+             f'{used} / ≈ {fc:.0f} (темп {last3 / 3:.0f}/сутки)', '✅' if fc <= 2000 else '⚠️')]
 
 
 def seal_today() -> list[tuple[str, str, str, str]]:
