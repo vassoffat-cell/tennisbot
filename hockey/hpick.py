@@ -316,6 +316,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         info = SEAL.seal('hockey', [it for it in items if it[0].get('league') in leagues], lo, hi, now, HD_DATA, str(day),
                          SEAL.cand_rows(all_cands, 'id'))
         scan = SEAL.text(info, len({str(c['id']) for c in all_cands}))
+        log.append(SEAL.verify(store.read('hk_day_pick'), HD_DATA, 'hockey', 'id'))   # 23.11 (IMP-08)
     except Exception as ex:
         log.append(f'⭐🏒 печать: сбой {ex.__class__.__name__}: {ex}')
     if st.get('date') != str(day):                           # новые сутки: снять закрепы прошлых, убрать уведомления

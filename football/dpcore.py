@@ -284,6 +284,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             import seal as SEAL
             lo = pd.Timestamp(day) + pd.Timedelta(hours=C.DAY_START_HOUR - C.TZ_OFFSET_HOURS)
             info = SEAL.seal(_sk(), items, lo, lo + pd.Timedelta(days=1), now, C.DATA, dstr, SEAL.cand_rows(cands))
+            log.append(SEAL.verify(dp, C.DATA, _sk(), 'espn_id'))     # 23.11 (IMP-08): ⭐ прошлых прогонов ↔ снимок
         except Exception as e:
             log.append(f'печать: сбой {e.__class__.__name__}: {e}')
     note = ('; ' + '; '.join(log)) if log else ''
