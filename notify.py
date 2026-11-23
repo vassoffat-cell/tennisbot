@@ -29,6 +29,7 @@ COVER = '🔒 ·'                                  # не одиночный э�
 
 
 HIDE = True                     # 21.11 (решение пользователя): все сообщения ботов — скрытым текстом Telegram (tg-spoiler)
+PRE_PLAIN = True                # 23.11: <pre>/<code> снимаются — Telegram не прячет их под spoiler (spoiler_probe.py)
 _KEEP = re.compile(r'(<pre>.*?</pre>|<code>.*?</code>|<blockquote[^>]*>|</blockquote>)', re.S)
 
 
@@ -38,6 +39,8 @@ def hide(text: str) -> str:
     свёрнутых списков; таблицу <pre> спрятать нельзя — spoiler вокруг неё Telegram отбрасывает. Поэтому скрывается всё, кроме <pre>/<code>."""
     if not HIDE or not text or 'tg-spoiler' in text:
         return text
+    if PRE_PLAIN:                # 23.11 (решение пользователя): таблицы <pre>/<code> — простым текстом, тоже под spoiler
+        text = re.sub(r'</?(?:pre|code)>', '', text)
     out = []
     for part in _KEEP.split(text):
         if not part or _KEEP.fullmatch(part) or not part.strip():
