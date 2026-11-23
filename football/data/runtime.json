@@ -1,10 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "401875009",
-  "401879237",
-  "401882802"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-23",
  "last_files": "2026-11-06",
  "last_reminder": "2026-11-10",
@@ -153,7 +149,7 @@
   "first_match": "Levante — Elche",
   "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 4 матча · 49 линий · на ставку дня — 2\nСуперлига Турции 1 · Серия A 1 · АПЛ 1 · Ла Лига 1 · 🔏 2a26ec42\n🏆 Ла Лига · 🕒 01:00\n<b>Levante — Elche</b>\n<b>Ф1(+0)</b> — 63% · честный кф 1,59\n💵 1xBet 1,69 · EV +6,2% · ставка ¼ ед.",
   "vol": 4,
-  "played": false
+  "played": true
  },
  "model_version": 2,
  "reported": [
@@ -1055,7 +1051,7 @@
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-23T19:24:29",
- "chk_run": "2026-11-23T19:04:20",
+ "chk_run": "2026-11-23T20:25:04",
  "plan_at": [],
  "plan_sig": [],
  "wide_catchup": "2026-11-08",
