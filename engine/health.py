@@ -70,6 +70,8 @@ def seal_today() -> list[tuple[str, str, str, str]]:
     return [('печать С16: последний снимок суток', f'≥ {day:%d.%m}', ', '.join(f'{s} {v}' for s, v in last.items()), '✅' if ok else '❌')]
 
 
+K16_UTC = '2026-11-21 05:13'   # 23.11 аудит: К16 (21.11 10:13 Ташкент) — открытый купон 1WIN больше не «после матча»; купоны до К16,
+                                # переразмеченные задним числом «post → pre» (7 строк 29.10–20.11), — история выговора 21.11, а не новый пропуск
 K9_UTC = '2026-11-15 14:06'    # К9 «страховочная сеть» (15.11 19:06 Ташкент): с этого момента книга v10 и сообщение «❔»
 
 
@@ -106,9 +108,10 @@ def cappers(since: datetime) -> list[tuple[str, str, str, str]]:
             if not slips:                                                           # купонов нет — текст поста (кроме рекламы)
                 want += [r for r in rs if not re.search(r'реклам|промокод|подписат', r['pick'], re.I)]
             if want:                                         # 16.11 аудит: посты ДО К9 (15.11 19:06), найденные пересборкой книги
-                (hist if min(r['post_ts'] for r in rs) < K9_UTC else miss).append(f'{src}:{pid}')   # задним числом, — история
+                t0 = min(r['post_ts'] for r in rs)
+                (hist if t0 < K9_UTC or (slips and t0 < K16_UTC) else miss).append(f'{src}:{pid}')   # задним числом, — история
         out.append(('каперы: прочитаны, но не присланы', '0', f"{len(miss)}" + (f" ({', '.join(miss[:4])})" if miss else '')
-                    + (f'; до К9 (история, пересборка): {len(hist)}' if hist else ''), '✅' if not miss else '❌'))
+                    + (f'; до К9/К16 (история, пересборка): {len(hist)}' if hist else ''), '✅' if not miss else '❌'))
     except Exception as e:
         out.append(('каперы: прочитаны, но не присланы', '0', f'нет данных ({e.__class__.__name__})', '❌'))
     return out
@@ -368,15 +371,34 @@ def wide_check() -> list[tuple[str, str, str, str]]:
              '✅' if nb < 5 or nw >= 0.15 * nb else '❌')]
 
 
+def alerts_check() -> list[tuple[str, str, str, str]]:
+    """23.11 аудит (AUDIT 0ж④, CODEX 2а): журнал присланных сообщений каперов с вердиктом (football/data/tips/alerts.csv, с 23.11).
+    Каждый присланный прогноз — строка с причиной; «⬜ матч не найден» и «ставка не разобрана» — доля, разбор на аудите."""
+    import pandas as pd
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent / 'football' / 'data' / 'tips'
+    if not (root / 'alerts.csv').exists():
+        return [('каперы: журнал вердиктов (alerts.csv)', 'растёт', 'файла ещё нет (с 23.11)', '⏳')]
+    a = pd.read_csv(root / 'alerts.csv', dtype=str, keep_default_na=False)
+    edge = (pd.Timestamp.now(tz='UTC').tz_localize(None) - pd.Timedelta(hours=72)).strftime('%Y-%m-%d %H:%M')
+    a = a[a.sent >= edge]
+    if a.empty:
+        return [('каперы: журнал вердиктов за 72 ч', 'растёт', 'строк 0', '⏳')]
+    v = a.verdict.str.extract(r'^(\S+\s\S+)')[0].fillna('—').value_counts()
+    empty = int((a.verdict.str.strip() == '').sum())
+    return [('каперы: журнал вердиктов за 72 ч (у каждого — причина)', 'пусто 0', f"строк {len(a)}, без вердикта {empty}; "
+             + ', '.join(f'{k} {n}' for k, n in v.head(6).items()), '✅' if not empty else '❌')]
+
+
 def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
     rows = []
     for wf, per_day in (('daily.yml', 9), ('football.yml', 7), ('cappers.yml', 21)):
         rs = runs(wf, since)
-        bad = [r for r in rs if r['conclusion'] not in ('success', None)]
+        bad = [r for r in rs if r['conclusion'] not in ('success', None) and not _special(r)]   # 23.11 аудит: разовая проверка (research) — не сбой системы
         exp = int(per_day * hours / 24)
-        rows.append((f'{wf}: прогонов', f'≈ {exp}', f'{len(rs)} (сбоев {len(bad)})', '✅' if not bad and len(rs) >= exp * 0.7 else '❌'))
+        rows.append((f'{wf}: прогонов', f'≥ {int(exp * 0.7)}', f'{len(rs)} (сбоев {len(bad)})', '✅' if not bad and len(rs) >= exp * 0.7 else '❌'))
         for r in bad[:5]:
             rows.append(('  сбой', '', f"{(datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) + TZ):%d.%m %H:%M} {r['event']}", '❌'))
     # контрольные события: ищем в прогонах нужного часа (по местному времени начала)
@@ -431,6 +453,7 @@ def main(hours: int = 26) -> None:
     rows += halves_check()
     rows += ours_check(since)
     rows += wide_check()
+    rows += alerts_check()
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:

@@ -54,6 +54,18 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Репетиция в окне плана (аудит 23.11)
+        # 22.11: репетиция 21:13 опоздала до 21:56 и попала в окно плана 22:00 (T−40м ×2) — planTick_ (Apps Script) засчитал её
+        # как прогон окна и не запустил полный → окно без прогона (health «план по матчам»). Репетиция в окне — запускает полный прогон сама.
+        if: github.event.schedule == '13 16 * * *' || github.event.inputs.rehearse != ''
+        continue-on-error: true
+        run: |
+          pa=$(gh api "repos/${{ github.repository }}/contents/football/data/plan.json" -H 'Accept: application/vnd.github.raw' 2>/dev/null | jq -r --arg n "$(date -u -d '+15 min' '+%Y-%m-%d %H:%M')" --arg m "$(date -u -d '-10 min' '+%Y-%m-%d %H:%M')" '[.groups[]|select(.at <= $n and .hi >= $m)|.at]|max // empty' 2>/dev/null || true)
+          if [ -n "$pa" ]; then
+            gh api -X POST "repos/${{ github.repository }}/actions/workflows/football.yml/dispatches" -f ref=main && echo "📅 репетиция в окне плана $pa UTC — запущен полный прогон"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Gate — экономия минут (14.11)
         id: gate
         if: github.event_name == 'schedule' && github.event.schedule != '13 16 * * *'

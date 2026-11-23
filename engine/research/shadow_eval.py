@@ -16,7 +16,8 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-SRC = {'теннис': ROOT / 'data' / 'shadow', 'футбол': ROOT / 'football' / 'data' / 'shadow'}
+SRC = {'теннис': ROOT / 'data' / 'shadow', 'футбол': ROOT / 'football' / 'data' / 'shadow',
+       'хоккей': ROOT / 'hockey' / 'data' / 'shadow'}     # 23.11 аудит: + хоккей (С21б; закрытие — p_last)
 GATE_N, GATE_T = 300, 2.0
 
 
@@ -26,11 +27,14 @@ def load() -> pd.DataFrame:
         for f in sorted(d.glob('*.csv')):
             x = pd.read_csv(f, dtype=str, keep_default_na=False)
             x['sport'] = sport
+            if 'p_mkt_last' not in x and 'p_last' in x:          # хоккей (С21б): p — Pinnacle (инверсия), закрытие — p_last
+                x['p_mkt_last'] = x['p_last']
+                x['mkt_src'] = 'pinnacle'
             parts.append(x)
     if not parts:
         return pd.DataFrame()
     df = pd.concat(parts, ignore_index=True)
-    for c in ('result', 'settled', 'k_best', 'book_best', 'group', 'market', 'k_1x', 'book'):
+    for c in ('result', 'settled', 'k_best', 'book_best', 'group', 'market', 'k_1x', 'book', 'mkt_src', 'p_mkt'):
         if c not in df:
             df[c] = ''
     df = df.fillna('')
@@ -86,9 +90,14 @@ def main(min_n: int = 1) -> None:
     head = f'{"срез":<44} {"n":>5} {"угад":>6} {"P":>6} {"ROI ± ош.":>15} {"z":>5} {"CLV ± ош.":>15} {"t":>5}  ворота R7'
     for title, keys in (('вид', ['sport']), ('вид × рынок', ['sport', 'market']), ('вид × кф', ['sport', 'kf']),
                         ('вид × EV при ставке', ['sport', 'evb']), ('вид × группа (value / fallback)', ['sport', 'group']),
+                        ('вид × источник справедливой P (аудит 23.11: blend — дальние линии, маржа 10–25%)', ['sport', 'mkt_src']),
+                        ('вид · ⭐-зона (P 0,55–0,85, кф 1,35–2,50 — где выбирается ⭐)', 'zone'),
                         ('теннис 💰 сегмент (П1/П2, кф 1,70–2,50, EV 3–20%)', None)):
         print(f'— {title}\n{head}')
-        if keys is None:
+        if keys == 'zone':
+            z = df[df.p_first.between(0.55, 0.85) & df.k_first.between(1.35, 2.5)]
+            groups = [(f'{sp} · ⭐-зона', g) for sp, g in z.groupby('sport')]
+        elif keys is None:
             seg = df[(df.sport == 'теннис') & (df.market == 'ML') & (df.kf == '1,70–2,50') & (df.evb == '3…20%')]
             groups = [('💰 теннис', seg)]
         else:

@@ -23,6 +23,7 @@ import pandas as pd
 import tips as T
 
 BOOK = T.DIR / 'book.csv'
+ALERTS = T.DIR / 'alerts.csv'     # 23.11 аудит (AUDIT 0ж④, CODEX 2а): журнал присланных сообщений каперов с вердиктом — проверка «каждое сообщение»
 VERSION = 17                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
@@ -915,6 +916,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
             continue
         # 14.11 (замечание пользователя): КАЖДЫЙ прогноз — отдельным сообщением, с вердиктом системы (🔥 / ⚔️ / нейтрально / вне базы)
         msgs = []
+        jr: list[dict] = []                                       # 23.11 аудит: журнал вердиктов (alerts.csv)
         no_reason: list[str] = []
         for r in g.itertuples(index=False):
             r0 = st[st.src == r.src] if len(st) else st
@@ -927,11 +929,16 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
                 msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n"
                             + (f"{notify.esc(r.a)} — {notify.esc(r.b)}\n" if r.a else '')
                             + f"❔ <i>{notify.esc(str(r.pick)[2:220])}</i>" + (f"\n{wh}" if wh else '') + f"\n⬜ ставка не разобрана · {link}")
+                jr.append(dict(uid=r.uid, sent=str(now)[:16], bot=bot, sport=r.sport, match=f'{r.a} — {r.b}' if r.a else '',
+                               pick=str(r.pick)[:60], when=wh.split(' ')[0] if wh else '', verdict='⬜ ставка не разобрана'))
                 continue
             verdict = rel.get(r.uid) or ('· после начала — не оценивается' if wh.startswith('🔴') else None)
             if verdict is None:                                   # 21.11 (К16): «без оценки» / «вне базы» без причины — запрещено
                 verdict = '⬜ матч не найден на табло'
                 no_reason.append(r.uid)
+            jr.append(dict(uid=r.uid, sent=str(now)[:16], bot=bot, sport=r.sport, match=f'{r.a} — {r.b}' if r.a else '',
+                           pick=str(_pick_short(r.pick, r.a, r.b, r.sport) or r.pick)[:60], when=wh.split(' ')[0] if wh else '',
+                           verdict=re.sub(r'<[^>]+>', '', str(verdict))[:80]))
             msgs.append(f"👥 <b>{notify.esc(T.TG.get(r.src, r.src))}</b>{roi} · {ICON.get(r.sport, '•')}\n{match}\n"
                         f"<b>{notify.esc(_pick_short(r.pick, r.a, r.b, r.sport) or str(r.pick)[:40])}</b>" + (f' @{k}' if k else '')
                         + (f"\n{wh}" if wh else '') + f"\n{verdict} · {link}")
@@ -945,6 +952,11 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
         for m in msgs:
             notify.send_blocks([('🧪 <b>ТЕСТ</b>\n' if test else '') + m], bot=bot)
         n += len(g)
+        if jr and not test:
+            try:
+                pd.DataFrame(jr).to_csv(ALERTS, mode='a', header=not ALERTS.exists(), index=False)
+            except Exception as e:
+                log.append(f'👥 журнал вердиктов — сбой записи ({e.__class__.__name__})')
         if no_reason:                                             # сторож health: «каперы: сбои вердикта без причины»
             log.append(f"👥 вердикт без причины (К16): {len(no_reason)} — {', '.join(no_reason[:5])}")
     if test:
