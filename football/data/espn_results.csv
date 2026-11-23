@@ -948,3 +948,4 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401876400,fra.1,league,FRA,F1,2026-11-22 19:45,Marseille,Le Mans,Marseille,Le Mans,2,3,FT,2026-27-ligue-1,0
 401882803,esp.1,league,ESP,SP1,2026-11-22 20:00,Getafe,Atlético Madrid,Getafe,Ath Madrid,0,3,FT,2026-27-laliga,0
 401931822,por.taca.portugal,cup,POR,P1,2026-11-22 20:45,Torreense,Benfica,,Benfica,1,3,FT,4th-round,0
+401888370,tur.1,league,TUR,T1,2026-11-23 17:00,Istanbul Basaksehir,Çorum FK,Buyuksehyr,Corum,4,2,FT,2026-27-turkish-super-lig,0
