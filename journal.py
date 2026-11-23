@@ -13,6 +13,7 @@
 """
 from __future__ import annotations
 
+import os
 import csv
 import datetime as dt
 import uuid
@@ -48,6 +49,7 @@ LINE_FCST_COLS = ['start_utc', 'start_local', 'player1', 'player2', 'market', 'p
 LINE_RESULT_COLS = ['status', 'result', 'settled', 'pnl_lo']
 AUTO_FCST_COLS = AUTO_COLS[AUTO_COLS.index('start_utc'):AUTO_COLS.index('p_0_3') + 1]
 AUTO_TAIL_COLS = ['level', 'p1_raw', 'calib_k', 'confidence']
+VER = os.environ.get('GITHUB_SHA', '')[:7]                # 23.11 (IMP-06): версия кода прогона (GitHub Actions)
 DAY_COLS = ['date', 'espn_id', 'slot', 'tour', 'event', 'start_utc', 'start_local', 'player1', 'player2', 'market', 'label', 'p',
             'p_low', 'published', 'changes', 'history', 'status', 'result', 'settled',
             # пакет №3 (правило C): линия, кф 1xBet, источник P, уверенность в выгодности, принятие, скриншоты — только в конец
@@ -55,7 +57,8 @@ DAY_COLS = ['date', 'espn_id', 'slot', 'tour', 'event', 'start_utc', 'start_loca
             'screenshots', 'edge', 'group', 'p_pin',                 # ТЗ-004 — перевес над Pinnacle, группа, P Pinnacle
             'rank', 'fire', 'clash',                                 # 11.11: ⭐2/⭐3 (rank), синтез с каперами 🔥/⚔️
             'p_close', 'clv',                                        # 14.11: цена закрытия (Pinnacle без маржи), CLV = кф × P_закр − 1
-            'ev', 'k_best', 'book_best', 'ev_best']                  # 16.11: EV = P × кф − 1 (1xBet) и по лучшей цене из 10 книг
+            'ev', 'k_best', 'book_best', 'ev_best',                  # 16.11: EV = P × кф − 1 (1xBet) и по лучшей цене из 10 книг
+            'ver']                           # 23.11 (ORG IMP-06): версия кода — короткий хеш коммита, выбравшего ставку
 CHG_COLS = ['date', 'time', 'reason', 'rank', 'espn_id', 'market', 'pick', 'line', 'label', 'match', 'p', 'k', 'to_label',
             'to_key', 'slot', 'status', 'result', 'settled']   # журнал смен ставки дня (заменённые ставки тоже получают итог)
 SHEETS = {'forecasts': FORECAST_COLS, 'paper_bets': BET_COLS, 'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS,
@@ -152,6 +155,8 @@ class Store:
         if not rows:
             return
         cols = SHEETS[name]
+        if 'ver' in cols:                              # 23.11 (IMP-06): строка ставки дня помнит версию кода
+            rows = [dict(r, ver=r.get('ver') or VER) for r in rows]
         if self.sh:
             ws = self._sheet(name)
             ws.append_rows([[_clean(r.get(c, '')) for c in cols] for r in rows], value_input_option='RAW',

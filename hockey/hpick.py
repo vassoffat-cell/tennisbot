@@ -27,7 +27,8 @@ from hockey import hlines as HL
 DP_COLS = ['date', 'rank', 'id', 'league', 'start_utc', 'start_local', 'home', 'away', 'slot', 'market', 'pick', 'line',
            'label', 'p', 'fair_k', 'fire', 'clash', 'status', 'reason', 'result', 'settled', 'created',
            'k', 'p_close', 'clv',          # 14.11: кф DraftKings на момент ставки, цена закрытия (DK без маржи перед матчем), CLV
-           'ev']                           # 17.11 лестница: EV по кф 1xBet (линии с ценой)
+           'ev',                           # 17.11 лестница: EV по кф 1xBet (линии с ценой)
+           'ver']                          # 23.11 (ORG IMP-06): версия кода — короткий хеш коммита
 J.SHEETS.setdefault('hk_day_pick', DP_COLS)
 P_MIN, P_MAX = 0.65, 0.80
 MAX_PICKS = 3                   # 14.11: запасное значение — лимит динамический (selflearn.max_picks)
