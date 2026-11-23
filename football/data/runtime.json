@@ -1,6 +1,11 @@
 {
  "list_messages": [],
- "list_match_ids": [],
+ "list_match_ids": [
+  "401875009",
+  "401879237",
+  "401882802",
+  "401888370"
+ ],
  "last_daily": "2026-11-22",
  "last_files": "2026-11-06",
  "last_reminder": "2026-11-10",
@@ -76,215 +81,63 @@
   "IT1": "2026-11-22"
  },
  "day_pick": {
-  "date": "2026-11-22",
+  "date": "2026-11-23",
   "msgs": [
    [
     570704006,
-    998
+    1072
    ]
   ],
   "changes": 0,
   "history": [],
   "shots": [],
   "screenshots": 0,
-  "extras": [
-   {
-    "espn_id": "401884730",
-    "comp_name": "Бундеслига",
-    "start_utc": "2026-11-22 16:30",
-    "start_local": "22.11 21:30",
-    "home": "Werder Bremen",
-    "away": "Hamburg SV",
-    "market": "1X2",
-    "pick": "H",
-    "line": null,
-    "label": "П1",
-    "p": 0.6200263732247956,
-    "p_src": "pinnacle",
-    "book": "onexbet",
-    "k_1x": 1.66,
-    "p_model": 0.4874745399893162,
-    "p_push": 0.0,
-    "k": 1.66,
-    "k_src": "api",
-    "source": "api",
-    "sigma": 0.38,
-    "p_mkt": 0.607345850154835,
-    "mkt_src": "pinnacle",
-    "k_best": 1.66,
-    "book_best": "onexbet",
-    "tips_for": 0,
-    "fire_i": false,
-    "clash_i": false,
-    "fire": false,
-    "clash": false,
-    "veto": false,
-    "edge": null,
-    "group": "fallback",
-    "sl_pen": 0,
-    "slot": 1,
-    "tier": 2,
-    "rank": 2,
-    "key": [
-     "401884730",
-     "1X2",
-     "H",
-     ""
-    ],
-    "match": "Werder Bremen — Hamburg SV",
-    "why": "EV +2,9% · 2-я 🎯 из 3",
-    "at": "09:02",
-    "edits": 0,
-    "hist": [
-     "➕ новая линия дня в 09:02: EV +2,9% · 2-я 🎯 из 3"
-    ],
-    "text": "⚽2 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Бундеслига · 🕒 21:30\n<b>Werder Bremen — Hamburg SV</b>\n<b>П1</b> — 62% · честный кф 1,61\n💵 1xBet 1,66 · EV +2,9% · ставка ¼ ед.\n➕ новая линия дня в 09:02: EV +2,9% · 2-я 🎯 из 3",
-    "msgs": [
-     [
-      570704006,
-      1001
-     ]
-    ]
-   },
-   {
-    "espn_id": "401875001",
-    "comp_name": "Серия A",
-    "start_utc": "2026-11-22 19:45",
-    "start_local": "23.11 00:45",
-    "home": "Atalanta",
-    "away": "Internazionale",
-    "market": "1X2",
-    "pick": "A",
-    "line": null,
-    "label": "П2",
-    "p": 0.6364122816790352,
-    "p_src": "pinnacle",
-    "book": "onexbet",
-    "k_1x": 1.6,
-    "p_model": 0.5313593558285484,
-    "p_push": 0.0,
-    "k": 1.6,
-    "k_src": "api",
-    "source": "api",
-    "sigma": 0.38,
-    "p_mkt": 0.6263979857818623,
-    "mkt_src": "pinnacle",
-    "k_best": 1.6,
-    "book_best": "onexbet",
-    "tips_for": 0,
-    "fire_i": false,
-    "clash_i": false,
-    "fire": false,
-    "clash": false,
-    "veto": false,
-    "edge": null,
-    "group": "fallback",
-    "sl_pen": 0,
-    "slot": 3,
-    "tier": 2,
-    "rank": 3,
-    "key": [
-     "401875001",
-     "1X2",
-     "A",
-     ""
-    ],
-    "match": "Atalanta — Internazionale",
-    "why": "EV +1,8% · 3-я 🎯 из 3",
-    "at": "09:02",
-    "edits": 0,
-    "hist": [
-     "➕ новая линия дня в 09:02: EV +1,8% · 3-я 🎯 из 3"
-    ],
-    "text": "⚽3 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Серия A · 🕒 00:45\n<b>Atalanta — Internazionale</b>\n<b>П2</b> — 64% · честный кф 1,57\n💵 1xBet 1,60 · EV +1,8% · ставка ¼ ед.\n➕ новая линия дня в 09:02: EV +1,8% · 3-я 🎯 из 3",
-    "msgs": [
-     [
-      570704006,
-      1003
-     ]
-    ]
-   }
-  ],
-  "log": [
-   {
-    "date": "2026-11-22",
-    "time": "09:02",
-    "reason": "новая: EV +2,9% · 2-я 🎯 из 3",
-    "rank": 2,
-    "espn_id": "401884730",
-    "market": "1X2",
-    "pick": "H",
-    "line": "",
-    "label": "П1",
-    "match": "Werder Bremen — Hamburg SV",
-    "p": 0.62,
-    "k": 1.66,
-    "to_label": "—",
-    "to_key": "401884730|1X2|H|",
-    "slot": 1
-   },
-   {
-    "date": "2026-11-22",
-    "time": "09:02",
-    "reason": "новая: EV +1,8% · 3-я 🎯 из 3",
-    "rank": 3,
-    "espn_id": "401875001",
-    "market": "1X2",
-    "pick": "A",
-    "line": "",
-    "label": "П2",
-    "match": "Atalanta — Internazionale",
-    "p": 0.6364,
-    "k": 1.6,
-    "to_label": "—",
-    "to_key": "401875001|1X2|A|",
-    "slot": 3
-   }
-  ],
+  "extras": [],
+  "log": [],
   "notes": [],
   "nokb": true,
   "sep": true,
   "hdr2": true,
   "hdr3": true,
   "hdr4": true,
-  "scan": "🔎 Сутки: 25 матчей · 283 линии · на ставку дня — 11\nСерия A 5 · Суперлига Турции 4 · Эредивизи 4 · Ла Лига 4 · ещё 4 · 🔏 ab6ef2b2",
-  "espn_id": "401888246",
-  "slot": 3,
+  "scan": "🔎 Сутки: 4 матча · 49 линий · на ставку дня — 2\nСуперлига Турции 1 · Серия A 1 · АПЛ 1 · Ла Лига 1 · 🔏 2a26ec42",
+  "espn_id": "401882802",
+  "slot": 0,
   "key": [
-   "401888246",
-   "1X2",
-   "A",
-   ""
+   "401882802",
+   "AH",
+   "H",
+   "0"
   ],
-  "p": 0.6304111680274045,
+  "p": 0.628248255684795,
   "tier": 2,
-  "label": "П2",
-  "start_utc": "2026-11-22 13:00",
-  "match": "Konyaspor — Besiktas",
+  "label": "Ф1(+0)",
+  "start_utc": "2026-11-23 20:00",
+  "match": "Levante — Elche",
   "best": {
-   "espn_id": "401888246",
-   "comp_name": "Суперлига Турции",
-   "start_utc": "2026-11-22 13:00",
-   "start_local": "22.11 18:00",
-   "home": "Konyaspor",
-   "away": "Besiktas",
-   "market": "1X2",
-   "pick": "A",
-   "line": null,
-   "label": "П2",
-   "p": 0.6304111680274045,
+   "espn_id": "401882802",
+   "comp_name": "Ла Лига",
+   "start_utc": "2026-11-23 20:00",
+   "start_local": "24.11 01:00",
+   "home": "Levante",
+   "away": "Elche",
+   "market": "AH",
+   "pick": "H",
+   "line": 0.0,
+   "label": "Ф1(+0)",
+   "p": 0.628248255684795,
    "p_src": "pinnacle",
    "book": "onexbet",
-   "k_1x": 1.64,
-   "p_model": 0.465373802113162,
-   "p_push": 0.0,
-   "k": 1.64,
+   "k_1x": 1.69,
+   "p_model": 0.4455535242680655,
+   "p_push": 0.26677356564768695,
+   "k": 1.69,
    "k_src": "api",
    "source": "api",
    "sigma": 0.38,
-   "p_mkt": 0.6147483823555071,
+   "p_mkt": 0.6108870967741935,
    "mkt_src": "pinnacle",
-   "k_best": 1.64,
+   "k_best": 1.69,
    "book_best": "onexbet",
    "tips_for": 0,
    "fire_i": false,
@@ -295,13 +148,11 @@
    "edge": null,
    "group": "fallback",
    "sl_pen": 0,
-   "slot": 3
+   "slot": 0
   },
-  "first_label": "П2",
-  "first_match": "Konyaspor — Besiktas",
-  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 25 матчей · 283 линии · на ставку дня — 11\nСерия A 5 · Суперлига Турции 4 · Эредивизи 4 · Ла Лига 4 · ещё 4 · 🔏 ab6ef2b2\n🏆 Суперлига Турции · 🕒 18:00\n<b>Konyaspor — Besiktas</b>\n<b>П2</b> — 63% · честный кф 1,59\n💵 1xBet 1,64 · EV +3,4% · ставка ¼ ед.",
-  "vol": 25,
-  "played": true
+  "first_label": "Ф1(+0)",
+  "first_match": "Levante — Elche",
+  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 4 матча · 49 линий · на ставку дня — 2\nСуперлига Турции 1 · Серия A 1 · АПЛ 1 · Ла Лига 1 · 🔏 2a26ec42\n🏆 Ла Лига · 🕒 01:00\n<b>Levante — Elche</b>\n<b>Ф1(+0)</b> — 63% · честный кф 1,59\n💵 1xBet 1,69 · EV +6,2% · ставка ¼ ед."
  },
  "model_version": 2,
  "reported": [
@@ -1151,9 +1002,19 @@
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-22T22:01:08",
- "chk_run": "2026-11-22T22:02:03",
- "plan_at": [],
- "plan_sig": [],
+ "chk_run": "2026-11-23T03:11:44",
+ "plan_at": [
+  "2026-11-23 14:00",
+  "2026-11-23 16:00",
+  "2026-11-23 17:00",
+  "2026-11-23 19:00"
+ ],
+ "plan_sig": [
+  "2026-11-23 14:00|2026-11-23 15:10",
+  "2026-11-23 16:00|2026-11-23 16:35",
+  "2026-11-23 17:00|2026-11-23 17:55",
+  "2026-11-23 19:00|2026-11-23 19:20"
+ ],
  "wide_catchup": "2026-11-08",
  "et90": {
   "401931105": [
@@ -1299,6 +1160,10 @@
   "401931807": [
    0,
    0
+  ],
+  "401931819": [
+   2,
+   2
   ]
  },
  "et90_tried": [
@@ -1316,6 +1181,7 @@
   "401931108",
   "401931116",
   "401931807",
+  "401931819",
   "401931821",
   "401932738",
   "401932755",
