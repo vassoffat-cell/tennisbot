@@ -25,7 +25,22 @@ const MON = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл
 const IDLE_MS = 15 * 60 * 1000;
 
 // ============================================================ Telegram
+// 23.11 (В3б): текст под spoiler Telegram — в чате точки, нажал — видно. Таблицы <pre>/<code> — простым текстом (Telegram не прячет их).
+// Копия notify.hide из облака: spoiler вокруг каждого куска вне <blockquote>-тегов.
+function hide_(t) {
+  if (!t || String(t).indexOf('tg-spoiler') >= 0) return t;
+  t = String(t).replace(/<\/?(?:pre|code)>/g, '');
+  return t.split(/(<blockquote[^>]*>|<\/blockquote>)/).map(function (p) {
+    if (!p || /^<\/?blockquote/.test(p) || !p.trim()) return p;
+    const a = p.match(/^\s*/)[0], b = p.match(/\s*$/)[0];
+    return a + '<tg-spoiler>' + p.trim() + '</tg-spoiler>' + b;
+  }).join('');
+}
+
 function tg_(method, payload) {
+  if ((method === 'sendMessage' || method === 'editMessageText') && payload && payload.parse_mode === 'HTML') {
+    payload.text = hide_(payload.text);                    // 23.11 (решение пользователя): ответы меню — скрытым текстом, как в облаке (В3б)
+  }
   const r = UrlFetchApp.fetch('https://api.telegram.org/bot' + PROPS.getProperty('BOT_TOKEN') + '/' + method, {
     method: 'post', contentType: 'application/json', payload: JSON.stringify(payload), muteHttpExceptions: true
   });
