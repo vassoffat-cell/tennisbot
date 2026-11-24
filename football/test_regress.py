@@ -135,6 +135,14 @@ ocr = 'Футбол. Лига Чемпионов УЕФА\nБудё-Глимт V
 rows = B.tips_of('kapper_uk', dict(id=7, ts=pd.Timestamp('2026-11-24'), text='ЭКСПРЕСС С КОЭФ 2.5 🔥', ocr=ocr, photos=['x']))
 check('1xBet экспресс VS: пары', [(r['a'], r['b']) for r in rows], [('Будё-Глимт', 'ЛАСК'), ('Галатасарай', 'Астон Вилла')])
 
+# 24.11 · вердикт капера на наш матч — та же P, что у ставки дня (Комо Ф1(−1): ⭐-кандидат 77%, вердикт показывал «⚔️ 34%»)
+import numpy as np  # noqa: E402
+B._SHADOW['m'] = {'1': [dict(market='AH', pick='H', line='-1.0', p='0.7748', p_mkt='0.733', mkt_src='pinnacle')]}
+Pm = np.full((6, 6), 1 / 36)
+check('вердикт: P ставки дня для той же линии', round(B._sys_p('1', Pm, [('AH', 'H', -1.0)]), 4), 0.7748)
+check('вердикт: без цен — модель', round(B._sys_p('2', Pm, [('1X2', 'H', '')]), 4), round(T.p_legs(Pm, [('1X2', 'H', '')]), 4))
+B._SHADOW.clear()
+
 # 23.11 · сверка ⭐ ↔ снимок суток (ORG IMP-08): та же линия — ✅, чужая — «⭐ не в снимке»
 import tempfile                    # noqa: E402
 for seal_path in (HERE.parent / 'seal.py', HERE / 'seal.py'):     # у футбола своя копия seal.py (урок 23.11)

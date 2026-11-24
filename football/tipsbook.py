@@ -773,6 +773,60 @@ def _off_score(pick: str) -> bool:
     return bool(W.EXOT.search(p) or HV.OTHER.search(p) or (T.SKIP.search(p) and 'тайм' not in p))
 
 
+_SHADOW: dict = {}
+
+
+def _shadow_rows(eid: str) -> list[dict]:
+    """Стороны матча из теневого портфеля футбола (data/shadow/football_ГГГГ-ММ.csv): P ставки дня (рынок + модель, A2), P рынка."""
+    if 'm' not in _SHADOW:
+        m: dict = {}
+        for f in sorted((T.DIR.parent / 'shadow').glob('football_*.csv'))[-2:]:
+            try:
+                d = pd.read_csv(f, dtype=str, keep_default_na=False)
+            except Exception:
+                continue
+            for r in d.to_dict('records'):
+                m.setdefault(str(r['espn_id']), []).append(r)
+        _SHADOW['m'] = m
+    return _SHADOW['m'].get(str(eid), [])
+
+
+def _sys_p(eid, P: np.ndarray, legs) -> float:
+    """24.11 (решение пользователя, Ц14 — одна P во всей системе): P вердикта капера на наш матч = P ставки дня.
+    ① одна нога, линия есть среди сторон матча с ценой → та же P, что у ⭐ (смесь рынка и модели);
+    ② сочетание или линия без цены → матрица рынка (λ из Pinnacle без маржи: 1X2 + тотал 2,5) и смесь с моделью по весам истории;
+    ③ цен у матча нет → модель (как раньше)."""
+    pm = T.p_legs(P, legs)
+    rows = _shadow_rows(eid)
+    if not rows:
+        return pm
+    num = lambda v: round(float(v), 2) if str(v) not in ('', 'nan', 'None') else None
+    if len(legs) == 1:
+        mk, pk, L = legs[0]
+        for r in rows:
+            if r['market'] == mk and r['pick'] == pk and num(r['line']) == num(L) and r.get('p'):
+                return float(r['p'])
+    q = {(r['market'], r['pick'], num(r['line'])): float(r['p_mkt']) for r in rows
+         if r.get('p_mkt') and r.get('mkt_src') == 'pinnacle'}
+    h, d_, a = q.get(('1X2', 'H', None)), q.get(('1X2', 'D', None)), q.get(('1X2', 'A', None))
+    if not (h and d_ and a) or pm != pm:
+        return pm
+    try:
+        import config as CF
+        import dc
+        import fmarket as FMK
+        import pick as PKM
+        o = q.get(('TOT', 'O', 2.5))
+        inv = FMK.invert(dict(h=1 / h, d=1 / d_, a=1 / a, line=2.5 if o else None,
+                              over=1 / o if o else None, under=1 / (1 - o) if o else None))
+        if not inv:
+            return pm
+        pk_ = T.p_legs(np.asarray(dc.score_matrix(inv['lh'], inv['la'], CF.RHO), float), legs)
+        return PKM.fair(pm, pk_, 'pinnacle') if pk_ == pk_ and 0 < pk_ < 1 else pm
+    except Exception:
+        return pm
+
+
 def _verdict(p: float, src: str = 'система') -> str:
     if p != p:                                                    # nan — сочетание таймов, которое модель не считает
         return '⬜ рынок вне модели'
@@ -817,7 +871,7 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
                 eid, e, legs = o
                 st_o[r.uid] = pd.Timestamp(e['start'])
                 if st_o[r.uid] >= now:
-                    rel_o[r.uid] = _verdict(T.p_legs(np.asarray(e['P'], float), legs)) if legs else \
+                    rel_o[r.uid] = _verdict(_sys_p(eid, np.asarray(e['P'], float), legs)) if legs else \
                         '⬜ наш матч, рынок вне модели (фолы, угловые…)'
                 continue
         try:
@@ -837,7 +891,7 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
         if str(e['id']) in fx:                                    # ① наш матч, найденный по одной команде
             legs = _legs_for(pick, a, b, (e['away'], e['home']) if flip else (e['home'], e['away']), flip)
             P = np.asarray(fx[str(e['id'])]['P'], float)
-            rel_o[r.uid] = _verdict(T.p_legs(P, legs)) if legs else '⬜ наш матч, рынок вне модели (фолы, угловые…)'
+            rel_o[r.uid] = _verdict(_sys_p(e['id'], P, legs)) if legs else '⬜ наш матч, рынок вне модели (фолы, угловые…)'
             continue
         legs = _legs_for(pick, a, b, (e['away'], e['home']) if flip else (e['home'], e['away']), flip)
         od = e.get('odds') or {}
