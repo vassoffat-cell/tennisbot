@@ -113,6 +113,13 @@ check('табло: Лион (ж) = OL Lyonnes', _pair('Арсенал Лондо
 check('табло: Халл Сити ≠ Man City', _pair('Халл Сити', 'Тоттенхэм', 'Manchester City', 'Tottenham Hotspur'), False)
 check('табло: U21 не путается со взрослыми', _pair('Англия U21', 'Франция U21', 'England', 'France'), False)
 
+# 24.11 · Green Line «GREEN СТАВКА - 🔴🔴🔴🔴 … помойка Марсель» — реакция на проигрыш, не прогноз (было «❔»)
+p = dict(id=3, ts=pd.Timestamp('2026-11-23'), text='✖️✖️✖️ GREEN СТАВКА - 🔴🔴🔴🔴 Какая же помойка Марсель!', ocr='', photos=['x'])
+check('реакция на проигрыш — не кандидат', B._candidate(p), False)
+# 24.11 · «Статистика платных ставок: 21 победа | 6 минусов» стала прогнозом «21 победа» (14.11)
+p = dict(id=4, ts=pd.Timestamp('2026-11-14'), text='Статистика платных ставок:\n21 победа | 6 минусов⬇️\n1.91✅1.39✅', ocr='', photos=[])
+check('статистика канала — не прогноз', [t['pick'] for t in B.tips_of('stavki_na_sport_betting1', p) if not t['pick'].startswith('❔')], [])
+
 # 23.11 · сверка ⭐ ↔ снимок суток (ORG IMP-08): та же линия — ✅, чужая — «⭐ не в снимке»
 import tempfile                    # noqa: E402
 for seal_path in (HERE.parent / 'seal.py', HERE / 'seal.py'):     # у футбола своя копия seal.py (урок 23.11)
