@@ -97,8 +97,28 @@ def probe_oddspapi() -> None:
             print('      рынок', mid, [(o, ((v.get('players') or {}).get('0') or {}).get('price')) for o, v in list(oc.items())[:4]])
 
 
+def probe_markets() -> None:
+    """Проба 3: названия рынков (1 запрос) и все матчи КХЛ одним запросом /odds-by-tournaments (≤ 2 запроса)."""
+    print('== OddsPapi: рынки хоккея и odds-by-tournaments ==')
+    mk = op('/markets', sportId=15)
+    ml = mk if isinstance(mk, list) else (mk or {}).get('data') or []
+    print('  рынков в справочнике:', len(ml), '| пример:', ml[:1])
+    want = {'151', '151281', '151283', '151285', '151236', '151242', '151244', '1520', '1522', '1524', '15100'}
+    for m in ml:
+        if str(m.get('marketId')) in want:
+            print('   ', m.get('marketId'), m.get('marketName'), m.get('period') or m.get('marketType') or '',
+                  m.get('handicap', ''), [(o.get('outcomeId'), o.get('outcomeName')) for o in (m.get('outcomes') or [])][:3])
+    for key in ('tournamentIds', 'tournamentId'):
+        js = op('/odds-by-tournaments', bookmaker='pinnacle', **{key: 268})
+        lst = js if isinstance(js, list) else (js or {}).get('data') if isinstance(js, dict) else None
+        if lst:
+            print(f'  odds-by-tournaments ({key}): матчей {len(lst)}; ключи {sorted(lst[0])[:12]}')
+            break
+        print(f'  odds-by-tournaments ({key}): пусто / {str(js)[:200]}')
+
+
 if __name__ == '__main__':
-    for f in (probe_oddspapi,):                 # 24.11 проба 1: API-Sports — «Free plans do not have access to this season»
+    for f in (probe_markets,):                  # 24.11 проба 2 ✅: KHL 268 — Pinnacle 22 рынка, 1xBet 116, Marathon 86                 # 24.11 проба 1: API-Sports — «Free plans do not have access to this season»
         try:
             f()
         except Exception as e:
