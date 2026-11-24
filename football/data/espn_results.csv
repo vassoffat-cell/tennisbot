@@ -952,3 +952,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401875009,ita.1,league,ITA,I1,2026-11-23 19:45,Monza,Fiorentina,Monza,Fiorentina,3,0,FT,2026-27-italian-serie-a,0
 401879237,eng.1,league,ENG,E0,2026-11-23 20:00,Brentford,Everton,Brentford,Everton,4,0,FT,2026-27-english-premier-league,0
 401882802,esp.1,league,ESP,SP1,2026-11-23 20:00,Levante,Elche,Levante,Elche,1,1,FT,2026-27-laliga,0
+401915300,uefa.champions,uefa,,,2026-11-24 17:45,Galatasaray,Aston Villa,Galatasaray,Aston Villa,1,0,FT,league-phase,0
+401915380,uefa.champions,uefa,,,2026-11-24 17:45,Bodo/Glimt,LASK Linz,,,1,0,FT,league-phase,0
