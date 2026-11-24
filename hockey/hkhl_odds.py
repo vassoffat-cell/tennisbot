@@ -92,6 +92,8 @@ def snapshot(day: str, now: dt.datetime, log: list[str]) -> int:
                 r = fx.setdefault(str(x.get('fixtureId')), dict(
                     id=str(x.get('fixtureId')), start=str(x.get('startTime', '')),
                     p1=str(x.get('participant1Id', '')), p2=str(x.get('participant2Id', '')), books={}))
+                if not r['p1']:                                             # строка прошлой попытки без id участников
+                    r['p1'], r['p2'] = str(x.get('participant1Id', '')), str(x.get('participant2Id', ''))
                 pr = _prices(x, b)
                 if pr:
                     r['books'][b] = pr
