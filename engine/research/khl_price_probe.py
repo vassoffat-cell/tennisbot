@@ -5,7 +5,7 @@ The Odds API КХЛ не котирует (проба 16.11). Проверяем
      у нас ≤ 90 — сегодня занято ≈ 11): /games КХЛ на сегодня–завтра → /odds?game=… → какие конторы и рынки, есть ли 1xBet / Pinnacle.
   2) OddsPapi v4 (oddspapi.io, 250 запросов/мес, в ноябре потрачено 7): /sports → хоккей → /tournaments → КХЛ →
      /fixtures → /odds одного матча.
-Расход: API-Sports ≤ 4 запроса, OddsPapi ≤ 5. Только чтение и печать — ничего не пишет, ключи не печатает.
+Расход: API-Sports ≤ 4 запроса, OddsPapi ≤ 5 (проба 2 — 2 запроса, API-Sports пропущен: бесплатный план не видит сезон 2026). Только чтение и печать — ничего не пишет, ключи не печатает.
 Запуск: daily.yml, вход research = "engine/research/khl_price_probe.py".
 """
 from __future__ import annotations
@@ -75,36 +75,30 @@ def probe_apisports() -> None:
 
 def probe_oddspapi() -> None:
     print('== OddsPapi v4: КХЛ ==')
-    sp = op('/sports')
-    sports = sp if isinstance(sp, list) else (sp or {}).get('data') or []
-    hk = [s for s in sports if 'hockey' in json.dumps(s).lower()]
-    print('  видов спорта', len(sports), '| хоккей:', hk[:3])
-    if not hk:
-        return
-    sid = hk[0].get('sportId') or hk[0].get('id')
-    tr = op('/tournaments', sportId=sid)
-    tours = tr if isinstance(tr, list) else (tr or {}).get('data') or []
-    khl = [x for x in tours if any(k in json.dumps(x, ensure_ascii=False).lower() for k in ('khl', 'kontinental', 'кхл'))]
-    print('  турниров хоккея', len(tours), '| КХЛ:', khl[:3])
-    if not khl:
-        return
-    tid = khl[0].get('tournamentId') or khl[0].get('id')
+    tid = 268                                # 24.11 проба 1: /sports → Ice Hockey 15, /tournaments → KHL 268
     d = dt.date.today()
     fx = op('/fixtures', tournamentId=tid, **{'from': d.isoformat(), 'to': (d + dt.timedelta(days=2)).isoformat()})
     fl = fx if isinstance(fx, list) else (fx or {}).get('data') or []
     print('  матчей КХЛ на 2 дня:', len(fl), [(x.get('participant1Name'), x.get('participant2Name'), x.get('startTime')) for x in fl[:3]])
+    now = dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M')
+    fl = [x for x in fl if str(x.get('startTime', '')) > now]          # проба 1 взяла уже сыгранный матч → цен 0
     if not fl:
         return
+    fl.sort(key=lambda x: str(x.get('startTime', '')))
+    print('  беру будущий матч:', fl[0].get('participant1Name'), '—', fl[0].get('participant2Name'), fl[0].get('startTime'))
     od = op('/odds', fixtureId=fl[0].get('fixtureId'))
     books = (od or {}).get('bookmakerOdds') or {}
     print('  контор с ценой:', len(books), sorted(books)[:25])
     for b in ('pinnacle', '1xbet', 'marathonbet'):
         mk = (books.get(b) or {}).get('markets') or {}
-        print(f'   {b}: рынков {len(mk)} — {sorted(mk)[:12]}')
+        print(f'   {b}: рынков {len(mk)} — {sorted(mk)[:15]}')
+        for mid in sorted(mk)[:6]:
+            oc = (mk[mid] or {}).get('outcomes') or {}
+            print('      рынок', mid, [(o, ((v.get('players') or {}).get('0') or {}).get('price')) for o, v in list(oc.items())[:4]])
 
 
 if __name__ == '__main__':
-    for f in (probe_apisports, probe_oddspapi):
+    for f in (probe_oddspapi,):                 # 24.11 проба 1: API-Sports — «Free plans do not have access to this season»
         try:
             f()
         except Exception as e:
