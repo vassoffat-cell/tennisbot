@@ -78,6 +78,14 @@ for path in (HERE.parent / 'notify.py', HERE / 'notify.py'):
     check(f'{path.parent.name}/notify: нет <pre>', '<pre>' in out, False)
     check(f'{path.parent.name}/notify: всё скрыто', out.count('<tg-spoiler>'), 2)
 
+# 24.11 · хоккейные купоны 1xBet (Каппер UK, КХЛ) шли «⬜ матч не найден»: парсер хоккея не знал «Тотал. (5.5) М»
+sys.path.insert(0, str(HERE.parent))
+from hockey import hcappers as HC   # noqa: E402
+check('хоккей 1xBet «Тотал. (5.5) М»', HC.parse('Тотал. (5.5) М кф 1.53', 'Сибирь', 'Северсталь'), ('TOT', 'U', 5.5))
+check('хоккей 1xBet «Инд. тотал 2-го. (2) Б»', HC.parse('Индивидуальный тотал 2-го. (2) Б кф 1.465', 'Сибирь', 'Северсталь'),
+      ('IT2', 'O', 2.0))
+check('хоккей «ТМ 5.5» не сломан', HC.parse('ТМ 5.5', 'Сибирь', 'Северсталь'), ('TOT', 'U', 5.5))
+
 # 23.11 · сверка ⭐ ↔ снимок суток (ORG IMP-08): та же линия — ✅, чужая — «⭐ не в снимке»
 import tempfile                    # noqa: E402
 for seal_path in (HERE.parent / 'seal.py', HERE / 'seal.py'):     # у футбола своя копия seal.py (урок 23.11)

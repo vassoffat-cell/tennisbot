@@ -591,7 +591,8 @@ def _hockey_rel(d: pd.DataFrame, rel: dict) -> dict:
             if pd.to_datetime(gm.start) < ts - pd.Timedelta(minutes=5):   # после начала — не оценивается (К8)
                 continue
             leg = HC.parse(r.pick, r.a, r.b)
-            if leg is None:
+            if leg is None:                                         # 24.11: матч найден, ставка не разобрана — причина, не «не найден»
+                out[r.uid] = '⬜ рынок вне модели'
                 continue
             mk, pk, L = HC._orient(leg, hf)
             ok, nh, na = HC.fresh(g, gm.league, gm.home, gm.away, ts)

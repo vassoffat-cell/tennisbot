@@ -88,6 +88,10 @@ def _named(s: str, k: list) -> bool:
 def parse(pick: str, a: str, b: str) -> tuple[str, str, float | str] | None:
     """(рынок, выбор, линия) в терминах «команда a / команда b»: IT1/IT2, AH H/A, 1X2 H/A — сторона a = '1'."""
     s = re.sub(r'(\d),(\d)', r'\1.\2', str(pick).lower().replace('ё', 'е').replace('х', 'x')).replace('−', '-').replace('–', '-')
+    # 24.11: формат 1xBet (Каппер UK, купоны КХЛ): «Тотал. (5.5) М», «Индивидуальный тотал 2-го. (2) Б» → «тм 5.5», «ит2б 2»
+    s = re.sub(r'(тотал\w*|фор[аы]|-го)\.(?=\s)', r'\1', s)
+    s = re.sub(r'инд\w*\s+тотал\w*\s+([12])-го\s*\(?\s*' + NUM + r'\s*\)?\s*([бм])\b', r'ит\1\3 \2', s)
+    s = re.sub(r'\bтотал\w*\s*\(\s*' + NUM + r'\s*\)\s*([бм])\b', r'т\2 \1', s)
     ka, kb = _keys(a), _keys(b)
     side = None
     named = [n for n, k in (('1', ka), ('2', kb)) if _named(s, k)]
