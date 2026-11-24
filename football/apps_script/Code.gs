@@ -367,7 +367,12 @@ function planTick_() {
     const since = new Date(at - 15 * 60 * 1000).toISOString().slice(0, 19) + 'Z';
     const r = UrlFetchApp.fetch(api + 'runs?per_page=5&created=%3E%3D' + since, { headers: h, muteHttpExceptions: true });
     if (r.getResponseCode() !== 200) { log_('план: проверка ' + BOT.workflow, r.getResponseCode()); return; }
-    if (!(JSON.parse(r.getContentText()).workflow_runs || []).length) {
+    // 25.11: разовые прогоны (репетиция, проверка research) и упавшие/отменённые не закрывают окно матча
+    const full = (JSON.parse(r.getContentText()).workflow_runs || []).filter(function (x) {
+      return !/rehearse|research/.test(String(x.display_title || x.name || '')) &&
+             ['failure', 'cancelled', 'startup_failure', 'timed_out'].indexOf(String(x.conclusion)) < 0;
+    });
+    if (!full.length) {
       const d = UrlFetchApp.fetch(api + 'dispatches', { method: 'post', contentType: 'application/json',
         payload: JSON.stringify({ ref: 'main' }), headers: h, muteHttpExceptions: true });
       log_('план ' + rows[i][0] + ' UTC · ' + rows[i][2], d.getResponseCode() === 204 ? 'запущено' : d.getResponseCode());
