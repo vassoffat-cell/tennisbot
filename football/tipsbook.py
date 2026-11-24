@@ -632,7 +632,9 @@ def _hockey_rel(d: pd.DataFrame, rel: dict) -> dict:
             key = (gm.league, pd.Timestamp(pd.to_datetime(gm.start).date()))
             if key not in models:
                 models[key] = HM.fit(g, gm.league, key[1])
-            p = HC.p_model(models[key], gm.home, gm.away, mk, pk, L)
+            p = _hk_sys_p(gm.id, mk, pk, L)                      # 24.11 (Ц14): та же P, что у ⭐ хоккея (Pinnacle, осн. время)
+            if p is None:
+                p = HC.p_model(models[key], gm.home, gm.away, mk, pk, L)
             if p is not None:
                 out[r.uid] = (f'🔥 система согласна (P {p * 100:.0f}%)' if p >= 0.55 else
                               f'⚔️ система против (P {p * 100:.0f}%)' if p <= 0.45 else f'· система нейтральна (P {p * 100:.0f}%)')
@@ -825,6 +827,26 @@ def _sys_p(eid, P: np.ndarray, legs) -> float:
         return PKM.fair(pm, pk_, 'pinnacle') if pk_ == pk_ and 0 < pk_ < 1 else pm
     except Exception:
         return pm
+
+
+def _hk_sys_p(gid, mk: str, pk: str, L) -> float | None:
+    """24.11: P стороны матча НХЛ из теневого портфеля хоккея (hockey/data/shadow) — P ставки дня; нет — None (модель)."""
+    if 'h' not in _SHADOW:
+        m: dict = {}
+        root = Path(__file__).resolve().parent.parent / 'hockey' / 'data' / 'shadow'
+        for f in sorted(root.glob('hockey_*.csv'))[-2:]:
+            try:
+                d = pd.read_csv(f, dtype=str, keep_default_na=False)
+            except Exception:
+                continue
+            for r in d.to_dict('records'):
+                m.setdefault(str(r['id']), []).append(r)
+        _SHADOW['h'] = m
+    num = lambda v: round(float(v), 2) if str(v) not in ('', 'nan', 'None') else None
+    for r in _SHADOW['h'].get(str(gid), []):
+        if r['market'] == mk and r['pick'] == pk and num(r['line']) == num(L) and r.get('p'):
+            return float(r['p'])
+    return None
 
 
 def _verdict(p: float, src: str = 'система') -> str:

@@ -141,6 +141,9 @@ B._SHADOW['m'] = {'1': [dict(market='AH', pick='H', line='-1.0', p='0.7748', p_m
 Pm = np.full((6, 6), 1 / 36)
 check('вердикт: P ставки дня для той же линии', round(B._sys_p('1', Pm, [('AH', 'H', -1.0)]), 4), 0.7748)
 check('вердикт: без цен — модель', round(B._sys_p('2', Pm, [('1X2', 'H', '')]), 4), round(T.p_legs(Pm, [('1X2', 'H', '')]), 4))
+B._SHADOW['h'] = {'nhl:9': [dict(market='TOT', pick='O', line='5.5', p='0.5647')]}
+check('хоккей: P ставки дня для той же линии', B._hk_sys_p('nhl:9', 'TOT', 'O', 5.5), 0.5647)
+check('хоккей: нет цены — модель', B._hk_sys_p('khl:1', 'TOT', 'O', 5.5), None)
 B._SHADOW.clear()
 
 # 23.11 · сверка ⭐ ↔ снимок суток (ORG IMP-08): та же линия — ✅, чужая — «⭐ не в снимке»
