@@ -429,21 +429,21 @@ stavki_na_sport_betting1:slip:394417193:0,401861161,Scotland,North Macedonia,1X2
 stavki_na_sport_betting1:slip:395651677:0,401861167,Portugal,Denmark,1X2:H:,П1,,FT,L,2026-11-24
 stavki_na_sport_betting1:slip:408655239:0,401882803,Getafe,Atlético Madrid,1X2:A:,П2,,FT,W,2026-11-24
 stavki_na_sport_betting1:slip:409333495:0,401875001,Atalanta,Internazionale,1X2:A:,П2,,FT,L,2026-11-24
-stavki_na_sport_betting1:slip:411649759:0,401915295,Arsenal,Borussia Dortmund,1X2:H:,П1,,,,
+stavki_na_sport_betting1:slip:411649759:0,401915295,Arsenal,Borussia Dortmund,1X2:H:,П1,,FT,L,2026-11-24
 xs_stavkii:8051:0,401915294,Feyenoord Rotterdam,FC Porto,,,не разобрано,,,
 xs_stavkii:8051:1,401915295,Arsenal,Borussia Dortmund,,,не разобрано,,,
-stavki_na_sport_betting1:slip:411931452:0,401915379,Manchester City,Napoli,IT2:O:0.5,ИТ2 Б0.5,,,,
+stavki_na_sport_betting1:slip:411931452:0,401915379,Manchester City,Napoli,IT2:O:0.5,ИТ2 Б0.5,,FT,W,2026-11-24
 kapper_uk:22769:0,401915298,Real Madrid,PSV Eindhoven,,,не разобрано,,,
-kapper_uk:22768:0,401915295,Arsenal,Borussia Dortmund,BTTS:Y:,ОЗ да,,,,
-kapper_uk:22767:0,401915294,Feyenoord Rotterdam,FC Porto,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,,,
+kapper_uk:22768:0,401915295,Arsenal,Borussia Dortmund,BTTS:Y:,ОЗ да,,FT,W,2026-11-24
+kapper_uk:22767:0,401915294,Feyenoord Rotterdam,FC Porto,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,FT,L,2026-11-24
 kapper_uk:22766:0,401915300,Galatasaray,Aston Villa,DC:X2:|BTTS:Y:,X2 + ОЗ да,,FT,L,2026-11-24
 kapper_uk:22765:0,,,,,,нет данных,,,
-kapper_uk:22764:0,401915379,Manchester City,Napoli,IT2:O:0.5,ИТ2 Б0.5,,,,
-stavki_na_sport_betting1:slip:411960669:0,401915298,Real Madrid,PSV Eindhoven,IT1:O:3.0,ИТ1 Б3,,,,
-xs_stavkii:8053:0,401915296,Como,AEK Athens,IT2:O:0.5,ИТ2 Б0.5,,,,
-kapper_uk:22774:0,401915298,Real Madrid,PSV Eindhoven,1X2:H:|TOT:U:5.5,П1 + ТМ5.5,,,,
-kapper_uk:22773:0,401915294,Feyenoord Rotterdam,FC Porto,BTTS:Y:,ОЗ да,,,,
-stavki_na_sport_betting1:slip:412201818:0,401915299,RB Leipzig,Lens,TOT:O:3.0,ТБ3,,,,
+kapper_uk:22764:0,401915379,Manchester City,Napoli,IT2:O:0.5,ИТ2 Б0.5,,FT,W,2026-11-24
+stavki_na_sport_betting1:slip:411960669:0,401915298,Real Madrid,PSV Eindhoven,IT1:O:3.0,ИТ1 Б3,,FT,W,2026-11-24
+xs_stavkii:8053:0,401915296,Como,AEK Athens,IT2:O:0.5,ИТ2 Б0.5,,FT,L,2026-11-24
+kapper_uk:22774:0,401915298,Real Madrid,PSV Eindhoven,1X2:H:|TOT:U:5.5,П1 + ТМ5.5,,FT,L,2026-11-24
+kapper_uk:22773:0,401915294,Feyenoord Rotterdam,FC Porto,BTTS:Y:,ОЗ да,,FT,L,2026-11-24
+stavki_na_sport_betting1:slip:412201818:0,401915299,RB Leipzig,Lens,TOT:O:3.0,ТБ3,,FT,W,2026-11-24
 stavki_na_sport_betting1:slip:412384137:0,401915300,Galatasaray,Aston Villa,IT1:O:1.0,ИТ1 Б1,,FT,P,2026-11-24
 kapper_uk:22771:0,,,,,,нет данных,,,
 kapper_uk:22771:1,,,,,,нет данных,,,
@@ -457,10 +457,10 @@ stavki_na_sport_betting1:19600:s1,401876404,Lens,Marseille,IT1:O:1.0,ИТ1 Б1,,
 stavki_na_sport_betting1:19600:s2,401875003,Fiorentina,Juventus,TOT:O:1.5,ТБ1.5,,FT,W,2026-11-24
 stavki_na_sport_betting1:19719:s0,,,,,,матч не найден,,,
 stavki_na_sport_betting1:19850:s0,401882798,Real Madrid,Celta Vigo,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-24
-stavki_na_sport_betting1:19913:s0,401915298,Real Madrid,PSV Eindhoven,IT1@1:O:1.0,ИТ1 Б1 · 1-й тайм,,,,
-stavki_na_sport_betting1:19913:s1,401915296,Como,AEK Athens,AH:H:-1.0,Ф1(-1),,,,
-stavki_na_sport_betting1:19913:s2,401915299,RB Leipzig,Lens,AH:H:-1.0,Ф1(-1),,,,
-stavki_na_sport_betting1:19913:s3,401915294,Feyenoord Rotterdam,FC Porto,TOT:O:1.5,ТБ1.5,,,,
-stavki_na_sport_betting1:19917:s0,401915298,Real Madrid,PSV Eindhoven,IT1:O:1.5,ИТ1 Б1.5,,,,
-stavki_na_sport_betting1:slip:412798085:0,401915296,Como,AEK Athens,IT1@1:O:1.0,ИТ1 Б1 · 1-й тайм,,,,
-stavki_na_sport_betting1:slip:412932764:0,401915296,Como,AEK Athens,1X2:H:,П1,,,,
+stavki_na_sport_betting1:19913:s0,401915298,Real Madrid,PSV Eindhoven,IT1@1:O:1.0,ИТ1 Б1 · 1-й тайм,,FT,L,2026-11-24
+stavki_na_sport_betting1:19913:s1,401915296,Como,AEK Athens,AH:H:-1.0,Ф1(-1),,FT,P,2026-11-24
+stavki_na_sport_betting1:19913:s2,401915299,RB Leipzig,Lens,AH:H:-1.0,Ф1(-1),,FT,W,2026-11-24
+stavki_na_sport_betting1:19913:s3,401915294,Feyenoord Rotterdam,FC Porto,TOT:O:1.5,ТБ1.5,,FT,L,2026-11-24
+stavki_na_sport_betting1:19917:s0,401915298,Real Madrid,PSV Eindhoven,IT1:O:1.5,ИТ1 Б1.5,,FT,W,2026-11-24
+stavki_na_sport_betting1:slip:412798085:0,401915296,Como,AEK Athens,IT1@1:O:1.0,ИТ1 Б1 · 1-й тайм,,FT,L,2026-11-24
+stavki_na_sport_betting1:slip:412932764:0,401915296,Como,AEK Athens,1X2:H:,П1,,FT,W,2026-11-24

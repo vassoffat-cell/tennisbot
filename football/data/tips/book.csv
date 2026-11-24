@@ -927,9 +927,9 @@ stavki_na_sport_betting1:19877:s1,stavki_na_sport_betting1,19877,2026-11-22 21:4
 stavki_na_sport_betting1:slip:410369605:0,stavki_na_sport_betting1,19884,2026-11-23 13:04,football,Монца,Фиорентина,обе забьют да,1.51,,,"single · Обе команды забьют, Да",410369605,30000,pre
 stavki_na_sport_betting1:slip:410527684:0,stavki_na_sport_betting1,19886,2026-11-23 15:13,football,Монца,Фиорентина,1-й тайм ТБ(1.0),1.52,P,2026-11-24 17:43,"single · 1-й тайм. Тотал, Больше 1.0",410527684,30000,pre
 stavki_na_sport_betting1:slip:411649759:0,stavki_na_sport_betting1,19903,2026-11-24 08:03,football,Арсенал,Боруссия Дортмунд,победа арсенал,1.43,,,"single · Результат основного времени, Арсенал",411649759,30000,pre
-stavki_na_sport_betting1:slip:411931452:0,stavki_na_sport_betting1,19905,2026-11-24 11:35,football,Манчестер Сити,Наполи,наполи ИТБ(0.5),1.49,,,"single · Индивидуальный тотал Наполи, Больше 0.5",411931452,30000,pre
-stavki_na_sport_betting1:slip:411960669:0,stavki_na_sport_betting1,19907,2026-11-24 13:01,football,Реал Мадрид,ПСВ Эйндховен,реал мадрид ИТБ(3.0),1.51,,,"single · Индивидуальный тотал Реал Мадрид, Больше 3.0",411960669,30000,pre
-stavki_na_sport_betting1:slip:412201818:0,stavki_na_sport_betting1,19908,2026-11-24 14:57,football,РБ Лейпциг,Ланс,ТБ(3.0),1.40,,,"single · Тотал, Больше 3.0",412201818,30000,pre
+stavki_na_sport_betting1:slip:411931452:0,stavki_na_sport_betting1,19905,2026-11-24 11:35,football,Манчестер Сити,Наполи,наполи ИТБ(0.5),1.49,W,2026-11-24 22:17,"single · Индивидуальный тотал Наполи, Больше 0.5",411931452,30000,pre
+stavki_na_sport_betting1:slip:411960669:0,stavki_na_sport_betting1,19907,2026-11-24 13:01,football,Реал Мадрид,ПСВ Эйндховен,реал мадрид ИТБ(3.0),1.51,W,2026-11-24 22:17,"single · Индивидуальный тотал Реал Мадрид, Больше 3.0",411960669,30000,pre
+stavki_na_sport_betting1:slip:412201818:0,stavki_na_sport_betting1,19908,2026-11-24 14:57,football,РБ Лейпциг,Ланс,ТБ(3.0),1.40,W,2026-11-24 22:17,"single · Тотал, Больше 3.0",412201818,30000,pre
 stavki_na_sport_betting1:19913:s0,stavki_na_sport_betting1,19913,2026-11-24 16:17,football,Реал Мадрид,ПСВ Эйндховен,1-й тайм реал мадрид ИТБ(1.0),3.22,,,"express · 1-й тайм. Индивидуальный тотал Реал Мадрид, Больше 1.0",-,100000,pre
 stavki_na_sport_betting1:19913:s1,stavki_na_sport_betting1,19913,2026-11-24 16:17,football,Комо,АЕК Афины,комо фора (-1),3.22,,,"express · Фора, Комо -1",-,100000,pre
 stavki_na_sport_betting1:19913:s2,stavki_na_sport_betting1,19913,2026-11-24 16:17,football,РБ Лейпциг,Ланс,рб лейпциг фора (-1),3.22,,,"express · Фора, РБ Лейпциг -1",-,100000,pre
@@ -942,4 +942,10 @@ stavki_na_sport_betting1:19918:r,stavki_na_sport_betting1,19918,2026-11-24 19:46
 stavki_na_sport_betting1:19919:r,stavki_na_sport_betting1,19919,2026-11-24 19:52,other,,,❔ 🇪🇺ВОСЬМОЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,,🇪🇺ВОСЬМОЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,
 stavki_na_sport_betting1:slip:412798085:0,stavki_na_sport_betting1,19919,2026-11-24 19:52,football,Комо,АЕК Афины,1-й тайм комо ИТБ(1.0),1.67,,,"single · 1-й тайм. Индивидуальный тотал Комо, Больше 1.0",412798085,30000,pre
 stavki_na_sport_betting1:19920:r,stavki_na_sport_betting1,19920,2026-11-24 20:51,other,,,❔ 🇪🇺ДЕВЯТЫЙ ПРОГНОЗ НА ЛЧ🇪🇺 📢📢,,,,🇪🇺ДЕВЯТЫЙ ПРОГНОЗ НА ЛЧ🇪🇺 📢📢,,,
-stavki_na_sport_betting1:slip:412932764:0,stavki_na_sport_betting1,19920,2026-11-24 20:51,football,Комо,АЕК Афины,победа комо,1.50,,,"single · Результат основного времени, Комо",412932764,30000,pre
+stavki_na_sport_betting1:slip:412932764:0,stavki_na_sport_betting1,19920,2026-11-24 20:51,football,Комо,АЕК Афины,победа комо,1.50,W,2026-11-24 22:16,"single · Результат основного времени, Комо",412932764,30000,pre
+stavki_na_sport_betting1:19925:r,stavki_na_sport_betting1,19925,2026-11-24 22:12,other,,,❔ 🔥🔥🔥🔥 🇪🇺ТРЕТИЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,,🔥🔥🔥🔥 🇪🇺ТРЕТИЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,
+stavki_na_sport_betting1:19926:r,stavki_na_sport_betting1,19926,2026-11-24 22:13,other,,,❔ 🔥🔥🔥🔥 🇪🇺ЧЕТВЁРТЫЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,,🔥🔥🔥🔥 🇪🇺ЧЕТВЁРТЫЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,
+stavki_na_sport_betting1:19927:r,stavki_na_sport_betting1,19927,2026-11-24 22:13,other,,,❔ 🔥🔥🔥🔥 🇪🇺СЕДЬМОЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,,🔥🔥🔥🔥 🇪🇺СЕДЬМОЙ ПРОГНОЗ НА ЛЧ🇪🇺,,,
+stavki_na_sport_betting1:19928:r,stavki_na_sport_betting1,19928,2026-11-24 22:14,other,,,❔ 🔥🔥🔥🔥 🇪🇺ДЕВЯТЫЙ ПРОГНОЗ НА ЛЧ🇪🇺 📢📢,,,,🔥🔥🔥🔥 🇪🇺ДЕВЯТЫЙ ПРОГНОЗ НА ЛЧ🇪🇺 📢📢,,,
+stavki_na_sport_betting1:19927:s0,stavki_na_sport_betting1,19927,2026-11-24 22:13,football,Реал Мадрид 055,ПСВ Эйндховен 104,реал мадрид ИТБ(1.5),1.54,W,2026-11-24 22:16,"single · Офсайды. Индивидуальный тотал Реал Мадрид, Больше 1.5",-,30000,post
+stavki_na_sport_betting1:19921:s0,stavki_na_sport_betting1,19921,2026-11-24 22:02,football,РБ Лейпциг 213,Ланс 011,рб лейпциг ИТБ(20),1.89,L,2026-11-24 22:17,"express · Индивидуальный тотал РБ Лейпциг, Больше 20",-,2000000,post
