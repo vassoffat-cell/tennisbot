@@ -24,7 +24,7 @@ import tips as T
 
 BOOK = T.DIR / 'book.csv'
 ALERTS = T.DIR / 'alerts.csv'     # 23.11 аудит (AUDIT 0ж④, CODEX 2а): журнал присланных сообщений каперов с вердиктом — проверка «каждое сообщение»
-VERSION = 20                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 21                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -153,15 +153,30 @@ def _real_pair(s: str) -> bool:
     return any(not MARKET.search(m.group(1)) and not MARKET.search(m.group(2)) for m in W.PAIR.finditer(s))
 
 
+NEW_FROM = '2026-11-24'              # 24.11: новые правила нумерации (экспрессы) — только для постов с этих суток, uid истории не меняются
+VS = re.compile(r'(?m)^(.+?)\s+VS\s+(.+)$')
+
+
+def _vs_side(t: str) -> str:
+    """24.11: сторона пары купона 1xBet после OCR: «€ AVFC | Галатасарай» → «Галатасарай», «til ЛАСК» → «ЛАСК»."""
+    ws = t.strip().split()
+    while ws and not re.match(r'[А-ЯЁ]', ws[0]):
+        ws = ws[1:]
+    while ws and not re.search(r'[а-яёА-ЯЁ]{2}', ws[-1]):
+        ws = ws[:-1]
+    return ' '.join(ws)
+
+
 STATS_LINE = re.compile(r'(?im)^.*\d+\s+побед\w*\s*[|/,]\s*\d+\s+(?:минус|пораж|проигр)\w*.*$')
 SETTLED = re.compile(r'(?i)статус:\s*\W{0,3}\s*(?:выплачен|выигрыш|проигрыш|рассчитан)|завершено\s+\d+\s+из\s+\d+')
 REVIEW_POST = re.compile(r'(?i)^\s*(?:отзывы? клиент|видео-?отч[её]т|отч[её]т (?:по )?экспресс|всех с победой)')
+STATS_POST = re.compile(r'(?i)о\s+ч[её]м\s+говорят\s+цифры|статистическ\w*\s+закономерност')   # 24.11: пост-статистика (Хитрости 8051)
 
 
 def tips_of(src: str, p: dict) -> list[dict]:
     """Все прогнозы поста: по парам «A — B» (фрагмент до следующей пары) или одна ставка без пары."""
     import tipswide as W
-    if REVIEW_POST.search(p.get('text') or ''):                 # 19.11: отзывы / отчёты о выигрыше — скрины прошлых ставок, не прогноз
+    if REVIEW_POST.search(p.get('text') or '') or STATS_POST.search(p.get('text') or ''):   # 19.11 отзывы; 24.11 посты-статистика
         return []
     if src in OCR_CH and p.get('ocr'):
         rows = slip_rows(src, p)
@@ -170,6 +185,8 @@ def tips_of(src: str, p: dict) -> list[dict]:
     ocr = p.get('ocr') or ''
     if SETTLED.search(ocr):                                    # 24.11: на картинке уже рассчитанный купон («выплачена», «Выигрыш») —
         ocr = ''                                               # отчёт о прошлой ставке, не прогноз (Грозный 13149)
+    if ocr and len(VS.findall(ocr)) >= 2 and not W.pairs(p['text']) and str(p['ts'])[:10] >= NEW_FROM:   # 24.11: экспресс 1xBet/Melbet «A VS B» (Каппер UK 22771)
+        ocr = VS.sub(lambda m: f'{_vs_side(m.group(1))} — {_vs_side(m.group(2))}', ocr)
     txt = (p['text'] + ('\n' + ocr if ocr else '')).strip()
     txt = STATS_LINE.sub('', txt)                              # 24.11: «21 победа | 6 минусов» — статистика канала, не ставка
     sport = sport_of(txt)
@@ -292,7 +309,12 @@ def run(rt: dict, log: list[str]) -> None:
         if wide:
             W.save(pd.concat([wdf, pd.DataFrame(wide)], ignore_index=True))
         old = {r.uid: (r.self, r.self_ts) for r in df.itertuples(index=False)}
+        was = dict(zip(df.uid, df.pick))
         df, _ = merge_slips(_rows(rows), srows)
+        chg = [u for u, k in zip(df.uid, df.pick) if u in was and re.sub(r'\W', '', str(was[u])).lower() != re.sub(r'\W', '', str(k)).lower()]
+        if chg:                                                    # 24.11: ставка под тем же uid разобрана иначе — итог по табло заново
+            (T.DIR / 'ind_retry.json').write_text(json.dumps(chg), encoding='utf-8')
+            log.append(f'👥 книга: ставка разобрана иначе — пересчёт итога {len(chg)}')
         for i, u in enumerate(df.uid):
             if u in old and old[u][0] and not df.at[i, 'self']:
                 df.loc[i, ['self', 'self_ts']] = list(old[u])
@@ -1102,12 +1124,17 @@ def slip_rows(src: str, p: dict) -> list[dict]:
     """Купоны 1WIN на картинках поста → строки книги (одна на событие купона)."""
     import slips as S
     out = []
+    head, j = '', 0
     for part in str(p['ocr']).split('§'):
-        c = S.parse(part)
+        new = str(p['ts'])[:10] >= NEW_FROM
+        c = S.parse(part) or (S.parse(head + '\n' + part) if head and new else None)   # 24.11: продолжение экспресса на 2-й картинке
         if not c:
             continue
+        if not head:
+            head = '\n'.join(ln for ln in part.split('\n')[:6] if not re.search(r'(?i)футбол|хоккей|теннис', ln))
         for i, e in enumerate(c['events']):
-            key = f"slip:{c['id']}:{i}" if c['id'] else f"{p['id']}:s{i}"
+            key = f"slip:{c['id']}:{i}" if c['id'] else f"{p['id']}:s{j if new else i}"
+            j += 1
             sp = e['sport'] or next((x for x in (sport_of(e['a'] + ' ' + e['b']), sport_of(part), sport_of(p.get('text') or ''))
                                      if x != 'other'), '')
             if sp in ('', 'football') and (_tennis_match(e['a'], e['b']) or _tennis_players(e['a'], e['b'])):   # 21.11: «Алькарас — Шелтон» без «теннис»

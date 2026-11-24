@@ -22,8 +22,11 @@ def _amount(s: str) -> float | None:
 
 
 def _market(txt: str, a: str, b: str) -> str:
-    """Рынок 1WIN → краткая запись для разбора (tips.parse_legs)."""
+    """Рынок 1WIN → краткая запись для разбора (tips.parse_legs); «1-й тайм.» сохраняется (24.11)."""
     t = re.sub(r'\s+', ' ', txt.strip().lower().replace('ё', 'е'))
+    h = re.match(r'([12])-й тайм\.?\s*', t)
+    if h:
+        return f'{h.group(1)}-й тайм ' + _market(txt.strip()[h.end():], a, b)
     m = re.search(r'индивидуальный тотал (.+?),? (больше|меньше) ' + NUM, t)
     if m:
         return f"{m.group(1)} ИТ{'Б' if m.group(2) == 'больше' else 'М'}({m.group(3)})"
@@ -83,12 +86,14 @@ def parse(ocr: str) -> dict | None:
     sport = ''
     for n, ln in enumerate(lines):
         s = ln.lower()
-        m = re.match(r'([а-яё ]+?)\s*[»•*·]\s*', s)
+        m = re.match(r'([а-яё ]+?)\s*(?:[»•*·«„.]|\be\b)\s*', s)   # 24.11: OCR даёт «Футбол e Европа», «Футбол « Европа»
         if m and m.group(1).strip() in SPORT_WORDS:
             sport = SPORT_WORDS[m.group(1).strip()]
             # блок «Событие»: команда 1, команда 2, дата, рынок (может занимать 2 строки, кф между ними)
             a, b = (lines[n + 1] if n + 1 < len(lines) else ''), (lines[n + 2] if n + 2 < len(lines) else '')
             rest = [x for x in lines[n + 3:n + 7] if not re.search(r'\d{1,2} [а-я]+,? \d{1,2}:\d{2}|^\d\.\d{2}$', x.lower())]
+            cut = next((i for i, x in enumerate(rest) if re.match(r'(?i)(футбол|хоккей|теннис|баскетбол|волейбол|киберспорт)\b', x)), len(rest))
+            rest = rest[:cut]                                                # 24.11: рынок не захватывает шапку следующего события
             mk = ' '.join(re.sub(r'\b\d\.\d{2}\b', '', x).strip() for x in rest[:2])
             events.append(dict(sport=sport, a=a, b=b, market=mk.strip(' ,'), short=_market(mk, a, b)))
         elif ' — ' in ln or ' - ' in ln:

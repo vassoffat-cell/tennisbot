@@ -566,6 +566,11 @@ def book_ind(log: list[str], days: int = 45) -> int:
     retry = set(b.uid[b.pick.str.contains('тайм', case=False)])  # 21.11 К17: ставки на таймы — пересчитать один раз
     done = {u for u, r, w in zip(ind.uid, ind.result, ind.why)
             if r in ('W', 'L', 'P') or (w == 'нет данных' and u not in retry)}   # 24.11: «не разобрано» — снова, разбор растёт
+    rf = T.DIR / 'ind_retry.json'                                     # 24.11: uid, чья ставка после пересборки книги разобрана иначе
+    try:
+        done -= set(json.loads(rf.read_text(encoding='utf-8'))) if rf.exists() else set()
+    except ValueError:
+        pass
     rows = {u: i for i, u in enumerate(ind.uid)}
     cache: dict = {}
     out = ind.to_dict('records')
@@ -610,5 +615,6 @@ def book_ind(log: list[str], days: int = 45) -> int:
             rows[r.uid] = len(out)
             out.append(rec)
     pd.DataFrame(out, columns=IND_COLS).to_csv(BOOK_IND, index=False)
+    rf.unlink(missing_ok=True)
     log.append(f'👥 книга × табло: рассчитано {n}, строк {len(out)}')
     return n
