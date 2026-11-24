@@ -17,10 +17,70 @@ DIR = Path(__file__).resolve().parent / 'data' / 'odds'
 BASE = 'https://api.oddspapi.io/v4'
 DAILY_MAX = 7
 TENNIS = 12
+# 25.11 (CONTROL Ц6б, IMP-04): общий месячный учёт всех запросов OddsPapi и резерв тенниса.
+# Теннис в приоритете: DAILY_MAX тенниса не урезается; КХЛ берёт только остаток после резерва тенниса до конца месяца.
+LIMIT, SAFE = 250, 5                       # 250 запросов в месяц (бесплатный план), запас 5
+TENNIS_OFF = (dt.date(2026, 11, 23), dt.date(2026, 12, 27))   # межсезонье тенниса (резерв не нужен); сезон 2027 — с 28.12 с запасом.
+# ОБНОВЛЯТЬ ежегодно (аудит после финала ATP): прошедшее окно → резерв на все дни (безопасно, но КХЛ меньше)
+USAGE = DIR / 'oddspapi_usage.json'
+
+
+class UsageBroken(Exception):
+    """Файл учёта есть, но не читается — тратить остаток нельзя, перезаписывать историю нельзя (проверка 09, 25.11)."""
+
+
+def _usage() -> dict:
+    if not USAGE.exists():
+        return {}
+    try:
+        return json.loads(USAGE.read_text(encoding='utf-8'))
+    except Exception as e:
+        raise UsageBroken(str(USAGE)) from e
+
+
+def _count(who: str) -> None:
+    """+1 запрос в месячный учёт {ГГГГ-ММ: {кто: n}} (теннис, khl, прочее). Учёт сломан — исключение, запрос не идёт."""
+    u = _usage()
+    m = u.setdefault(dt.date.today().strftime('%Y-%m'), {})
+    m[who] = int(m.get(who, 0)) + 1
+    DIR.mkdir(parents=True, exist_ok=True)
+    USAGE.write_text(json.dumps(u, ensure_ascii=False), encoding='utf-8')
+
+
+def month_used(day: dt.date | None = None) -> int:
+    day = day or dt.date.today()
+    return sum(int(v) for v in _usage().get(day.strftime('%Y-%m'), {}).values())
+
+
+def _tennis_day(d: dt.date) -> bool:
+    return not (TENNIS_OFF[0] <= d <= TENNIS_OFF[1])
+
+
+def tennis_reserve(day: dt.date | None = None) -> int:
+    """Запросы, отложенные теннису до конца месяца: DAILY_MAX за каждый теннисный день после сегодняшнего
+    + неизрасходованный остаток сегодняшнего дня (сегодняшний кэш тенниса — c['calls'])."""
+    day = day or dt.date.today()
+    nxt = (day.replace(day=1) + dt.timedelta(days=32)).replace(day=1)
+    later = sum(_tennis_day(day + dt.timedelta(days=i)) for i in range(1, (nxt - day).days))
+    # сегодня — по дате UTC и по суткам тенниса (08:00 Ташкента = 03:00 UTC): pinnacle_ml ведёт кэш по C.wday,
+    # до 03:00 UTC это вчерашние сутки — резервируем остаток обоих кэшей (проверка 09, 25.11)
+    keys = {day.isoformat(), (day - dt.timedelta(days=1)).isoformat()} if dt.datetime.utcnow().hour < 3 else {day.isoformat()}
+    today = sum(max(0, DAILY_MAX - int(_cache(k)[1].get('calls', 0))) for k in keys) if _tennis_day(day) else 0
+    return DAILY_MAX * later + today
+
+
+def spare(day: dt.date | None = None) -> int:
+    """Сколько запросов можно потратить НЕ на теннис прямо сейчас, не задев резерв тенниса и лимит месяца."""
+    day = day or dt.date.today()
+    try:
+        return max(0, LIMIT - SAFE - month_used(day) - tennis_reserve(day))
+    except UsageBroken:
+        return 0
 WINNER, OUT1, OUT2 = '121', '121', '122'
 
 
-def _get(path: str, params: dict) -> object:
+def _get(path: str, params: dict, who: str = 'tennis') -> object:
+    _count(who)                                              # учёт до запроса: неудачный запрос тоже тратит квоту
     q = urllib.parse.urlencode(dict(params, apiKey=os.getenv('ODDSPAPI_KEY', '')))
     req = urllib.request.Request(f'{BASE}{path}?{q}', headers={'User-Agent': 'standing-in-motion/1.0'})
     with urllib.request.urlopen(req, timeout=25) as r:
@@ -90,32 +150,27 @@ def pinnacle_ml(items: list[tuple], day: dt.date, same_name, log: list[str]) -> 
 
 
 def probe() -> str:
-    """Проверка ключа один раз в сутки: есть ли ключ, отвечает ли API, сколько теннисных матчей на сегодня (1 запрос)."""
+    """Проверка ключа раз в сутки. 25.11 (Ц6б): без отдельных запросов — список теннисных матчей кладётся в тот же кэш дня,
+    что и у pinnacle_ml (входит в DAILY_MAX); отдельный запрос котировок для проверки убран (было до 2 лишних запросов в сутки)."""
     if not os.getenv('ODDSPAPI_KEY'):
         return 'OddsPapi: ключа нет (секрет ODDSPAPI_KEY не найден)'
     day = dt.date.today()
-    f = DIR / f'oddspapi_probe_{day.isoformat()}.json'
-    if f.exists():
-        return 'OddsPapi: ключ есть (проверен сегодня)'
+    f, c = _cache(day.isoformat())
+    if c['fixtures'] is not None:
+        return f'OddsPapi: ключ работает (сегодня {c["calls"]}/{DAILY_MAX}; месяц {month_used(day)}/{LIMIT})'
+    if not _tennis_day(day):
+        return f'OddsPapi: межсезонье тенниса — проверка без запроса (месяц {month_used(day)}/{LIMIT})'
+    if c['calls'] >= DAILY_MAX:
+        return f'OddsPapi: суточный лимит тенниса исчерпан ({c["calls"]}/{DAILY_MAX})'
     DIR.mkdir(parents=True, exist_ok=True)
     try:
-        fx = _get('/fixtures', dict(sportId=TENNIS, **{'from': day.isoformat(), 'to': (day + dt.timedelta(days=1)).isoformat()}))
+        c['calls'] += 1
+        fx = _get('/fixtures', dict(sportId=TENNIS, **{'from': day.isoformat(), 'to': (day + dt.timedelta(days=2)).isoformat()}))
         data = fx if isinstance(fx, list) else (fx.get('data') or [])
-        info = dict(n=len(data), sample=data[:3])
-        now = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:%M')
-        cand = [x for x in data if x.get('hasOdds') and (x.get('externalProviders') or {}).get('pinnacleId')]
-        cand.sort(key=lambda x: (str(x.get('startTime', '')) < now, str(x.get('startTime', ''))))   # не начавшиеся — первыми
-        msg = ''
-        if cand:                                                   # 1 запрос: проверка разбора котировок Pinnacle (рынок 121)
-            js = _get('/odds', dict(fixtureId=cand[0]['fixtureId']))
-            books = js.get('bookmakerOdds') or {}
-            pin = (books.get('pinnacle') or {}).get('markets', {})
-            win = pin.get(WINNER, {}).get('outcomes', {})
-            k = [_price(win.get(OUT1, {})), _price(win.get(OUT2, {}))]
-            info.update(odds_fixture=cand[0]['fixtureId'], books=sorted(books)[:40], pin_markets=sorted(pin)[:30], pin_winner=k)
-            msg = (f"; Pinnacle на исход: {cand[0].get('participant1Name')} — {cand[0].get('participant2Name')} {k}, "
-                   f"1xBet в списке: {'да' if any('1xbet' in b for b in books) else 'нет'}")
-        f.write_text(json.dumps(info, ensure_ascii=False), encoding='utf-8')
-        return f'OddsPapi: ключ работает, теннисных матчей на сегодня {len(data)}, с Pinnacle {len(cand)}' + msg
+        c['fixtures'] = [dict(id=str(x.get('fixtureId')), a=x.get('participant1Name', ''), b=x.get('participant2Name', ''),
+                              t=x.get('startTime', '')) for x in data]
+        f.write_text(json.dumps(c, ensure_ascii=False), encoding='utf-8')
+        return f'OddsPapi: ключ работает, теннисных матчей {len(data)} (месяц {month_used(day)}/{LIMIT})'
     except Exception as e:
-        return f'OddsPapi: ключ есть, но API ответил ошибкой ({e.__class__.__name__}: {str(e)[:80]})'
+        f.write_text(json.dumps(c, ensure_ascii=False), encoding='utf-8')
+        return f'OddsPapi: ключ есть, но API ответил ошибкой ({e.__class__.__name__})'

@@ -165,6 +165,68 @@ for seal_path in (HERE.parent / 'seal.py', HERE / 'seal.py'):     # у футб�
       dp.loc[0, 'line'] = '3.5'
       check(f'{seal_path.parent.name}/seal: ⭐ вне снимка', SEAL.verify(dp, Path(tmp), 'football', 'espn_id').startswith('🔏 ⭐ не в снимке'), True)
 
+# 25.11 · OddsPapi (Ц6б): теннис в приоритете — КХЛ только из остатка; учёт каждого запроса; пустой ответ не жжёт квоту
+import datetime as _dt     # noqa: E402
+import json as _json       # noqa: E402
+spec = importlib.util.spec_from_file_location('oddspapi_t', HERE.parent / 'oddspapi.py')
+OPT = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(OPT)
+with tempfile.TemporaryDirectory() as tmp:
+    OPT.DIR = Path(tmp)
+    OPT.USAGE = Path(tmp) / 'oddspapi_usage.json'
+    check('Ц6б: межсезонье — резерв тенниса только на 28–31.12', OPT.tennis_reserve(_dt.date(2026, 12, 1)), 7 * 4)
+    check('Ц6б: январь 1-го — резерв 7 × 31', OPT.tennis_reserve(_dt.date(2027, 1, 1)), 7 * 31)
+    OPT.USAGE.write_text(_json.dumps({'2027-01': {'tennis': 40}}), encoding='utf-8')
+    check('Ц6б: январь 10-го, потрачено 40 — остаток КХЛ', OPT.spare(_dt.date(2027, 1, 10)), 250 - 5 - 40 - 7 * 22)
+    (Path(tmp) / 'oddspapi_2027-01-10.json').write_text(_json.dumps({'calls': 7, 'fixtures': [], 'odds': {}}), encoding='utf-8')
+    check('Ц6б: сегодняшние 7 тенниса уже потрачены — резерв без сегодня', OPT.tennis_reserve(_dt.date(2027, 1, 10)), 7 * 21)
+    OPT.USAGE.write_text(_json.dumps({'2027-01': {'tennis': 245}}), encoding='utf-8')
+    check('Ц6б: месяц исчерпан — КХЛ 0', OPT.spare(_dt.date(2027, 1, 10)), 0)
+    _uo = OPT.urllib.request.urlopen
+    OPT.urllib.request.urlopen = lambda *a, **k: (_ for _ in ()).throw(OSError('нет сети'))
+    try:
+        OPT._get('/x', {}, who='khl')
+    except OSError:
+        pass
+    finally:
+        OPT.urllib.request.urlopen = _uo
+    check('Ц6б: неудачный запрос тоже в учёте', _json.loads(OPT.USAGE.read_text())[_dt.date.today().strftime('%Y-%m')].get('khl'), 1)
+    OPT.USAGE.write_text('{битый', encoding='utf-8')
+    check('Ц6б: учёт битый — КХЛ 0, история не перезаписана', (OPT.spare(_dt.date(2027, 1, 10)), OPT.USAGE.read_text()), (0, '{битый'))
+    OPT.USAGE.unlink()
+    # снимок КХЛ: остатка нет → ни одного запроса; пустой ответ дважды → третьей попытки нет
+    import os as _os  # noqa: E402
+    _os.environ.setdefault('ODDSPAPI_KEY', 'test')
+    sys.path.insert(0, str(HERE.parent))
+    from hockey import hkhl_odds as KO  # noqa: E402
+    KO.OP, KO.DIR, KO.TEAMS, KO.MARKETS = OPT, Path(tmp), Path(tmp) / 't.json', Path(tmp) / 'm.json'
+    got = []
+    OPT._get = lambda path, params, who='tennis': got.append(path) or []
+    OPT.spare = lambda day=None: 1
+    lg = []
+    check('КХЛ: остаток 1 < нужно 3 — пропуск без запросов', (KO.snapshot('2026-11-25', pd.Timestamp('2026-11-25 07:00'), lg), got), (0, []))
+    OPT.spare = lambda day=None: 100
+    KO.MARKETS.write_text('{}', encoding='utf-8')
+    for _ in range(3):
+        KO.snapshot('2026-11-25', pd.Timestamp('2026-11-25 07:00'), lg)
+    check('КХЛ: пустой ответ — не больше 2 попыток (2 × 2 конторы)', len(got), 4)
+    fx = dict(fixtureId='f1', startTime='2026-11-25T14:00:00.000Z', participant1Id=1, participant2Id=2,
+              bookmakerOdds={'pinnacle': {'markets': {'151': {'outcomes': {'151': {'players': {'0': {'price': 1.87}}},
+                                                                          '152': {'players': {'0': {'price': 1.95}}}}}}}})
+    old = dict(fixtureId='f0', startTime='2026-11-25T06:00:00.000Z', participant1Id=3, participant2Id=4, bookmakerOdds=fx['bookmakerOdds'])
+    OPT._get = lambda path, params, who='tennis': ([fx, old] if path == '/odds-by-tournaments' else
+                                                  [dict(participant1Id=1, participant1Name='HC Barys', participant2Id=2,
+                                                        participant2Name='Severstal Cherepovets')])
+    KO.snapshot('2026-11-26', pd.Timestamp('2026-11-25 07:00'), lg)
+    snap = _json.loads((Path(tmp) / 'khl_2026-11-26.json').read_text())
+    n0 = len(lg)
+    OPT._get = lambda path, params, who='tennis': got.append(path) or []
+    got.clear(); KO.snapshot('2026-11-26', pd.Timestamp('2026-11-25 08:00'), lg)
+    check('КХЛ: снимок с ценами есть — повторных запросов нет', got, [])
+    check('КХЛ: снимок — только будущий матч, имена, кф Pinnacle',
+          [(r['home'], r['away'], r['books']['pinnacle']['151']) for r in snap['fixtures']],
+          [('HC Barys', 'Severstal Cherepovets', {'151': 1.87, '152': 1.95})])
+
 if FAILS:
     print('\n'.join(FAILS))
     print(f'тесты регрессии: провалов {len(FAILS)}')

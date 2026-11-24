@@ -655,6 +655,13 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
                     fh.write(_js.dumps(dict(ts=now.isoformat(timespec='seconds'), events=slim), ensure_ascii=False) + '\n')
         except Exception as ex:
             log.append(f'🏒 A31 цены: сбой {ex.__class__.__name__}: {ex}')
+    if not dry and getattr(C, 'HK_KHL_ODDS', True):    # 25.11 IMP-04 шаг 1: снимки цен КХЛ (OddsPapi, остаток после резерва тенниса, Ц6б)
+        try:
+            from hockey import hkhl_odds
+            loc = now + dt.timedelta(hours=C.TZ_OFFSET_HOURS)
+            hkhl_odds.snapshot(str((loc - dt.timedelta(hours=12)).date()), now, log)
+        except Exception as ex:
+            log.append(f'🏒 КХЛ цены: сбой {ex.__class__.__name__}: {ex}')
     try:
         tp = HC.run(games, log)
     except Exception as ex:

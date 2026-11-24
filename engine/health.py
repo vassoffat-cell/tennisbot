@@ -78,6 +78,20 @@ def minutes_check() -> list[tuple[str, str, str, str]]:
              f'{used} / ≈ {fc:.0f} (темп {last3 / 3:.0f}/сутки)', '✅' if fc <= 2000 else '⚠️')]
 
 
+def oddspapi_check() -> list[tuple[str, str, str, str]]:
+    """25.11 (Ц6б): месячный учёт OddsPapi — всего / теннис / КХЛ; теннис в приоритете, КХЛ — только из остатка."""
+    import json
+    from pathlib import Path
+    f = Path(__file__).resolve().parent.parent / 'data' / 'odds' / 'oddspapi_usage.json'
+    try:
+        m = json.loads(f.read_text(encoding='utf-8')).get(datetime.now(timezone.utc).strftime('%Y-%m'), {})
+    except Exception:
+        return [('OddsPapi: запросов за месяц', '≤ 250', 'нет учёта', '⚠️')]
+    tot = sum(int(v) for v in m.values())
+    parts = ' · '.join(f'{k} {v}' for k, v in sorted(m.items()))
+    return [('OddsPapi: запросов за месяц (Ц6б)', '≤ 245', f'{tot} ({parts})', '✅' if tot <= 245 else '❌')]
+
+
 def seal_today() -> list[tuple[str, str, str, str]]:
     """🔏 С16: снимок линий суток есть у тенниса и хоккея (футбол — если у него были матчи; полная сверка — seal_check.py)."""
     from pathlib import Path
@@ -480,6 +494,7 @@ def main(hours: int = 26) -> None:
     rows += wide_check()
     rows += alerts_check()
     rows += minutes_check()
+    rows += oddspapi_check()
     w = max(len(r[0]) for r in rows)
     print(f'Здоровье за {hours} ч (до {(now + TZ):%d.%m %H:%M} Ташкент)')
     for a, b, c, d in rows:
