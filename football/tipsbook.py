@@ -861,6 +861,12 @@ def _verdict(p: float, src: str = 'система') -> str:
     return (f'{tag[0]} (P {p * 100:.0f}%)' if p >= 0.55 else f'{tag[1]} (P {p * 100:.0f}%)' if p <= 0.45 else f'{tag[2]} (P {p * 100:.0f}%)')
 
 
+def no_verdict(wh: str) -> str | None:
+    """Причина без оценки по строке времени (К16): 🔴 — после начала; ⚠️ — матч уже идёт (25.11: было «⬜ матч не найден»)."""
+    return ('· после начала — не оценивается' if wh.startswith('🔴') else
+            '· матч уже идёт — не оценивается' if wh.startswith('⚠️') else None)
+
+
 def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) -> tuple[dict, dict]:
     """Вердикт каждому прогнозу капера на футбол (и «другое» с командами), по уровням (20–21.11, замечания пользователя
     «все прогнозы — с оценкой и вердиктом системы», «не может быть вне системы»):
@@ -896,9 +902,10 @@ def _football_rel(d: pd.DataFrame, rel: dict, df: pd.DataFrame | None = None) ->
             if o is not None:
                 eid, e, legs = o
                 st_o[r.uid] = pd.Timestamp(e['start'])
-                if st_o[r.uid] >= now:
-                    rel_o[r.uid] = _verdict(_sys_p(eid, np.asarray(e['P'], float), legs)) if legs else \
-                        '⬜ наш матч, рынок вне модели (фолы, угловые…)'
+                # 25.11: купон, присланный после начала (⚠️ «матч уже идёт»), — оценка по P до матча (у нас она есть);
+                # раньше вердикт не ставился и сообщение получало ложное «⬜ матч не найден» (Комо — АЕК, 24.11 20:31)
+                rel_o[r.uid] = _verdict(_sys_p(eid, np.asarray(e['P'], float), legs)) if legs else \
+                    '⬜ наш матч, рынок вне модели (фолы, угловые…)'
                 continue
         try:
             hit = _event_of(a, b, pick, ts, cache, str(getattr(r, 'raw', '') or ''))
@@ -1043,7 +1050,7 @@ def alert(rt: dict, df: pd.DataFrame, log: list[str], test: bool = False) -> Non
                 jr.append(dict(uid=r.uid, sent=str(now)[:16], bot=bot, sport=r.sport, match=f'{r.a} — {r.b}' if r.a else '',
                                pick=str(r.pick)[:60], when=wh.split(' ')[0] if wh else '', verdict='⬜ ставка не разобрана'))
                 continue
-            verdict = rel.get(r.uid) or ('· после начала — не оценивается' if wh.startswith('🔴') else None)
+            verdict = rel.get(r.uid) or no_verdict(wh)
             if verdict is None:                                   # 21.11 (К16): «без оценки» / «вне базы» без причины — запрещено
                 verdict = '⬜ матч не найден на табло'
                 no_reason.append(r.uid)

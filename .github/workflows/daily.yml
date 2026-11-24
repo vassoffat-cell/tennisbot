@@ -111,6 +111,16 @@ jobs:
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
           RESEARCH: ${{ github.event.inputs.research }}
+      - name: Save OddsPapi usage (research)
+        # 25.11 (Ц6б, проверка 09): разовая проба тратит квоту OddsPapi — её учёт сохраняется, иначе КХЛ возьмёт запросы из резерва тенниса
+        if: always() && github.event.inputs.research != ''
+        run: |
+          git config user.name "tennis-bot"
+          git config user.email "tennis-bot@users.noreply.github.com"
+          git add data/odds/oddspapi_usage.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "OddsPapi: учёт пробы $(date -u +%F)"
+          ok=0; for i in 1 2 3; do (git pull --rebase -X theirs --autostash origin main || { git rebase --abort; false; }) && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]
       - name: Save data and model
         if: always() && steps.gate.outputs.skip != 'true' && github.event.inputs.research == ''
         run: |

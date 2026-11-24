@@ -35,9 +35,13 @@ def apis(path: str) -> dict:
 
 
 def op(path: str, **params) -> object:
-    q = urllib.parse.urlencode(dict(params, apiKey=os.getenv('ODDSPAPI_KEY', '')))
+    """25.11: через oddspapi._get — запрос попадает в месячный учёт (who='research'), daily.yml сохраняет учёт после пробы."""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import oddspapi as OPM
     try:
-        return _get(f'{OP}{path}?{q}')
+        return OPM._get(path, params, who='research')
     except Exception as e:                       # ключ в тексте ошибки не печатается (печатаем только тип/код)
         print(f'   OddsPapi {path}: {type(e).__name__} {getattr(e, "code", "")}')
         return None

@@ -165,6 +165,11 @@ for seal_path in (HERE.parent / 'seal.py', HERE / 'seal.py'):     # у футб�
       dp.loc[0, 'line'] = '3.5'
       check(f'{seal_path.parent.name}/seal: ⭐ вне снимка', SEAL.verify(dp, Path(tmp), 'football', 'espn_id').startswith('🔏 ⭐ не в снимке'), True)
 
+# 25.11 · купон после начала (⚠️) без вердикта получал «⬜ матч не найден» (Комо — АЕК 24.11 20:31) → точная причина
+check('⚠️ матч уже идёт — причина', B.no_verdict('⚠️ матч уже идёт'), '· матч уже идёт — не оценивается')
+check('🔴 после начала — причина', B.no_verdict('🔴 опубликован в 21:16'), '· после начала — не оценивается')
+check('⏰ до матча — без причины', B.no_verdict('⏰ начало 22:45'), None)
+
 # 25.11 · OddsPapi (Ц6б): теннис в приоритете — КХЛ только из остатка; учёт каждого запроса; пустой ответ не жжёт квоту
 import datetime as _dt     # noqa: E402
 import json as _json       # noqa: E402
