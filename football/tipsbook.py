@@ -24,7 +24,7 @@ import tips as T
 
 BOOK = T.DIR / 'book.csv'
 ALERTS = T.DIR / 'alerts.csv'     # 23.11 аудит (AUDIT 0ж④, CODEX 2а): журнал присланных сообщений каперов с вердиктом — проверка «каждое сообщение»
-VERSION = 18                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 19                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -213,6 +213,7 @@ def tips_of(src: str, p: dict) -> list[dict]:
             continue
         if src in OCR_IMG:                                     # 15.11: OCR путает «1» с «Л», «l», «|», «I» («П1» → «ПЛ»)
             pick = re.sub(r'\bП[ЛlI|]\b', 'П1', pick)
+            pick = re.sub(r'(?<![А-Яа-яA-Za-z])[ЛlI|][ХX](?![А-Яа-яA-Za-z])', '1Х', pick)   # 24.11: «ЛХ и ТБ (1.5)» = «1Х и ТБ (1.5)»
         if src == 'kapper_uk' and not T.odds_in(pick):        # 14.11: картинка Каппер UK — «Победа в матче. П2 1.675» (кф в конце, 2–3 знака)
             m = re.search(r'\s(\d\.\d{2,3})\s*$', pick)
             if m and 1.01 < float(m.group(1)) < 30:

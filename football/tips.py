@@ -176,9 +176,19 @@ def _skel(s: str) -> str:
     return re.sub(r'(.)\1+', r'\1', s)
 
 
+def _norm_like(s: str) -> str:
+    """24.11: выравнивание транслита: ck → k, j → h (исп. «Бадахос» = Badajoz), z → s, двойные буквы → одна."""
+    s = s.replace('ck', 'k').replace('j', 'h').replace('z', 's')
+    return re.sub(r'(.)\1+', r'\1', s)
+
+
 def _like(w: str, x: str) -> bool:
     if difflib.SequenceMatcher(None, w, x).ratio() >= 0.84:
         return True
+    nx = _norm_like(x)                                             # 24.11: «Халл» = Hull (а ↔ u), «Хеккен» = Häcken (е ↔ ä),
+    for v in (w, w.replace('а', 'u').replace('a', 'u', 1), w.replace('e', 'a', 1)):   # «Бадахос» = Badajoz (х ↔ j)
+        if len(v) >= 4 and difflib.SequenceMatcher(None, _norm_like(v), nx).ratio() >= 0.84:
+            return True
     a, b = _skel(w), _skel(x)
     return len(a) >= 3 and len(b) >= 3 and (a == b or (min(len(a), len(b)) >= 4 and difflib.SequenceMatcher(None, a, b).ratio() >= 0.85))
 
@@ -199,7 +209,7 @@ def _alias(w: str) -> str | None:
     return None
 
 
-EN_ALT = {'koln': ('cologne',), 'munchen': ('munich',), 'sevilla': ('seville',),
+EN_ALT = {'koln': ('cologne',), 'munchen': ('munich',), 'sevilla': ('seville',), 'lyon': ('lyonnes',),   # 24.11: ESPN «OL Lyonnes» (жен.)
           'sint truiden': ('sint truidense',)}   # 21.11: ESPN «Sint-Truidense» (Шарлеруа — Сент-Трюйден не находился)
 
 

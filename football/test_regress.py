@@ -101,6 +101,18 @@ p = dict(id=2, ts=pd.Timestamp('2026-11-24'), text='Вчерашний посл�
          ocr='Экспресс\nСтатус: © выплачена\nМонца 3:0 Фиорентина\nТотал. (2.5) Б 1.631\nСтатус: © Выигрыш', photos=['x'])
 check('рассчитанный купон — не прогноз', B.tips_of('groznyi_ruslan', p), [])
 
+# 24.11 · каперы «матч не найден» при матче на табло: транслит, женские команды, «Сити»
+import tipswide as W  # noqa: E402
+def _pair(a, b, h, w):
+    ev = [dict(id='1', home=h, away=w, start='2026-11-22 14:00')]
+    return W.match_pair(a, b, ev) is not None
+check('табло: Халл Сити = Hull City', _pair('Халл Сити', 'Брайтон энд Хав Альбион', 'Hull City', 'Brighton & Hove Albion'), True)
+check('табло: Бадахос = Badajoz', _pair('Бадахос', 'Тенерифе', 'Badajoz', 'Tenerife'), True)
+check('табло: Хеккен (жен) = BK Häcken', _pair('Хеккен (жен)', 'Манчестер Сити (жен)', 'BK Häcken', 'Manchester City'), True)
+check('табло: Лион (ж) = OL Lyonnes', _pair('Арсенал Лондон (ж)', 'Лион (ж)', 'Arsenal', 'OL Lyonnes'), True)
+check('табло: Халл Сити ≠ Man City', _pair('Халл Сити', 'Тоттенхэм', 'Manchester City', 'Tottenham Hotspur'), False)
+check('табло: U21 не путается со взрослыми', _pair('Англия U21', 'Франция U21', 'England', 'France'), False)
+
 # 23.11 · сверка ⭐ ↔ снимок суток (ORG IMP-08): та же линия — ✅, чужая — «⭐ не в снимке»
 import tempfile                    # noqa: E402
 for seal_path in (HERE.parent / 'seal.py', HERE / 'seal.py'):     # у футбола своя копия seal.py (урок 23.11)

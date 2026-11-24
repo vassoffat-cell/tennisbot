@@ -230,7 +230,8 @@ def capper_check() -> list[tuple[str, str, str, str]]:
     both = ind[ind.result.isin(['W', 'L']) & ind.self.isin(['W', 'L'])]
     bad = int((both.result != both.self).sum())
     rows = [('каперы: сверка с табло = отметки каналов (К13)', '100%', f'{len(both) - bad}/{len(both)}', '✅' if not bad else '❌')]
-    wk = ind[(ind.ts > pd.Timestamp.now() - pd.Timedelta(days=7)) & (ind.ts < pd.Timestamp.now() - pd.Timedelta(hours=26))]
+    ind['sport'] = ind.uid.map(b['sport'])                       # 24.11: табло ESPN — только футбол (хоккей и теннис — свои базы)
+    wk = ind[(ind.sport == 'football') & (ind.ts > pd.Timestamp.now() - pd.Timedelta(days=7)) & (ind.ts < pd.Timestamp.now() - pd.Timedelta(hours=26))]
     if len(wk):
         nf = int(wk.why.isin(['матч не найден', 'не разобрано']).sum())
         rows.append(('каперы: без итога за 7 дн. (не найден / не разобрано)', '≤ 20%', f'{nf}/{len(wk)} ({nf / len(wk) * 100:.0f}%)',

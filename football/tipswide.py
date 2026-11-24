@@ -73,6 +73,9 @@ def day_events(d: dt.date, fresh_min: int = 90) -> list[dict]:
 
 
 # ------------------------------------------------------------------ сопоставление пары команд
+GENERIC = {'сити', 'юнайтед', 'city', 'united', 'реал', 'атлетико'}
+
+
 def _ru_info(name: str) -> tuple[str | None, list[str], bool]:
     low = name.lower().strip(' .,:;!⚽️-–—')
     al = COUNTRY.get(low) or T._alias(low)
@@ -80,7 +83,10 @@ def _ru_info(name: str) -> tuple[str | None, list[str], bool]:
     if not al:
         for n in (2, 1):
             for i in range(len(ws) - n + 1):
-                al = al or COUNTRY.get(' '.join(ws[i:i + n])) or T._alias(' '.join(ws[i:i + n]))
+                g = ' '.join(ws[i:i + n])
+                if n == 1 and len(ws) > 1 and g in GENERIC:          # 24.11: «Халл Сити» — не «Манчестер Сити» по слову «сити»
+                    continue
+                al = al or COUNTRY.get(g) or T._alias(g)
     return al, [T._tr(w) for w in ws if len(w) >= 4], bool(YOUTH.search(low))
 
 
@@ -89,10 +95,10 @@ def _en_info(name: str) -> tuple[str, list[str], bool]:
     return k, [x for x in k.split() if len(x) >= 4 and x not in T.STOP], bool(YOUTH.search(name.lower()))
 
 
-def _same(ru, en) -> bool:
+def _same(ru, en, women: bool = False) -> bool:
     al, ws, y1 = ru
     k, toks, y2 = en
-    if y1 != y2:
+    if y1 != y2 and not (women and y1 and not y2):              # 24.11: женские команды ESPN пишет без пометки («Benfica», «Roma»)
         return False
     if al and any(re.search(r'\b' + re.escape(T._fold(x)) + r'\b', k)
                   for x in (al,) + T.EN_ALT.get(T._fold(al), ())):       # 21.11: «Кёльн» = «FC Cologne» (EN_ALT, как в tips)
@@ -117,6 +123,13 @@ def match_pair(a: str, b: str, events: list[dict], when: int | None = None) -> t
             hits[e['id']] = (e, False)
         elif _same(ra, w) and _same(rb, h):
             hits.setdefault(e['id'], (e, True))
+    if not hits and re.search(r'\(ж\)|\bжен', f'{a} {b}'.lower()):  # 24.11: женский матч — второй проход без пометки у ESPN
+        for e in events:
+            h, w = e['_h'], e['_a']
+            if not (h[2] or w[2]) and _same(ra, h, True) and _same(rb, w, True):
+                hits[e['id']] = (e, False)
+            elif not (h[2] or w[2]) and _same(ra, w, True) and _same(rb, h, True):
+                hits.setdefault(e['id'], (e, True))
     if len(hits) > 1:                                              # 18.11: «Атлетико — Барселона» — несколько «Атлетико …»:
         def sc(v):                                                 # берём событие, где совпало больше слов названий
             e, fl = v
@@ -552,7 +565,7 @@ def book_ind(log: list[str], days: int = 45) -> int:
     ind = _ind_load()
     retry = set(b.uid[b.pick.str.contains('тайм', case=False)])  # 21.11 К17: ставки на таймы — пересчитать один раз
     done = {u for u, r, w in zip(ind.uid, ind.result, ind.why)
-            if r in ('W', 'L', 'P') or (w in ('нет данных', 'не разобрано') and not (u in retry and w == 'нет данных'))}
+            if r in ('W', 'L', 'P') or (w == 'нет данных' and u not in retry)}   # 24.11: «не разобрано» — снова, разбор растёт
     rows = {u: i for i, u in enumerate(ind.uid)}
     cache: dict = {}
     out = ind.to_dict('records')
