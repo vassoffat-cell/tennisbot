@@ -24,7 +24,7 @@ import tips as T
 
 BOOK = T.DIR / 'book.csv'
 ALERTS = T.DIR / 'alerts.csv'     # 23.11 аудит (AUDIT 0ж④, CODEX 2а): журнал присланных сообщений каперов с вердиктом — проверка «каждое сообщение»
-VERSION = 17                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 18                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -153,6 +153,7 @@ def _real_pair(s: str) -> bool:
     return any(not MARKET.search(m.group(1)) and not MARKET.search(m.group(2)) for m in W.PAIR.finditer(s))
 
 
+SETTLED = re.compile(r'(?i)статус:\s*\W{0,3}\s*(?:выплачен|выигрыш|проигрыш|рассчитан)|завершено\s+\d+\s+из\s+\d+')
 REVIEW_POST = re.compile(r'(?i)^\s*(?:отзывы? клиент|видео-?отч[её]т|отч[её]т (?:по )?экспресс|всех с победой)')
 
 
@@ -165,7 +166,10 @@ def tips_of(src: str, p: dict) -> list[dict]:
         rows = slip_rows(src, p)
         if rows:
             return rows
-    txt = (p['text'] + ('\n' + p['ocr'] if p.get('ocr') else '')).strip()
+    ocr = p.get('ocr') or ''
+    if SETTLED.search(ocr):                                    # 24.11: на картинке уже рассчитанный купон («выплачена», «Выигрыш») —
+        ocr = ''                                               # отчёт о прошлой ставке, не прогноз (Грозный 13149)
+    txt = (p['text'] + ('\n' + ocr if ocr else '')).strip()
     sport = sport_of(txt)
     # 15.11: номер сегмента = номер пары в W.pairs (uid прежних прогнозов не меняется);
     # пара из прозы («в пяти матчах - ожидать …») — не пара команд (названия команд с заглавной буквы)

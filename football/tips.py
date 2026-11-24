@@ -266,7 +266,7 @@ def parse_legs(sel: str, home_first: bool | None = None, teams: tuple[str, str] 
         if m:
             legs.append((f'IT{m.group(1)}', 'O' if m.group(3)[0] == 'б' else 'U', _num(m.group(2))))
             continue
-        m = re.search(r'инд\w*\.?\s*тотал\w*\s*(больше|меньше)\s*\(?\s*' + NUM, p)
+        m = re.search(r'инд\w*\.?\s*тотал\w*\s+(?:[^\d()]{1,40}?\s+)?(больше|меньше)\s*\(?\s*' + NUM, p)   # 24.11: «Инд. Тотал Наполи больше (0.5)»
         if m and side:
             legs.append((f'IT{side}', 'O' if m.group(1)[0] == 'б' else 'U', _num(m.group(2))))
             continue

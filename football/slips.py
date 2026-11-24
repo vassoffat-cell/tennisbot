@@ -36,7 +36,7 @@ def _market(txt: str, a: str, b: str) -> str:
     m = re.search(r'обе (?:команды )?забьют,? (да|нет)', t)
     if m:
         return f'обе забьют {m.group(1)}'
-    m = re.search(r'(?:победа|исход матча,?|победитель,?) (.+)', t)
+    m = re.search(r'(?:победа|исход матча,?|победитель,?|результат основного времени,?) (.+)', t)   # 24.11: 1WIN «Результат основного времени, Арсенал»
     if m:
         w = m.group(1).strip()
         if w in ('ничья', 'x'):
@@ -96,7 +96,7 @@ def parse(ocr: str) -> dict | None:
             if len(parts) == 2 and all(len(re.findall(r'[а-яёa-z]', x.lower())) >= 3 for x in parts) and n + 1 < len(lines):
                 a, b = (re.sub(r'^\W+', '', parts[0]).strip(), parts[1].strip())
                 mk = re.sub(r'\b\d\.\d{2}\b', '', lines[n + 1]).strip(' ,|[]')
-                if re.search(r'тотал|фора|победа|исход|забьют|шанс|больше|меньше|выигра|тайм|ничья', mk.lower()):   # 21.11: «Выиграет оба тайма»
+                if re.search(r'тотал|фора|победа|исход|забьют|шанс|больше|меньше|выигра|тайм|ничья|результат', mk.lower()):   # 21.11: «Выиграет оба тайма»
                     events.append(dict(sport=sport, a=a, b=b, market=mk, short=_market(mk, a, b)))
     if not events:
         return None
