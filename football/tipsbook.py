@@ -24,7 +24,7 @@ import tips as T
 
 BOOK = T.DIR / 'book.csv'
 ALERTS = T.DIR / 'alerts.csv'     # 23.11 аудит (AUDIT 0ж④, CODEX 2а): журнал присланных сообщений каперов с вердиктом — проверка «каждое сообщение»
-VERSION = 21                                        # версия правил разбора (смена → пересборка книги из архива)
+VERSION = 22                                        # версия правил разбора (смена → пересборка книги из архива)
 PDIR = T.DIR / 'posts'
 COLS = ['uid', 'src', 'post_id', 'post_ts', 'sport', 'a', 'b', 'pick', 'k', 'self', 'self_ts', 'raw', 'slip', 'stake', 'seen']
 SPORT_RU = {'football': 'футбол', 'hockey': 'хоккей', 'tennis': 'теннис', 'basketball': 'баскет', 'volleyball': 'волейб',
@@ -237,6 +237,10 @@ def tips_of(src: str, p: dict) -> list[dict]:
             m = re.search(r'\s(\d\.\d{2,3})\s*$', pick)
             if m and 1.01 < float(m.group(1)) < 30:
                 pick = f"{pick[:m.start()].strip()} кф {m.group(1)}"
+        if src == 'kapper_uk' and not T.odds_in(pick) and ocr and len(VS.findall(ocr)) <= 1:   # 24.11: одиночный купон — «Коэффициент: 1.53»
+            m = re.search(r'Коэффициент:\s*(\d+[.,]\d{2,3})', ocr)
+            if m and 1.01 < float(m.group(1).replace(',', '.')) < 30 and not re.search(r'\s\d\.\d{2,3}\s*$', pick):
+                pick = f"{pick} кф {m.group(1).replace(',', '.')}"
         mk = self_mark(pick)                                   # только в строке ставки: «✅ Прогноз:» у части каналов — маркер списка
         out.append(dict(uid=f"{src}:{p['id']}:{n}", src=src, post_id=str(p['id']), post_ts=str(p['ts'])[:16],
                         sport=next((x for x in (sport_of(frag), sport, DEFAULT.get(src, 'other')) if x != 'other'), 'other'), a=a, b=b,
