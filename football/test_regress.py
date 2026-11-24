@@ -199,6 +199,7 @@ with tempfile.TemporaryDirectory() as tmp:
     _os.environ.setdefault('ODDSPAPI_KEY', 'test')
     sys.path.insert(0, str(HERE.parent))
     from hockey import hkhl_odds as KO  # noqa: E402
+    KO.PAUSE = 0
     KO.OP, KO.DIR, KO.TEAMS, KO.MARKETS = OPT, Path(tmp), Path(tmp) / 't.json', Path(tmp) / 'm.json'
     got = []
     OPT._get = lambda path, params, who='tennis': got.append(path) or []
@@ -222,7 +223,9 @@ with tempfile.TemporaryDirectory() as tmp:
     n0 = len(lg)
     OPT._get = lambda path, params, who='tennis': got.append(path) or []
     got.clear(); KO.snapshot('2026-11-26', pd.Timestamp('2026-11-25 08:00'), lg)
-    check('КХЛ: снимок с ценами есть — повторных запросов нет', got, [])
+    check('КХЛ: нет 1xBet — повтор только недостающей конторы', got, ['/odds-by-tournaments'])
+    got.clear(); KO.snapshot('2026-11-26', pd.Timestamp('2026-11-25 09:00'), lg)
+    check('КХЛ: 2 попытки — дальше без запросов', got, [])
     check('КХЛ: снимок — только будущий матч, имена, кф Pinnacle',
           [(r['home'], r['away'], r['books']['pinnacle']['151']) for r in snap['fixtures']],
           [('HC Barys', 'Severstal Cherepovets', {'151': 1.87, '152': 1.95})])

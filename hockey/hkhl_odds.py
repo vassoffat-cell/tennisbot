@@ -18,12 +18,14 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import time
 from pathlib import Path
 
 import oddspapi as OP
 
 SPORT, KHL = 15, 268
 BOOKS = ('pinnacle', '1xbet')
+PAUSE = 3.0                                 # секунд между запросами (25.11: без паузы 2-й запрос — HTTPError)
 DIR = OP.DIR
 TEAMS = DIR / 'oddspapi_khl_teams.json'
 MARKETS = DIR / f'oddspapi_markets_{SPORT}.json'
@@ -62,20 +64,29 @@ def snapshot(day: str, now: dt.datetime, log: list[str]) -> int:
         return 0
     f = DIR / f'khl_{day}.json'
     old = _load(f, {})
-    if old.get('fixtures') or int(old.get('tries', 0)) >= 2:          # снимок есть или 2 пустых попытки — квоту не жжём
+    have = {b for r in old.get('fixtures', []) for b in r.get('books', {})}
+    if set(BOOKS) <= have or int(old.get('tries', 0)) >= 2:            # полный снимок есть или 2 попытки — квоту не жжём
         return len(old.get('fixtures', []))
     teams = _load(TEAMS, {})
-    need = len(BOOKS) + (0 if MARKETS.exists() else 1)
+    need = len(set(BOOKS) - have) + (0 if MARKETS.exists() else 1)
     left = OP.spare()
     if left < need:
         log.append(f'🏒 КХЛ цены: пропуск — остаток OddsPapi {left} < {need} (резерв тенниса {OP.tennis_reserve()}, '
                    f'месяц {OP.month_used()}/{OP.LIMIT})')
         return 0
     iso = now.strftime('%Y-%m-%dT%H:%M')
-    fx: dict[str, dict] = {}
+    fx: dict[str, dict] = {r['id']: dict(r, p1=r.get('p1', ''), p2=r.get('p2', '')) for r in old.get('fixtures', [])}
     try:
         for b in BOOKS:
-            for x in _rows(OP._get('/odds-by-tournaments', dict(tournamentIds=KHL, bookmaker=b), who='khl')):
+            if b in have:                                                   # повторная попытка — только недостающая контора
+                continue
+            time.sleep(PAUSE)                                               # 25.11: 2-й запрос подряд → HTTPError (минимальная пауза API)
+            try:
+                got = _rows(OP._get('/odds-by-tournaments', dict(tournamentIds=KHL, bookmaker=b), who='khl'))
+            except Exception as e:
+                log.append(f'🏒 КХЛ цены: {b} — {e.__class__.__name__} {getattr(e, "code", "")}')
+                continue
+            for x in got:
                 if str(x.get('startTime', '')) <= iso:                      # начавшиеся и сыгранные — не нужны
                     continue
                 r = fx.setdefault(str(x.get('fixtureId')), dict(
@@ -84,8 +95,9 @@ def snapshot(day: str, now: dt.datetime, log: list[str]) -> int:
                 pr = _prices(x, b)
                 if pr:
                     r['books'][b] = pr
-        unknown = {r[k] for r in fx.values() for k in ('p1', 'p2')} - set(teams)
-        if unknown and OP.spare() >= 1:                                     # названия команд — один раз на новую команду
+        unknown = {r[k] for r in fx.values() for k in ('p1', 'p2')} - set(teams) - {''}
+        if unknown and OP.spare() >= 1:
+            time.sleep(PAUSE)                                     # названия команд — один раз на новую команду
             d0 = dt.date.fromisoformat(day)
             for x in _rows(OP._get('/fixtures', {'tournamentId': KHL, 'from': d0.isoformat(),
                                                  'to': (d0 + dt.timedelta(days=7)).isoformat()}, who='khl')):   # окно как у odds-by-tournaments
@@ -94,6 +106,7 @@ def snapshot(day: str, now: dt.datetime, log: list[str]) -> int:
                         teams[str(x[f'participant{i}Id'])] = x[f'participant{i}Name']
             TEAMS.write_text(json.dumps(teams, ensure_ascii=False, sort_keys=True), encoding='utf-8')
         if not MARKETS.exists() and OP.spare() >= 1:                        # справочник рынков — один раз
+            time.sleep(PAUSE)
             mk = {str(m.get('marketId')): [m.get('marketName'), m.get('handicap'),
                                            {str(o.get('outcomeId')): o.get('outcomeName') for o in (m.get('outcomes') or [])}]
                   for m in _rows(OP._get('/markets', dict(sportId=SPORT), who='khl'))}
@@ -105,8 +118,8 @@ def snapshot(day: str, now: dt.datetime, log: list[str]) -> int:
     for r in sorted(fx.values(), key=lambda r: r['start']):
         if not r['books']:
             continue
-        rows.append(dict(id=r['id'], start=r['start'], home=teams.get(r['p1'], r['p1']), away=teams.get(r['p2'], r['p2']),
-                         books=r['books']))
+        rows.append(dict(id=r['id'], start=r['start'], p1=r['p1'], p2=r['p2'], home=teams.get(r['p1'], r.get('home', r['p1'])),
+                         away=teams.get(r['p2'], r.get('away', r['p2'])), books=r['books']))
     # пустой ответ — помечаем попытку (не больше 2 за сутки), снимок с ценами — пишем
     f.write_text(json.dumps(dict(ts=now.isoformat(timespec='seconds'), fixtures=rows, tries=int(old.get('tries', 0)) + 1),
                             ensure_ascii=False), encoding='utf-8')
