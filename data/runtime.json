@@ -3452,12 +3452,47 @@
       1093
      ]
     ]
+   },
+   {
+    "id": "nhl:401892786",
+    "league": "NHL",
+    "start_utc": "2026-11-26 00:00",
+    "start_local": "26.11 05:00",
+    "home": "Pittsburgh Penguins",
+    "away": "Calgary Flames",
+    "slot": 23,
+    "market": "TOT",
+    "pick": "O",
+    "line": 5.5,
+    "label": "ТБ5.5",
+    "p": 0.5629,
+    "p_low": 0.5629,
+    "tier": 4,
+    "k": 1.79,
+    "ev": 0.0076,
+    "book": "onexbet",
+    "fire": 0,
+    "clash": 0,
+    "fire_i": 0,
+    "clash_i": 0,
+    "sl_pen": 0,
+    "rank": 2,
+    "hist": [
+     "➕ новая линия дня в 13:39: EV +0,8% · 2-я из 3"
+    ],
+    "msgs": [
+     [
+      570704006,
+      1096
+     ]
+    ]
    }
   ],
   "notes": [],
   "hdr2": true,
   "hdr3": true,
-  "hdr4": true
+  "hdr4": true,
+  "vol": 17
  },
  "resend_done": "2026-11-13",
  "hk_resend_done": "2026-11-13",
@@ -3510,7 +3545,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-25T07:42:29",
+ "chk_run": "2026-11-25T08:39:44",
  "plan_at": [
   "2026-11-25 22:00",
   "2026-11-25 23:30",
