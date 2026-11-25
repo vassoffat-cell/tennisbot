@@ -1,7 +1,7 @@
 {
  "list_messages": [],
  "list_match_ids": [],
- "last_daily": "2026-11-24",
+ "last_daily": "2026-11-25",
  "last_retrain": "2026-11-25",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
@@ -53,7 +53,7 @@
    32
   ]
  },
- "kcal_date": "2026-11-24",
+ "kcal_date": "2026-11-25",
  "breaker": {},
  "day_pick": {
   "date": "2026-11-25",
@@ -3511,7 +3511,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-25T04:10:49",
+ "chk_run": "2026-11-25T06:00:55",
  "plan_at": [
   "2026-11-25 22:00",
   "2026-11-25 23:30",
