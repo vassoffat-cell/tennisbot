@@ -875,8 +875,8 @@ def run(dry: bool = False) -> str:
     sched = FF.Schedule(train[['date', 'home', 'away']], usched)
 
     loc = _local(); today = C.wday(loc).isoformat()                  # дата суток системы (08:00 → 08:00)
-    due_h = getattr(C, 'MONDAY_HOUR', C.DAILY_HOUR[0]) if C.wday(loc).weekday() == 0 else C.DAILY_HOUR[0]   # 25.11 Р8: пн — 11:00
-    daily_due = due_h <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
+    ra = getattr(C, 'REPORT_AT', (C.DAILY_HOUR[0], 0))                # 25.11 Р8: отчёт с 11:15 (пн — и недельный)
+    daily_due = (loc.hour, loc.minute) >= ra and loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
     if not dry:                                                        # итоги прошедших матчей — до пересчёта k
         ns, nl = settle(store, results_index(st))
         nd = daypick.settle(store)
@@ -1021,8 +1021,8 @@ def run(dry: bool = False) -> str:
             notify.send_blocks(replies)
         for fid, name, _, _ in SHOTS:
             inbox.mark_done(fid, name)
-        wait = dpcore.pick_wait(rt, loc, today, C.DAILY_HOUR[0], getattr(C, 'MONDAY_HOUR', 11), getattr(C, 'PICK_WAIT_H', 2),
-                                getattr(C, 'REPORT_FIRST', False))
+        wait = dpcore.pick_wait(rt, loc, today, getattr(C, 'REPORT_AT', (11, 15)), getattr(C, 'PICK_AT', (11, 30)),
+                                getattr(C, 'PICK_WAIT_H', 2), getattr(C, 'REPORT_FIRST', False))
         if wait:
             log.append(f'ставка дня: {wait}')
         hold = bool(wait) and not wait.startswith('⚠️')            # 25.11 Р8: сначала отчёт за прошлые сутки, потом ⚽1

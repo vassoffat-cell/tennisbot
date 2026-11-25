@@ -6,7 +6,7 @@ on:
   # 18.11 ТЗ-007 шаг 2б: прогоны по матчам (план Р7, Apps Script planTick_) + резерв раз в 4 ч + ключевые часы.
   # Проверка 17.11 12:52 → 18.11 12:52: окон плана 7, без прогона 0. Было: каждые 2 ч круглые сутки (12 + 3 резерва).
   - cron: '7 1-23/4 * * *'     # резерв :07 раз в 4 ч — 06, 10, 14, 18, 22, 02 Ташкента
-  - cron: '7 3,6,7 * * *'      # ключевые часы: 08:07 ставка дня, 11:07 отчёт тенниса, 12:07 хоккей
+  - cron: '17,32 6,7 * * *'    # 25.11 Р8: страховка слотов 11:15 / 11:30 / 12:15 / 12:30 (основной запуск — keyTick_)
   # 18.11 18:30: резервы 08:27/11:27/12:27 убраны — ключевой час страхуют keyTick_ (Apps Script, со 2-й минуты) и Р4 (каперы, +25 мин);
   # прогон, пропущенный шлюзом, всё равно стоит 1 мин (GitHub округляет до минуты) → резерв был ≈ 3 мин/сутки впустую
   workflow_dispatch:
@@ -63,8 +63,9 @@ jobs:
         if: github.event_name == 'schedule'
         run: |
           since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
-          # ключевые часы (ставка дня 08, отчёты 11/12): считается только прогон ПОСЛЕ начала часа — иначе работа часа не сделана
-          h=$(TZ=Asia/Tashkent date +%H); case " 08 11 12 " in *" $h "*) since2=$(date -u -d "$(TZ=Asia/Tashkent date '+%Y-%m-%d %H:00') +0500" +%Y-%m-%dT%H:%M:%SZ);; *) since2=$since;; esac
+          # 25.11 Р8: ключевые слоты (Ташкент) — в течение часа после слота считается только прогон ПОСЛЕ его начала
+          since2=$since; nowm=$(( 10#$(TZ=Asia/Tashkent date +%H) * 60 + 10#$(TZ=Asia/Tashkent date +%M) ))
+          for sl in 11:15 11:30 12:15 12:30; do sm=$(( 10#${sl%:*} * 60 + 10#${sl#*:} )); if [ $nowm -ge $sm ] && [ $nowm -lt $((sm + 60)) ]; then s1=$(date -u -d "$(TZ=Asia/Tashkent date +%Y-%m-%d) $sl +0500" +%Y-%m-%dT%H:%M:%SZ); [[ "$s1" > "$since2" ]] && since2=$s1; fi; done
           # 17.11 ТЗ-007 шаг 2: окно плана по матчам открыто или откроется ≤ 15 мин — считается только полный прогон ПОСЛЕ начала окна
           # (окно в будущем → since2 в будущем → не пропускаем: Apps Script planTick_ засчитает этот запуск, значит он должен быть полным)
           pa=$(gh api "repos/${{ github.repository }}/contents/data/plan.json" -H 'Accept: application/vnd.github.raw' 2>/dev/null | jq -r --arg n "$(date -u -d '+15 min' '+%Y-%m-%d %H:%M')" --arg m "$(date -u -d '-10 min' '+%Y-%m-%d %H:%M')" '[.groups[]|select(.at <= $n and .hi >= $m)|.at]|max // empty' 2>/dev/null || true)
@@ -111,15 +112,6 @@ jobs:
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
           RESEARCH: ${{ github.event.inputs.research }}
-      - name: Monday — football right after tennis reports
-        # 25.11 (CONTROL Р8): понедельник — сначала отчёты в 11:00, затем новая неделя; футбол запускается сразу после отчёта тенниса
-        if: steps.gate.outputs.skip != 'true' && github.event.inputs.research == '' && github.event.inputs.resend_day == '' && github.event.inputs.resend_week == ''
-        run: |
-          if [ -f /tmp/football_now ]; then                    # пишет autorun только в прогоне, отправившем отчёт пн (один раз)
-            gh api -X POST "repos/${{ github.repository }}/actions/workflows/football.yml/dispatches" -f ref=main && echo "⚽ понедельник: футбол запущен после отчётов тенниса" || true
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
       - name: Save OddsPapi usage (research)
         # 25.11 (Ц6б, проверка 09): разовая проба тратит квоту OddsPapi — её учёт сохраняется, иначе КХЛ возьмёт запросы из резерва тенниса
         if: always() && github.event.inputs.research != ''

@@ -697,15 +697,19 @@ def _off_rows(off_: pd.DataFrame) -> list:
     return rows
 
 
-def pick_wait(rt: dict, loc, today: str, base_h: int, monday_h: int, wait_h: int, need: bool) -> str:
-    """25.11 (CONTROL Р8): ⭐1 новых суток — после отчёта за прошлые сутки. Пусто — выбирать можно; иначе причина ожидания.
-    need — нужен ли отчёт перед ⭐1 (футбол — всегда; теннис — только понедельник). ⭐ этих суток уже объявлена — не ждём."""
-    if not need or rt.get('last_daily') == today or (rt.get('day_pick') or {}).get('date') == today:
+def pick_wait(rt: dict, loc, today: str, report_at: tuple, pick_at: tuple, wait_h: int, need: bool) -> str:
+    """25.11 Р8: до 11:00 ждём итоги, 11:15 — отчёт и самообучение, 11:30 — ⭐1 новых суток (CONTROL Р8).
+    Пусто — выбирать можно; иначе причина ожидания (⚠️ — выпускать без отчёта). ⭐ этих суток уже есть — не ждём."""
+    if not need or (rt.get('day_pick') or {}).get('date') == today:
         return ''
-    if rt.get('rep_fail') == today:                             # отчёт упал (сбой кода) — ⭐1 не ждёт: раньше она выходила в 08:00
+    mins = (pd.Timestamp(loc) - pd.Timestamp(today)).total_seconds() / 60       # минуты от полуночи даты суток (ночью > 1440)
+    start = pick_at[0] * 60 + pick_at[1]
+    if mins < start:
+        return f'ждём старт суток {pick_at[0]}:{pick_at[1]:02d} (отчёт — {report_at[0]}:{report_at[1]:02d})'
+    if rt.get('last_daily') == today:
+        return ''
+    if rt.get('rep_fail') == today:                             # отчёт упал (сбой кода) — ⭐1 не ждёт
         return '⚠️ отчёт за прошлые сутки: сбой — ⭐1 без него'
-    due = monday_h if pd.Timestamp(today).weekday() == 0 else base_h
-    since = (pd.Timestamp(loc) - pd.Timestamp(today)).total_seconds() / 3600   # часы от полуночи даты суток (ночью > 24)
-    if since >= due + wait_h:
-        return f'⚠️ отчёт за прошлые сутки не ушёл к {due + wait_h}:00 — ⭐1 без него'
-    return f'ждём отчёт за прошлые сутки (⭐1 — сразу после него, срок {due}:00)'
+    if mins >= start + wait_h * 60:
+        return f'⚠️ отчёт за прошлые сутки не ушёл к {pick_at[0] + wait_h}:{pick_at[1]:02d} — ⭐1 без него'
+    return 'ждём отчёт за прошлые сутки (⭐1 — сразу после него)'

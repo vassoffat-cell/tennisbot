@@ -21,7 +21,7 @@ import tipswide
 
 ROUTE = {'football': 'football.yml', 'tennis': 'daily.yml', 'hockey': 'daily.yml'}
 SCHED_MIN = {'daily.yml': 7, 'football.yml': 37}       # плановые прогоны: :07 / :37
-SCHED_H = {'daily.yml': {1, 3, 5, 6, 7, 9, 13, 17, 21},             # часы UTC (18.11 шаг 2б: резерв 4 ч + ключевые; = config.DAILY_CRON_H)
+SCHED_H = {'daily.yml': {1, 5, 6, 7, 9, 13, 17, 21},             # 25.11 Р8: 08:07 убран             # часы UTC (18.11 шаг 2б: резерв 4 ч + ключевые; = config.DAILY_CRON_H)
            'football.yml': {6, 7, 11, 15, 19}}                    # 18.11 шаг 2б
 CAP_HOURS = set(range(10, 22))                        # 19.11 Г0б: часы UTC запусков каперов 15:22…02:22 Ташкента (тихое окно 03:00–15:00)
 MAX_EXTRA = 8                                         # внеплановых запусков в сутки на бота (кредиты API, квота таблиц)
@@ -36,7 +36,7 @@ def _next_sched(now: pd.Timestamp, minute: int, hours: set[int] | None = None) -
     return t
 
 
-KEY_SLOTS = {'daily.yml': (8, 11, 12), 'football.yml': (8, 11)}   # ключевые часы Ташкента: ⭐1 08:00, отчёты 11, хоккей 12
+KEY_SLOTS = {'daily.yml': ((11, 15), (11, 30), (12, 15), (12, 30)), 'football.yml': ((11, 15), (11, 30))}   # 25.11 Р8: отчёты 11:15 / 12:15, ⭐1 11:30 / 12:30
 KEY_LATE = pd.Timedelta(minutes=25)                   # прогона после начала ключевого часа нет 25 мин — GitHub его пропустил
 
 
@@ -60,21 +60,21 @@ def key_guard(now: pd.Timestamp, log: list[str]) -> list[str]:
     сторожат ключевые часы других ботов: прогона после начала ключевого часа нет 25 мин → запуск (≤ 3 ч после начала часа)."""
     out = []
     loc = now + pd.Timedelta(hours=5)
-    for wf, hours in KEY_SLOTS.items():
-        for h in hours:
-            start = loc.normalize() + pd.Timedelta(hours=h)
+    for wf, slots in KEY_SLOTS.items():
+        for h, m in slots:
+            start = loc.normalize() + pd.Timedelta(hours=h, minutes=m)
             if not (start + KEY_LATE <= loc < start + pd.Timedelta(hours=3)):
                 continue
             try:
                 rs = _wf_runs(wf)
             except Exception as e:
-                log.append(f'🛡 {wf}: проверка ключевого часа {h:02d}:00 — сбой {e.__class__.__name__}')
+                log.append(f'🛡 {wf}: проверка ключевого слота {h:02d}:{m:02d} — сбой {e.__class__.__name__}')
                 continue
             if rs is None:
                 continue
             if not any(t >= start - pd.Timedelta(hours=5) for t in rs):
                 out.append(wf)
-                log.append(f'🛡 {wf}: после {h:02d}:00 прогона нет {int((loc - start).total_seconds() // 60)} мин — запуск')
+                log.append(f'🛡 {wf}: после {h:02d}:{m:02d} прогона нет {int((loc - start).total_seconds() // 60)} мин — запуск')
     return out
 
 

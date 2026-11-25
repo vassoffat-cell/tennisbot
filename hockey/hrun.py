@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import traceback
 
 import numpy as np
 import pandas as pd
@@ -576,6 +577,38 @@ def dp_report(dp: pd.DataFrame, title: str, day: dt.date, d0: dt.date | None = N
 
 
 # ------------------------------------------------------------------ прогон
+
+def _hk_rep_hold(rt: dict, day: str, log: list[str]) -> bool:
+    """25.11 Р8: отчёт хоккея упал — повтор не чаще раза в час."""
+    if rt.get('hk_rep_fail') != day:
+        return False
+    try:
+        ago = (pd.Timestamp.now(tz='UTC') - pd.Timestamp(rt.get('hk_rep_fail_at'))).total_seconds() / 60
+    except Exception:
+        return False
+    if ago < 60:
+        log.append(f'🏒 суточный отчёт: после сбоя повтор через {60 - ago:.0f} мин')
+        return True
+    return False
+
+
+def hk_hold(rt: dict, cur: dt.date, yday: dt.date, loc) -> str:
+    """25.11 Р8: 🏒1 новых суток — в 12:30 и после отчёта за прошлые сутки (12:15). Пусто — выбирать; ⚠️ — без отчёта."""
+    if not getattr(C, 'REPORT_FIRST', False) or (rt.get('hk_dp') or {}).get('date') == str(cur):
+        return ''
+    pa = getattr(C, 'HK_PICK_AT', (12, 30))
+    mins = (pd.Timestamp(loc) - pd.Timestamp(cur)).total_seconds() / 60
+    start = pa[0] * 60 + pa[1]
+    if mins < start:
+        return f'ждём старт хоккейных суток {pa[0]}:{pa[1]:02d}'
+    if rt.get('hk_last_daily') == str(yday):
+        return ''
+    if rt.get('hk_rep_fail') == str(cur):
+        return '⚠️ отчёт за прошлые сутки: сбой — 🏒1 без него'
+    if mins >= start + getattr(C, 'PICK_WAIT_H', 2) * 60:
+        return f'⚠️ отчёт за прошлые сутки не ушёл к {pa[0] + getattr(C, "PICK_WAIT_H", 2)}:{pa[1]:02d} — 🏒1 без него'
+    return 'ждём отчёт за прошлые сутки (🏒1 — сразу после него)'
+
 def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool = False,
         day_override: dt.date | None = None, week_override: dt.date | None = None) -> list[dict]:
     """Вызывается из autorun.py после тенниса (каждые 2 ч). Расписание — свои хоккейные сутки (12:00 → 12:00).
@@ -617,7 +650,9 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
         Y = gf[gf.league.isin(public()) & (gf.start_utc.map(_day) == yday)]
         pend = int(Y.settled.map(_blank).sum())
     since = (now - _bound_utc(cur)).total_seconds() / 3600
-    due = force or (rt['hk_last_daily'] != str(yday) and (pend == 0 or since >= REPORT_GRACE_H))
+    ra = getattr(C, 'HK_REPORT_AT', (12, 0))                # 25.11 Р8: отчёт хоккея с 12:15
+    ra_h = ra[0] + ra[1] / 60 - HK_DAY_START
+    due = force or (since >= ra_h and rt['hk_last_daily'] != str(yday) and (pend == 0 or since >= REPORT_GRACE_H))
     replay = day_override is not None or week_override is not None   # повтор / тест (не сдвигает плановый отчёт)
     if replay:
         yday, due = (day_override or week_override), True
@@ -684,57 +719,70 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
             HP.shadow_settle(games, log)                  # 21.11: теневой портфель хоккея — итоги
         except Exception as ex_:
             log.append(f'🗂 теневой портфель 🏒: сбой итогов {ex_.__class__.__name__}: {ex_}')
-        HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log, games=games,
-                   evs=evs, M=models.get('NHL'))
+        dp = store.read('hk_day_pick')                    # 25.11 Р8: 🏒1 — после отчёта (вызов ниже, после блока отчёта)
+    except Exception as ex:
+        log.append(f'⭐🏒 сбой {ex.__class__.__name__}: {ex}')
+    gf, ld = store.read('hk_games'), store.read('hk_lines')
+    kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
+    if due and not _hk_rep_hold(rt, str(cur), log):     # 25.11 Р8: сбой отчёта не блокирует 🏒1, повтор раз в час
+        try:
+            tag = ' · повтор' if replay else ''                    # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
+            import selflearn as SL                                # 🧠 14.11: обучение по каждому суточному отчёту
+            try:                                              # 📈 цена закрытия (CLV) рассчитанных ставок дня — до обучения
+                import clv as CLV
+                log.append(CLV.update(store, 'hockey', {m_: float(v_[0]) for m_, v_ in kcal.items()}))
+                dp = store.read('hk_day_pick')
+            except Exception as ex:
+                log.append(f'📈 CLV hockey: сбой {ex.__class__.__name__}: {ex}')
+            slP, slE, slR = SL.cycle('hockey', 'Хоккей', store, dp if dp is not None else store.read('hk_day_pick'), None, cur, log)
+            notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
+            try:
+                import caprep
+                notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START),
+                                    SL.safe(SL.cap_block, 'hockey', slR)])
+            except Exception as ex:
+                log.append(f'🏒 отчёт каперов: сбой {ex.__class__.__name__}')
+            notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday)
+                               + [SL.safe(SL.day_block, 'hockey', slP, slE, yday, slR)])
+            if not replay:
+                rt['hk_last_daily'] = str(yday)
+            log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен' + (' (повтор)' if replay else ''))
+            if (yday.weekday() == 6 and not replay) or week_override:        # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
+                if week_override:
+                    yday = week_override
+                d0 = yday - dt.timedelta(days=6)
+                notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp,
+                                          split=True))
+                try:
+                    import caprep
+                    notify.send_blocks([caprep.report('hockey', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}', day_start=HK_DAY_START)])
+                except Exception as ex:
+                    log.append(f'🏒 недельный отчёт каперов: сбой {ex.__class__.__name__}')
+                notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
+                                   + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)])
+                log.append('🏒 недельный отчёт отправлен')
+            try:                                                  # 🗂 ТЗ-006: архив отчётов хоккея для меню теннисного бота
+                log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))
+            except Exception as ex:
+                log.append(f'🗂 архив хоккея: сбой {ex.__class__.__name__}: {ex}')
+        except Exception as ex:
+            if not replay:
+                rt['hk_rep_fail'], rt['hk_rep_fail_at'] = str(cur), pd.Timestamp.now(tz='UTC').isoformat()
+            log.append(f'🏒 суточный отчёт: сбой {ex.__class__.__name__}: {ex}')
+            log.append(traceback.format_exc()[-800:])
+    try:                                                  # ⭐ 🏒1 — после отчёта (Р8): до 12:30 и пока отчёта нет — только печать и тень
+        hold = hk_hold(rt, cur, cur - dt.timedelta(days=1), loc)   # не yday: при ручном повторе yday — дата повтора
+        if hold:
+            log.append(f'⭐🏒 {hold}')
+        HP.process(store, rt, items, tp, public(), cur, _bound_utc(cur), _bound_utc(cur + dt.timedelta(days=1)), now, _ltier, log,
+                   games=games, evs=evs, M=models.get('NHL'), hold=bool(hold) and not hold.startswith('⚠️'))
         dp = store.read('hk_day_pick')
     except Exception as ex:
         log.append(f'⭐🏒 сбой {ex.__class__.__name__}: {ex}')
-    try:                                                  # 21.11: теневой портфель хоккея — стороны с ценой этого прогона
+    try:                                                  # 21.11: теневой портфель хоккея — строки собирает HP.process (candidates) → только ПОСЛЕ него
         HP.shadow(pd.Timestamp(now), log)
     except Exception as ex:
         log.append(f'🗂 теневой портфель 🏒: сбой {ex.__class__.__name__}: {ex}')
-    gf, ld = store.read('hk_games'), store.read('hk_lines')
-    kprev = {k: tuple(v) for k, v in (rt.get('hk_kcal_prev') or {}).items()}
-    if due:
-        tag = ' · повтор' if replay else ''                    # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
-        import selflearn as SL                                # 🧠 14.11: обучение по каждому суточному отчёту
-        try:                                              # 📈 цена закрытия (CLV) рассчитанных ставок дня — до обучения
-            import clv as CLV
-            log.append(CLV.update(store, 'hockey', {m_: float(v_[0]) for m_, v_ in kcal.items()}))
-            dp = store.read('hk_day_pick')
-        except Exception as ex:
-            log.append(f'📈 CLV hockey: сбой {ex.__class__.__name__}: {ex}')
-        slP, slE, slR = SL.cycle('hockey', 'Хоккей', store, dp if dp is not None else store.read('hk_day_pick'), None, cur, log)
-        notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
-        try:
-            import caprep
-            notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START),
-                                SL.safe(SL.cap_block, 'hockey', slR)])
-        except Exception as ex:
-            log.append(f'🏒 отчёт каперов: сбой {ex.__class__.__name__}')
-        notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday)
-                           + [SL.safe(SL.day_block, 'hockey', slP, slE, yday, slR)])
-        if not replay:
-            rt['hk_last_daily'] = str(yday)
-        log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен' + (' (повтор)' if replay else ''))
-        if (yday.weekday() == 6 and not replay) or week_override:        # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
-            if week_override:
-                yday = week_override
-            d0 = yday - dt.timedelta(days=6)
-            notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp,
-                                      split=True))
-            try:
-                import caprep
-                notify.send_blocks([caprep.report('hockey', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}', day_start=HK_DAY_START)])
-            except Exception as ex:
-                log.append(f'🏒 недельный отчёт каперов: сбой {ex.__class__.__name__}')
-            notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
-                               + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)])
-            log.append('🏒 недельный отчёт отправлен')
-        try:                                                  # 🗂 ТЗ-006: архив отчётов хоккея для меню теннисного бота
-            log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))
-        except Exception as ex:
-            log.append(f'🗂 архив хоккея: сбой {ex.__class__.__name__}: {ex}')
     if rt.get('hk_arch_v1') != 8 and not dry:                # 🗂 ТЗ-006: первый прогон — архив хоккея за прошлые сутки и недели
         try:
             log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))

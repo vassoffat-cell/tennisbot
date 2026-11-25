@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -170,22 +171,34 @@ check('⚠️ матч уже идёт — причина', B.no_verdict('⚠️
 check('🔴 после начала — причина', B.no_verdict('🔴 опубликован в 21:16'), '· после начала — не оценивается')
 check('⏰ до матча — без причины', B.no_verdict('⏰ начало 22:45'), None)
 
-# 25.11 · Р8: ⭐1 новых суток — после отчёта за прошлые сутки (футбол всегда, теннис — пн); обе копии dpcore
+# 25.11 · Р8 (решение 11:37): до 11:00 итоги, 11:15 отчёт + самообучение, 11:30 ⭐1; хоккей 12:15 / 12:30; обе копии dpcore
 for dpc_path in (HERE.parent / 'dpcore.py', HERE / 'dpcore.py'):
     spec = importlib.util.spec_from_file_location(f'dpc_{dpc_path.parent.name}', dpc_path)
     DPC = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(DPC)
     tag = dpc_path.parent.name
-    L = lambda h: pd.Timestamp(f'2026-11-26 {h:02d}:05')            # четверг
-    M = lambda h: pd.Timestamp(f'2026-11-30 {h:02d}:05')            # понедельник
-    check(f'{tag} Р8: отчёт ушёл — выбирать', DPC.pick_wait({'last_daily': '2026-11-26'}, L(8), '2026-11-26', 8, 11, 2, True), '')
-    check(f'{tag} Р8: отчёта нет — ждём', DPC.pick_wait({}, L(8), '2026-11-26', 8, 11, 2, True).startswith('ждём'), True)
-    check(f'{tag} Р8: отчёта нет 2 ч — ⭐ без него', DPC.pick_wait({}, L(10), '2026-11-26', 8, 11, 2, True).startswith('⚠️'), True)
-    check(f'{tag} Р8: пн 09:00 — ждём отчёт 11:00', DPC.pick_wait({}, M(9), '2026-11-30', 8, 11, 2, True).startswith('ждём'), True)
-    check(f'{tag} Р8: ⭐ уже объявлена — не ждём', DPC.pick_wait({'day_pick': {'date': '2026-11-30'}}, M(9), '2026-11-30', 8, 11, 2, True), '')
-    check(f'{tag} Р8: не нужен (теннис не пн) — не ждём', DPC.pick_wait({}, L(8), '2026-11-26', 11, 11, 2, False), '')
-    check(f'{tag} Р8: отчёт упал — ⭐1 сразу', DPC.pick_wait({'rep_fail': '2026-11-26'}, L(8), '2026-11-26', 8, 11, 2, True).startswith('⚠️'), True)
-    check(f'{tag} Р8: ночь (пт 02:05, сутки чт без ⭐) — не ждём', DPC.pick_wait({}, pd.Timestamp('2026-11-27 02:05'), '2026-11-26', 8, 11, 2, True).startswith('⚠️'), True)
+    T_ = lambda hm: pd.Timestamp(f'2026-11-26 {hm}')               # четверг
+    W = lambda rt, hm: DPC.pick_wait(rt, T_(hm), '2026-11-26', (11, 15), (11, 30), 2, True)
+    check(f'{tag} Р8: 09:00 — ждём 11:30', W({}, '09:00').startswith('ждём старт'), True)
+    check(f'{tag} Р8: 11:20 отчёт ушёл — всё равно ждём 11:30', W({'last_daily': '2026-11-26'}, '11:20').startswith('ждём старт'), True)
+    check(f'{tag} Р8: 11:31 отчёт ушёл — выбирать', W({'last_daily': '2026-11-26'}, '11:31'), '')
+    check(f'{tag} Р8: 11:31 отчёта нет — ждём отчёт', W({}, '11:31').startswith('ждём отчёт'), True)
+    check(f'{tag} Р8: 13:30 отчёта нет — ⭐ без него', W({}, '13:30').startswith('⚠️'), True)
+    check(f'{tag} Р8: 11:31 отчёт упал — ⭐ сразу', W({'rep_fail': '2026-11-26'}, '11:31').startswith('⚠️'), True)
+    check(f'{tag} Р8: ⭐ уже объявлена — не ждём', W({'day_pick': {'date': '2026-11-26'}}, '09:00'), '')
+    check(f'{tag} Р8: ночь пт 02:05 (сутки чт без ⭐) — ⚠️', DPC.pick_wait({}, pd.Timestamp('2026-11-27 02:05'), '2026-11-26', (11, 15), (11, 30), 2, True).startswith('⚠️'), True)
+    check(f'{tag} Р8: флаг выключен — не ждём', DPC.pick_wait({}, T_('09:00'), '2026-11-26', (11, 15), (11, 30), 2, False), '')
+import datetime as _dt2  # noqa: E402
+from hockey import hrun as HR  # noqa: E402
+_c, _y = _dt2.date(2026, 11, 26), _dt2.date(2026, 11, 25)
+check('🏒 Р8: 12:20 — ждём 12:30', HR.hk_hold({}, _c, _y, pd.Timestamp('2026-11-26 12:20')).startswith('ждём старт'), True)
+check('🏒 Р8: 12:31 отчёт ушёл — выбирать', HR.hk_hold({'hk_last_daily': '2026-11-25'}, _c, _y, pd.Timestamp('2026-11-26 12:31')), '')
+check('🏒 Р8: 12:31 отчёта нет — ждём', HR.hk_hold({}, _c, _y, pd.Timestamp('2026-11-26 12:31')).startswith('ждём отчёт'), True)
+check('🏒 Р8: 14:30 отчёта нет — ⚠️', HR.hk_hold({}, _c, _y, pd.Timestamp('2026-11-26 14:30')).startswith('⚠️'), True)
+check('🏒 Р8: 🏒1 уже есть — не ждём', HR.hk_hold({'hk_dp': {'date': '2026-11-26'}}, _c, _y, pd.Timestamp('2026-11-26 12:20')), '')
+_src = (HERE.parent / 'hockey' / 'hrun.py').read_text(encoding='utf-8')
+check('🏒 Р8: теневой портфель после HP.process (SHADOW_ROWS заполняет process)', _src.index('HP.shadow(pd.Timestamp(now)') > _src.index('HP.process(store'), True)
+check('🏒 Р8: health не путает сбой отчёта хоккея с отправкой', bool(re.search(r'🏒 суточный отчёт \d\d\.\d\d отправлен', '🏒 суточный отчёт: сбой KeyError')), False)
 
 # 25.11 · Р8 (проверка 09): исключение в отчёте не блокирует ⭐1, повтор отчёта не чаще раза в час
 sys.path.insert(0, str(HERE))

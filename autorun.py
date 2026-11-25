@@ -736,7 +736,8 @@ def run(dry: bool = False) -> str:
         except Exception as e:
             log.append(f'OddsPapi: проверка не удалась ({e.__class__.__name__})')
     loc = _local(); today = C.wday(loc).isoformat()                  # дата суток системы (08:00 → 08:00)
-    daily_due = C.DAILY_HOUR[0] <= loc.hour < C.DAILY_HOUR[1] and rt.get('last_daily') != today
+    daily_due = ((loc.hour, loc.minute) >= getattr(C, 'REPORT_AT', (C.DAILY_HOUR[0], 0)) and loc.hour < C.DAILY_HOUR[1]
+                 and rt.get('last_daily') != today)                    # 25.11 Р8: отчёт с 11:15
     start_due = C.START_HOURS[0] <= loc.hour < C.START_HOURS[1]
     retrain_log = []
     if got or (start_due and rt.get('last_retrain') != today):
@@ -822,10 +823,6 @@ def run(dry: bool = False) -> str:
             except Exception as ex:
                 log.append(f'📈 CLV tennis: сбой {ex.__class__.__name__}: {ex}')
             slP, slE, slR = SL.cycle('tennis', 'Теннис', store, dpk, store.read('dp_changes'), loc.date(), log)
-            pre = rt.get('sl_pre') or {}
-            if daily_due and pre.get('date') == today and isinstance(slR, dict):     # 25.11 Р8: уроки, принятые в 08:00 до 🎾1, — тоже в блок 🧠 отчёта
-                for k_ in ('added', 'removed'):
-                    slR[k_] = list(pre.get(k_, [])) + [x for x in slR.get(k_, []) if x not in pre.get(k_, [])]
             quiet_d = _tn_empty(auto, dpk, yday, yday)
             if not only_week and not quiet_d:
                 notify.send_blocks(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,
@@ -878,25 +875,8 @@ def run(dry: bool = False) -> str:
                 rt['rep_fail'], rt['rep_fail_at'] = today, pd.Timestamp.now(tz='UTC').isoformat()
             log.append(f'суточный отчёт: сбой {ex.__class__.__name__}: {ex}')
             log.append(traceback.format_exc()[-800:])
-    if daily_due and not dry and rt.get('last_daily') == today and C.wday(loc).weekday() == 0:
-        try:                                                       # 25.11 Р8: пн — отчёт тенниса ушёл → daily.yml запускает футбол
-            open('/tmp/football_now', 'w').write(today)
-        except OSError:
-            pass
     if rt.get('arch_v2') != 7 and not dry:                         # 🗂 ТЗ-006: архив за прошлые сутки и недели (18.11 v4 — каперы: каждый отдельным сообщением)
         archive_run(store, rt, auto, ldf, kcal, off, C.wday(loc) - dt.timedelta(days=1), log)
-    if (not dry and getattr(C, 'LEARN_FIRST', False) and rt.get('last_daily') != today and rt.get('sl_pre', {}).get('date') != today
-            and (rt.get('day_pick') or {}).get('date') != today and C.wday(loc).weekday() != 0
-            and C.DAILY_HOUR[0] > loc.hour >= C.START_HOURS[0]):
-        try:                                                       # 25.11 Р8 (вариант Б): самообучение по сыгранным ставкам — до 🎾1
-            import clv as CLV
-            import selflearn as SL
-            log.append(CLV.update(store, 'tennis', last=rt.get('dp_last')))
-            _, _, pre = SL.cycle('tennis', 'Теннис', store, store.read('day_pick'), store.read('dp_changes'), loc.date(), log)
-            rt['sl_pre'] = dict(date=today, added=list(pre.get('added', [])), removed=list(pre.get('removed', [])))
-            log.append('🧠 теннис: самообучение до 🎾1 (отчёт — в 11:00)')
-        except Exception as e:
-            log.append(f'🧠 теннис: самообучение до 🎾1 — сбой {e.__class__.__name__}: {e}')
     daypick.TITLE = title
     hold_list = False                                              # ТЗ-004: прогноз на 24 ч — после скриншотов
     try:
@@ -928,8 +908,8 @@ def run(dry: bool = False) -> str:
             log.append(f"ставка дня: ждём скриншоты ({len((rt.get('r4') or {}).get('got', {}))}"
                        f"/{len((rt.get('r4') or {}).get('queue', []))})")
         else:
-            wait = dpcore.pick_wait(rt, loc, today, C.DAILY_HOUR[0], getattr(C, 'MONDAY_HOUR', 11), getattr(C, 'PICK_WAIT_H', 2),
-                                    getattr(C, 'LEARN_FIRST', False) and C.wday(loc).weekday() == 0)   # 25.11 Р8: пн — 🎾1 после отчётов
+            wait = dpcore.pick_wait(rt, loc, today, getattr(C, 'REPORT_AT', (11, 15)), getattr(C, 'PICK_AT', (11, 30)),
+                                    getattr(C, 'PICK_WAIT_H', 2), getattr(C, 'REPORT_FIRST', False))   # 25.11 Р8: 🎾1 в 11:30 после отчёта
             if wait:
                 log.append(f'ставка дня: {wait}')
             log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today,

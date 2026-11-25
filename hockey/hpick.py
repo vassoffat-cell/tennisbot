@@ -289,7 +289,7 @@ def texts(rt: dict) -> list[str]:
 
 
 def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, now, tier_fn, log: list[str],
-            games: pd.DataFrame | None = None, evs: list | None = None, M=None) -> None:
+            games: pd.DataFrame | None = None, evs: list | None = None, M=None, hold: bool = False) -> None:
     """Каждая ставка — отдельное закреплённое сообщение; rt['hk_dp'] = {date, picks: [...], notes: [...]}."""
     st = rt.get('hk_dp') or {}
     loc = now + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)
@@ -319,6 +319,8 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         log.append(SEAL.verify(store.read('hk_day_pick'), HD_DATA, 'hockey', 'id'))   # 23.11 (IMP-08)
     except Exception as ex:
         log.append(f'⭐🏒 печать: сбой {ex.__class__.__name__}: {ex}')
+    if hold and st.get('date') != str(day):                 # 25.11 Р8: 🏒1 ждёт 12:30 и отчёт — только печать С16
+        return
     if st.get('date') != str(day):                           # новые сутки: снять закрепы прошлых, убрать уведомления
         old = [tuple(m) for x in st.get('picks', []) for m in x.get('msgs', [])] + [tuple(m) for m in st.get('msgs', [])]
         if old:

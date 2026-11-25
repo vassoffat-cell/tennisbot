@@ -32,8 +32,10 @@ def main(arg: str) -> None:
     use_odds = 'odds' in flags
     auto = 'auto' in flags                                          # 16.11: плановая репетиция 21:13 — ⚠️ в бот только при проблеме
     send = notify.send_blocks
-    fake = pd.Timestamp(day) + pd.Timedelta(hours=C.DAY_START_HOUR - C.TZ_OFFSET_HOURS, minutes=30)   # 08:30 Ташкента
-    RN._now = lambda: fake                                          # прогноз и окно суток — как в 08:30 того дня
+    pa = getattr(C, 'PICK_AT', (11, 30))                            # 25.11 Р8: ⚽1 — в 11:30, репетиция — как в этот момент
+    fake = pd.Timestamp(day) + pd.Timedelta(hours=pa[0] - C.TZ_OFFSET_HOURS, minutes=pa[1] + 5)
+    RN._now = lambda: fake                                          # прогноз и окно суток — как в 11:35 того дня
+    C.REPORT_FIRST = False                                          # отчёта в репетиции нет — ⚽1 не ждёт его
     notify.send_blocks = notify.send = lambda *a, **k: []           # страховка: репетиция ничего не отправляет
     if not use_odds:
         OD.day_events = lambda *a, **k: ([], ['кф: репетиция без кф'])
