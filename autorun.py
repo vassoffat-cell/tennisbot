@@ -788,88 +788,115 @@ def run(dry: bool = False) -> str:
     resend = not dry and (not rt.get('resend_1111b') or bool(rday and rt.get('resend_done') != rday)
                           or bool(wk0 and rt.get('resend_week_done') != wk0))
     only_week = resend and bool(wk0) and not (rday and rt.get('resend_done') != rday) and not daily_due
-    if daily_due or resend:
-        notes = []
-        for tour in TOURS:
-            last = getattr(P.model(tour).state, 'td_last', None)
-            if last is not None and (loc.normalize() - last).days > 9:
-                notes.append(f'база {tour.upper()} (TennisMyLife) по {last:%d.%m} — старше 9 дней, проверить загрузку')
-        if retrain_log:
-            notes.append('переобучено: ' + '; '.join(x.split(':')[0] + ' ' + x.split('точность')[-1].split(';')[0].strip()
-                                                  for x in retrain_log if 'точность' in x))
-        yday = C.wday(loc) - dt.timedelta(days=1)                     # прошлые сутки 08:00 → 08:00
-        if rday and resend and not daily_due:
-            yday = dt.date.fromisoformat(rday)
-        import coverage
-        try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
-            late = coverage.late_ids(R.matches(auto), yday, rt)
-            cov = coverage.report_rows(R.matches(auto), R.lines(ldf), auto, yday, rt, R.fmt)
-        except Exception as ex:
-            late, cov = set(), [f'⚠️ контроль охвата: {type(ex).__name__}']
+    if (daily_due or resend) and not _rep_hold(rt, today, log):   # 25.11 Р8 (проверка 09): сбой отчёта не блокирует ⭐1
         try:
-            import dpcore as DPC
-            R.EXTRA_OPS = DPC.changes_rows(store, store.read('day_pick'))
-        except Exception as e:
-            log.append(f'🔁 смены: сбой {e.__class__.__name__}')
-        rep_tag = ' · повтор' if resend and not daily_due else ''
-        dpk = store.read('day_pick')                              # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
-        import selflearn as SL                                    # 🧠 14.11: обучение по каждому суточному отчёту
-        try:                                                      # 📈 цена закрытия (CLV) рассчитанных ставок дня — до обучения
-            import clv as CLV
-            log.append(CLV.update(store, 'tennis', last=rt.get('dp_last')))
-            dpk = store.read('day_pick')
+            notes = []
+            for tour in TOURS:
+                last = getattr(P.model(tour).state, 'td_last', None)
+                if last is not None and (loc.normalize() - last).days > 9:
+                    notes.append(f'база {tour.upper()} (TennisMyLife) по {last:%d.%m} — старше 9 дней, проверить загрузку')
+            if retrain_log:
+                notes.append('переобучено: ' + '; '.join(x.split(':')[0] + ' ' + x.split('точность')[-1].split(';')[0].strip()
+                                                      for x in retrain_log if 'точность' in x))
+            yday = C.wday(loc) - dt.timedelta(days=1)                     # прошлые сутки 08:00 → 08:00
+            if rday and resend and not daily_due:
+                yday = dt.date.fromisoformat(rday)
+            import coverage
+            try:                                                      # дорасчитано / ждут результата (сбой не ломает отчёт)
+                late = coverage.late_ids(R.matches(auto), yday, rt)
+                cov = coverage.report_rows(R.matches(auto), R.lines(ldf), auto, yday, rt, R.fmt)
+            except Exception as ex:
+                late, cov = set(), [f'⚠️ контроль охвата: {type(ex).__name__}']
+            try:
+                import dpcore as DPC
+                R.EXTRA_OPS = DPC.changes_rows(store, store.read('day_pick'))
+            except Exception as e:
+                log.append(f'🔁 смены: сбой {e.__class__.__name__}')
+            rep_tag = ' · повтор' if resend and not daily_due else ''
+            dpk = store.read('day_pick')                              # 14.11: три отдельных сообщения — отчёт, каперы, ставки дня
+            import selflearn as SL                                    # 🧠 14.11: обучение по каждому суточному отчёту
+            try:                                                      # 📈 цена закрытия (CLV) рассчитанных ставок дня — до обучения
+                import clv as CLV
+                log.append(CLV.update(store, 'tennis', last=rt.get('dp_last')))
+                dpk = store.read('day_pick')
+            except Exception as ex:
+                log.append(f'📈 CLV tennis: сбой {ex.__class__.__name__}: {ex}')
+            slP, slE, slR = SL.cycle('tennis', 'Теннис', store, dpk, store.read('dp_changes'), loc.date(), log)
+            pre = rt.get('sl_pre') or {}
+            if daily_due and pre.get('date') == today and isinstance(slR, dict):     # 25.11 Р8: уроки, принятые в 08:00 до 🎾1, — тоже в блок 🧠 отчёта
+                for k_ in ('added', 'removed'):
+                    slR[k_] = list(pre.get(k_, [])) + [x for x in slR.get(k_, []) if x not in pre.get(k_, [])]
+            quiet_d = _tn_empty(auto, dpk, yday, yday)
+            if not only_week and not quiet_d:
+                notify.send_blocks(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,
+                                           kprev=kprev, off=off, notes=notes, daily_day=yday, split=True))
+                try:
+                    import caprep
+                    notify.send_blocks([caprep.report('tennis', yday, yday, f'{yday:%d.%m}' + rep_tag), SL.safe(SL.cap_block, 'tennis', slR)])
+                except Exception as ex:
+                    log.append(f'👥 отчёт каперов: сбой {ex.__class__.__name__}')
+                notify.send_blocks(R.dp_report(dpk, f'🎾 Теннис · ставки дня · {yday:%d.%m}' + rep_tag, yday)
+                                   + [SL.safe(SL.day_block, 'tennis', slP, slE, yday, slR)])
+            if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
+                rt['last_daily'] = today
+            rt['resend_1111b'] = 1
+            if rday:
+                rt['resend_done'] = rday
+            log.append('суточный отчёт: тихий режим — сутки без матчей' if quiet_d else
+                       'суточный отчёт отправлен' if not only_week else 'суточный — пропущен (только недельный)')
+            wk = os.getenv('RESEND_WEEK', '').strip()                 # тест / повтор недельного: неделя, оканчивающаяся этой датой
+            week_due = (daily_due and C.wday(loc).weekday() == 0) or bool(wk and rt.get('resend_week_done') != wk)
+            if week_due:
+                if wk and rt.get('resend_week_done') != wk:
+                    yday = dt.date.fromisoformat(wk); rt['resend_week_done'] = wk
+                d0 = yday - dt.timedelta(days=6)
+                a_, l_, d_ = R.week(auto, ldf, store.read('day_pick'), d0, yday)
+            if week_due and _tn_empty(auto, dpk, d0, yday):            # 16.11 «тихий режим»: неделя без матчей — без пустого отчёта
+                log.append('недельный отчёт: тихий режим — неделя без матчей')
+            elif week_due:
+                notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
+                                           period='за неделю', split=True) + R.week_lines(ldf, d0, yday))
+                try:
+                    import caprep
+                    notify.send_blocks([caprep.report('tennis', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
+                except Exception as ex:
+                    log.append(f'👥 недельный отчёт каперов: сбой {ex.__class__.__name__}')
+                notify.send_blocks(R.dp_report(d_, f'🎾 Теннис · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
+                                   + [SL.safe(SL.week_block, 'tennis', slP, slE, d0, yday)])
+                log.append('недельный отчёт отправлен')
+            archive_run(store, rt, auto, ldf, kcal, off, yday, log)
+            if reminder_due(rt):                                      # запрос файлов — сразу после отчётов
+                notify.send_blocks([reminder_text(rt)])
+                rt['last_reminder'] = today
+                log.append('напоминание о файлах отправлено')
+            try:
+                log.append(news.collect())
+            except Exception as e:
+                log.append(f'новости: сбой {e.__class__.__name__}')
         except Exception as ex:
-            log.append(f'📈 CLV tennis: сбой {ex.__class__.__name__}: {ex}')
-        slP, slE, slR = SL.cycle('tennis', 'Теннис', store, dpk, store.read('dp_changes'), loc.date(), log)
-        quiet_d = _tn_empty(auto, dpk, yday, yday)
-        if not only_week and not quiet_d:
-            notify.send_blocks(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,
-                                       kprev=kprev, off=off, notes=notes, daily_day=yday, split=True))
-            try:
-                import caprep
-                notify.send_blocks([caprep.report('tennis', yday, yday, f'{yday:%d.%m}' + rep_tag), SL.safe(SL.cap_block, 'tennis', slR)])
-            except Exception as ex:
-                log.append(f'👥 отчёт каперов: сбой {ex.__class__.__name__}')
-            notify.send_blocks(R.dp_report(dpk, f'🎾 Теннис · ставки дня · {yday:%d.%m}' + rep_tag, yday)
-                               + [SL.safe(SL.day_block, 'tennis', slP, slE, yday, slR)])
-        if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
-            rt['last_daily'] = today
-        rt['resend_1111b'] = 1
-        if rday:
-            rt['resend_done'] = rday
-        log.append('суточный отчёт: тихий режим — сутки без матчей' if quiet_d else
-                   'суточный отчёт отправлен' if not only_week else 'суточный — пропущен (только недельный)')
-        wk = os.getenv('RESEND_WEEK', '').strip()                 # тест / повтор недельного: неделя, оканчивающаяся этой датой
-        week_due = (daily_due and C.wday(loc).weekday() == 0) or bool(wk and rt.get('resend_week_done') != wk)
-        if week_due:
-            if wk and rt.get('resend_week_done') != wk:
-                yday = dt.date.fromisoformat(wk); rt['resend_week_done'] = wk
-            d0 = yday - dt.timedelta(days=6)
-            a_, l_, d_ = R.week(auto, ldf, store.read('day_pick'), d0, yday)
-        if week_due and _tn_empty(auto, dpk, d0, yday):            # 16.11 «тихий режим»: неделя без матчей — без пустого отчёта
-            log.append('недельный отчёт: тихий режим — неделя без матчей')
-        elif week_due:
-            notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
-                                       period='за неделю', split=True) + R.week_lines(ldf, d0, yday))
-            try:
-                import caprep
-                notify.send_blocks([caprep.report('tennis', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
-            except Exception as ex:
-                log.append(f'👥 недельный отчёт каперов: сбой {ex.__class__.__name__}')
-            notify.send_blocks(R.dp_report(d_, f'🎾 Теннис · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
-                               + [SL.safe(SL.week_block, 'tennis', slP, slE, d0, yday)])
-            log.append('недельный отчёт отправлен')
-        archive_run(store, rt, auto, ldf, kcal, off, yday, log)
-        if reminder_due(rt):                                      # запрос файлов — сразу после отчётов
-            notify.send_blocks([reminder_text(rt)])
-            rt['last_reminder'] = today
-            log.append('напоминание о файлах отправлено')
-        try:
-            log.append(news.collect())
-        except Exception as e:
-            log.append(f'новости: сбой {e.__class__.__name__}')
+            if daily_due:                                          # ручной повтор (resend) не выпускает ⭐1 раньше отчёта
+                rt['rep_fail'], rt['rep_fail_at'] = today, pd.Timestamp.now(tz='UTC').isoformat()
+            log.append(f'суточный отчёт: сбой {ex.__class__.__name__}: {ex}')
+            log.append(traceback.format_exc()[-800:])
+    if daily_due and not dry and rt.get('last_daily') == today and C.wday(loc).weekday() == 0:
+        try:                                                       # 25.11 Р8: пн — отчёт тенниса ушёл → daily.yml запускает футбол
+            open('/tmp/football_now', 'w').write(today)
+        except OSError:
+            pass
     if rt.get('arch_v2') != 7 and not dry:                         # 🗂 ТЗ-006: архив за прошлые сутки и недели (18.11 v4 — каперы: каждый отдельным сообщением)
         archive_run(store, rt, auto, ldf, kcal, off, C.wday(loc) - dt.timedelta(days=1), log)
+    if (not dry and getattr(C, 'LEARN_FIRST', False) and rt.get('last_daily') != today and rt.get('sl_pre', {}).get('date') != today
+            and (rt.get('day_pick') or {}).get('date') != today and C.wday(loc).weekday() != 0
+            and C.DAILY_HOUR[0] > loc.hour >= C.START_HOURS[0]):
+        try:                                                       # 25.11 Р8 (вариант Б): самообучение по сыгранным ставкам — до 🎾1
+            import clv as CLV
+            import selflearn as SL
+            log.append(CLV.update(store, 'tennis', last=rt.get('dp_last')))
+            _, _, pre = SL.cycle('tennis', 'Теннис', store, store.read('day_pick'), store.read('dp_changes'), loc.date(), log)
+            rt['sl_pre'] = dict(date=today, added=list(pre.get('added', [])), removed=list(pre.get('removed', [])))
+            log.append('🧠 теннис: самообучение до 🎾1 (отчёт — в 11:00)')
+        except Exception as e:
+            log.append(f'🧠 теннис: самообучение до 🎾1 — сбой {e.__class__.__name__}: {e}')
     daypick.TITLE = title
     hold_list = False                                              # ТЗ-004: прогноз на 24 ч — после скриншотов
     try:
@@ -901,8 +928,13 @@ def run(dry: bool = False) -> str:
             log.append(f"ставка дня: ждём скриншоты ({len((rt.get('r4') or {}).get('got', {}))}"
                        f"/{len((rt.get('r4') or {}).get('queue', []))})")
         else:
+            wait = dpcore.pick_wait(rt, loc, today, C.DAILY_HOUR[0], getattr(C, 'MONDAY_HOUR', 11), getattr(C, 'PICK_WAIT_H', 2),
+                                    getattr(C, 'LEARN_FIRST', False) and C.wday(loc).weekday() == 0)   # 25.11 Р8: пн — 🎾1 после отчётов
+            if wait:
+                log.append(f'ставка дня: {wait}')
             log.append(daypick.process(rt, store, items, off, daily_done=rt.get('last_daily') == today,
-                                       shots=offers_s + offers4, actions=actions))
+                                       shots=offers_s + offers4, actions=actions,
+                                       hold=bool(wait) and not wait.startswith('⚠️')))
             if table4:
                 notify.send_blocks(table4)
     except Exception as e:
@@ -1032,6 +1064,20 @@ def archive_run(store, rt: dict, af, ld, kcal, off, yday: dt.date, log: list[str
         log.append(f'🗂 архив: {n_} отчётов')
     except Exception as ex:
         log.append(f'🗂 архив: сбой {ex.__class__.__name__}: {ex}')
+
+
+def _rep_hold(rt: dict, today: str, log: list[str]) -> bool:
+    """25.11 Р8 (проверка 09): отчёт упал — повтор не чаще раза в час (не слать ① заново каждым прогоном)."""
+    if rt.get('rep_fail') != today:
+        return False
+    try:
+        ago = (pd.Timestamp.now(tz='UTC') - pd.Timestamp(rt.get('rep_fail_at'))).total_seconds() / 60
+    except Exception:
+        return False
+    if ago < 60:
+        log.append(f'суточный отчёт: после сбоя повтор через {60 - ago:.0f} мин')
+        return True
+    return False
 
 def main() -> None:
     try:                                                        # ⏱ 14.11 Ц7: профиль времени прогона (одна строка в журнал)

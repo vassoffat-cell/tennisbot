@@ -170,6 +170,32 @@ check('⚠️ матч уже идёт — причина', B.no_verdict('⚠️
 check('🔴 после начала — причина', B.no_verdict('🔴 опубликован в 21:16'), '· после начала — не оценивается')
 check('⏰ до матча — без причины', B.no_verdict('⏰ начало 22:45'), None)
 
+# 25.11 · Р8: ⭐1 новых суток — после отчёта за прошлые сутки (футбол всегда, теннис — пн); обе копии dpcore
+for dpc_path in (HERE.parent / 'dpcore.py', HERE / 'dpcore.py'):
+    spec = importlib.util.spec_from_file_location(f'dpc_{dpc_path.parent.name}', dpc_path)
+    DPC = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(DPC)
+    tag = dpc_path.parent.name
+    L = lambda h: pd.Timestamp(f'2026-11-26 {h:02d}:05')            # четверг
+    M = lambda h: pd.Timestamp(f'2026-11-30 {h:02d}:05')            # понедельник
+    check(f'{tag} Р8: отчёт ушёл — выбирать', DPC.pick_wait({'last_daily': '2026-11-26'}, L(8), '2026-11-26', 8, 11, 2, True), '')
+    check(f'{tag} Р8: отчёта нет — ждём', DPC.pick_wait({}, L(8), '2026-11-26', 8, 11, 2, True).startswith('ждём'), True)
+    check(f'{tag} Р8: отчёта нет 2 ч — ⭐ без него', DPC.pick_wait({}, L(10), '2026-11-26', 8, 11, 2, True).startswith('⚠️'), True)
+    check(f'{tag} Р8: пн 09:00 — ждём отчёт 11:00', DPC.pick_wait({}, M(9), '2026-11-30', 8, 11, 2, True).startswith('ждём'), True)
+    check(f'{tag} Р8: ⭐ уже объявлена — не ждём', DPC.pick_wait({'day_pick': {'date': '2026-11-30'}}, M(9), '2026-11-30', 8, 11, 2, True), '')
+    check(f'{tag} Р8: не нужен (теннис не пн) — не ждём', DPC.pick_wait({}, L(8), '2026-11-26', 11, 11, 2, False), '')
+    check(f'{tag} Р8: отчёт упал — ⭐1 сразу', DPC.pick_wait({'rep_fail': '2026-11-26'}, L(8), '2026-11-26', 8, 11, 2, True).startswith('⚠️'), True)
+    check(f'{tag} Р8: ночь (пт 02:05, сутки чт без ⭐) — не ждём', DPC.pick_wait({}, pd.Timestamp('2026-11-27 02:05'), '2026-11-26', 8, 11, 2, True).startswith('⚠️'), True)
+
+# 25.11 · Р8 (проверка 09): исключение в отчёте не блокирует ⭐1, повтор отчёта не чаще раза в час
+sys.path.insert(0, str(HERE))
+import run as FR  # noqa: E402
+lg = []
+_now = pd.Timestamp.now(tz='UTC')
+check('Р8: сбой только что — повтор позже', FR._rep_hold({'rep_fail': 'd', 'rep_fail_at': _now.isoformat()}, 'd', lg), True)
+check('Р8: сбой час назад — повторить', FR._rep_hold({'rep_fail': 'd', 'rep_fail_at': (_now - pd.Timedelta(minutes=61)).isoformat()}, 'd', lg), False)
+check('Р8: сбоя не было — отчёт', FR._rep_hold({}, 'd', lg), False)
+
 # 25.11 · OddsPapi (Ц6б): теннис в приоритете — КХЛ только из остатка; учёт каждого запроса; пустой ответ не жжёт квоту
 import datetime as _dt     # noqa: E402
 import json as _json       # noqa: E402

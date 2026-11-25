@@ -310,11 +310,11 @@ def _slot(c: dict, items: list[tuple]) -> int:
 
 
 def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done: bool, dry: bool = False,
-            shots: list[dict] | None = None, actions: list[str] | None = None) -> str:
+            shots: list[dict] | None = None, actions: list[str] | None = None, hold: bool = False) -> str:
     """Публикация / замена / принятие — общий цикл dpcore (оба бота одинаково)."""
     return dpcore.process(rt, store, items, off, daily_done, offers_fn=offers, text_fn=text, row_fn=_row, slot_fn=_slot,
                           match_fn=lambda c: f"{c['home']} — {c['away']}", score_fn=score_line,
-                          shots=shots, actions=actions, dry=dry)
+                          shots=shots, actions=actions, dry=dry, hold=hold)
 
 
 def settle(store: J.Store, sheet: str = 'day_pick') -> int:

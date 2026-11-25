@@ -111,6 +111,15 @@ jobs:
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
           RESEARCH: ${{ github.event.inputs.research }}
+      - name: Monday — football right after tennis reports
+        # 25.11 (CONTROL Р8): понедельник — сначала отчёты в 11:00, затем новая неделя; футбол запускается сразу после отчёта тенниса
+        if: steps.gate.outputs.skip != 'true' && github.event.inputs.research == '' && github.event.inputs.resend_day == '' && github.event.inputs.resend_week == ''
+        run: |
+          if [ -f /tmp/football_now ]; then                    # пишет autorun только в прогоне, отправившем отчёт пн (один раз)
+            gh api -X POST "repos/${{ github.repository }}/actions/workflows/football.yml/dispatches" -f ref=main && echo "⚽ понедельник: футбол запущен после отчётов тенниса" || true
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Save OddsPapi usage (research)
         # 25.11 (Ц6б, проверка 09): разовая проба тратит квоту OddsPapi — её учёт сохраняется, иначе КХЛ возьмёт запросы из резерва тенниса
         if: always() && github.event.inputs.research != ''

@@ -237,7 +237,8 @@ def _set_main(cur: dict, c: dict, match_fn: Callable) -> None:
 
 def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done: bool, *,
             offers_fn: Callable, text_fn: Callable, row_fn: Callable, slot_fn: Callable, match_fn: Callable,
-            score_fn: Callable, shots: list[dict] | None = None, actions: list[str] | None = None, dry: bool = False) -> str:
+            score_fn: Callable, shots: list[dict] | None = None, actions: list[str] | None = None, dry: bool = False,
+            hold: bool = False) -> str:
     """Каждая ставка дня — отдельное закреплённое сообщение (⭐1, ⭐2, ⭐3). Новые сутки — старые закрепы сняты."""
     loc = _local_now()
     day = C.wday(loc); dstr = day.isoformat()                   # сутки системы 08:00 → 08:00
@@ -246,7 +247,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         cur = {}
     log: list[str] = []
     dp = store.read('day_pick')
-    if not cur.get('date'):                                     # новые сутки: снять закрепы прошлых ставок, убрать уведомления
+    if not cur.get('date') and not hold:                        # новые сутки: снять закрепы прошлых ставок, убрать уведомления
+        # 25.11 Р8: hold — ⭐1 ждёт отчёт: только печать С16 и теневой портфель, сутки ставки не начинаются
         old = rt.get('day_pick') or {}
         if not dry:
             pins = [tuple(x) for x in old.get('msgs', [])] + [tuple(m) for x in (old.get('extras') or []) for m in x.get('msgs', [])]
@@ -267,7 +269,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     raw = _dedupe(offers_fn(items, off, day, log) + [_revive(o) for o in cur.get('shots', []) if pd.Timestamp(o['start_utc']) > now])
     cands = [o for o in PK.choose(raw) if o['market'] not in off and not o.get('veto')]   # 21.11: вето ✔ капера — вне выбора
     cands = SL.reorder(_sk(), cands)                            # 🧠 пониженные сегменты — в конец очереди
-    snap_prices(rt, cur, cands, now)                            # 📈 последняя цена рынка до начала — для CLV
+    if not hold:
+        snap_prices(rt, cur, cands, now)                        # 📈 последняя цена рынка до начала — для CLV
     if not dry:
         try:
             # 19.11 (взгляд со стороны): раньше сюда шли только прошедшие фильтр ⭐ (P ≥ 0,60, EV ≥ −3%) — за 17–18.11 одна строка тенниса,
@@ -288,6 +291,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         except Exception as e:
             log.append(f'печать: сбой {e.__class__.__name__}: {e}')
     note = ('; ' + '; '.join(log)) if log else ''
+    if hold:
+        return f'ждёт отчёт — печать и теневой портфель обновлены{note}'
     if dry:
         print(text_fn(cands[0] if cands else None, day, [], '', 'нет подходящих линий'))
         return 'dry'
@@ -690,3 +695,17 @@ def _off_rows(off_: pd.DataFrame) -> list:
     if len(fin):
         rows.append(rtable.row(' снятие право (L)', int((fin.result == 'L').sum()), len(fin)))
     return rows
+
+
+def pick_wait(rt: dict, loc, today: str, base_h: int, monday_h: int, wait_h: int, need: bool) -> str:
+    """25.11 (CONTROL Р8): ⭐1 новых суток — после отчёта за прошлые сутки. Пусто — выбирать можно; иначе причина ожидания.
+    need — нужен ли отчёт перед ⭐1 (футбол — всегда; теннис — только понедельник). ⭐ этих суток уже объявлена — не ждём."""
+    if not need or rt.get('last_daily') == today or (rt.get('day_pick') or {}).get('date') == today:
+        return ''
+    if rt.get('rep_fail') == today:                             # отчёт упал (сбой кода) — ⭐1 не ждёт: раньше она выходила в 08:00
+        return '⚠️ отчёт за прошлые сутки: сбой — ⭐1 без него'
+    due = monday_h if pd.Timestamp(today).weekday() == 0 else base_h
+    since = (pd.Timestamp(loc) - pd.Timestamp(today)).total_seconds() / 3600   # часы от полуночи даты суток (ночью > 24)
+    if since >= due + wait_h:
+        return f'⚠️ отчёт за прошлые сутки не ушёл к {due + wait_h}:00 — ⭐1 без него'
+    return f'ждём отчёт за прошлые сутки (⭐1 — сразу после него, срок {due}:00)'
