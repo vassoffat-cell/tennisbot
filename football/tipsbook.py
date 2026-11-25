@@ -755,6 +755,10 @@ def _event_of(a: str, b: str, pick: str, ts, cache: dict, raw: str = '') -> tupl
     if len(hits) > 1:                                             # несколько событий команды — ближайшее по времени к посту
         near = sorted(hits.values(), key=lambda v: abs((pd.Timestamp(v[0]['start']) - pd.Timestamp(ts)).total_seconds()))
         return near[0]
+    if not hits and raw:                                          # 25.11: команд нет в ставке — обе названы в разборе (как итог _prose)
+        e = W.prose_event(raw, evs)
+        if e is not None:
+            return e, False
     return next(iter(hits.values())) if hits else None
 
 

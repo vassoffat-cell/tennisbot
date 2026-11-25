@@ -295,27 +295,33 @@ def _single(src: str, name: str, p: dict, cache: dict, have: set) -> list[dict]:
     return []
 
 
-def _prose(src: str, name: str, p: dict, cache: dict, have: set, sel: str, evs: list[dict]) -> list[dict]:
-    """18.11 (пользователь: «не может быть, что Грозный ничего не угадывает»): Грозный пишет «Лига. ✅ Прогноз: ТБ (2.5).
-    ☑️ Ювентус дома силён против Наполи…» — пары в строке нет, команда в ставке не названа → 29 из 36 прогнозов ноября не
-    попадали в статистику. Матч ищется по тексту разбора: ОБЕ команды события названы в посте и такое событие в окне одно
-    (прошлые соперники из разбора отсекаются требованием обеих команд и единственности)."""
-    ws0 = T._words(p['text'])
+
+def prose_event(text: str, evs: list[dict]) -> dict | None:
+    """Событие по тексту разбора: ОБЕ команды события названы в посте (только справочник, без транслита: проверка 18.11 —
+    «Ребят…» давало Richmond — Fordham, «сборные» — Chapecoense) и такое событие в окне одно. Общая для итога (_prose)
+    и вердикта сообщения (tipsbook._event_of, 25.11)."""
+    ws0 = T._words(text or '')
     words = [w for w in ws0 if len(w) >= 4 or T._alias(w)]
     words += [f'{a} {b}' for a, b in zip(ws0, ws0[1:]) if T._alias(f'{a} {b}')]   # 21.11: «Крылья Советов», «Северная Ирландия»
     info = [_ru_info(w) for w in dict.fromkeys(words)]
-    info = [(x[0], [], x[2]) for x in info if x[0]]                # только команды из справочника (без транслита: проверка 18.11 —
-    #                                                                 «Ребят…» давало Richmond — Fordham, «сборные» — Chapecoense)
+    info = [(x[0], [], x[2]) for x in info if x[0]]
     if not info or not evs:
-        return []
+        return None
     hits = {}
     for e in evs:
         h, a = e.setdefault('_h', _en_info(e['home'])), e.setdefault('_a', _en_info(e['away']))
         if any(_same(x, h) for x in info) and any(_same(x, a) for x in info):
             hits[e['id']] = e
-    if len(hits) != 1:
+    return next(iter(hits.values())) if len(hits) == 1 else None
+
+def _prose(src: str, name: str, p: dict, cache: dict, have: set, sel: str, evs: list[dict]) -> list[dict]:
+    """18.11 (пользователь: «не может быть, что Грозный ничего не угадывает»): Грозный пишет «Лига. ✅ Прогноз: ТБ (2.5).
+    ☑️ Ювентус дома силён против Наполи…» — пары в строке нет, команда в ставке не названа → 29 из 36 прогнозов ноября не
+    попадали в статистику. Матч ищется по тексту разбора: ОБЕ команды события названы в посте и такое событие в окне одно
+    (прошлые соперники из разбора отсекаются требованием обеих команд и единственности)."""
+    e = prose_event(p['text'], evs)
+    if e is None:
         return []
-    e = next(iter(hits.values()))
     uid = f"tg:{src}:{p['id']}:{e['id']}"
     if uid in have:
         return []

@@ -178,14 +178,14 @@ for dpc_path in (HERE.parent / 'dpcore.py', HERE / 'dpcore.py'):
     spec.loader.exec_module(DPC)
     tag = dpc_path.parent.name
     T_ = lambda hm: pd.Timestamp(f'2026-11-26 {hm}')               # четверг
-    W = lambda rt, hm: DPC.pick_wait(rt, T_(hm), '2026-11-26', (11, 15), (11, 30), 2, True)
-    check(f'{tag} Р8: 09:00 — ждём 11:30', W({}, '09:00').startswith('ждём старт'), True)
-    check(f'{tag} Р8: 11:20 отчёт ушёл — всё равно ждём 11:30', W({'last_daily': '2026-11-26'}, '11:20').startswith('ждём старт'), True)
-    check(f'{tag} Р8: 11:31 отчёт ушёл — выбирать', W({'last_daily': '2026-11-26'}, '11:31'), '')
-    check(f'{tag} Р8: 11:31 отчёта нет — ждём отчёт', W({}, '11:31').startswith('ждём отчёт'), True)
-    check(f'{tag} Р8: 13:30 отчёта нет — ⭐ без него', W({}, '13:30').startswith('⚠️'), True)
-    check(f'{tag} Р8: 11:31 отчёт упал — ⭐ сразу', W({'rep_fail': '2026-11-26'}, '11:31').startswith('⚠️'), True)
-    check(f'{tag} Р8: ⭐ уже объявлена — не ждём', W({'day_pick': {'date': '2026-11-26'}}, '09:00'), '')
+    PW = lambda rt, hm: DPC.pick_wait(rt, T_(hm), '2026-11-26', (11, 15), (11, 30), 2, True)
+    check(f'{tag} Р8: 09:00 — ждём 11:30', PW({}, '09:00').startswith('ждём старт'), True)
+    check(f'{tag} Р8: 11:20 отчёт ушёл — всё равно ждём 11:30', PW({'last_daily': '2026-11-26'}, '11:20').startswith('ждём старт'), True)
+    check(f'{tag} Р8: 11:31 отчёт ушёл — выбирать', PW({'last_daily': '2026-11-26'}, '11:31'), '')
+    check(f'{tag} Р8: 11:31 отчёта нет — ждём отчёт', PW({}, '11:31').startswith('ждём отчёт'), True)
+    check(f'{tag} Р8: 13:30 отчёта нет — ⭐ без него', PW({}, '13:30').startswith('⚠️'), True)
+    check(f'{tag} Р8: 11:31 отчёт упал — ⭐ сразу', PW({'rep_fail': '2026-11-26'}, '11:31').startswith('⚠️'), True)
+    check(f'{tag} Р8: ⭐ уже объявлена — не ждём', PW({'day_pick': {'date': '2026-11-26'}}, '09:00'), '')
     check(f'{tag} Р8: ночь пт 02:05 (сутки чт без ⭐) — ⚠️', DPC.pick_wait({}, pd.Timestamp('2026-11-27 02:05'), '2026-11-26', (11, 15), (11, 30), 2, True).startswith('⚠️'), True)
     check(f'{tag} Р8: флаг выключен — не ждём', DPC.pick_wait({}, T_('09:00'), '2026-11-26', (11, 15), (11, 30), 2, False), '')
 import datetime as _dt2  # noqa: E402
@@ -208,6 +208,12 @@ _now = pd.Timestamp.now(tz='UTC')
 check('Р8: сбой только что — повтор позже', FR._rep_hold({'rep_fail': 'd', 'rep_fail_at': _now.isoformat()}, 'd', lg), True)
 check('Р8: сбой час назад — повторить', FR._rep_hold({'rep_fail': 'd', 'rep_fail_at': (_now - pd.Timedelta(minutes=61)).isoformat()}, 'd', lg), False)
 check('Р8: сбоя не было — отчёт', FR._rep_hold({}, 'd', lg), False)
+
+# 25.11 · вердикт капера: команд в ставке нет, обе названы в разборе → матч найден (как итог _prose); одна команда — не угадываем
+_evs = [dict(id='1', start='2026-11-22 17:30', home='Juventus', away='Napoli', kind='', hg=None, ag=None),
+        dict(id='2', start='2026-11-22 20:00', home='Brentford', away='Everton', kind='', hg=None, ag=None)]
+check('разбор: обе команды → событие', (W.prose_event('Чемпионат Италии. ✅ Прогноз: ТБ (2.5) ☑️ Ювентус дома силён против Наполи', _evs) or {}).get('id'), '1')
+check('разбор: одна команда → нет', W.prose_event('✅ Прогноз: ТБ (2.5) ☑️ Ювентус дома силён', _evs), None)
 
 # 25.11 · OddsPapi (Ц6б): теннис в приоритете — КХЛ только из остатка; учёт каждого запроса; пустой ответ не жжёт квоту
 import datetime as _dt     # noqa: E402
