@@ -954,3 +954,10 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401882802,esp.1,league,ESP,SP1,2026-11-23 20:00,Levante,Elche,Levante,Elche,1,1,FT,2026-27-laliga,0
 401915300,uefa.champions,uefa,,,2026-11-24 17:45,Galatasaray,Aston Villa,Galatasaray,Aston Villa,1,0,FT,league-phase,0
 401915380,uefa.champions,uefa,,,2026-11-24 17:45,Bodo/Glimt,LASK Linz,,,1,0,FT,league-phase,0
+401915294,uefa.champions,uefa,,,2026-11-24 20:00,Feyenoord Rotterdam,FC Porto,Feyenoord,Porto,0,1,FT,league-phase,0
+401915295,uefa.champions,uefa,,,2026-11-24 20:00,Arsenal,Borussia Dortmund,Arsenal,Dortmund,1,1,FT,league-phase,0
+401915296,uefa.champions,uefa,,,2026-11-24 20:00,Como,AEK Athens,Como,AEK,1,0,FT,league-phase,0
+401915297,uefa.champions,uefa,,,2026-11-24 20:00,Slovan Bratislava,Real Betis,,Betis,0,2,FT,league-phase,0
+401915298,uefa.champions,uefa,,,2026-11-24 20:00,Real Madrid,PSV Eindhoven,Real Madrid,PSV Eindhoven,5,1,FT,league-phase,0
+401915299,uefa.champions,uefa,,,2026-11-24 20:00,RB Leipzig,Lens,RB Leipzig,Lens,3,1,FT,league-phase,0
+401915379,uefa.champions,uefa,,,2026-11-24 20:00,Manchester City,Napoli,Man City,Napoli,2,2,FT,league-phase,0
