@@ -282,7 +282,7 @@
  "steps": {
   "исход": 50.8
  },
- "tips_book": "2026-11-24 22:17",
+ "tips_book": "2026-11-25 10:01",
  "tips_book_v": 22,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -1071,13 +1071,14 @@
   "stavki_na_sport_betting1:slip:347241332:1",
   "stavki_na_sport_betting1:19925:r",
   "stavki_na_sport_betting1:19926:r",
-  "stavki_na_sport_betting1:19928:r"
+  "stavki_na_sport_betting1:19928:r",
+  "stavki_na_sport_betting1:19917:r",
+  "stavki_na_sport_betting1:19919:r"
  ],
  "resend_1111": 1,
  "resend_1111b": 1,
  "cap_extra": {
-  "day": "2026-11-24",
-  "football.yml": 8
+  "day": "2026-11-25"
  },
  "resend_done": "2026-11-13",
  "resend_week_done": "2026-11-11",
@@ -1148,7 +1149,7 @@
  },
  "arch_v1": 1,
  "arch_v2": 8,
- "chk_cap": "2026-11-24T22:17:14",
+ "chk_cap": "2026-11-25T10:01:46",
  "chk_run": "2026-11-25T08:50:21",
  "plan_at": [
   "2026-11-25 17:00",
