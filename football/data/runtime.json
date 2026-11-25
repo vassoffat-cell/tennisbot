@@ -1,12 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "401915292",
-  "401915373",
-  "401915374",
-  "401915376",
-  "401915377"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-25",
  "last_files": "2026-11-06",
  "last_reminder": "2026-11-10",
@@ -155,7 +149,7 @@
   "first_match": "Paris Saint-Germain — AS Roma",
   "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 5 матчей · 60 линий · на ставку дня — 3\nЛига чемпионов 5 · 🔏 33f8ce40\n🏆 Лига чемпионов · 🕒 01:00\n<b>Paris Saint-Germain — AS Roma</b>\n<b>ТБ3</b> 🔥 — 71% · честный кф 1,42\n💵 1xBet 1,48 · EV +4,4% · ставка ¼ ед.",
   "vol": 5,
-  "played": false
+  "played": true
  },
  "model_version": 2,
  "reported": [
@@ -1184,7 +1178,7 @@
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-25T20:16:00",
- "chk_run": "2026-11-25T19:45:46",
+ "chk_run": "2026-11-25T20:16:46",
  "plan_at": [],
  "plan_sig": [],
  "wide_catchup": "2026-11-08",
