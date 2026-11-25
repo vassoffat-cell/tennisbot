@@ -245,7 +245,7 @@ def tips_of(src: str, p: dict) -> list[dict]:
         out.append(dict(uid=f"{src}:{p['id']}:{n}", src=src, post_id=str(p['id']), post_ts=str(p['ts'])[:16],
                         sport=next((x for x in (sport_of(frag), sport, DEFAULT.get(src, 'other')) if x != 'other'), 'other'), a=a, b=b,
                         pick=AD_TAIL.sub('', re.sub(r'[✅❌✖️⛔↩🔄✔]+', '', pick)).strip()[:100], k=f'{T.odds_in(pick):.2f}' if T.odds_in(pick) else '',
-                        self=mk, self_ts=pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M') if mk else '', raw=frag[:200].replace('\n', ' ')))
+                        self=mk, self_ts=pd.Timestamp.now(tz='UTC').strftime('%Y-%m-%d %H:%M') if mk else '', raw=frag[:RAW_MAX].replace('\n', ' ')))
     if not out and _candidate(p):                               # 15.11 «страховочная сеть» (Г0): не разобрали — НЕ теряем
         body = re.sub(r'\s+', ' ', AD_TAIL.sub('', p['text'])).strip()
         bet = [ln.strip() for ln in str(p.get('ocr', '')).split('\n')            # ставка с картинки (строки рынка, без «Ставка: 2000 Р»)
@@ -256,7 +256,7 @@ def tips_of(src: str, p: dict) -> list[dict]:
         out.append(dict(uid=f"{src}:{p['id']}:r", src=src, post_id=str(p['id']), post_ts=str(p['ts'])[:16],
                         sport=next((x for x in (sport, DEFAULT.get(src, 'other')) if x != 'other'), 'other'), a=a0, b=b0,
                         pick=('❔ ' + body)[:240], k=f'{T.odds_in(body):.2f}' if T.odds_in(body) else '', self='', self_ts='',
-                        raw=body[:200]))
+                        raw=body[:RAW_MAX]))
     return out
 
 
@@ -471,6 +471,8 @@ def _short(s: str, n: int) -> str:
     s = re.sub(r'\s*\((ж|w)\)', ' Ж', str(s)).strip()
     return s if len(s) <= n else s[:n - 1].rstrip() + '.'
 
+
+RAW_MAX = 1200    # 25.11: текст поста в книге (было 200 — соперник в разборе обрезался, вердикт «матч не найден»: Грозный 13158)
 
 def _context(raw: str, pick: str) -> str:
     """Пост без распознанной пары команд: короткий контекст из текста (турнир / команды до слова «прогноз»), без рекламы."""
