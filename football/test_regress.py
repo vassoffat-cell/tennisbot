@@ -321,6 +321,18 @@ with tempfile.TemporaryDirectory() as tmp:
           [(r['home'], r['away'], r['books']['pinnacle']['151']) for r in snap['fixtures']],
           [('HC Barys', 'Severstal Cherepovets', {'151': 1.87, '152': 1.95})])
 
+# 26.11 IMP-12: недельный отчёт — своя отметка, повтор после сбоя (суточный в пн уже ушёл)
+_R = Path(__file__).resolve().parent.parent
+for _f, _k in (('autorun.py', "rt['week_done'] = yday.isoformat()"), ('football/run.py', "rt['week_done'] = yday.isoformat()"),
+               ('hockey/hrun.py', "rt['hk_week_done'] = str(yday)")):
+    _s = (_R / _f).read_text()
+    check(f'IMP-12 {_f}: отметка недельного после отправки', _k in _s, True)
+    check(f'IMP-12 {_f}: повтор недельного в условии отчёта',
+          ('or week_pend) and not _rep_hold' in _s) if 'hrun' not in _f else ('if wk_pend:\n        due = True' in _s), True)
+_s = (_R / 'hockey/hrun.py').read_text()
+check('IMP-12 хоккей: повтор недельного не шлёт суточный и не сдвигает калибровку',
+      ('if not wk_pend:\n                notify.send_blocks(report(' in _s) and ('(due and not wk_pend)' in _s), True)
+
 if FAILS:
     print('\n'.join(FAILS))
     print(f'тесты регрессии: провалов {len(FAILS)}')

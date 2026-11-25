@@ -932,7 +932,14 @@ def run(dry: bool = False) -> str:
     resend = not dry and (not rt.get('resend_1111b') or bool(rday and rt.get('resend_done') != rday)
                           or bool(wk0 and rt.get('resend_week_done') != wk0))
     only_week = resend and bool(wk0) and not (rday and rt.get('resend_done') != rday) and not daily_due
-    if (daily_due or resend) and not _rep_hold(rt, today, log):   # 25.11 Р8 (проверка 09): сбой отчёта не блокирует ⭐1
+    wkey = (C.wday(loc) - dt.timedelta(days=1)).isoformat()          # 26.11 IMP-12: недельный отчёт — своя отметка (воскресенье недели)
+    rt.setdefault('week_done', wkey if C.wday(loc).weekday() else (C.wday(loc) - dt.timedelta(days=8)).isoformat())
+    week_pend = (not dry and not daily_due and C.wday(loc).weekday() == 0 and rt.get('last_daily') == today
+                 and rt.get('week_done') != wkey and loc.hour < C.DAILY_HOUR[1])   # пн: суточный ушёл, недельный упал — повтор
+    if week_pend:
+        only_week = True
+        log.append('недельный отчёт: повтор после сбоя')
+    if (daily_due or resend or week_pend) and not _rep_hold(rt, today, log):   # 25.11 Р8 (проверка 09): сбой отчёта не блокирует ⭐1
         try:
             notes = []
             if mp.missed:
@@ -984,8 +991,10 @@ def run(dry: bool = False) -> str:
                 rt['resend_done'] = rday
             log.append('суточный отчёт отправлен' if not only_week else 'суточный — пропущен (только недельный)')
             wk = os.getenv('RESEND_WEEK', '').strip()                 # тест / повтор недельного: неделя, оканчивающаяся этой датой
-            if (daily_due and C.wday(loc).weekday() == 0) or (wk and rt.get('resend_week_done') != wk):
-                if wk and rt.get('resend_week_done') != wk:
+            wk_res = bool(wk and rt.get('resend_week_done') != wk)
+            week_due = (daily_due and C.wday(loc).weekday() == 0) or week_pend or wk_res
+            if week_due:
+                if wk_res:
                     yday = dt.date.fromisoformat(wk); rt['resend_week_done'] = wk
                 d0 = yday - dt.timedelta(days=6)
                 a_, l_, d_ = R.week(af, ld, dpk, d0, yday)
@@ -998,6 +1007,8 @@ def run(dry: bool = False) -> str:
                 notify.send_blocks(R.dp_report(d_, f'⚽ Футбол · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
                                    + [SL.safe(SL.week_block, 'football', slP, slE, d0, yday)])
                 log.append('недельный отчёт отправлен')
+                if not wk_res:                                        # 26.11 IMP-12: своя отметка недельного
+                    rt['week_done'] = yday.isoformat()
             archive_run(store, rt, af, ld, kcal, off, yday, log)
             if reminder_due(rt):                                      # запрос файла — сразу после отчётов
                 notify.send_blocks([reminder_text(rt)])
@@ -1008,7 +1019,7 @@ def run(dry: bool = False) -> str:
             except Exception as ex:
                 log.append(f'новости: сбой {ex.__class__.__name__}')
         except Exception as ex:
-            if daily_due:                                          # ручной повтор (resend) не выпускает ⭐1 раньше отчёта
+            if daily_due or week_pend:                             # ручной повтор (resend) не выпускает ⭐1 раньше отчёта
                 rt['rep_fail'], rt['rep_fail_at'] = today, pd.Timestamp.now(tz='UTC').isoformat()
             log.append(f'суточный отчёт: сбой {ex.__class__.__name__}: {ex}')
             log.append(traceback.format_exc()[-800:])

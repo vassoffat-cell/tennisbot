@@ -654,9 +654,15 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     ra_h = ra[0] + ra[1] / 60 - HK_DAY_START
     due = force or (since >= ra_h and rt['hk_last_daily'] != str(yday) and (pend == 0 or since >= REPORT_GRACE_H))
     replay = day_override is not None or week_override is not None   # повтор / тест (не сдвигает плановый отчёт)
+    rt.setdefault('hk_week_done', str(yday) if cur.weekday() else str(cur - dt.timedelta(days=8)))
+    wk_pend = (not replay and not due and not force and cur.weekday() == 0 and rt['hk_last_daily'] == str(yday)
+               and rt.get('hk_week_done') != str(yday))       # 26.11 IMP-12: пн — суточный ушёл, недельный упал → повтор
+    if wk_pend:
+        due = True
+        log.append('🏒 недельный отчёт: повтор после сбоя')
     if replay:
         yday, due = (day_override or week_override), True
-    if due or not rt.get('hk_kcal'):
+    if (due and not wk_pend) or not rt.get('hk_kcal'):     # повтор недельного не сдвигает калибровку
         prev = rt.get('hk_kcal') or {}
         rt['hk_kcal_prev'] = prev
         rt['hk_kcal'] = {k: list(v) for k, v in calibration(ld).items()}
@@ -735,18 +741,19 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
             except Exception as ex:
                 log.append(f'📈 CLV hockey: сбой {ex.__class__.__name__}: {ex}')
             slP, slE, slR = SL.cycle('hockey', 'Хоккей', store, dp if dp is not None else store.read('hk_day_pick'), None, cur, log)
-            notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
-            try:
-                import caprep
-                notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START),
-                                    SL.safe(SL.cap_block, 'hockey', slR)])
-            except Exception as ex:
-                log.append(f'🏒 отчёт каперов: сбой {ex.__class__.__name__}')
-            notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday)
-                               + [SL.safe(SL.day_block, 'hockey', slP, slE, yday, slR)])
-            if not replay:
-                rt['hk_last_daily'] = str(yday)
-            log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен' + (' (повтор)' if replay else ''))
+            if not wk_pend:
+                notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
+                try:
+                    import caprep
+                    notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START),
+                                        SL.safe(SL.cap_block, 'hockey', slR)])
+                except Exception as ex:
+                    log.append(f'🏒 отчёт каперов: сбой {ex.__class__.__name__}')
+                notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday)
+                                   + [SL.safe(SL.day_block, 'hockey', slP, slE, yday, slR)])
+                if not replay:
+                    rt['hk_last_daily'] = str(yday)
+                log.append(f'🏒 суточный отчёт {yday:%d.%m} отправлен' + (' (повтор)' if replay else ''))
             if (yday.weekday() == 6 and not replay) or week_override:        # сутки воскресенья закрылись в пн 12:00 → неделя пн–вс
                 if week_override:
                     yday = week_override
@@ -761,12 +768,14 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
                 notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
                                    + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)])
                 log.append('🏒 недельный отчёт отправлен')
+                if not week_override:                             # 26.11 IMP-12: своя отметка недельного
+                    rt['hk_week_done'] = str(yday)
             try:                                                  # 🗂 ТЗ-006: архив отчётов хоккея для меню теннисного бота
                 log.append(archive_hockey(store, rt, gf, ld, kcal, kprev, off, tp, dp, yday, log))
             except Exception as ex:
                 log.append(f'🗂 архив хоккея: сбой {ex.__class__.__name__}: {ex}')
         except Exception as ex:
-            if not replay:
+            if not replay:                                        # в т.ч. повтор недельного (wk_pend) — раз в час
                 rt['hk_rep_fail'], rt['hk_rep_fail_at'] = str(cur), pd.Timestamp.now(tz='UTC').isoformat()
             log.append(f'🏒 суточный отчёт: сбой {ex.__class__.__name__}: {ex}')
             log.append(traceback.format_exc()[-800:])
