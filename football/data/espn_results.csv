@@ -961,3 +961,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915298,uefa.champions,uefa,,,2026-11-24 20:00,Real Madrid,PSV Eindhoven,Real Madrid,PSV Eindhoven,5,1,FT,league-phase,0
 401915299,uefa.champions,uefa,,,2026-11-24 20:00,RB Leipzig,Lens,RB Leipzig,Lens,3,1,FT,league-phase,0
 401915379,uefa.champions,uefa,,,2026-11-24 20:00,Manchester City,Napoli,Man City,Napoli,2,2,FT,league-phase,0
+401915293,uefa.champions,uefa,,,2026-11-25 17:45,Slavia Prague,Villarreal,,Villarreal,0,1,FT,league-phase,0
+401915378,uefa.champions,uefa,,,2026-11-25 17:45,Sabah FK,Barcelona,,Barcelona,1,4,FT,league-phase,0
