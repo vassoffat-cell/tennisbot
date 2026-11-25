@@ -33,6 +33,7 @@ SPORT_KEYS = {'eng.1': 'soccer_epl', 'eng.fa': 'soccer_fa_cup', 'esp.1': 'soccer
               'ned.1': 'soccer_netherlands_eredivisie', 'tur.1': 'soccer_turkey_super_league',
               'uefa.champions': 'soccer_uefa_champs_league', 'uefa.europa': 'soccer_uefa_europa_league',
               'uefa.europa.conf': 'soccer_uefa_europa_conference_league'}
+MARKET_ONLY: list[tuple] = []   # 25.11: (m, row) еврокубков с командой вне модели — заполняет run.forecast (MARKET_ONLY_UEFA)
 API_MARKETS = ('h2h', 'totals')
 ALT_MARKETS = ('alternate_totals', 'alternate_spreads', 'double_chance')
 ALT_EVENTS = 2
@@ -81,6 +82,12 @@ def _offer(m, row, market, pick, line, p, p_src, k, k_src, source, books: dict |
     p_mkt = float(p) if p is not None and p_src in ('pinnacle', 'blend') else None   # 14.11: цена рынка без маржи (снимок → CLV)
     if p is None:
         p, p_src = pm, 'model'
+    elif P is None and p_src == 'pinnacle':                # 25.11: модели нет (еврокубок вне модели) — чистый рынок без маржи
+        if line is not None and float(line) == int(float(line)):
+            return None                                    # целая линия: без матрицы счёта нет P возврата → EV завышен (урок 21.11)
+        p, p_src = float(p), 'pinnacle'                    # (веса 1,11/−0,11 подобраны вместе с моделью: без неё завышали бы P)
+    elif P is None:
+        return None                                        # без Pinnacle и без модели P честно не получить
     elif p_src == 'pinnacle':
         p = PK.fair(pm, p, 'pinnacle')                     # веса истории: рынок 1,11, модель −0,11
     elif p_src == 'blend':
@@ -175,6 +182,11 @@ def model_offers(m, row) -> list[dict]:
 def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
     now = pd.Timestamp.now(tz='UTC').tz_localize(None)
     todays = [(m, row) for m, row, _ in items if m.start > now and C.wday(m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)) == day]
+    extra = [(m, row) for m, row in MARKET_ONLY                 # 25.11: еврокубки с командой вне модели — только по цене Pinnacle
+             if m.start > now and C.wday(m.start + pd.Timedelta(hours=C.TZ_OFFSET_HOURS)) == day]
+    if extra:
+        log.append(f'⭐ еврокубки вне модели: матчей {len(extra)} — кандидаты по цене Pinnacle')
+    todays = todays + extra
     if not todays:
         return []
     events, r = [], OD.r_ratio()
@@ -317,6 +329,16 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                           shots=shots, actions=actions, dry=dry, hold=hold)
 
 
+
+def espn_results() -> dict:
+    """{espn_id: (status, hg, ag, settled)} сыгранных матчей из табло ESPN (football/data/espn_results.csv; ET — счёт 90 минут неизвестен)."""
+    try:
+        er = pd.read_csv(C.ESPN_STORE, dtype=str, keep_default_na=False)
+    except Exception:
+        return {}
+    er = er[(er.status.isin(['ET', 'VOID'])) | ((er.status == 'FT') & (er.hg != ''))]   # VOID (перенос) — возврат, как в auto_forecasts
+    return {str(J.num(i)): (st, hg, ag, d[:10]) for i, st, hg, ag, d in zip(er.id, er.status, er.hg, er.ag, er.date)}
+
 def settle(store: J.Store, sheet: str = 'day_pick') -> int:
     """Итог по фактическому счёту (auto_forecasts: status FT/ET, hg, ag); старые строки без pick — по рассчитанной линии."""
     dp = store.read(sheet)
@@ -326,6 +348,8 @@ def settle(store: J.Store, sheet: str = 'day_pick') -> int:
     af = store.read('auto_forecasts')
     res_af = {str(J.num(e)): (str(st), hg, ag, se) for e, st, hg, ag, se in zip(af.espn_id, af.status, af.hg, af.ag, af.settled)
               if str(se).strip() not in ('', 'nan')}
+    for k_, v_ in espn_results().items():                  # 25.11: ⭐ еврокубка вне модели — итог по табло ESPN (матча нет в auto_forecasts)
+        res_af.setdefault(k_, v_)
     ld = store.read('auto_lines')
     res_ln = {(str(J.num(e)), str(J.num(s))): (st, r, se) for e, s, st, r, se in zip(ld.espn_id, ld.slot, ld.status, ld.result, ld.settled)
               if str(r) in ('W', 'L', 'P')}
@@ -360,6 +384,8 @@ def shadow_settle(store: J.Store, folder) -> int:
     af = store.read('auto_forecasts')
     res_af = {str(J.num(e)): (str(st), hg, ag, se) for e, st, hg, ag, se in zip(af.espn_id, af.status, af.hg, af.ag, af.settled)
               if str(se).strip() not in ('', 'nan')}
+    for k_, v_ in espn_results().items():                  # 25.11: ⭐ еврокубка вне модели — итог по табло ESPN (матча нет в auto_forecasts)
+        res_af.setdefault(k_, v_)
     n = 0
     for f in files:
         df = pd.read_csv(f, dtype=str, keep_default_na=False)

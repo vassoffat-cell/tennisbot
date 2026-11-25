@@ -217,6 +217,45 @@ check('разбор: одна команда → нет', W.prose_event('✅ П�
 
 check('книга: текст поста не режется на 200 знаках (соперник в разборе)', B.RAW_MAX >= 1000, True)
 
+# 25.11 · еврокубок с командой вне модели → кандидат ⭐ по чистой P Pinnacle (без весов модели), итог — по табло ESPN
+import types as _types  # noqa: E402
+import daypick as FDP   # noqa: E402
+import pick as FPK      # noqa: E402
+_st = pd.Timestamp.now(tz='UTC').tz_localize(None).normalize() + pd.Timedelta(hours=20)
+_m = _types.SimpleNamespace(id='999001', comp='uefa.europa', start=_st, home='Marseille', away='Levski Sofia')
+_row = dict(espn_id='999001', comp='uefa.europa', comp_name='Лига Европы', start_utc=_st.strftime('%Y-%m-%d %H:%M'), start_local='', home='Marseille', away='Levski Sofia')
+_ev = dict(id='e1', sport_key='soccer_uefa_europa_league', home_team='Marseille', away_team='Levski Sofia', commence_time=_st.strftime('%Y-%m-%dT%H:%M:%SZ'),
+           bookmakers=[dict(key=b, markets=[dict(key='h2h', outcomes=[dict(name='Marseille', price=ph), dict(name='Draw', price=pd_), dict(name='Levski Sofia', price=pa)])])
+                       for b, ph, pd_, pa in (('pinnacle', 1.40, 4.90, 8.00), ('onexbet', 1.42, 4.80, 7.50))])
+_save = (FDP.OD.sports, FDP.OD.day_events, FDP.OD.r_ratio, FDP.C.wday)
+FDP.OD.sports = lambda: [dict(key='soccer_uefa_europa_league', active=True)]
+FDP.OD.day_events = lambda *a, **k: ([_ev], [])
+FDP.OD.add_alternates = lambda *a, **k: (None, '')   # без лишних кредитов API в тесте
+FDP.MARKET_ONLY[:] = [(_m, _row)]
+_day = FDP.C.wday(_st + pd.Timedelta(hours=FDP.C.TZ_OFFSET_HOURS))
+_lg = []
+try:
+    _o = [o for o in FDP.offers([], {}, _day, _lg) if o['market'] == '1X2' and o['pick'] == 'H']
+finally:
+    FDP.OD.sports, FDP.OD.day_events = _save[0], _save[1]
+    FDP.MARKET_ONLY.clear()
+_shin = FPK.shin([1.40, 4.90, 8.00])[0]
+check('еврокубок вне модели: кандидат П1 есть', len(_o), 1)
+check('еврокубок вне модели: P = чистый Pinnacle (Шин)', round(_o[0]['p'], 4) if _o else None, round(_shin, 4))
+check('еврокубок вне модели: строка в логе', any('еврокубки вне модели' in x for x in _lg), True)
+with tempfile.TemporaryDirectory() as _tmp:
+    _f = Path(_tmp) / 'er.csv'
+    _f.write_text('id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko\n'
+                  '999001,uefa.europa,uefa,,,2026-11-26 20:00,Marseille,Levski Sofia,,,2,0,FT,league-phase,0\n'
+                  '999002,uefa.europa,uefa,,,2026-11-26 20:00,A,B,,,,,VOID,league-phase,0\n', encoding='utf-8')
+    _old = FDP.C.ESPN_STORE
+    FDP.C.ESPN_STORE = _f
+    try:
+        _r = FDP.espn_results()
+    finally:
+        FDP.C.ESPN_STORE = _old
+check('еврокубок вне модели: итог по табло FT и VOID', (_r.get(str(FDP.J.num('999001')), ('',))[0], _r.get(str(FDP.J.num('999002')), ('',))[0]), ('FT', 'VOID'))
+
 # 25.11 · OddsPapi (Ц6б): теннис в приоритете — КХЛ только из остатка; учёт каждого запроса; пустой ответ не жжёт квоту
 import datetime as _dt     # noqa: E402
 import json as _json       # noqa: E402

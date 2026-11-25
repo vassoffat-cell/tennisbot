@@ -82,11 +82,16 @@ def main(arg: str) -> None:
     print(daypick.text(cands[0] if cands else None, day, [], '', 'подходящей линии нет'))
     print(f'\nрепетиция {time.time() - t0:.0f} с; {knote}')
     n_pre = int((days == day).sum()) if len(days) else 0
+    # 25.11: еврокубки с командой вне модели — штатно (кандидаты ⭐ по цене рынка, MARKET_ONLY_UEFA), не тревога репетиции
+    cup = {v[0] for k_, v in C.COMPETITIONS.items() if k_.startswith('uefa.')}
+    own = [x for x in skipped if not any(f'({n})' in x for n in cup)]
+    if len(own) < len(skipped):
+        print(f'еврокубки вне модели: {len(skipped) - len(own)} матчей — ⭐ по цене Pinnacle')
     probs = ([f'ESPN: ошибок запросов {len(errs)}'] if errs else []) \
         + ([f'в расписании {n_pre} матчей, а прогноз — 0'] if n_pre and not items else []) \
         + ([f'прогноз {len(items)} матчей, а линий-кандидатов 0'] if items and not raw else []) \
         + ([f'прогноз {len(items)} матчей, а кандидатов ставки дня с ценой 0'] if use_odds and items and not cands else []) \
-        + ([f'не опознано {len(skipped)} из {len(skipped) + len(items)} матчей'] if len(skipped) > max(5, len(items)) else [])
+        + ([f'не опознано {len(own)} из {len(own) + len(items)} матчей наших лиг'] if len(own) > max(5, len(items)) else [])
     print('🎬 итог:', '; '.join(probs) if probs else 'проблем нет')
     if auto and probs:
         send([f'⚠️ <b>Футбол · репетиция {day:%d.%m}</b>\n' + '\n'.join(f'• {notify.esc(p)}' for p in probs)])

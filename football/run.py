@@ -379,6 +379,7 @@ def save_dists(matches: list, mp, world, sched, log: list[str]) -> None:
 
 
 # ======================================================================== прогноз (модель + A2)
+
 def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched: FF.Schedule, train: pd.DataFrame,
              auto: pd.DataFrame, kcal: dict) -> tuple[list[tuple], list[str]]:
     now = _now()
@@ -387,6 +388,7 @@ def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched:
     seasons: dict[str, pd.DataFrame] = {}
     kc = {k: v[0] for k, v in kcal.items()}
     out, skipped = [], []
+    daypick.MARKET_ONLY.clear()                                       # 25.11: еврокубки вне модели → ⭐ по цене рынка
     for m in matches:
         if m.state != 'pre' or m.id in settled or not (now < m.start <= C.window_end_utc(now)):
             continue
@@ -395,6 +397,9 @@ def forecast(matches: list[fespn.FMatch], mp: Mapper, world: model.World, sched:
         lam = world.lambdas(m.comp, h, a, m.neutral) if (h and a) else None
         if lam is None:
             skipped.append(f'{m.home} — {m.away} ({name}): ' + ('команда не опознана' if not (h and a) else 'нет оценки силы'))
+            if m.comp.startswith('uefa.') and getattr(C, 'MARKET_ONLY_UEFA', False):   # 25.11: еврокубок вне модели — кандидат ⭐ по цене рынка
+                daypick.MARKET_ONLY.append((m, dict(espn_id=m.id, comp=m.comp, comp_name=name, start_utc=m.start.strftime('%Y-%m-%d %H:%M'),
+                                            start_local=J.to_local(m.start), home=m.home, away=m.away)))
             continue
         fh, fa = {}, {}
         if kind in LEAGUE_KINDS:
