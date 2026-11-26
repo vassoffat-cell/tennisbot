@@ -151,6 +151,64 @@
       1331
      ]
     ]
+   },
+   {
+    "espn_id": "401915512",
+    "comp_name": "Лига Европы",
+    "start_utc": "2026-11-26 20:00",
+    "start_local": "27.11 01:00",
+    "home": "Torreense",
+    "away": "Celtic",
+    "market": "1X2",
+    "pick": "A",
+    "line": null,
+    "label": "П2",
+    "p": 0.6012875404763733,
+    "p_src": "pinnacle",
+    "book": "onexbet",
+    "k_1x": 1.67,
+    "p_model": null,
+    "p_push": 0.0,
+    "k": 1.67,
+    "k_src": "api",
+    "source": "api",
+    "sigma": 0.38,
+    "p_mkt": 0.6012875404763733,
+    "mkt_src": "pinnacle",
+    "k_best": 1.67,
+    "book_best": "onexbet",
+    "tips_for": 0,
+    "fire_i": false,
+    "clash_i": false,
+    "fire": false,
+    "clash": false,
+    "veto": false,
+    "edge": null,
+    "group": "fallback",
+    "sl_pen": 0,
+    "slot": 0,
+    "tier": 2,
+    "rank": 3,
+    "key": [
+     "401915512",
+     "1X2",
+     "A",
+     ""
+    ],
+    "match": "Torreense — Celtic",
+    "why": "EV +0,4% · 3-я 🎯 из 3",
+    "at": "16:03",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 16:03: EV +0,4% · 3-я 🎯 из 3"
+    ],
+    "text": "⚽3 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Лига Европы · 🕒 01:00\n<b>Torreense — Celtic</b>\n<b>П2</b> — 60% · честный кф 1,66\n💵 1xBet 1,67 · EV +0,4% · ставка ¼ ед.\n➕ новая линия дня в 16:03: EV +0,4% · 3-я 🎯 из 3",
+    "msgs": [
+     [
+      570704006,
+      1340
+     ]
+    ]
    }
   ],
   "log": [
@@ -170,6 +228,23 @@
     "to_label": "—",
     "to_key": "401915811|1X2|A|",
     "slot": 3
+   },
+   {
+    "date": "2026-11-26",
+    "time": "16:03",
+    "reason": "новая: EV +0,4% · 3-я 🎯 из 3",
+    "rank": 3,
+    "espn_id": "401915512",
+    "market": "1X2",
+    "pick": "A",
+    "line": "",
+    "label": "П2",
+    "match": "Torreense — Celtic",
+    "p": 0.6013,
+    "k": 1.67,
+    "to_label": "—",
+    "to_key": "401915512|1X2|A|",
+    "slot": 0
    }
   ],
   "notes": [],
@@ -1277,20 +1352,20 @@
   "2026-11-26|1": {
    "p": 0.6294,
    "src": "pinnacle",
-   "at": "2026-11-26 10:03",
+   "at": "2026-11-26 11:03",
    "key": "401915504|TOT|O|2.5"
   },
   "2026-11-26|2": {
    "p": 0.6204,
    "src": "pinnacle",
-   "at": "2026-11-26 10:03",
+   "at": "2026-11-26 11:03",
    "key": "401915811|1X2|A|"
   }
  },
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-26T10:02:25",
- "chk_run": "2026-11-26T10:03:14",
+ "chk_run": "2026-11-26T11:05:35",
  "plan_at": [
   "2026-11-26 14:45",
   "2026-11-26 17:00",
