@@ -93,8 +93,85 @@
   "history": [],
   "shots": [],
   "screenshots": 0,
-  "extras": [],
-  "log": [],
+  "extras": [
+   {
+    "espn_id": "401915811",
+    "comp_name": "Лига конференций",
+    "start_utc": "2026-11-26 17:45",
+    "start_local": "26.11 22:45",
+    "home": "Heart of Midlothian",
+    "away": "AS Monaco",
+    "market": "1X2",
+    "pick": "A",
+    "line": null,
+    "label": "П2",
+    "p": 0.6430314929752841,
+    "p_src": "pinnacle",
+    "book": "pinnacle",
+    "k_1x": 1.56,
+    "p_model": 0.40251836015200454,
+    "p_push": 0.0,
+    "k": 1.57,
+    "k_src": "api",
+    "source": "api",
+    "sigma": 0.38,
+    "p_mkt": 0.6203606555240725,
+    "mkt_src": "pinnacle",
+    "k_best": 1.57,
+    "book_best": "pinnacle",
+    "tips_for": 0,
+    "fire_i": false,
+    "clash_i": false,
+    "fire": false,
+    "clash": false,
+    "veto": false,
+    "edge": null,
+    "group": "fallback",
+    "sl_pen": 0,
+    "slot": 3,
+    "tier": 2,
+    "rank": 2,
+    "key": [
+     "401915811",
+     "1X2",
+     "A",
+     ""
+    ],
+    "match": "Heart of Midlothian — AS Monaco",
+    "why": "EV +1,0% · 2-я 🎯 из 3",
+    "at": "12:34",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 12:34: EV +1,0% · 2-я 🎯 из 3"
+    ],
+    "text": "⚽2 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Лига конференций · 🕒 22:45\n<b>Heart of Midlothian — AS Monaco</b>\n<b>П2</b> — 64% · честный кф 1,56\n💵 Pinnacle 1,57 · EV +1,0% · ставка ¼ ед.\n➕ новая линия дня в 12:34: EV +1,0% · 2-я 🎯 из 3",
+    "msgs": [
+     [
+      570704006,
+      1331
+     ]
+    ]
+   }
+  ],
+  "log": [
+   {
+    "date": "2026-11-26",
+    "time": "12:34",
+    "reason": "новая: EV +1,0% · 2-я 🎯 из 3",
+    "rank": 2,
+    "espn_id": "401915811",
+    "market": "1X2",
+    "pick": "A",
+    "line": "",
+    "label": "П2",
+    "match": "Heart of Midlothian — AS Monaco",
+    "p": 0.643,
+    "k": 1.57,
+    "to_label": "—",
+    "to_key": "401915811|1X2|A|",
+    "slot": 3
+   }
+  ],
   "notes": [],
   "nokb": true,
   "sep": true,
@@ -153,7 +230,9 @@
   },
   "first_label": "ТБ2.5",
   "first_match": "Crystal Palace — Real Sociedad",
-  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 14 матчей · 90 линий · на ставку дня — 10\nЛига Европы 5 · Лига конференций 2 · 🔏 ba64631c\n🏆 Лига Европы · 🕒 01:00\n<b>Crystal Palace — Real Sociedad</b>\n<b>ТБ2.5</b> — 64% · честный кф 1,57\n💵 1xBet 1,61 · EV +2,9% · ставка ¼ ед."
+  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 14 матчей · 90 линий · на ставку дня — 10\nЛига Европы 5 · Лига конференций 2 · 🔏 ba64631c\n🏆 Лига Европы · 🕒 01:00\n<b>Crystal Palace — Real Sociedad</b>\n<b>ТБ2.5</b> — 64% · честный кф 1,57\n💵 1xBet 1,61 · EV +2,9% · ставка ¼ ед.",
+  "vol": 7,
+  "played": false
  },
  "model_version": 2,
  "reported": [
@@ -1185,12 +1264,18 @@
    "src": "pinnacle",
    "at": "2026-11-25 19:43",
    "key": "401915374|TOT|O|3"
+  },
+  "2026-11-26|1": {
+   "p": 0.6294,
+   "src": "pinnacle",
+   "at": "2026-11-26 07:34",
+   "key": "401915504|TOT|O|2.5"
   }
  },
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-25T22:17:05",
- "chk_run": "2026-11-26T06:44:08",
+ "chk_run": "2026-11-26T07:34:27",
  "plan_at": [
   "2026-11-26 14:45",
   "2026-11-26 17:00",
