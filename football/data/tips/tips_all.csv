@@ -520,22 +520,26 @@ tg:kapper_uk:22800:401915373,kapper_uk,Каппер UK,2026-11-25 18:29,20261125
 tg:kapper_uk:22801:401915292,kapper_uk,Каппер UK,2026-11-25 18:29,20261125,401915292,2026-11-25 20:00,Club Brugge,Liverpool,TOT:O:3.0,ТБ3,,Тотал. (3) Б 1.475,FT,P,2026-11-26
 tg:kapper_uk:22802:401915374,kapper_uk,Каппер UK,2026-11-25 18:30,20261125,401915374,2026-11-25 20:00,Paris Saint-Germain,AS Roma,1X2:H:,П1,,1Х2. П1 1.49,FT,L,2026-11-26
 tg:kapper_uk:22803:401915374,kapper_uk,Каппер UK,2026-11-25 18:31,20261125,401915374,2026-11-25 20:00,Paris Saint-Germain,AS Roma,AH:H:-1.0,Ф1(-1),,Фора 1 (-1) ,FT,L,2026-11-26
-tg:stavki_na_sport_betting1:s4151844480:401915521,stavki_na_sport_betting1,Green Line,2026-11-26 09:28,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,TOT:O:2.0,ТБ2,1.40,ТБ(2.0) кф. 1.40,,,
+tg:stavki_na_sport_betting1:s4151844480:401915521,stavki_na_sport_betting1,Green Line,2026-11-26 09:28,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,TOT:O:2.0,ТБ2,1.40,ТБ(2.0) кф. 1.40,FT,W,2026-11-26
 tg:stavki_na_sport_betting1:s4153783310:401915504,stavki_na_sport_betting1,Green Line,2026-11-26 13:12,20261126,401915504,2026-11-26 20:00,Crystal Palace,Real Sociedad,BTTS:Y:,ОЗ да,1.48,обе забьют да кф. 1.48,,,
-tg:kapper_uk:22807:401915507,kapper_uk,Каппер UK,2026-11-26 12:41,20261126,401915507,2026-11-26 17:45,Marseille,Levski Sofia,IT2:O:0.5,ИТ2 Б0.5,,Индивидуальный тотал 2-го. (0.5) Б 1.73,,,
+tg:kapper_uk:22807:401915507,kapper_uk,Каппер UK,2026-11-26 12:41,20261126,401915507,2026-11-26 17:45,Marseille,Levski Sofia,IT2:O:0.5,ИТ2 Б0.5,,Индивидуальный тотал 2-го. (0.5) Б 1.73,FT,L,2026-11-26
 tg:kapper_uk:22809:401915515,kapper_uk,Каппер UK,2026-11-26 12:43,20261126,401915515,2026-11-26 20:00,TSG Hoffenheim,SK Sturm Graz,BTTS:Y:,ОЗ да,,Обе забьют. Да 1.63,,,
-tg:kapper_uk:22810:401915517,kapper_uk,Каппер UK,2026-11-26 12:44,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,TOT:O:2.5,ТБ2.5,,Тотал и обе забьют. Обе забьют + ТБ (2.5) - Да 1.74,,,
+tg:kapper_uk:22810:401915517,kapper_uk,Каппер UK,2026-11-26 12:44,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,TOT:O:2.5,ТБ2.5,,Тотал и обе забьют. Обе забьют + ТБ (2.5) - Да 1.74,FT,L,2026-11-26
 tg:kapper_uk:22814:401915503,kapper_uk,Каппер UK,2026-11-26 12:46,20261126,401915503,2026-11-26 20:00,OFI Crete,Anderlecht,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,"Второй, результат + тотал. 2Х и ТБ (1.5) - Да 1.47",,,
-tg:kapper_uk:22815:401915519,kapper_uk,Каппер UK,2026-11-26 12:46,20261126,401915519,2026-11-26 17:45,Celta Vigo,AFC Bournemouth,TOT:O:2.0,ТБ2,,Тотал. (2) Б 1.458,,,
-tg:stavki_na_sport_betting1:s19991s0s0:401915517,stavki_na_sport_betting1,Green Line,2026-11-26 14:45,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,IT2:O:1.5,ИТ2 Б1.5,1.50,байер леверкузен ИТБ(1.5) кф. 1.50,,,
-tg:stavki_na_sport_betting1:s4154219580:401915521,stavki_na_sport_betting1,Green Line,2026-11-26 14:35,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,IT2:O:1.0,ИТ2 Б1,1.46,милан ИТБ(1.0) кф. 1.46,,,
-tg:stavki:5854:401915521,stavki,Прогнозы,2026-11-26 14:32,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,Индивидуальный Тотал 1-го (1)Б,,,
-tg:stavki:5855:401915517,stavki,Прогнозы,2026-11-26 14:33,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,Обе забьют - Да,,,
-tg:kapper_uk:22818:401915517,kapper_uk,Каппер UK,2026-11-26 15:02,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,Обе забьют. Да 1.51,,,
-tg:kapper_uk:22819:401915521,kapper_uk,Каппер UK,2026-11-26 15:02,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,Индивидуальный тотал 1-го. (1) Б 1.615,,,
-tg:kapper_uk:22822:401915517,kapper_uk,Каппер UK,2026-11-26 16:08,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,DC:12:,12,,26.11.2026 (12:45),,,
+tg:kapper_uk:22815:401915519,kapper_uk,Каппер UK,2026-11-26 12:46,20261126,401915519,2026-11-26 17:45,Celta Vigo,AFC Bournemouth,TOT:O:2.0,ТБ2,,Тотал. (2) Б 1.458,FT,W,2026-11-26
+tg:stavki_na_sport_betting1:s19991s0s0:401915517,stavki_na_sport_betting1,Green Line,2026-11-26 14:45,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,IT2:O:1.5,ИТ2 Б1.5,1.50,байер леверкузен ИТБ(1.5) кф. 1.50,FT,W,2026-11-26
+tg:stavki_na_sport_betting1:s4154219580:401915521,stavki_na_sport_betting1,Green Line,2026-11-26 14:35,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,IT2:O:1.0,ИТ2 Б1,1.46,милан ИТБ(1.0) кф. 1.46,FT,W,2026-11-26
+tg:stavki:5854:401915521,stavki,Прогнозы,2026-11-26 14:32,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,Индивидуальный Тотал 1-го (1)Б,FT,W,2026-11-26
+tg:stavki:5855:401915517,stavki,Прогнозы,2026-11-26 14:33,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,Обе забьют - Да,FT,L,2026-11-26
+tg:kapper_uk:22818:401915517,kapper_uk,Каппер UK,2026-11-26 15:02,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,Обе забьют. Да 1.51,FT,L,2026-11-26
+tg:kapper_uk:22819:401915521,kapper_uk,Каппер UK,2026-11-26 15:02,20261126,401915521,2026-11-26 17:45,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,Индивидуальный тотал 1-го. (1) Б 1.615,FT,W,2026-11-26
+tg:kapper_uk:22822:401915517,kapper_uk,Каппер UK,2026-11-26 16:08,20261126,401915517,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,DC:12:,12,,26.11.2026 (12:45),FT,W,2026-11-26
 tg:kapper_uk:22824:401915803,kapper_uk,Каппер UK,2026-11-26 16:23,20261126,401915803,2026-11-26 20:00,CSKA Sofia,Trabzonspor,1X2:A:,П2,,1Х2. П2 1.696,,,
-tg:kapper_uk:22825:401915506,kapper_uk,Каппер UK,2026-11-26 16:23,20261126,401915506,2026-11-26 17:45,Besiktas,Hapoel Be'er,BTTS:Y:,ОЗ да,,Обе забьют. Да 1.71,,,
-tg:kapper_uk:22826:401915507,kapper_uk,Каппер UK,2026-11-26 16:24,20261126,401915507,2026-11-26 17:45,Marseille,Levski Sofia,BTTS:Y:,ОЗ да,,Обе забьют. Да 1.87,,,
+tg:kapper_uk:22825:401915506,kapper_uk,Каппер UK,2026-11-26 16:23,20261126,401915506,2026-11-26 17:45,Besiktas,Hapoel Be'er,BTTS:Y:,ОЗ да,,Обе забьют. Да 1.71,FT,W,2026-11-26
+tg:kapper_uk:22826:401915507,kapper_uk,Каппер UK,2026-11-26 16:24,20261126,401915507,2026-11-26 17:45,Marseille,Levski Sofia,BTTS:Y:,ОЗ да,,Обе забьют. Да 1.87,FT,L,2026-11-26
 tg:stavki_na_sport_betting1:s4156933810:401915502,stavki_na_sport_betting1,Green Line,2026-11-26 17:04,20261126,401915502,2026-11-26 20:00,Juventus,Omonia Nicosia,TOT:O:2.5,ТБ2.5,1.45,ТБ(2.5) кф. 1.45,,,
 tg:kapper_uk:22828:401915801,kapper_uk,Каппер UK,2026-11-26 17:31,20261126,401915801,2026-11-26 20:00,SC Freiburg,FC Twente,DC:12:,12,,„- 26.1.2026 (12:47),,,
+tg:stavki_na_sport_betting1:s20002s0s0:401915504,stavki_na_sport_betting1,Green Line,2026-11-26 19:57,20261126,401915504,2026-11-26 20:00,Crystal Palace,Real Sociedad,IT1:O:1.5,ИТ1 Б1.5,4.20,кристал пэлас ИТБ(1.5) кф. 4.20,,,
+tg:stavki_na_sport_betting1:s20002s1s1:401915502,stavki_na_sport_betting1,Green Line,2026-11-26 19:57,20261126,401915502,2026-11-26 20:00,Juventus,Omonia Nicosia,IT1:O:2.0,ИТ1 Б2,4.20,ювентус ИТБ(2.0) кф. 4.20,,,
+tg:stavki_na_sport_betting1:s20002s2s2:401915501,stavki_na_sport_betting1,Green Line,2026-11-26 19:57,20261126,401915501,2026-11-26 20:00,Lyon,Lillestrom,1X2:H:,П1,4.20,победа лион кф. 4.20,,,
+tg:stavki_na_sport_betting1:s20002s3s3:401915512,stavki_na_sport_betting1,Green Line,2026-11-26 19:57,20261126,401915512,2026-11-26 20:00,Torreense,Celtic,IT1:O:0.5,ИТ1 Б0.5,4.20,торренсе ИТБ(0.5) кф. 4.20,,,

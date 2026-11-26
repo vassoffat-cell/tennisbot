@@ -493,29 +493,36 @@ kapper_uk:22801:0,401915292,Club Brugge,Liverpool,TOT:O:3.0,ТБ3,,FT,P,2026-11-
 kapper_uk:22800:0,401915373,Sporting CP,Manchester United,BTTS:Y:,ОЗ да,,FT,W,2026-11-25
 kapper_uk:22799:0,401915376,Internazionale,VfB Stuttgart,BTTS:Y:,ОЗ да,,FT,L,2026-11-25
 stavki_na_sport_betting1:19943:s0,,,,,,матч не найден,,,
-stavki_na_sport_betting1:slip:415184448:0,401915521,Olympiacos,AC Milan,TOT:O:2.0,ТБ2,,,,
+stavki_na_sport_betting1:slip:415184448:0,401915521,Olympiacos,AC Milan,TOT:O:2.0,ТБ2,,FT,W,2026-11-26
 stavki_na_sport_betting1:19975:0,,,,,,матч не найден,,,
 xs_stavkii:8060:0,,,,,,нет данных,,,
 xs_stavkii:8060:1,,,,,,нет данных,,,
 stavki_na_sport_betting1:slip:415378331:0,401915504,Crystal Palace,Real Sociedad,BTTS:Y:,ОЗ да,,,,
-kapper_uk:22815:0,401915519,Celta Vigo,AFC Bournemouth,TOT:O:2.0,ТБ2,,,,
+kapper_uk:22815:0,401915519,Celta Vigo,AFC Bournemouth,TOT:O:2.0,ТБ2,,FT,W,2026-11-26
 kapper_uk:22814:0,401915503,OFI Crete,Anderlecht,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,,,
 kapper_uk:22810:0,401915517,Dinamo Zagreb,Bayer Leverkusen,,,не разобрано,,,
 kapper_uk:22809:0,401915515,TSG Hoffenheim,SK Sturm Graz,BTTS:Y:,ОЗ да,,,,
-kapper_uk:22807:0,401915507,Marseille,Levski Sofia,IT2:O:0.5,ИТ2 Б0.5,,,,
-stavki:5854:0,401915521,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,,,
-stavki:5855:0,401915517,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,,,
-stavki_na_sport_betting1:19991:s0,401915517,Dinamo Zagreb,Bayer Leverkusen,IT2:O:1.5,ИТ2 Б1.5,,,,
-stavki_na_sport_betting1:slip:415421958:0,401915521,Olympiacos,AC Milan,IT2:O:1.0,ИТ2 Б1,,,,
-kapper_uk:22821:0,401915519,Celta Vigo,AFC Bournemouth,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,,,
+kapper_uk:22807:0,401915507,Marseille,Levski Sofia,IT2:O:0.5,ИТ2 Б0.5,,FT,L,2026-11-26
+stavki:5854:0,401915521,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-26
+stavki:5855:0,401915517,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,FT,L,2026-11-26
+stavki_na_sport_betting1:19991:s0,401915517,Dinamo Zagreb,Bayer Leverkusen,IT2:O:1.5,ИТ2 Б1.5,,FT,W,2026-11-26
+stavki_na_sport_betting1:slip:415421958:0,401915521,Olympiacos,AC Milan,IT2:O:1.0,ИТ2 Б1,,FT,W,2026-11-26
+kapper_uk:22821:0,401915519,Celta Vigo,AFC Bournemouth,DC:X2:|TOT:O:1.5,X2 + ТБ1.5,,FT,W,2026-11-26
 kapper_uk:22821:1,,,,,,матч не найден,,,
-kapper_uk:22819:0,401915521,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,,,
-kapper_uk:22818:0,401915517,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,,,
+kapper_uk:22819:0,401915521,Olympiacos,AC Milan,IT1:O:1.0,ИТ1 Б1,,FT,W,2026-11-26
+kapper_uk:22818:0,401915517,Dinamo Zagreb,Bayer Leverkusen,BTTS:Y:,ОЗ да,,FT,L,2026-11-26
 kapper_uk:22817:0,,,,,,матч не найден,,,
 stavki_na_sport_betting1:slip:415603323:0,,,,,,матч не найден,,,
-kapper_uk:22826:0,401915507,Marseille,Levski Sofia,BTTS:Y:,ОЗ да,,,,
+kapper_uk:22826:0,401915507,Marseille,Levski Sofia,BTTS:Y:,ОЗ да,,FT,L,2026-11-26
 kapper_uk:22825:0,401915506,Besiktas,Hapoel Be'er,BTTS:Y:,ОЗ да,,ET,P,2026-11-26
 kapper_uk:22824:0,401915803,CSKA Sofia,Trabzonspor,1X2:A:,П2,,,,
 kapper_uk:22823:0,,,,,,матч не найден,,,
 kapper_uk:22822:0,401915517,Dinamo Zagreb,Bayer Leverkusen,,,не разобрано,,,
 stavki_na_sport_betting1:slip:415693381:0,401915502,Juventus,Omonia Nicosia,TOT:O:2.5,ТБ2.5,,,,
+stavki_na_sport_betting1:20002:s0,401915504,Crystal Palace,Real Sociedad,IT1:O:1.5,ИТ1 Б1.5,,,,
+stavki_na_sport_betting1:20002:s1,401915502,Juventus,Omonia Nicosia,IT1:O:2.0,ИТ1 Б2,,,,
+stavki_na_sport_betting1:20002:s2,401915501,Lyon,Lillestrom,1X2:H:,П1,,,,
+stavki_na_sport_betting1:20002:s3,401915512,Torreense,Celtic,IT1:O:0.5,ИТ1 Б0.5,,,,
+kapper_uk:22831:0,401915504,Crystal Palace,Real Sociedad,IT2@1:O:0.5,ИТ2 Б0.5 · 1-й тайм,,,,
+kapper_uk:22831:1,,,,,,матч не найден,,,
+kapper_uk:22831:2,401915501,Lyon,Lillestrom,TOT@1:U:1.5,ТМ1.5 · 1-й тайм,,,,
