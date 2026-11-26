@@ -2,7 +2,7 @@
  "list_messages": [],
  "list_match_ids": [],
  "last_daily": "2026-11-25",
- "last_retrain": "2026-11-25",
+ "last_retrain": "2026-11-26",
  "last_files": "2026-11-05",
  "last_reminder": "2026-11-09",
  "files": {
@@ -3403,10 +3403,7 @@
   "khl:430724",
   "khl:430725",
   "khl:430726",
-  "khl:430727",
-  "nhl:401892792",
-  "nhl:401892793",
-  "nhl:401892794"
+  "khl:430727"
  ],
  "hk_last_daily": "2026-11-24",
  "hk_dp": {
@@ -3537,7 +3534,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-26T02:02:02",
+ "chk_run": "2026-11-26T06:02:59",
  "plan_at": [],
  "plan_sig": [],
  "quiet_on": "2026-11-23",
