@@ -270,15 +270,6 @@ def _publish(day, c: dict, rank: int, hist: list[str]) -> dict:
     return x
 
 
-SEGMENT_H = 2.0                   # 14.11 (решение пользователя): одна ставка дня на игровой отрезок — начала ставок не ближе 2 ч
-
-
-def busy(start, starts: list) -> bool:
-    """Игровой отрезок занят: уже есть ставка дня, чей матч начинается ближе SEGMENT_H часов (риск одной волны событий)."""
-    s = pd.Timestamp(start)
-    return any(abs((s - pd.Timestamp(x)).total_seconds()) < SEGMENT_H * 3600 for x in starts if x not in (None, ''))
-
-
 HD_DATA = __import__('pathlib').Path(__file__).resolve().parent / 'data'   # hockey/data (печать — hockey/data/seal)
 CHANGED = [False]                 # ставки хоккея изменились в этом прогоне → autorun обновит кэш кнопки «⭐ Ставка дня»
 
@@ -444,7 +435,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         used = {str(x['id']) for x in picks}
         main = picks[0]
         for c in cands:
-            if str(c['id']) in used or busy(c['start_utc'], [x['start_utc'] for x in picks]):
+            if str(c['id']) in used:
                 continue
             why = better(c, main)
             if why:
@@ -461,7 +452,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         for c in pool:
             if sum(1 for x in picks if not x.get('off')) >= TARGET_MAX:
                 break
-            if str(c['id']) in used or pd.Timestamp(c['start_utc']) <= now or busy(c['start_utc'], [x['start_utc'] for x in picks if not x.get('off')]):
+            if str(c['id']) in used or pd.Timestamp(c['start_utc']) <= now:
                 continue
             r = len(picks) + 1
             why = f"EV {float(c['ev']) * 100:+.1f}% · {sum(1 for x in picks if not x.get('off')) + 1}-я из {TARGET_MAX}".replace('.', ',')

@@ -316,9 +316,6 @@ def rules_check() -> list[tuple[str, str, str, str]]:
         ids = [str(x.get('espn_id') or x.get('id') or x.get('game_id') or x.get('match')) for x in live]   # хоккей: номер матча — поле id
         if len(set(ids)) < len(ids):
             bad.append('два ⭐ на один матч')
-        ts = sorted(pd.Timestamp(x['start_utc']) for x in live if x.get('start_utc'))
-        if any((b - a).total_seconds() < 2 * 3600 for a, b in zip(ts, ts[1:])):
-            bad.append('отрезок < 2 ч')
         for x in live:
             k = x.get('k') or (x.get('best') or {}).get('k')
             if not k:
@@ -326,7 +323,7 @@ def rules_check() -> list[tuple[str, str, str, str]]:
             ev = x.get('ev') if x.get('ev') not in (None, '') else (x.get('best') or {}).get('ev')
             if ev not in (None, '') and float(ev) > 0.20:
                 bad.append(f"EV {float(ev) * 100:.0f}% > 20%: {x.get('label')}")
-        out.append((f'⭐ правила суток ({name}): ≤ 3 🎯, свой матч, отрезок 2 ч, цена', 'по правилам',
+        out.append((f'⭐ правила суток ({name}): ≤ 3 🎯, свой матч, цена', 'по правилам',
                     f"{st.get('date', '—')}: ⭐ {len(live)} (🎯 {n_t})" + (' · ' + '; '.join(bad) if bad else ''), '❌' if bad else '✅'))
     return out
 

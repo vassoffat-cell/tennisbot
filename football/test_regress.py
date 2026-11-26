@@ -333,6 +333,10 @@ _s = (_R / 'hockey/hrun.py').read_text()
 check('IMP-12 хоккей: повтор недельного не шлёт суточный и не сдвигает калибровку',
       ('if not wk_pend:\n                notify.send_blocks(report(' in _s) and ('(due and not wk_pend)' in _s), True)
 
+# 26.11 решение пользователя: правило «одна ⭐ на 2 ч» (С14) отменено во всех видах — одновременные матчи можно
+for _f in ('dpcore.py', 'football/dpcore.py', 'hockey/hpick.py'):
+    check(f'С14 отменено: в {_f} нет проверки отрезка', 'SEGMENT_H' not in (_R / _f).read_text(), True)
+
 if FAILS:
     print('\n'.join(FAILS))
     print(f'тесты регрессии: провалов {len(FAILS)}')

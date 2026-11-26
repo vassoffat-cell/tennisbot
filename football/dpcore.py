@@ -35,11 +35,10 @@ except ImportError:                                             # футбол: 
     import selflearn as SL
 
 PRIORITY = {'screenshot': 0, 'api': 1, 'model': 2}
-SEGMENT_H = 2.0                 # 14.11 (решение пользователя): одна ставка дня на игровой отрезок — начала не ближе 2 ч
 MAX_PICKS = 3                   # 14.11: только запасное значение — лимит динамический (selflearn.max_picks)
 MAX_V2 = 8                      # 17.11 ТЗ-007 R4: защитный потолок ⭐ в сутки на вид (лимита количества нет — С7а)
 WITHDRAW = True                 # 21.11 С2а (решение пользователя): ⭐, переставшая проходить порог, — правка или «снята — рынок против»
-TARGET_MAX = 3                  # 21.11 (решение пользователя, С23а): 🎯 — до 3 в сутки, лучшие по EV (раньше одна), отрезок 2 ч — как С14
+TARGET_MAX = 3                  # 21.11 (решение пользователя, С23а): 🎯 — до 3 в сутки, лучшие по EV (раньше одна); одновременные матчи — можно (С14 отменено 26.11) — как С14
 REASON = {'исправление': 'исправлена ошибка кф скриншота', 'отказ': 'по вашему отказу', 'скриншот': 'по скриншоту', 'лучше': 'найдена лучше',
           'каперы': 'по каперам (🔥/⚔️)'}
 
@@ -500,9 +499,8 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             events.append(f'{ICON}{r} новая ({why})')
             picks.append(dict(x))
             used.add(str(c['espn_id']))
-        if getattr(PK, 'DP_LADDER', False) and picks:            # 21.11 С23а: 🎯 до TARGET_MAX в сутки — лучшие по EV, разные матчи и отрезки
+        if getattr(PK, 'DP_LADDER', False) and picks:            # 21.11 С23а: 🎯 до TARGET_MAX в сутки — лучшие по EV, разные матчи (С14 отменено 26.11)
             n_t = sum(1 for x in picks if str(x.get('tier', '')).split('.')[0] != '0' and not x.get('off'))
-            starts = [x.get('start_utc') for x in picks if not x.get('off')]   # С2а: отрезок снятой ⭐ свободен
             # 21.11 (проверка синтеза): порядок — тот же, что у ⭐1 (cands = SL.reorder(PK.choose)): понижение самообучения →
             # ступень → 🔥 / ⚔️ каперов → EV. Раньше доп. 🎯 сортировались только по EV — каперы и самообучение не влияли на ⭐2/⭐3.
             pool = [c for c in cands if int(c.get('tier', 9)) not in (0, 9) and c.get('ev') is not None
@@ -511,9 +509,6 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 if n_t >= TARGET_MAX or len(picks) >= MAX_V2:
                     break
                 if str(c['espn_id']) in used or pd.Timestamp(c['start_utc']) <= now:
-                    continue
-                if any(abs((pd.Timestamp(c['start_utc']) - pd.Timestamp(s)).total_seconds()) < SEGMENT_H * 3600
-                       for s in starts if s not in (None, '')):     # С14: игровой отрезок уже занят ставкой дня
                     continue
                 r = len(picks) + 1
                 why = f"EV {float(c['ev']) * 100:+.1f}% · {n_t + 1}-я 🎯 из {TARGET_MAX}".replace('.', ',')
@@ -528,17 +523,12 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 events.append(f'{ICON}{r} новая ({why})')
                 picks.append(dict(x))
                 used.add(str(c['espn_id']))
-                starts.append(c['start_utc'])
                 n_t += 1
     elif picks and len(picks) < SL.max_picks(_sk(), MAX_PICKS, cur['vol'], loc):
         used = {str(x['espn_id']) for x in picks}
         main = next((c for c in cands if key(c) == list(cur.get('key', []))), None) or _pick_view(cur)
-        starts = [x.get('start_utc') for x in picks]
         for c in cands:
             if str(c['espn_id']) in used or pd.Timestamp(c['start_utc']) <= now:
-                continue
-            if any(abs((pd.Timestamp(c['start_utc']) - pd.Timestamp(s)).total_seconds()) < SEGMENT_H * 3600
-                   for s in starts if s not in (None, '')):     # 14.11: игровой отрезок уже занят ставкой дня
                 continue
             why = better(c, main)
             if not why:
