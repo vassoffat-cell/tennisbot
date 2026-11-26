@@ -431,11 +431,12 @@ def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
     rows = []
-    for wf, per_day in (('daily.yml', 9), ('football.yml', 7), ('cappers.yml', 21)):
+    for wf, per_day in (('daily.yml', 9), ('football.yml', 7), ('cappers.yml', 12)):   # 26.11: каперы 12 в сутки (15:22…02:22, Г0б), было 21 — ложный ❌
         rs = runs(wf, since)
         bad = [r for r in rs if r['conclusion'] not in ('success', None) and not _special(r)]   # 23.11 аудит: разовая проверка (research) — не сбой системы
         exp = int(per_day * hours / 24)
-        rows.append((f'{wf}: прогонов', f'≥ {int(exp * 0.7)}', f'{len(rs)} (сбоев {len(bad)})', '✅' if not bad and len(rs) >= exp * 0.7 else '❌'))
+        need = int(exp * 0.7)                                  # 26.11: порог = показанному числу (15 при «≥ 15» было ❌)
+        rows.append((f'{wf}: прогонов', f'≥ {need}', f'{len(rs)} (сбоев {len(bad)})', '✅' if not bad and len(rs) >= need else '❌'))
         for r in bad[:5]:
             rows.append(('  сбой', '', f"{(datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) + TZ):%d.%m %H:%M} {r['event']}", '❌'))
     # контрольные события: ищем в прогонах нужного часа (по местному времени начала)
