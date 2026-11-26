@@ -3397,10 +3397,7 @@
   ]
  },
  "hk_list": [],
- "hk_list_ids": [
-  "khl:430724",
-  "khl:430725"
- ],
+ "hk_list_ids": [],
  "hk_last_daily": "2026-11-25",
  "hk_dp": {
   "date": "2026-11-26",
@@ -3466,7 +3463,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-26T14:23:24",
+ "chk_run": "2026-11-26T17:55:35",
  "plan_at": [],
  "plan_sig": [],
  "quiet_on": "2026-11-23",
