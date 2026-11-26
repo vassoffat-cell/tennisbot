@@ -1,11 +1,6 @@
 {
  "list_messages": [],
- "list_match_ids": [
-  "401915503",
-  "401915504",
-  "401915505",
-  "401915801"
- ],
+ "list_match_ids": [],
  "last_daily": "2026-11-26",
  "last_files": "2026-11-06",
  "last_reminder": "2026-11-10",
@@ -304,7 +299,7 @@
   "first_match": "Crystal Palace — Real Sociedad",
   "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 14 матчей · 90 линий · на ставку дня — 10\nЛига Европы 5 · Лига конференций 2 · 🔏 ba64631c\n🏆 Лига Европы · 🕒 01:00\n<b>Crystal Palace — Real Sociedad</b>\n<b>ТБ2.5</b> 🔥 — 64% · честный кф 1,57\n💵 1xBet 1,61 · EV +2,9% · ставка ¼ ед.",
   "vol": 7,
-  "played": false
+  "played": true
  },
  "model_version": 2,
  "reported": [
@@ -1399,7 +1394,7 @@
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-26T19:25:59",
- "chk_run": "2026-11-26T19:04:20",
+ "chk_run": "2026-11-26T20:27:49",
  "plan_at": [],
  "plan_sig": [],
  "wide_catchup": "2026-11-08",

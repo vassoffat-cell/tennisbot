@@ -971,3 +971,20 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915376,uefa.champions,uefa,,,2026-11-25 20:00,Internazionale,VfB Stuttgart,Inter,Stuttgart,2,0,FT,league-phase,0
 401915377,uefa.champions,uefa,,,2026-11-25 20:00,Lille,Bayern Munich,Lille,Bayern Munich,2,1,FT,league-phase,0
 401915816,uefa.europa.conf,uefa,,,2026-11-26 15:30,Kairat Almaty,Mjällby AIF,,,1,0,FT,league-phase,0
+401915506,uefa.europa,uefa,,,2026-11-26 17:45,Besiktas,Hapoel Be'er,Besiktas,,2,1,FT,league-phase,0
+401915507,uefa.europa,uefa,,,2026-11-26 17:45,Marseille,Levski Sofia,Marseille,,1,0,FT,league-phase,0
+401915508,uefa.europa,uefa,,,2026-11-26 17:45,Union St.-Gilloise,Lech Poznan,St. Gilloise,,2,2,FT,league-phase,0
+401915517,uefa.europa,uefa,,,2026-11-26 17:45,Dinamo Zagreb,Bayer Leverkusen,,Leverkusen,0,2,FT,league-phase,0
+401915518,uefa.europa,uefa,,,2026-11-26 17:45,Viktoria Plzen,Benfica,,Benfica,4,0,FT,league-phase,0
+401915519,uefa.europa,uefa,,,2026-11-26 17:45,Celta Vigo,AFC Bournemouth,Celta,Bournemouth,1,2,FT,league-phase,0
+401915520,uefa.europa,uefa,,,2026-11-26 17:45,RB Salzburg,Ararat-Armenia,,,2,0,FT,league-phase,0
+401915521,uefa.europa,uefa,,,2026-11-26 17:45,Olympiacos,AC Milan,Olympiakos,Milan,2,4,FT,league-phase,0
+401915739,uefa.europa.conf,uefa,,,2026-11-26 17:45,Kauno Zalgiris,Riga FC,,,2,0,FT,league-phase,0
+401915808,uefa.europa.conf,uefa,,,2026-11-26 17:45,SK Brann,AGF,,,1,4,FT,league-phase,0
+401915809,uefa.europa.conf,uefa,,,2026-11-26 17:45,Pafos,FC Midtjylland,,,0,2,FT,league-phase,0
+401915810,uefa.europa.conf,uefa,,,2026-11-26 17:45,Egnatia,Lincoln Red Imps,,,2,1,FT,league-phase,0
+401915811,uefa.europa.conf,uefa,,,2026-11-26 17:45,Heart of Midlothian,AS Monaco,Hearts,Monaco,2,3,FT,league-phase,0
+401915812,uefa.europa.conf,uefa,,,2026-11-26 17:45,Jablonec,FC Lugano,,,2,0,FT,league-phase,0
+401915813,uefa.europa.conf,uefa,,,2026-11-26 17:45,Iberia 1999,Getafe,,Getafe,1,0,FT,league-phase,0
+401915814,uefa.europa.conf,uefa,,,2026-11-26 17:45,Brighton & Hove Albion,Universitatea Craiova,Brighton,,4,0,FT,league-phase,0
+401915815,uefa.europa.conf,uefa,,,2026-11-26 17:45,Ajax Amsterdam,FC Thun,Ajax,,4,0,FT,league-phase,0
