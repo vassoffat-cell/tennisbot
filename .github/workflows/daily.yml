@@ -102,6 +102,7 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
+          FOOT_SHEET_ID: ${{ github.event.inputs.research != '' && secrets.FOOT_SHEET_ID || '' }}   # 27.11: только research (cards_backfill)
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
           APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}

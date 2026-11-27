@@ -62,6 +62,13 @@ def put(store, items: Iterable[tuple], split_fn: Callable[[str], list[str]] | No
         store.update('archive', df.loc[sorted(set(upd))], ['title', 'text', 'updated', 'img'])
     if new:
         store.append('archive', new)
+    try:                                                       # 27.11 (В9): картинки всех отчётов меню — ветка cards-fb / cards-tn
+        import cardstore
+        msg = cardstore.publish([(r['key'], json.loads(r['text'])) for r in rows], df)
+        if msg:
+            print(msg)
+    except Exception as ex:
+        print(f'🖼 картинки меню: сбой {ex.__class__.__name__}: {ex}')
     return len(rows)
 
 

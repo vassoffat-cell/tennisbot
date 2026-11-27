@@ -370,6 +370,15 @@ NT.CARD_IDS.clear(); NT.CARD_IDS[NT.card_key('⚽ Футбол · ставки �
 check('🖼 архив: img по заголовку', (AR._img(['<b>⚽ Футбол · ставки дня · 26.11.2026</b>\n…']), AR._img(['<b>Другой</b>'])), ('["F1", "F2"]', ''))
 NT.CARD_IDS.clear()
 
+# 27.11 14:35 картинки всего меню: имя файла в ветке совпадает с Apps Script fname_; вне GitHub Actions — ничего не делает
+import cardstore as CS
+check('🖼 меню: имя файла картинки', CS.fname('fb|rep|m|2026-11', 1), 'fb_rep_m_2026-11_1.png')
+check('🖼 меню: ветка по виду', (CS.BRANCH['fb'], CS.BRANCH['hk']), ('cards-fb', 'cards-tn'))
+_ga = __import__('os').environ.pop('GITHUB_ACTIONS', None)
+check('🖼 меню: локально — без публикации', CS.publish([('fb|rep|d|2026-11-26', ['<b>x</b>'])]), '')
+if _ga is not None:
+    __import__('os').environ['GITHUB_ACTIONS'] = _ga
+
 if FAILS:
     print('\n'.join(FAILS))
     print(f'тесты регрессии: провалов {len(FAILS)}')
