@@ -95,8 +95,160 @@
   "history": [],
   "shots": [],
   "screenshots": 0,
-  "extras": [],
-  "log": [],
+  "extras": [
+   {
+    "espn_id": "401888240",
+    "comp_name": "Суперлига Турции",
+    "start_utc": "2026-11-27 17:00",
+    "start_local": "27.11 22:00",
+    "home": "Caykur Rizespor",
+    "away": "Kasimpasa",
+    "market": "AH",
+    "pick": "H",
+    "line": 0.0,
+    "label": "Ф1(+0)",
+    "p": 0.6922090050181731,
+    "p_src": "pinnacle",
+    "book": "pinnacle",
+    "k_1x": null,
+    "p_model": 0.44539885473254825,
+    "p_push": 0.2600818223214647,
+    "k": 1.46,
+    "k_src": "api",
+    "source": "api",
+    "sigma": 0.38,
+    "p_mkt": 0.6700519603212092,
+    "mkt_src": "pinnacle",
+    "k_best": 1.46,
+    "book_best": "pinnacle",
+    "tips_for": 0,
+    "fire_i": false,
+    "clash_i": false,
+    "fire": false,
+    "clash": false,
+    "veto": false,
+    "edge": null,
+    "group": "fallback",
+    "sl_pen": 0,
+    "slot": 0,
+    "tier": 2,
+    "rank": 2,
+    "key": [
+     "401888240",
+     "AH",
+     "H",
+     "0"
+    ],
+    "match": "Caykur Rizespor — Kasimpasa",
+    "why": "EV +0,8% · 2-я 🎯 из 3",
+    "at": "12:33",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 12:33: EV +0,8% · 2-я 🎯 из 3"
+    ],
+    "text": "⚽2 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Суперлига Турции · 🕒 22:00\n<b>Caykur Rizespor — Kasimpasa</b>\n<b>Ф1(+0)</b> — 69% · честный кф 1,44\n💵 Pinnacle 1,46 · EV +1,1% · ставка ¼ ед.\n➕ новая линия дня в 12:33: EV +0,8% · 2-я 🎯 из 3",
+    "msgs": [
+     [
+      570704006,
+      1432
+     ]
+    ]
+   },
+   {
+    "espn_id": "401875536",
+    "comp_name": "Эредивизи",
+    "start_utc": "2026-11-27 19:00",
+    "start_local": "28.11 00:00",
+    "home": "FC Groningen",
+    "away": "Willem II",
+    "market": "1X2",
+    "pick": "H",
+    "line": null,
+    "label": "П1",
+    "p": 0.7061451757173768,
+    "p_src": "pinnacle",
+    "book": "matchbook",
+    "k_1x": 1.37,
+    "p_model": 0.7195208423612144,
+    "p_push": 0.0,
+    "k": 1.402,
+    "k_src": "api",
+    "source": "api",
+    "sigma": 0.38,
+    "p_mkt": 0.7074872246661357,
+    "mkt_src": "pinnacle",
+    "k_best": 1.402,
+    "book_best": "matchbook",
+    "tips_for": 0,
+    "fire_i": false,
+    "clash_i": false,
+    "fire": false,
+    "clash": false,
+    "veto": false,
+    "edge": null,
+    "group": "fallback",
+    "sl_pen": 0,
+    "slot": 1,
+    "tier": 2,
+    "rank": 3,
+    "key": [
+     "401875536",
+     "1X2",
+     "H",
+     ""
+    ],
+    "match": "FC Groningen — Willem II",
+    "why": "EV -1,0% · 3-я 🎯 из 3",
+    "at": "12:33",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 12:33: EV -1,0% · 3-я 🎯 из 3"
+    ],
+    "text": "⚽3 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Эредивизи · 🕒 00:00\n<b>FC Groningen — Willem II</b>\n<b>П1</b> — 71% · честный кф 1,42\n💵 Matchbook 1,40 · EV −1,0% · ставка ¼ ед.\n➕ новая линия дня в 12:33: EV -1,0% · 3-я 🎯 из 3",
+    "msgs": [
+     [
+      570704006,
+      1434
+     ]
+    ]
+   }
+  ],
+  "log": [
+   {
+    "date": "2026-11-27",
+    "time": "12:33",
+    "reason": "новая: EV +0,8% · 2-я 🎯 из 3",
+    "rank": 2,
+    "espn_id": "401888240",
+    "market": "AH",
+    "pick": "H",
+    "line": 0.0,
+    "label": "Ф1(+0)",
+    "match": "Caykur Rizespor — Kasimpasa",
+    "p": 0.6922,
+    "k": 1.46,
+    "to_label": "—",
+    "to_key": "401888240|AH|H|0",
+    "slot": 0
+   },
+   {
+    "date": "2026-11-27",
+    "time": "12:33",
+    "reason": "новая: EV -1,0% · 3-я 🎯 из 3",
+    "rank": 3,
+    "espn_id": "401875536",
+    "market": "1X2",
+    "pick": "H",
+    "line": "",
+    "label": "П1",
+    "match": "FC Groningen — Willem II",
+    "p": 0.7061,
+    "k": 1.402,
+    "to_label": "—",
+    "to_key": "401875536|1X2|H|",
+    "slot": 1
+   }
+  ],
   "notes": [],
   "nokb": true,
   "sep": true,
@@ -155,7 +307,9 @@
   },
   "first_label": "ТМ3",
   "first_match": "Nottingham Forest — Chelsea",
-  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 9 матчей · 106 линий · на ставку дня — 3\nСуперлига Турции 2 · Эредивизи 1 · Бундеслига 1 · Серия A 1 · ещё 4 · 🔏 c74d46f5\n🏆 АПЛ · 🕒 01:00\n<b>Nottingham Forest — Chelsea</b>\n<b>ТМ3</b> — 65% · честный кф 1,54\n💵 1xBet 1,58 · EV +2,7% · ставка ¼ ед."
+  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 9 матчей · 106 линий · на ставку дня — 3\nСуперлига Турции 2 · Эредивизи 1 · Бундеслига 1 · Серия A 1 · ещё 4 · 🔏 c74d46f5\n🏆 АПЛ · 🕒 01:00\n<b>Nottingham Forest — Chelsea</b>\n<b>ТМ3</b> — 65% · честный кф 1,54\n💵 1xBet 1,58 · EV +2,7% · ставка ¼ ед.",
+  "vol": 9,
+  "played": false
  },
  "model_version": 2,
  "reported": [
@@ -1267,12 +1421,18 @@
    "src": "pinnacle",
    "at": "2026-11-26 19:04",
    "key": "401915512|1X2|A|"
+  },
+  "2026-11-27|1": {
+   "p": 0.6324,
+   "src": "pinnacle",
+   "at": "2026-11-27 07:33",
+   "key": "401879225|TOT|U|3"
   }
  },
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-26T22:17:47",
- "chk_run": "2026-11-27T06:43:26",
+ "chk_run": "2026-11-27T07:33:23",
  "plan_at": [
   "2026-11-27 14:00",
   "2026-11-27 16:30",
