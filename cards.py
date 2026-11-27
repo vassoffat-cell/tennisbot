@@ -268,29 +268,36 @@ def _title(cv: Canvas, line: str):
     cv.mark()
 
 
+def _parse_row(r: str) -> dict | None:
+    """Строка <pre>-таблицы → {ind, label, vals, flag, head}; пустая / линия — None."""
+    s = html.unescape(re.sub(r'<[^>]+>', '', r)).rstrip()
+    if not s.strip() or set(s.strip()) <= set('─-—='):
+        return None
+    ind = len(s) - len(s.lstrip(' '))
+    flags = [f for f in FLAG if f in s]
+    s2 = s
+    for f in list(FLAG) + ['▶']:
+        s2 = s2.replace(f, '')
+    cells = re.split(r'\s{2,}', s2.strip())
+    label, vals = cells[0], cells[1:]
+    if len(vals) == 1 and ' ' in vals[0]:
+        vals = vals[0].split()
+    m = re.match(r'^(.*\S)\s+(\d+/\d+)$', label)              # 27.11: длинная метка слиплась с «240/343» (один пробел) → в колонку
+    if m:
+        label, vals = m.group(1), [m.group(2)] + vals
+    label = re.sub(r'\bДвойной шан\b', 'Двойной шанс', label)   # в тексте обрезано под 35 знаков, на картинке место есть
+    if any(re.search(r'\d', v) for v in vals):               # «⛔» и т. п. — к метке, не в колонку (шапку не трогать)
+        extra = [v for v in vals if not re.search(r'\d', v)]
+        vals = [v for v in vals if re.search(r'\d', v)]
+        if extra:
+            label = f"{label} {' '.join(extra)}"
+    label = _clean(label)
+    return (dict(ind=ind, label=label, vals=vals, flag=flags[0] if flags else '', head=(ind == 0)))
+
+
 def _table(cv: Canvas, rows: list[str]):
     """<pre>-таблица: «Метка   n   %  🟢» → карточка с колонками; строки без отступа — заголовки групп."""
-    parsed = []
-    for r in rows:
-        s = html.unescape(re.sub(r'<[^>]+>', '', r)).rstrip()
-        if not s.strip() or set(s.strip()) <= set('─-—='):
-            continue
-        ind = len(s) - len(s.lstrip(' '))
-        flags = [f for f in FLAG if f in s]
-        s2 = s
-        for f in list(FLAG) + ['▶']:
-            s2 = s2.replace(f, '')
-        cells = re.split(r'\s{2,}', s2.strip())
-        label, vals = cells[0], cells[1:]
-        if len(vals) == 1 and ' ' in vals[0]:
-            vals = vals[0].split()
-        if any(re.search(r'\d', v) for v in vals):               # «⛔» и т. п. — к метке, не в колонку (шапку не трогать)
-            extra = [v for v in vals if not re.search(r'\d', v)]
-            vals = [v for v in vals if re.search(r'\d', v)]
-            if extra:
-                label = f"{label} {' '.join(extra)}"
-        label = _clean(label)
-        parsed.append(dict(ind=ind, label=label, vals=vals, flag=flags[0] if flags else '', head=(ind == 0)))
+    parsed = [p for p in (_parse_row(r) for r in rows) if p]
     if not parsed:
         return
     hdr = parsed[0] if parsed[0]['head'] and not any(re.search(r'\d', v) for v in parsed[0]['vals']) and parsed[0]['vals'] else None
