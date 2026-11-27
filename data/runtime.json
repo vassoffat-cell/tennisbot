@@ -3454,12 +3454,81 @@
       1165
      ]
     ]
+   },
+   {
+    "id": "nhl:401892801",
+    "league": "NHL",
+    "start_utc": "2026-11-27 20:00",
+    "start_local": "28.11 01:00",
+    "home": "Washington Capitals",
+    "away": "Florida Panthers",
+    "slot": 24,
+    "market": "TOT",
+    "pick": "U",
+    "line": 6.5,
+    "label": "ТМ6.5",
+    "p": 0.5623,
+    "p_low": 0.5623,
+    "tier": 4,
+    "k": 1.82,
+    "ev": 0.0233,
+    "book": "marathonbet",
+    "fire": 0,
+    "clash": 0,
+    "fire_i": 0,
+    "clash_i": 0,
+    "sl_pen": 0,
+    "rank": 2,
+    "hist": [
+     "➕ новая линия дня в 12:41: EV +2,3% · 2-я из 3"
+    ],
+    "msgs": [
+     [
+      570704006,
+      1168
+     ]
+    ]
+   },
+   {
+    "id": "nhl:401892796",
+    "league": "NHL",
+    "start_utc": "2026-11-27 18:00",
+    "start_local": "27.11 23:00",
+    "home": "New Jersey Devils",
+    "away": "Calgary Flames",
+    "slot": 20,
+    "market": "1X2",
+    "pick": "H",
+    "line": "",
+    "label": "П1",
+    "p": 0.6105,
+    "p_low": 0.6105,
+    "tier": 4,
+    "k": 1.67,
+    "ev": 0.0195,
+    "book": "onexbet",
+    "fire": 0,
+    "clash": 0,
+    "fire_i": 0,
+    "clash_i": 0,
+    "sl_pen": 0,
+    "rank": 3,
+    "hist": [
+     "➕ новая линия дня в 12:41: EV +1,9% · 3-я из 3"
+    ],
+    "msgs": [
+     [
+      570704006,
+      1170
+     ]
+    ]
    }
   ],
   "notes": [],
   "hdr2": true,
   "hdr3": true,
-  "hdr4": true
+  "hdr4": true,
+  "vol": 18
  },
  "resend_done": "2026-11-13",
  "hk_resend_done": "2026-11-13",
@@ -3512,7 +3581,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-27T07:31:28",
+ "chk_run": "2026-11-27T07:41:52",
  "plan_at": [
   "2026-11-27 16:00",
   "2026-11-27 17:00",
