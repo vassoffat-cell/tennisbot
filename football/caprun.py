@@ -22,7 +22,7 @@ import tipswide
 ROUTE = {'football': 'football.yml', 'tennis': 'daily.yml', 'hockey': 'daily.yml'}
 SCHED_MIN = {'daily.yml': 7, 'football.yml': 37}       # плановые прогоны: :07 / :37
 SCHED_H = {'daily.yml': {1, 3, 5, 6, 7, 9, 11, 13, 15, 17, 19, 21, 23},   # 27.11 Ц19: раз в 2 ч             # часы UTC (18.11 шаг 2б: резерв 4 ч + ключевые; = config.DAILY_CRON_H)
-           'football.yml': {6, 7, 11, 15, 19}}                    # 18.11 шаг 2б
+           'football.yml': {3, 5, 6, 7, 9, 11, 13, 15, 17, 19}}   # 27.11 Ц19: раз в 2 ч                    # 18.11 шаг 2б
 CAP_HOURS = set(range(10, 22))                        # 19.11 Г0б: часы UTC запусков каперов 15:22…02:22 Ташкента (тихое окно 03:00–15:00)
 MAX_EXTRA = 8                                         # внеплановых запусков в сутки на бота (кредиты API, квота таблиц)
 SOON = pd.Timedelta(minutes=30)
