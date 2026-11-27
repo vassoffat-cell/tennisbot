@@ -430,7 +430,7 @@ def main(hours: int = 26) -> None:
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=hours)
     rows = []
-    for wf, per_day in (('daily.yml', 9), ('football.yml', 7), ('cappers.yml', 12)):   # 26.11: каперы 12 в сутки (15:22…02:22, Г0б), было 21 — ложный ❌
+    for wf, per_day in (('daily.yml', 12), ('football.yml', 7), ('cappers.yml', 12)):   # 26.11: каперы 12 в сутки (Г0б); 27.11 Ц19: теннис/хоккей резерв раз в 2 ч (9 → 12)
         rs = runs(wf, since)
         bad = [r for r in rs if r['conclusion'] not in ('success', None) and not _special(r)]   # 23.11 аудит: разовая проверка (research) — не сбой системы
         exp = int(per_day * hours / 24)
