@@ -526,21 +526,21 @@ stavki_na_sport_betting1:20002:s3,401915512,Torreense,Celtic,IT1:O:0.5,ИТ1 Б0
 kapper_uk:22831:0,401915504,Crystal Palace,Real Sociedad,IT2@1:O:0.5,ИТ2 Б0.5 · 1-й тайм,,FT,L,2026-11-26
 kapper_uk:22831:1,,,,,,матч не найден,,,
 kapper_uk:22831:2,401915501,Lyon,Lillestrom,TOT@1:U:1.5,ТМ1.5 · 1-й тайм,,FT,W,2026-11-26
-kapper_uk:22844:0,401879225,Nottingham Forest,Chelsea,DC:X2:,X2,,,,
-kapper_uk:22843:0,401876392,Brest,Paris FC,TOT:O:2.0,ТБ2,,,,
+kapper_uk:22844:0,401879225,Nottingham Forest,Chelsea,DC:X2:,X2,,FT,L,2026-11-27
+kapper_uk:22843:0,401876392,Brest,Paris FC,TOT:O:2.0,ТБ2,,FT,L,2026-11-27
 kapper_uk:22842:0,401885045,VfL Bochum,SV Darmstadt 98,TOT:O:2.5,ТБ2.5,,FT,L,2026-11-27
 xs_stavkii:8067:1,401875536,FC Groningen,Willem II,,,не разобрано,,,
 xs_stavkii:8067:2,401885047,1. FC Heidenheim 1846,1. FC Nürnberg,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-27
 xs_stavkii:8067:3,401875831,Jong FC Utrecht,Almere City,TOT:O:2.5,ТБ2.5,,VOID,P,2026-11-27
 xs_stavkii:8067:4,,,,,,матч не найден,,,
-xs_stavkii:8067:5,401884720,Werder Bremen,Borussia Mönchengladbach,TOT:O:2.5,ТБ2.5,,,,
-xs_stavkii:8068:1,401875004,Venezia,Bologna,IT2:O:1.0,ИТ2 Б1,,,,
+xs_stavkii:8067:5,401884720,Werder Bremen,Borussia Mönchengladbach,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-27
+xs_stavkii:8068:1,401875004,Venezia,Bologna,IT2:O:1.0,ИТ2 Б1,,FT,L,2026-11-27
 xs_stavkii:8068:3,,,,,,нет данных,,,
-kapper_uk:22847:0,401875004,Venezia,Bologna,BTTS:Y:,ОЗ да,,,,
+kapper_uk:22847:0,401875004,Venezia,Bologna,BTTS:Y:,ОЗ да,,FT,L,2026-11-27
 kapper_uk:22846:0,,,,,,нет данных,,,
-kapper_uk:22849:0,401884720,Werder Bremen,Borussia Mönchengladbach,TOT:O:2.5,ТБ2.5,,,,
+kapper_uk:22849:0,401884720,Werder Bremen,Borussia Mönchengladbach,TOT:O:2.5,ТБ2.5,,FT,W,2026-11-27
 kapper_uk:22852:0,,,,,,матч не найден,,,
-kapper_uk:22851:0,401876392,Brest,Paris FC,AH:A:0.0,Ф2(+0),,,,
-kapper_uk:22853:0,401876392,Brest,Paris FC,BTTS:Y:,ОЗ да,,,,
-kapper_uk:22855:0,401879225,Nottingham Forest,Chelsea,BTTS:Y:,ОЗ да,,,,
-kapper_uk:22854:0,401882791,Levante,Racing Santander,BTTS:Y:,ОЗ да,,,,
+kapper_uk:22851:0,401876392,Brest,Paris FC,AH:A:0.0,Ф2(+0),,FT,L,2026-11-27
+kapper_uk:22853:0,401876392,Brest,Paris FC,BTTS:Y:,ОЗ да,,FT,L,2026-11-27
+kapper_uk:22855:0,401879225,Nottingham Forest,Chelsea,BTTS:Y:,ОЗ да,,FT,W,2026-11-27
+kapper_uk:22854:0,401882791,Levante,Racing Santander,BTTS:Y:,ОЗ да,,FT,W,2026-11-27

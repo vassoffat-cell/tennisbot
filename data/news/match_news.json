@@ -3,13 +3,6 @@
   "match": "Brest — Paris FC",
   "news": [
    {
-    "t": "PSG's Doue to have surgery on ruptured ACL",
-    "tags": "травма",
-    "src": "bbc_eu",
-    "at": "2026-11-22 15:50",
-    "link": "https://www.bbc.co.uk/sport/football/articles/cw0k6x0764ero?at_medium=RSS&at_campaign=rss"
-   },
-   {
     "t": "PSG v Lyon moved as Paris prepares for more protests",
     "tags": "",
     "src": "bbc_eu",
@@ -71,6 +64,13 @@
     "src": "champ_fb",
     "at": "2026-11-27 20:40",
     "link": "https://www.championat.com/football/news-6716886-fabricio-romano-otreagiroval-na-sluhi-o-vozmozhnom-transfere-vinisiusa-zhuniora-v-pszh.html"
+   },
+   {
+    "t": "«Брест» обыграл «Париж» и одержал четвертую победу подряд",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-27 21:38",
+    "link": "https://www.sport-express.ru/football/france/news/brest-parizh-schet-i-rezultat-matcha-12-tura-ligi-1-27-noyabrya-2026-2479895/"
    }
   ]
  },
@@ -78,74 +78,74 @@
   "match": "Nottingham Forest — Chelsea",
   "news": [
    {
-    "t": "'It's a WORLDIE!' - Igor Jesus stuns Chelsea with stunning volley",
+    "t": "Lifeline for Chelsea! Emegha issues immediate response",
     "tags": "",
     "src": "sky_fb",
-    "at": "2026-11-27 20:10",
-    "link": "https://www.skysports.com/watch/video/13617329/goal-i-jesus-5-nottm-forest-1-0-chelsea"
+    "at": "2026-11-27 21:16",
+    "link": "https://www.skysports.com/watch/video/13617352/goal-e-emegha-54-nottm-forest-2-1-chelsea"
    },
    {
-    "t": "«Челси» и «Тоттенхэм» могут побороться за защитника «Вольфсбурга» — TEAMtalk",
+    "t": "Gibbs-White penalty doubles Forest lead over Chelsea",
     "tags": "",
+    "src": "sky_fb",
+    "at": "2026-11-27 21:13",
+    "link": "https://www.skysports.com/watch/video/13617349/goal-m-gibbs-white-pen-nottm-forest-2-0-chelsea"
+   },
+   {
+    "t": "Ook dubbelslag Emegha kan nieuwe Chelsea-sof niet voorkomen",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-27 22:02",
+    "link": "https://www.vi.nl/nieuws/ook-dubbelsag-emegha-kan-nieuwe-chelsea-sof-niet-voorkomen"
+   },
+   {
+    "t": "«Челси» потерпел третье поражение подряд в АПЛ, в пяти турах победа — только над «МЮ»",
+    "tags": "тренер",
     "src": "champ_fb",
-    "at": "2026-11-27 19:34",
-    "link": "https://www.championat.com/football/news-6716832-chelsi-i-tottenhem-mogut-poborotsya-za-zaschitnika-volfsburga-teamtalk.html"
+    "at": "2026-11-27 21:55",
+    "link": "https://www.championat.com/football/news-6716954-chelsi-poterpel-trete-porazhenie-podryad-v-apl-v-pyati-turah-pobeda-tolko-nad-myu.html"
    },
    {
-    "t": "Джон Терри назвал лучшего действующего голкипера в мировом футболе",
-    "tags": "",
+    "t": "«Челси» проиграл «Ноттингем Форест» в 13-м туре АПЛ, Гиббс-Уайт оформил дубль",
+    "tags": "ротация",
     "src": "champ_fb",
-    "at": "2026-11-27 18:38",
-    "link": "https://www.championat.com/football/news-6716772-dzhon-terri-nazval-luchshego-dejstvuyuschego-golkipera-v-mirovom-futbole.html"
+    "at": "2026-11-27 21:54",
+    "link": "https://www.championat.com/football/news-6716948-nottingem-forest-chelsi-rezultat-matcha-28-noyabrya-2026-schet-3-2-12-j-tur-apl-sezona-2026-2027.html"
    },
    {
-    "t": "«Ноттингем Форест» — «Челси»: во сколько начало матча АПЛ",
-    "tags": "",
-    "src": "sportexpress",
-    "at": "2026-11-27 18:00",
-    "link": "https://www.sport-express.ru/football/news/nottingem-forest-chelsi-vo-skolko-nachalo-matcha-apl-gde-smotret-translyaciyu-27-noyabrya-2026-2479572/"
-   },
-   {
-    "t": "«Ливерпуль», «Челси» и «Атлетико» заинтересовались защитником «Фенербахче» Брауном",
-    "tags": "",
-    "src": "sportexpress",
-    "at": "2026-11-27 12:42",
-    "link": "https://www.sport-express.ru/football/transfers/news/liverpul-chelsi-i-atletiko-zainteresovalis-zaschitnikom-fenerbahche-braunom-2479646/"
-   },
-   {
-    "t": "TEAMtalk: «Тоттенхэм», «Челси» и «Фулхэм» следят за Кумбеди из «Вольфсбурга»",
-    "tags": "",
-    "src": "sportexpress",
-    "at": "2026-11-27 10:18",
-    "link": "https://www.sport-express.ru/football/transfers/news/teamtalk-tottenhem-chelsi-i-fulhem-sledyat-za-kumbedi-iz-volfsburga-2479639/"
-   },
-   {
-    "t": "Хаби Алонсо подтвердил: Фофана извинился перед «Челси» за скандальное интервью",
-    "tags": "тренер;конфликт",
-    "src": "sportexpress",
-    "at": "2026-11-26 16:23",
-    "link": "https://www.sport-express.ru/football/england/news/habi-alonso-podtverdil-zaschitnik-uesli-fofana-izvinilsya-pered-chelsi-za-skandalnoe-intervyu-2479385/"
-   },
-   {
-    "t": "Джейми Реднапп призвал «Челси» попытаться подписать капитана «Ливерпуля» Вирджила ван Дейка летом",
+    "t": "В «Челси» планируют три трансфера зимой, но опасаются раздувания состава — The Athletic",
     "tags": "слух",
-    "src": "sportexpress",
-    "at": "2026-11-26 11:30",
-    "link": "https://www.sport-express.ru/football/transfers/news/dzheymi-rednapp-prizval-chelsi-popytatsya-podpisat-kapitana-liverpulya-virdzhila-van-deyka-letom-2479247/"
+    "src": "champ_fb",
+    "at": "2026-11-27 21:30",
+    "link": "https://www.championat.com/football/news-6716940-v-chelsi-planiruyut-tri-transfera-zimoj-no-opasayutsya-razduvaniya-sostava-the-athletic.html"
    },
    {
-    "t": "CaughtOffside: «ПСЖ» нацелился на Эстевана",
-    "tags": "травма;слух",
-    "src": "sportexpress",
-    "at": "2026-11-26 09:24",
-    "link": "https://www.sport-express.ru/football/transfers/news/caughtoffside-pszh-nacelilsya-na-estevana-2479211/"
+    "t": "Football Insider поделился информацией о будущем Михаила Мудрика",
+    "tags": "дисквалификация;тренер;слух",
+    "src": "champ_fb",
+    "at": "2026-11-27 21:20",
+    "link": "https://www.championat.com/football/news-6716930-football-insider-podelilsya-informaciej-o-buduschem-mihaila-mudrika.html"
    },
    {
-    "t": "😮 ⚽️ «Челси» на полпути к третьему подряд поражению в АПЛ – в первом тайме лондонцы не нанесли ни одного удара в створ ворот «Ноттингема» и набрали всего 0,09 x",
+    "t": "«Ноттингем» нанес «Челси» третье поражение подряд",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-27 21:54",
+    "link": "https://www.sport-express.ru/football/england/news/nottingem-chelsi-schet-i-rezultat-matcha-12-tura-apl-27-noyabrya-2026-2479899/"
+   },
+   {
+    "t": "У Алонсо снова проблемы. Третье поражение «Челси» подряд — теперь от «Ноттингема» 🫠 Шесть проигрышей за 12 туров и риск прилично скатиться с восьмого места. Пор",
+    "tags": "мотивация",
+    "src": "tg_championat",
+    "at": "2026-11-27 21:55",
+    "link": "https://t.me/championat/89750"
+   },
+   {
+    "t": "⬇️ 😱 «Челси» третий раз подряд проиграл в АПЛ и может опуститься на 12-е место по итогам тура ⚽️ Все рекорды сезона – в приложении ГОЛ",
     "tags": "",
     "src": "tg_sportsru",
-    "at": "2026-11-27 20:50",
-    "link": "https://t.me/sportsru/132194"
+    "at": "2026-11-27 21:54",
+    "link": "https://t.me/sportsru/132196"
    }
   ]
  },
@@ -165,6 +165,27 @@
     "src": "champ_fb",
     "at": "2026-11-27 19:15",
     "link": "https://www.championat.com/football/news-6711196-verder-borussiya-myonhengladbah-pryamaya-translyaciya-matcha-11-go-tura-bundesligi-po-futbolu-2026-2027-nachnetsya-v-22-30.html"
+   },
+   {
+    "t": "Hands Regeer, goal Diks en toch weer die dekselse laatste plek voor Gladbach",
+    "tags": "травма",
+    "src": "vi",
+    "at": "2026-11-27 21:56",
+    "link": "https://www.vi.nl/nieuws/hands-regeer-goal-diks-en-toch-weer-die-dekselse-laatste-plek-voor-gladbach"
+   },
+   {
+    "t": "«Вердер» сыграл вничью с мёнхенгладбахской «Боруссией», отыгравшись с 1:3",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-27 21:30",
+    "link": "https://www.championat.com/football/news-6716932-verder-borussiya-rezultat-matcha-27-noyabrya-2026-schet-3-3-11-j-tur-bundesligi-2026-2027.html"
+   },
+   {
+    "t": "Менхенгладбахская «Боруссия» и «Вердер» сыграли вничью",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-27 21:27",
+    "link": "https://www.sport-express.ru/football/germany/news/verder-borussiya-m-schet-i-rezultat-matcha-11-tura-bundesligi-27-noyabrya-2026-2479888/"
    }
   ]
  },
@@ -198,6 +219,13 @@
     "src": "marca",
     "at": "2026-11-26 12:37",
     "link": "https://www.marca.com/futbol/levante/2026/11/26/luis-castro-hay-parar-zabiri-parar-racing.html"
+   },
+   {
+    "t": "«Леванте» дома проиграл «Расингу»",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-27 22:02",
+    "link": "https://www.sport-express.ru/football/spain/news/levante-rasing-schet-1-3-rezultat-matcha-chempionata-ispanii-27-noyabrya-2026-goda-2479900/"
    }
   ]
  },
@@ -238,6 +266,20 @@
     "src": "gazzetta",
     "at": "2024-01-27 14:53",
     "link": "https://www.gazzetta.it/Calcio/Serie-A/Milan/27-01-2024/milan-bologna-seriea-risultato-diretta-live.shtml"
+   },
+   {
+    "t": "«Болонья» и «Венеция» сыграли вничью в матче 13-го тура Серии А",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-27 21:40",
+    "link": "https://www.championat.com/football/news-6716936-veneciya-bolonya-rezultat-matcha-27-noyabrya-2026-schet-0-0-13-j-tur-serii-a-2026-2027.html"
+   },
+   {
+    "t": "Матч «Болоньи» и «Венеции» завершился нулевой ничьей",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-27 21:39",
+    "link": "https://www.sport-express.ru/football/italy/news/veneciya-bolonya-schet-i-rezultat-matcha-13-tura-serii-a-27-noyabrya-2026-2479896/"
    }
   ]
  },
@@ -276,6 +318,27 @@
     "src": "vi",
     "at": "2026-11-27 21:01",
     "link": "https://www.vi.nl/nieuws/willem-ii-geeft-eerste-competitiezege-in-blessuretijd-weg-tegen-fc-groningen"
+   },
+   {
+    "t": "Van Bergen kan niet écht juichen: 'Vervelend gevoel overheerst'",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-27 22:13",
+    "link": "https://www.vi.nl/nieuws/van-bergen-kan-niet-echt-juichen-vervelend-gevoel-overheerst"
+   },
+   {
+    "t": "Teruglezen: negentien goals in drie KKD-potjes",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-27 21:57",
+    "link": "https://www.vi.nl/nieuws/teruglezen-negentien-goals-in-drie-kkd-potjes"
+   },
+   {
+    "t": "Ongezien slechte reeks: Willem II zorgt voor unicum in zeventig jaar Eredivisie",
+    "tags": "травма",
+    "src": "vi",
+    "at": "2026-11-27 21:23",
+    "link": "https://www.vi.nl/nieuws/ongezien-slechte-reeks-willem-ii-zorgt-voor-unicum-in-zeventig-jaar-eredivisie"
    }
   ]
  },
@@ -458,6 +521,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 14:49",
     "link": "https://www.championat.com/hockey/news-6716446-boumen-zhal-krosbi-potomu-chto-ego-komanda-ne-ochen-silna-ona-slabee-chem-vashington.html"
+   },
+   {
+    "t": "Два ассиста Бучневича помогли «Сент-Луису» обыграть «Даллас» в матче НХЛ",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:12",
+    "link": "https://www.championat.com/hockey/news-6716960-sent-luis-blyuz-dallas-starz-rezultat-matcha-27-noyabrya-2026-schet-5-3-nhl-2026-2027.html"
    }
   ]
  },
@@ -513,6 +583,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 21:00",
     "link": "https://www.championat.com/hockey/news-6716908-neshvill-predatorz-yuta-mammot-rezultat-matcha-27-noyabrya-2026-goda-schet-5-6-regulyarnyj-chempionat-nhl-2026-2027.html"
+   },
+   {
+    "t": "Два ассиста Бучневича помогли «Сент-Луису» обыграть «Даллас» в матче НХЛ",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:12",
+    "link": "https://www.championat.com/hockey/news-6716960-sent-luis-blyuz-dallas-starz-rezultat-matcha-27-noyabrya-2026-schet-5-3-nhl-2026-2027.html"
    }
   ]
  },
