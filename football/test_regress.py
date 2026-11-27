@@ -392,6 +392,42 @@ try:
           dict(espn_id='5', match='A — B')], 'fb', 'espn_id', _lg)], _lg), (['5'], ['📰 ⭐: матч исключён — Brest — Lorient: перенос/отмена матча']))
 finally:
     ND.BLOCK = _bk
+# 💤 Р10 (28.11): умный шлюз резервов — подсказка «делать нечего до …»
+import datetime as _dt, tempfile as _tf, json as _js
+_RT0 = Path(__file__).resolve().parent.parent
+_ID = importlib.util.module_from_spec(importlib.util.spec_from_file_location('idle_root', _RT0 / 'idle.py'))
+importlib.util.spec_from_file_location('idle_root', _RT0 / 'idle.py').loader.exec_module(_ID)
+_n0 = _dt.datetime(2026, 11, 27, 20, 28)                   # 01:28 Ташкента: матчи начались в 00:10 и 00:55
+_fs = _ID.football_settle(['2026-11-27 19:10', '2026-11-27 19:55', '2026-11-27 17:00'], ['', '', '2026-11-27 19:00'], _n0)
+check('💤 Р10: ночные итоги футбола — к 08:00 Ташкента', sorted({t.strftime('%H:%M') for t in _fs}), ['03:00'])
+_dd = Path(_tf.mkdtemp()); _rt: dict = {'plan_at': []}
+_msg = _ID.hint(_dd, _rt, _n0, [(t, 'итог матча') for t in _fs], ['ставка дня: сыграна — ждём итог'])
+check('💤 Р10: 01:28 — ночью резервы не нужны (итоги к 08:00, запас 6 ч)', (_js.loads((_dd / 'idle.json').read_text())['until'], _msg),
+      ('2026-11-28 02:28', '💤 резервы: делать нечего до 28.11 07:28 (запас 6 ч)'))
+check('💤 Р10: окно плана раньше итога — до окна', _ID.hint(_dd, dict(plan_at=['2026-11-27 22:00']), _n0, [(t, 'итог матча') for t in _fs], []),
+      '💤 резервы: делать нечего до 28.11 03:00 (окно плана по матчам)')
+check('💤 Р10: ⭐1 объявлена — следующий резерв не пропускается', _ID.hint(_dd, {}, _n0, [], ['ставка дня: объявлена → ТБ2.5 (ступень 2)']),
+      '💤 резервы: следующий нужен сразу (⭐1 объявлена — следующий прогон добирает ⭐2/⭐3)')
+check('💤 Р10: без дел — не дольше 6 ч', _ID.hint(_dd, {}, _n0, [], []), '💤 резервы: делать нечего до 28.11 07:28 (запас 6 ч)')
+_rt2 = {'idle_until': '2026-11-28 03:00'}
+_ID.hint(_dd, _rt2, _dt.datetime(2026, 11, 28, 3, 40), [], [])
+check('💤 Р10: пропущенный резерв — не ⚠️, «далее» — после idle_until',
+      (_ID.was_idle(_rt2, _dt.datetime(2026, 11, 27, 21, 37)), _ID.was_idle(_rt2, _dt.datetime(2026, 11, 28, 3, 37)),
+       _ID.after({'idle_until': '2026-11-28 03:00'}, _dt.datetime(2026, 11, 27, 21, 3))), (True, False, _dt.datetime(2026, 11, 28, 3, 0)))
+(_dd / 'odds').mkdir()
+(_dd / 'odds' / 'hockey_2026-11-28.json').write_text(_js.dumps({'sports': {'icehockey_nhl': '2026-11-27T19:26:41+00:00'}}))
+check('💤 Р10: цены НХЛ обновятся через 10 ч — если матчи позже', [t.strftime('%d %H:%M') for t in _ID.hockey_prices(_dd, ['2026-11-28 07:00'], _n0)],
+      ['28 05:26'])
+# 💳 Ц22 (28.11): платный тариф The Odds API — флаг одинаков в обеих копиях; при включении — свежая цена перед матчем
+_OR = importlib.util.module_from_spec(importlib.util.spec_from_file_location('odds_root', _RT0 / 'odds.py'))
+importlib.util.spec_from_file_location('odds_root', _RT0 / 'odds.py').loader.exec_module(_OR)
+import odds as _OF
+_soon_ev = [{'commence_time': (_dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(hours=2)).strftime('%Y-%m-%dT%H:%M:%SZ')}]
+check('💳 Ц22: флаг тарифа и доли — одинаковы (корень и football/)', (_OR.PAID_PLAN, _OR.PAID_QUOTA, _OR.FRESH_MIN),
+      (_OF.PAID_PLAN, _OF.PAID_QUOTA, _OF.FRESH_MIN))
+check('💳 Ц22: матч через 2 ч — «скоро», через 5 ч — нет', (_OF._soon(_soon_ev, _dt.datetime.now(_dt.timezone.utc)),
+      _OF._soon([{'commence_time': (_dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(hours=5)).isoformat()}], _dt.datetime.now(_dt.timezone.utc))), (True, False))
+check('💳 Ц22: пока не оплачено — бесплатный режим', _OF.PAID_PLAN, False)
 check('🖼 сводка каперов — таблица', bool(CD._CAP.match('Green Line — 7/7 · прогнозов 8 · ROI +84%')), True)
 import notify as NT
 _r0 = CD.render

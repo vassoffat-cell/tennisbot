@@ -68,9 +68,10 @@ def _check(rt: dict) -> dict:
     m, hrs = 7, C.DAILY_CRON_H                                         # 18.11 шаг 2б: резерв 4 ч + ключевые часы
     last = rt.get('chk_run')
     prev = notify.slot(now - _d.timedelta(minutes=45), m, hrs, back=True)
-    missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
+    import idle as IDLE                                                # 💤 28.11 Р10: резерв, пропущенный «делать нечего», — не ⚠️
+    missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40) and not IDLE.was_idle(rt, prev)
     rt['chk_run'] = now.isoformat(timespec='seconds')
-    nxt = notify.slot(now + _d.timedelta(minutes=35), m, hrs)        # шлюз Ц7 пропускает плановый прогон в 35 мин после полного
+    nxt = notify.slot(IDLE.after(rt, now + _d.timedelta(minutes=35)), m, hrs)   # шлюз Ц7 (35 мин) и умный шлюз (idle_until)
     pn = PL.next_at(rt, now)                                           # ТЗ-007 шаг 2: прогон по матчам раньше планового
     nxt = min(nxt, pn) if pn else nxt
     # 17.11 ТЗ-007 R6: все ⭐ суток (теннис и хоккей) начались, новых кандидатов нет — «⭐ сыграны, ждём итог», а не «без изменений»
@@ -979,6 +980,13 @@ def run(dry: bool = False) -> str:
         log.append(PL.update(store, rt, C.DATA, list(auto.start_utc) + (list(hg[hg.league.astype(str) == 'NHL'].start_utc) if len(hg) else [])))
     except Exception as e:
         log.append(f'📅 план: сбой {e.__class__.__name__}: {e}')
+    try:                                                               # 💤 28.11 Р10: умный шлюз резервов — подсказка «делать нечего до …»
+        import idle as IDLE
+        _n = _now().to_pydatetime()
+        _nhl = list(hg[hg.league.astype(str) == 'NHL'].start_utc) if len(hg) else []
+        log.append(IDLE.hint(C.DATA, rt, _n, [(t, 'обновление цен НХЛ') for t in IDLE.hockey_prices(C.DATA, _nhl, _n)], log))
+    except Exception as e:
+        log.append(f'💤 резервы: сбой {e.__class__.__name__}: {e}')
     if not dry:                                                        # 📰 Ц23: отдел «Новости» — ленты, метки, привязка к матчам (раз в час)
         try:
             import newsdesk

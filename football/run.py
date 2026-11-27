@@ -62,9 +62,10 @@ def _check(rt: dict) -> dict:
     m, hrs = 37, {3, 5, 6, 7, 9, 11, 13, 15, 17, 19}   # 27.11 Ц19: резерв снова каждые 2 ч (08:37 … 00:37) + 11:37
     last = rt.get('chk_run')
     prev = notify.slot(now - _d.timedelta(minutes=45), m, hrs, back=True)
-    missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40)
+    import idle as IDLE                                                # 💤 28.11 Р10: резерв, пропущенный «делать нечего», — не ⚠️
+    missed = bool(last) and _d.datetime.fromisoformat(str(last)) < prev - _d.timedelta(minutes=40) and not IDLE.was_idle(rt, prev)
     rt['chk_run'] = now.isoformat(timespec='seconds')
-    nxt = notify.slot(now + _d.timedelta(minutes=35), m, hrs)        # шлюз Ц7 пропускает плановый прогон в 35 мин после полного
+    nxt = notify.slot(IDLE.after(rt, now + _d.timedelta(minutes=35)), m, hrs)   # шлюз Ц7 (35 мин) и умный шлюз (idle_until)
     pn = PL.next_at(rt, now)                                           # ТЗ-007 шаг 2: прогон по матчам раньше планового
     nxt = min(nxt, pn) if pn else nxt
     quiet = '⭐ сыграна, ждём итог' if (rt.get('day_pick') or {}).get('played') else '⭐ без изменений'   # 17.11 ТЗ-007 R6
@@ -1083,9 +1084,18 @@ def run(dry: bool = False) -> str:
         log.append(f'отчёт самообучения: сбой {ex.__class__.__name__}: {ex}')
     store.write_all('reports', reps)
     try:                                                               # 📅 ТЗ-007 шаг 2: план прогонов по времени матчей
-        log.append(PL.update(store, rt, C.DATA, list(store.read('auto_forecasts').start_utc)))
+        _af = store.read('auto_forecasts')
+        log.append(PL.update(store, rt, C.DATA, list(_af.start_utc)))
     except Exception as ex:
+        _af = None
         log.append(f'📅 план: сбой {ex.__class__.__name__}: {ex}')
+    try:                                                               # 💤 28.11 Р10: умный шлюз резервов — подсказка «делать нечего до …»
+        import idle as IDLE
+        _n = _now().to_pydatetime()
+        _need = [(t, 'итог матча') for t in IDLE.football_settle(_af.start_utc, _af.settled, _n)] if _af is not None and len(_af) else []
+        log.append(IDLE.hint(C.DATA, rt, _n, _need, log))
+    except Exception as ex:
+        log.append(f'💤 резервы: сбой {ex.__class__.__name__}: {ex}')
     try:                                                               # 🔒 заглушка последним сообщением (превью скрыто)
         log.append(f'🔒 заглушка: {notify.cover(C.DATA / "cover.json", _check(rt))}')
     except Exception as ex:

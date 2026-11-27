@@ -182,8 +182,17 @@ QUOTA_BY_MONTH = {'2026-12': {'football': 350, 'hockey': 120, 'tennis': 30}}   #
 
 
 def _quota() -> dict:
+    if PAID_PLAN:
+        return PAID_QUOTA
     return QUOTA_BY_MONTH.get(_month(), QUOTA)
 SAFETY = 5                   # общий остаток API не опускать ниже
+# 28.11 Ц22 (решение пользователя «давай», включит сам после оплаты): тариф The Odds API 20K — $30/мес, 20 000 кредитов.
+# PAID_PLAN = True → свежая цена в каждом окне плана (T−3 ч, T−40 мин): лига с матчем в ближайшие SOON_H ч обновляется не реже FRESH_MIN.
+# Флаг — в обеих копиях (корень и football/), тест регрессии сверяет. Оценка расхода: футбол ≈ 1 500, хоккей ≈ 450, теннис ≈ 1 800 в мес.
+PAID_PLAN = False
+PAID_QUOTA = {'football': 9000, 'hockey': 4000, 'tennis': 6000}   # из 20 000; ≈ 1 000 — запас и исследования
+FRESH_MIN = 30
+SOON_H = 3.5
 
 
 def _month() -> str:
@@ -229,6 +238,18 @@ def budget_ok(cost: int, bot: str = '') -> bool:
     return int(u['remaining']) - cost >= RESERVE_PER_DAY * days_left
 
 
+def _soon(events: list[dict], now: dt.datetime) -> bool:
+    """Есть ли в кэше лиги матч, который начнётся в ближайшие SOON_H ч (окна плана T−3 ч / T−40 мин)."""
+    for e in events or []:
+        try:
+            t = dt.datetime.fromisoformat(str(e.get('commence_time', '')).replace('Z', '+00:00'))
+        except ValueError:
+            continue
+        if now < t <= now + dt.timedelta(hours=SOON_H):
+            return True
+    return False
+
+
 def day_events(bot: str, sport_keys: list[str], markets: tuple[str, ...], day: str, refresh_hours: float = 6.0) -> tuple[list[dict], list[str]]:
     """Котировки 1xBet/Pinnacle по турнирам дня. Кэш data/odds/{bot}_{day}.json; повтор не чаще refresh_hours;
     каждая лига — только если хватает кредитов. Возвращает (матчи с котировками, журнал)."""
@@ -241,7 +262,10 @@ def day_events(bot: str, sport_keys: list[str], markets: tuple[str, ...], day: s
     log, spent = [], 0
     for key in sport_keys:
         got = cache['sports'].get(key)
-        if got and (now - dt.datetime.fromisoformat(got)).total_seconds() < refresh_hours * 3600:
+        ttl = refresh_hours * 3600
+        if PAID_PLAN and _soon(cache['events'].get(key, []), now):   # Ц22: матч лиги скоро — цена не старше FRESH_MIN
+            ttl = min(ttl, FRESH_MIN * 60)
+        if got and (now - dt.datetime.fromisoformat(got)).total_seconds() < ttl:
             continue
         if not budget_ok(len(markets), bot):
             log.append(f'кф: {key} пропущен — бережём кредиты (доля {bot}: осталось {quota_left(bot)})')

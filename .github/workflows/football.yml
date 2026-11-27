@@ -71,6 +71,14 @@ jobs:
         id: gate
         if: github.event_name == 'schedule' && github.event.schedule != '13 16 * * *'
         run: |
+          # 💤 28.11 Р10 (решение пользователя): умный шлюз — резерв пропускается, если полный прогон написал «делать нечего до …»
+          if [ "${{ github.event.schedule }}" = "37 3-19/2 * * *" ]; then
+            ih=$(gh api "repos/${{ github.repository }}/contents/football/data/idle.json" -H 'Accept: application/vnd.github.raw' 2>/dev/null || true)
+            iu=$(echo "$ih" | jq -r '.until // empty' 2>/dev/null || true); im=$(echo "$ih" | jq -r '.made // empty' 2>/dev/null || true)
+            if [ -n "$iu" ] && [ -n "$im" ] && [[ "$im" > "$(date -u -d '-8 hours' '+%Y-%m-%d %H:%M')" ]] && [[ "$(date -u '+%Y-%m-%d %H:%M')" < "$iu" ]]; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"; echo "💤 резерв: делать нечего до $iu UTC ($(echo "$ih" | jq -r '.why // ""')) — пропуск"; exit 0
+            fi
+          fi
           since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
           # 25.11 Р8: ключевые слоты (Ташкент) — в течение часа после слота считается только прогон ПОСЛЕ его начала
           since2=$since; nowm=$(( 10#$(TZ=Asia/Tashkent date +%H) * 60 + 10#$(TZ=Asia/Tashkent date +%M) ))
