@@ -78,74 +78,74 @@
   "match": "Nottingham Forest — Chelsea",
   "news": [
    {
-    "t": "Lifeline for Chelsea! Emegha issues immediate response",
-    "tags": "",
-    "src": "sky_fb",
-    "at": "2026-11-27 21:16",
-    "link": "https://www.skysports.com/watch/video/13617352/goal-e-emegha-54-nottm-forest-2-1-chelsea"
-   },
-   {
-    "t": "Gibbs-White penalty doubles Forest lead over Chelsea",
-    "tags": "",
-    "src": "sky_fb",
-    "at": "2026-11-27 21:13",
-    "link": "https://www.skysports.com/watch/video/13617349/goal-m-gibbs-white-pen-nottm-forest-2-0-chelsea"
-   },
-   {
-    "t": "Ook dubbelslag Emegha kan nieuwe Chelsea-sof niet voorkomen",
-    "tags": "",
-    "src": "vi",
-    "at": "2026-11-27 22:02",
-    "link": "https://www.vi.nl/nieuws/ook-dubbelsag-emegha-kan-nieuwe-chelsea-sof-niet-voorkomen"
-   },
-   {
-    "t": "«Челси» потерпел третье поражение подряд в АПЛ, в пяти турах победа — только над «МЮ»",
-    "tags": "тренер",
-    "src": "champ_fb",
-    "at": "2026-11-27 21:55",
-    "link": "https://www.championat.com/football/news-6716954-chelsi-poterpel-trete-porazhenie-podryad-v-apl-v-pyati-turah-pobeda-tolko-nad-myu.html"
-   },
-   {
-    "t": "«Челси» проиграл «Ноттингем Форест» в 13-м туре АПЛ, Гиббс-Уайт оформил дубль",
-    "tags": "ротация",
-    "src": "champ_fb",
-    "at": "2026-11-27 21:54",
-    "link": "https://www.championat.com/football/news-6716948-nottingem-forest-chelsi-rezultat-matcha-28-noyabrya-2026-schet-3-2-12-j-tur-apl-sezona-2026-2027.html"
-   },
-   {
-    "t": "В «Челси» планируют три трансфера зимой, но опасаются раздувания состава — The Athletic",
-    "tags": "слух",
-    "src": "champ_fb",
-    "at": "2026-11-27 21:30",
-    "link": "https://www.championat.com/football/news-6716940-v-chelsi-planiruyut-tri-transfera-zimoj-no-opasayutsya-razduvaniya-sostava-the-athletic.html"
-   },
-   {
-    "t": "Football Insider поделился информацией о будущем Михаила Мудрика",
-    "tags": "дисквалификация;тренер;слух",
-    "src": "champ_fb",
-    "at": "2026-11-27 21:20",
-    "link": "https://www.championat.com/football/news-6716930-football-insider-podelilsya-informaciej-o-buduschem-mihaila-mudrika.html"
-   },
-   {
-    "t": "«Ноттингем» нанес «Челси» третье поражение подряд",
-    "tags": "",
-    "src": "sportexpress",
-    "at": "2026-11-27 21:54",
-    "link": "https://www.sport-express.ru/football/england/news/nottingem-chelsi-schet-i-rezultat-matcha-12-tura-apl-27-noyabrya-2026-2479899/"
-   },
-   {
-    "t": "У Алонсо снова проблемы. Третье поражение «Челси» подряд — теперь от «Ноттингема» 🫠 Шесть проигрышей за 12 туров и риск прилично скатиться с восьмого места. Пор",
-    "tags": "мотивация",
-    "src": "tg_championat",
-    "at": "2026-11-27 21:55",
-    "link": "https://t.me/championat/89750"
-   },
-   {
     "t": "⬇️ 😱 «Челси» третий раз подряд проиграл в АПЛ и может опуститься на 12-е место по итогам тура ⚽️ Все рекорды сезона – в приложении ГОЛ",
     "tags": "",
     "src": "tg_sportsru",
     "at": "2026-11-27 21:54",
     "link": "https://t.me/sportsru/132196"
+   },
+   {
+    "t": "Gibbs-White scores twice as Forest beat struggling Chelsea",
+    "tags": "конфликт",
+    "src": "bbc_fb",
+    "at": "2026-11-27 22:30",
+    "link": "https://www.bbc.co.uk/sport/football/videos/cm5y10n8e737o?at_medium=RSS&at_campaign=rss"
+   },
+   {
+    "t": "Chelsea must stick together in 'difficult moment' - Alonso",
+    "tags": "тренер;конфликт",
+    "src": "bbc_fb",
+    "at": "2026-11-27 22:45",
+    "link": "https://www.bbc.co.uk/sport/football/videos/cq3dgpj5xn0do?at_medium=RSS&at_campaign=rss"
+   },
+   {
+    "t": "Glasner praises 'smart' Igor Jesus after Chelsea win",
+    "tags": "тренер",
+    "src": "bbc_fb",
+    "at": "2026-11-27 22:47",
+    "link": "https://www.bbc.co.uk/sport/football/videos/ck7v2lpe2rpgo?at_medium=RSS&at_campaign=rss"
+   },
+   {
+    "t": "Gibbs-White and Igor Jesus fire Nottingham Forest past shaky Chelsea",
+    "tags": "",
+    "src": "guardian_fb",
+    "at": "2026-11-27 22:10",
+    "link": "https://www.theguardian.com/football/2026/nov/27/nottingham-forest-chelsea-premier-league-match-report"
+   },
+   {
+    "t": "Forest beat Chelsea to heap pressure on Alonso as Fofana is booed",
+    "tags": "конфликт",
+    "src": "sky_fb",
+    "at": "2026-11-27 21:45",
+    "link": "https://www.skysports.com/football/nottingham-forest-vs-chelsea/report/559562"
+   },
+   {
+    "t": "'We're low on confidence'- Alonso discusses difficult spell after Forest loss",
+    "tags": "",
+    "src": "sky_fb",
+    "at": "2026-11-27 22:23",
+    "link": "https://www.skysports.com/watch/video/13617385/nottm-forest-3-2-chelsea-xabi-alonso-discusses-low-on-confidence-blues-after-another-loss"
+   },
+   {
+    "t": "Chelsea woes continue as Gibbs-White fires Forest to victory",
+    "tags": "",
+    "src": "sky_fb",
+    "at": "2026-11-27 22:08",
+    "link": "https://www.skysports.com/watch/video/13617372/nottingham-forest-3-2-chelsea-premier-league-highlights"
+   },
+   {
+    "t": "Henderson kraakt matig Chelsea maar is enthousiast over Emegha",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-27 22:43",
+    "link": "https://www.vi.nl/nieuws/henderson-kraakt-matig-chelsea-maar-is-enthousiast-over-emegha"
+   },
+   {
+    "t": "Болельщики «Челси» освистали Фофана на матче с «Ноттингемом»",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-27 23:12",
+    "link": "https://www.championat.com/football/news-6716976-bolelschiki-chelsi-osvistali-fofana-na-matche-s-nottingemom.html"
    }
   ]
  },
@@ -186,6 +186,13 @@
     "src": "sportexpress",
     "at": "2026-11-27 21:27",
     "link": "https://www.sport-express.ru/football/germany/news/verder-borussiya-m-schet-i-rezultat-matcha-11-tura-bundesligi-27-noyabrya-2026-2479888/"
+   },
+   {
+    "t": "Bremen fight back to earn draw in six-goal thriller",
+    "tags": "",
+    "src": "bbc_fb",
+    "at": "2026-11-27 22:37",
+    "link": "https://www.bbc.co.uk/sport/football/videos/cm0qjlq19qw3o?at_medium=RSS&at_campaign=rss"
    }
   ]
  },
@@ -226,6 +233,13 @@
     "src": "sportexpress",
     "at": "2026-11-27 22:02",
     "link": "https://www.sport-express.ru/football/spain/news/levante-rasing-schet-1-3-rezultat-matcha-chempionata-ispanii-27-noyabrya-2026-goda-2479900/"
+   },
+   {
+    "t": "Luís Castro: \"Guardiola no podría entrenar aquí porque no hace cambios o los hace en el 80\"",
+    "tags": "тренер",
+    "src": "marca",
+    "at": "2026-11-27 23:15",
+    "link": "https://www.marca.com/futbol/levante/2026/11/28/luis-castro-guardiola-podria-entrenar-aqui-cambios-cambios-80.html"
    }
   ]
  },
@@ -283,25 +297,6 @@
    }
   ]
  },
- "fb|401888241": {
-  "match": "Alanyaspor — Konyaspor",
-  "news": [
-   {
-    "t": "Fenerbahçe-Konyaspor MAÇI CANLI İZLE | Fenerbahçe-Tümosan Konyaspor maçı saat kaçta ve hangi kanalda?",
-    "tags": "",
-    "src": "fotomac",
-    "at": "2025-05-31 11:15",
-    "link": "https://www.fotomac.com.tr/fenerbahce/2025/05/31/fenerbahce-konyaspor-maci-canli-izle-fenerbahce-tumosan-konyaspor-maci-saat-kacta-ve-hangi-kanalda"
-   },
-   {
-    "t": "Fenerbahçe-Tümosan Konyaspor maçı VAR hakemi Ali Şansalan oldu",
-    "tags": "",
-    "src": "fotomac",
-    "at": "2025-05-31 09:23",
-    "link": "https://www.fotomac.com.tr/fenerbahce/2025/05/31/fenerbahce-tumosan-konyaspor-maci-var-hakemi-ali-sansalan-oldu"
-   }
-  ]
- },
  "fb|401875536": {
   "match": "FC Groningen — Willem II",
   "news": [
@@ -339,6 +334,13 @@
     "src": "vi",
     "at": "2026-11-27 21:23",
     "link": "https://www.vi.nl/nieuws/ongezien-slechte-reeks-willem-ii-zorgt-voor-unicum-in-zeventig-jaar-eredivisie"
+   },
+   {
+    "t": "Teleurstelling én goede moed bij Willem II: 'Vooraf teken je misschien voor 1-1'",
+    "tags": "травма;тренер",
+    "src": "vi",
+    "at": "2026-11-27 22:16",
+    "link": "https://www.vi.nl/nieuws/teleurstelling-en-goede-moed-bij-willem-ii-vooraf-teken-je-misschien-voor-1-1"
    }
   ]
  },
@@ -457,6 +459,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 20:57",
     "link": "https://www.championat.com/hockey/news-6716904-fanaty-filadelfii-skandirovali-my-hotim-michkova-na-starte-matcha-s-vankuverom.html"
+   },
+   {
+    "t": "«Филадельфия» без Мичкова уверенно обыграла «Ванкувер» в матче регулярного чемпионата НХЛ",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:42",
+    "link": "https://www.championat.com/hockey/news-6716970-filadelfiya-flajerz-vankuver-kenaks-rezultat-matcha-27-noyabrya-2026-schet-5-2-nhl-2026-2027.html"
    }
   ]
  },
@@ -488,6 +497,20 @@
     "src": "champ_hk",
     "at": "2026-11-27 17:00",
     "link": "https://www.championat.com/hockey/news-6715818-vashington-kepitalz-florida-panterz-onlajn-translyaciya-matcha-nhl-sezona-2026-2027-nachnetsya-v-23-00-msk.html"
+   },
+   {
+    "t": "«Вашингтон» пропустил дважды в концовке и проиграл «Флориде» в НХЛ. Овечкин не забил",
+    "tags": "не сыграет",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:50",
+    "link": "https://www.championat.com/hockey/news-6716972-vashington-kepitalz-florida-panterz-rezultat-matcha-28-noyabrya-2026-schyot-2-3-regulyarnyj-chempionat-nhl-2026-2027.html"
+   },
+   {
+    "t": "«Тампа» с Кучеровым уступила «Оттаве». К 48-й минуте счёт был 0:6, Артём Зуб забил",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:43",
+    "link": "https://www.championat.com/hockey/news-6716966-tampa-bej-lajtning-ottava-senatorz-rezultat-matcha-28-noyabrya-2026-schyot-2-6-regulyarnyj-chempionat-nhl-2026-2027.html"
    }
   ]
  },
@@ -528,18 +551,20 @@
     "src": "champ_hk",
     "at": "2026-11-27 22:12",
     "link": "https://www.championat.com/hockey/news-6716960-sent-luis-blyuz-dallas-starz-rezultat-matcha-27-noyabrya-2026-schet-5-3-nhl-2026-2027.html"
-   }
-  ]
- },
- "hk|nhl:401892803": {
-  "match": "Minnesota Wild — Colorado Avalanche",
-  "news": [
+   },
    {
-    "t": "Флориан Джекай из «Монреаля» оштрафован на $ 2,5 тыс. за подсечку на Фёдоре Свечкове",
+    "t": "41-летний Овечкин обновил личный антирекорд по числу матчей без голов в истории НХЛ",
     "tags": "",
     "src": "champ_hk",
-    "at": "2026-11-27 16:19",
-    "link": "https://www.championat.com/hockey/news-6716544-florian-dzhekaj-iz-monrealya-oshtrafovan-na-2-5-tys-za-podsechku-na-fyodore-svechkove.html"
+    "at": "2026-11-27 23:10",
+    "link": "https://www.championat.com/hockey/news-6716974-41-letnij-ovechkin-obnovil-lichnyj-antirekord-po-chislu-matchej-bez-golov-v-istorii-nhl.html"
+   },
+   {
+    "t": "«Вашингтон» пропустил дважды в концовке и проиграл «Флориде» в НХЛ. Овечкин не забил",
+    "tags": "не сыграет",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:50",
+    "link": "https://www.championat.com/hockey/news-6716972-vashington-kepitalz-florida-panterz-rezultat-matcha-28-noyabrya-2026-schyot-2-3-regulyarnyj-chempionat-nhl-2026-2027.html"
    }
   ]
  },
@@ -614,6 +639,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 21:00",
     "link": "https://www.championat.com/hockey/news-6716908-neshvill-predatorz-yuta-mammot-rezultat-matcha-27-noyabrya-2026-goda-schet-5-6-regulyarnyj-chempionat-nhl-2026-2027.html"
+   },
+   {
+    "t": "«Коламбус» дома всухую проиграл «Детройту». У Ничушкина — «-1»",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:33",
+    "link": "https://www.championat.com/hockey/news-6716964-kolambus-blyu-dzhekets-detrojt-red-uingz-rezultat-matcha-28-noyabrya-2026-schyot-0-3-regulyarnyj-chempionat-nhl-2025-2026.html"
    }
   ]
  },
@@ -638,6 +670,42 @@
     "src": "champ_hk",
     "at": "2026-11-27 20:38",
     "link": "https://www.championat.com/hockey/news-6716892-nyu-dzhersi-devilz-kalgari-flejmz-rezultat-matcha-27-noyabrya-2026-goda-schet-5-3-regulyarnyj-chempionat-nhl-2026-2027.html"
+   }
+  ]
+ },
+ "hk|nhl:401892821": {
+  "match": "Los Angeles Kings — Anaheim Ducks",
+  "news": [
+   {
+    "t": "«Лос-Анджелес» обыграл «Анахайм» в матче НХЛ, у Панарина ассист",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 23:48",
+    "link": "https://www.championat.com/hockey/news-6716988-los-andzheles-obygral-anahajm-v-matche-nhl-u-panarina-assist.html"
+   }
+  ]
+ },
+ "hk|nhl:401892816": {
+  "match": "Carolina Hurricanes — Ottawa Senators",
+  "news": [
+   {
+    "t": "«Тампа» с Кучеровым уступила «Оттаве». К 48-й минуте счёт был 0:6, Артём Зуб забил",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:43",
+    "link": "https://www.championat.com/hockey/news-6716966-tampa-bej-lajtning-ottava-senatorz-rezultat-matcha-28-noyabrya-2026-schyot-2-6-regulyarnyj-chempionat-nhl-2026-2027.html"
+   }
+  ]
+ },
+ "hk|nhl:401892824": {
+  "match": "Boston Bruins — Vancouver Canucks",
+  "news": [
+   {
+    "t": "«Филадельфия» без Мичкова уверенно обыграла «Ванкувер» в матче регулярного чемпионата НХЛ",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 22:42",
+    "link": "https://www.championat.com/hockey/news-6716970-filadelfiya-flajerz-vankuver-kenaks-rezultat-matcha-27-noyabrya-2026-schet-5-2-nhl-2026-2027.html"
    }
   ]
  }
