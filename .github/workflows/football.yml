@@ -8,6 +8,7 @@ on:
     # 18.11 18:30: резервы 07:47 и 11:57 убраны — страхуют keyTick_ (Apps Script) и Р4 (каперы, +25 мин)
     - cron: '17 6 * * *'      # 25.11 Р8: 11:17 — страховка отчёта 11:15 (основной запуск — keyTick_)
     - cron: '37 6 * * *'      # 11:37 Ташкента — страховка ⚽1 11:30 (Р8)
+    - cron: '2 12 * * 1'      # 28.11 Р9: пн 17:02 — крайний срок старта суток (mgate.DEADLINE)
     - cron: '13 16 * * *'     # 21:13 Ташкента — 16.11: автоматическая репетиция завтрашних суток (без кф и отправок; ⚠️ только при проблеме)
   workflow_dispatch:
     inputs:
@@ -73,7 +74,7 @@ jobs:
           since=$(date -u -d '-35 min' +%Y-%m-%dT%H:%M:%SZ)
           # 25.11 Р8: ключевые слоты (Ташкент) — в течение часа после слота считается только прогон ПОСЛЕ его начала
           since2=$since; nowm=$(( 10#$(TZ=Asia/Tashkent date +%H) * 60 + 10#$(TZ=Asia/Tashkent date +%M) ))
-          for sl in 11:15 11:30; do sm=$(( 10#${sl%:*} * 60 + 10#${sl#*:} )); if [ $nowm -ge $sm ] && [ $nowm -lt $((sm + 60)) ]; then s1=$(date -u -d "$(TZ=Asia/Tashkent date +%Y-%m-%d) $sl +0500" +%Y-%m-%dT%H:%M:%SZ); [[ "$s1" > "$since2" ]] && since2=$s1; fi; done
+          for sl in 11:15 11:30 17:00; do sm=$(( 10#${sl%:*} * 60 + 10#${sl#*:} )); if [ $nowm -ge $sm ] && [ $nowm -lt $((sm + 60)) ]; then s1=$(date -u -d "$(TZ=Asia/Tashkent date +%Y-%m-%d) $sl +0500" +%Y-%m-%dT%H:%M:%SZ); [[ "$s1" > "$since2" ]] && since2=$s1; fi; done
           # 17.11 ТЗ-007 шаг 2: окно плана по матчам открыто или откроется ≤ 15 мин — считается только полный прогон ПОСЛЕ начала окна
           # (окно в будущем → since2 в будущем → не пропускаем: Apps Script planTick_ засчитает этот запуск, значит он должен быть полным)
           pa=$(gh api "repos/${{ github.repository }}/contents/football/data/plan.json" -H 'Accept: application/vnd.github.raw' 2>/dev/null | jq -r --arg n "$(date -u -d '+15 min' '+%Y-%m-%d %H:%M')" --arg m "$(date -u -d '-10 min' '+%Y-%m-%d %H:%M')" '[.groups[]|select(.at <= $n and .hi >= $m)|.at]|max // empty' 2>/dev/null || true)

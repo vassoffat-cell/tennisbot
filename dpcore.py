@@ -697,6 +697,9 @@ def pick_wait(rt: dict, loc, today: str, report_at: tuple, pick_at: tuple, wait_
     start = pick_at[0] * 60 + pick_at[1]
     if mins < start:
         return f'ждём старт суток {pick_at[0]}:{pick_at[1]:02d} (отчёт — {report_at[0]}:{report_at[1]:02d})'
+    g = __import__('mgate').hold(today, loc)                    # 28.11 Р9: понедельник — после аудита и решений (≤ 17:00)
+    if g:
+        return g
     if rt.get('last_daily') == today:
         return ''
     if rt.get('rep_fail') == today:                             # отчёт упал (сбой кода) — ⭐1 не ждёт

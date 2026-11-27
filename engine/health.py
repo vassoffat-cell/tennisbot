@@ -180,13 +180,14 @@ def punctual(cache: dict) -> list[tuple[str, str, str, str]]:
         if slot > loc:
             slot -= timedelta(days=1)
         s_utc = slot - TZ
+        lim = LATE_MIN + ((17 * 60 - (hh * 60 + mm)) if slot.weekday() == 0 and (hh, mm) in ((11, 30), (12, 30)) else 0)   # 28.11 Р9: пн ⭐1 — до 17:00
         f_utc = s_utc - timedelta(minutes=(hh * 60 + mm) - (frm[0][0] * 60 + frm[0][1])) if frm else s_utc
         rs = sorted([r for r in runs(wf, f_utc) if r['conclusion'] == 'success' and _dur(r) > 25],
                     key=lambda r: r.get('run_started_at') or r['created_at'])
         hit = None
         for r in rs:
             t0 = datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
-            if t0 > s_utc + timedelta(hours=6):
+            if t0 > s_utc + timedelta(hours=8):
                 break
             cache.setdefault(r['id'], log(r['id']))
             if grep(cache[r['id']], pat):
@@ -195,11 +196,11 @@ def punctual(cache: dict) -> list[tuple[str, str, str, str]]:
         if hit is None:
             late = int((now - s_utc).total_seconds() // 60)
             out.append((f'вовремя: {name} ({slot:%d.%m %H:%M})', f'≤ {LATE_MIN} мин',
-                        'нет' + (f' (прошло {late} мин)' if late < 360 else ''), '❌' if late > LATE_MIN else '⏳'))
+                        'нет' + (f' (прошло {late} мин)' if late < 360 else ''), '❌' if late > lim else '⏳'))
             continue
         late = max(0, int((hit - s_utc).total_seconds() // 60))
         out.append((f'вовремя: {name} ({slot:%d.%m %H:%M})', f'≤ {LATE_MIN} мин', f'{(hit + TZ):%H:%M} (+{late} мин)',
-                    '✅' if late <= LATE_MIN else '❌'))
+                    '✅' if late <= lim else '❌'))
     return out
 
 def plan_check(since: datetime) -> list[tuple[str, str, str, str]]:
@@ -471,7 +472,9 @@ def main(hours: int = 26) -> None:
     for wf, (h0, h1), pat, name in checks:
         rs = [r for r in runs(wf, since) if r['conclusion'] == 'success']
         if (h0, h1) != (0, 24):
-            rs = [r for r in rs if h0 <= (datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) + TZ).hour < h1]
+            _pn = lambda r: (datetime.fromisoformat(r['created_at'].replace('Z', '+00:00')) + TZ)
+            h1m = 18 if 'объявлена' in name else h1                   # 28.11 Р9: по пн ⭐1 — после аудита, до 17:00
+            rs = [r for r in rs if h0 <= _pn(r).hour < (h1m if _pn(r).weekday() == 0 else h1)]
         else:                                                     # последний ПОЛНЫЙ прогон (шлюз Ц7 даёт пустые ≈ 5 с)
             full = [r for r in rs if wf == 'cappers.yml' or (_dur(r) > 25 and not _special(r))]
             rs = full[:1]

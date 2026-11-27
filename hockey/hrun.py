@@ -601,6 +601,9 @@ def hk_hold(rt: dict, cur: dt.date, yday: dt.date, loc) -> str:
     start = pa[0] * 60 + pa[1]
     if mins < start:
         return f'ждём старт хоккейных суток {pa[0]}:{pa[1]:02d}'
+    g = __import__('mgate').hold(cur, loc)                      # 28.11 Р9: понедельник — после аудита и решений (≤ 17:00)
+    if g:
+        return g
     if rt.get('hk_last_daily') == str(yday):
         return ''
     if rt.get('hk_rep_fail') == str(cur):

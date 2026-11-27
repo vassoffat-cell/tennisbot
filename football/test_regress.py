@@ -188,12 +188,26 @@ for dpc_path in (HERE.parent / 'dpcore.py', HERE / 'dpcore.py'):
     check(f'{tag} Р8: ⭐ уже объявлена — не ждём', PW({'day_pick': {'date': '2026-11-26'}}, '09:00'), '')
     check(f'{tag} Р8: ночь пт 02:05 (сутки чт без ⭐) — ⚠️', DPC.pick_wait({}, pd.Timestamp('2026-11-27 02:05'), '2026-11-26', (11, 15), (11, 30), 2, True).startswith('⚠️'), True)
     check(f'{tag} Р8: флаг выключен — не ждём', DPC.pick_wait({}, T_('09:00'), '2026-11-26', (11, 15), (11, 30), 2, False), '')
+    import mgate as MG, tempfile as _tf, pathlib as _pl
+    _gf, MG.FILE = MG.FILE, _pl.Path(_tf.mkdtemp()) / 'g.json'
+    PM = lambda rt, hm: DPC.pick_wait(rt, pd.Timestamp(f'2026-11-30 {hm}'), '2026-11-30', (11, 15), (11, 30), 2, True)   # понедельник
+    check(f'{tag} Р9: пн 11:31 отчёт ушёл — ждём аудит', PM({'last_daily': '2026-11-30'}, '11:31').startswith('понедельник'), True)
+    check(f'{tag} Р9: пн 17:00 — старт сам', PM({'last_daily': '2026-11-30'}, '17:00'), '')
+    MG.FILE.write_text('{"2026-11-30": "open"}')
+    check(f'{tag} Р9: пн 14:10 ворота открыты — выбирать', PM({'last_daily': '2026-11-30'}, '14:10'), '')
+    MG.FILE = _gf
 import datetime as _dt2  # noqa: E402
 from hockey import hrun as HR  # noqa: E402
 _c, _y = _dt2.date(2026, 11, 26), _dt2.date(2026, 11, 25)
 check('🏒 Р8: 12:20 — ждём 12:30', HR.hk_hold({}, _c, _y, pd.Timestamp('2026-11-26 12:20')).startswith('ждём старт'), True)
 check('🏒 Р8: 12:31 отчёт ушёл — выбирать', HR.hk_hold({'hk_last_daily': '2026-11-25'}, _c, _y, pd.Timestamp('2026-11-26 12:31')), '')
 check('🏒 Р8: 12:31 отчёта нет — ждём', HR.hk_hold({}, _c, _y, pd.Timestamp('2026-11-26 12:31')).startswith('ждём отчёт'), True)
+import mgate as _MG, tempfile as _tf3, pathlib as _pl3  # noqa: E402
+_gf3, _MG.FILE = _MG.FILE, _pl3.Path(_tf3.mkdtemp()) / 'g.json'
+check('🏒 Р9: пн 12:31 отчёт ушёл — ждём аудит', HR.hk_hold({'hk_last_daily': '2026-11-29'}, _dt2.date(2026, 11, 30), _dt2.date(2026, 11, 29), pd.Timestamp('2026-11-30 12:31')).startswith('понедельник'), True)
+check('🏒 Р9: пн 17:05 — старт сам', HR.hk_hold({'hk_last_daily': '2026-11-29'}, _dt2.date(2026, 11, 30), _dt2.date(2026, 11, 29), pd.Timestamp('2026-11-30 17:05')), '')
+check('🏒 Р9: вт — без ворот', HR.hk_hold({'hk_last_daily': '2026-11-30'}, _dt2.date(2026, 12, 1), _dt2.date(2026, 11, 30), pd.Timestamp('2026-12-01 12:31')), '')
+_MG.FILE = _gf3
 check('🏒 Р8: 14:30 отчёта нет — ⚠️', HR.hk_hold({}, _c, _y, pd.Timestamp('2026-11-26 14:30')).startswith('⚠️'), True)
 check('🏒 Р8: 🏒1 уже есть — не ждём', HR.hk_hold({'hk_dp': {'date': '2026-11-26'}}, _c, _y, pd.Timestamp('2026-11-26 12:20')), '')
 _src = (HERE.parent / 'hockey' / 'hrun.py').read_text(encoding='utf-8')

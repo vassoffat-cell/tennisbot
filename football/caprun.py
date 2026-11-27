@@ -61,6 +61,8 @@ def key_guard(now: pd.Timestamp, log: list[str]) -> list[str]:
     out = []
     loc = now + pd.Timedelta(hours=5)
     for wf, slots in KEY_SLOTS.items():
+        if loc.dayofweek == 0:                            # 28.11 Р9: пн 17:00 — крайний срок старта суток (= mgate.DEADLINE)
+            slots = tuple(slots) + ((17, 0),)
         for h, m in slots:
             start = loc.normalize() + pd.Timedelta(hours=h, minutes=m)
             if not (start + KEY_LATE <= loc < start + pd.Timedelta(hours=3)):
