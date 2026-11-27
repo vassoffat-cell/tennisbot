@@ -333,7 +333,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             cur.update(first_label=best['label'], first_match=match_fn(best))
             _sheet_row(store, dp, dstr, row_fn(best, dstr, 0, []), cur, best)
         cur['text'] = main_text()
-        cur['msgs'] = [list(x) for x in notify.send_markup(cur['text'], None)]
+        cur['msgs'] = [list(x) for x in notify.send_pick(cur['text'])]
         notify.pin(cur['msgs'])
         rt['day_pick'] = cur
         return f"ставка дня: объявлена → {best['label'] + ' (ступень ' + str(best['tier']) + ')' if best else 'нет'}{note}"
@@ -345,7 +345,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
         for x in cur.get('extras') or []:
             if not x.get('msgs'):
                 x['text'] = extra_text(x)
-                x['msgs'] = [list(m) for m in notify.send_markup(x['text'], None, silent=True)]
+                x['msgs'] = [list(m) for m in notify.send_pick(x['text'], silent=True)]
                 notify.pin(x['msgs'])
         cur['text'] = main_text()
         notify.edit(cur['msgs'], cur['text'], None)
@@ -370,14 +370,14 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             if h.get('text'):
                 if h.get('msgs'):
                     notify.delete([tuple(m) for m in h['msgs']])
-                h['msgs'] = [list(m) for m in notify.send_markup(h['text'], None, silent=True)]
+                h['msgs'] = [list(m) for m in notify.send_pick(h['text'], silent=True)]
                 notify.pin(h['msgs'])
                 n_ += 1
         log.append(f'ставки на сутки: прислано заново {n_}')
     back = 0                                                    # 12.11: удалённые пользователем ставки — заново, с закрепом
     for h in [cur] + list(cur.get('extras') or []):
         if h.get('text') and (not h.get('msgs') or not notify.alive(h['msgs'])):   # 14.11: и не доставленные вовсе
-            h['msgs'] = [list(m) for m in notify.send_markup(h['text'], None, silent=True)]
+            h['msgs'] = [list(m) for m in notify.send_pick(h['text'], silent=True)]
             if not h.get('off'):                                # С2а: снятая ⭐ не закрепляется
                 notify.pin(h['msgs'])
             back += 1
@@ -426,7 +426,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                         notify.edit(h['msgs'], off_t, None)
                         notify.pin([tuple(m) for m in h['msgs']], on=False)
                 _sheet_drop(store, dp, dstr, r)
-                cur['notes'] = list(cur.get('notes', [])) + [list(m) for m in notify.send_blocks([off_t])]
+                cur['notes'] = list(cur.get('notes', [])) + [list(m) for m in notify.send_pick(off_t)]
                 events.append(f'{ICON}{r} снята ({was})')
                 continue
             top = same[0]
@@ -491,7 +491,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             x = dict(_plain(c), tier=c['tier'], rank=r, key=key(c), match=match_fn(c), why=why, at=f'{loc:%H:%M}', edits=0,
                      hist=[f'➕ новая линия дня в {loc:%H:%M}: {why}'])
             x['text'] = extra_text(x)
-            x['msgs'] = [list(m) for m in notify.send_markup(x['text'], None)]
+            x['msgs'] = [list(m) for m in notify.send_pick(x['text'])]
             notify.pin(x['msgs'])
             cur.setdefault('extras', []).append(x)
             _sheet_row(store, dp, dstr, row_fn(c, dstr, 0, x['hist']), cur, c, rank=r)
@@ -515,7 +515,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
                 x = dict(_plain(c), tier=c['tier'], rank=r, key=key(c), match=match_fn(c), why=why, at=f'{loc:%H:%M}', edits=0,
                          hist=[f'➕ новая линия дня в {loc:%H:%M}: {why}'])
                 x['text'] = extra_text(x)
-                x['msgs'] = [list(m) for m in notify.send_markup(x['text'], None)]
+                x['msgs'] = [list(m) for m in notify.send_pick(x['text'])]
                 notify.pin(x['msgs'])
                 cur.setdefault('extras', []).append(x)
                 _sheet_row(store, dp, dstr, row_fn(c, dstr, 0, x['hist']), cur, c, rank=r)
@@ -537,7 +537,7 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
             x = dict(_plain(c), tier=c['tier'], rank=r, key=key(c), match=match_fn(c), why=why, at=f'{loc:%H:%M}', edits=0,
                      hist=[f'➕ новая линия дня в {loc:%H:%M}: {why} (лучше ⭐1 {cur.get("label", "")})'])
             x['text'] = extra_text(x)
-            x['msgs'] = [list(m) for m in notify.send_markup(x['text'], None)]
+            x['msgs'] = [list(m) for m in notify.send_pick(x['text'])]
             notify.pin(x['msgs'])
             cur.setdefault('extras', []).append(x)
             _sheet_row(store, dp, dstr, row_fn(c, dstr, 0, x['hist']), cur, c, rank=r)

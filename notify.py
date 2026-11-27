@@ -265,7 +265,7 @@ def _photo(chat: int, png: bytes, caption: str, silent: bool, bot: str) -> int |
 
 
 def send_card(blocks: list[str], chat_ids: set[int] | None = None, silent: bool = False,
-              bot: str = 'main', queue: bool = True) -> list[tuple[int, int]]:
+              bot: str = 'main', queue: bool = True, extra: list | None = None) -> list[tuple[int, int]]:
     """27.11: отчёт картинкой (cards.render) + свёрнутые списки текстом. Сбой отрисовки или отправки фото — тот же отчёт текстом
     (ничего не теряется; текст при сбое уходит в очередь повтора Д4)."""
     blocks = [b for b in blocks if b]
@@ -279,6 +279,7 @@ def send_card(blocks: list[str], chat_ids: set[int] | None = None, silent: bool 
         return send_blocks(blocks, chat_ids, silent, bot, queue)
     if not pngs:
         return send_blocks(blocks, chat_ids, silent, bot, queue)
+    pngs = pngs + [x for x in (extra or []) if x]                # 27.11 этап 3: график банка в недельном ③
     if not BOTS[bot]() or not (chat_ids or C.ALLOWED_USERS):
         print(f'🖼 {title}: картинок {len(pngs)} ({sum(len(p) for p in pngs) // 1024} КБ) + текстом {len(texts)}')
         return []
@@ -296,6 +297,64 @@ def send_card(blocks: list[str], chat_ids: set[int] | None = None, silent: bool 
             continue
         if texts:
             sent += send_blocks(texts, {chat}, silent, bot, queue)
+    return sent
+
+
+PIN_CARDS = True                # 27.11 этап 2: закреп ставки дня — картинкой (cards.render_pick); правка — editMessageMedia
+
+
+def _media_edit(chat: int, mid: int, png: bytes, caption: str, bot: str = 'main') -> None:
+    """Заменить картинку закрепа (правка / снятие ⭐): editMessageMedia, has_spoiler сохраняется."""
+    import uuid
+    b = uuid.uuid4().hex
+    media = json.dumps({'type': 'photo', 'media': 'attach://card', 'caption': hide(caption), 'parse_mode': 'HTML', 'has_spoiler': True})
+    fields = {'chat_id': str(chat), 'message_id': str(mid), 'media': media}
+    body = b''.join(f'--{b}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode() for k, v in fields.items())
+    body += (f'--{b}\r\nContent-Disposition: form-data; name="card"; filename="card.png"\r\nContent-Type: image/png\r\n\r\n'.encode()
+             + png + f'\r\n--{b}--\r\n'.encode())
+    req = urllib.request.Request(API.format(token=BOTS[bot](), method='editMessageMedia'), data=body,
+                                 headers={'Content-Type': f'multipart/form-data; boundary={b}'})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            r.read()
+    except urllib.error.HTTPError as e:
+        t = e.read().decode('utf-8', 'replace')[:200]
+        if 'not modified' not in t:
+            print(f'Telegram: картинка не изменена ({e.code} {t})')
+
+
+def _pick_caption(text: str) -> str:
+    first = _plain(text.split('\n', 1)[0]).strip()
+    return f'<b>{esc(first)}</b>'
+
+
+def send_pick(text: str, silent: bool = False, bot: str = 'main') -> list[tuple[int, int]]:
+    """27.11 этап 2: закреп ставки дня картинкой; сбой отрисовки / отправки — тем же текстом (send_markup)."""
+    if not PIN_CARDS:
+        return send_markup(text, None, silent)
+    try:
+        import cards
+        png = cards.render_pick(text)
+    except Exception as e:
+        print(f'🖼 ставка дня: сбой отрисовки {e.__class__.__name__}: {e} — текстом')
+        return send_markup(text, None, silent)
+    if not BOTS[bot]() or not C.ALLOWED_USERS:
+        print(f'🖼 ставка дня картинкой ({len(png) // 1024} КБ): {_plain(text)[:80]}')
+        return []
+    sent = []
+    for chat in C.ALLOWED_USERS:
+        try:
+            mid = _photo(chat, png, _pick_caption(text), silent, bot)
+            if mid is not None:
+                sent.append((chat, mid))
+        except Exception as e:
+            print(f'🖼 ставка дня: фото не отправлено ({_why_tg(e)}) — текстом')
+            try:
+                mid = _send_one(chat, text, silent, bot)
+                if mid is not None:
+                    sent.append((chat, mid))
+            except Exception as e2:
+                print(f'Telegram: не отправлено ({e2})')
     return sent
 
 
@@ -437,6 +496,14 @@ def edit(messages: list, text: str, markup: dict | None = None) -> int:
             n += 1
         except Exception as e:
             body = getattr(e, 'tg_body', '')
+            if 'no text in the message' in body:              # 27.11: закреп — картинка → заменить картинку
+                try:
+                    import cards
+                    _media_edit(int(chat), int(mid), cards.render_pick(text), _pick_caption(text))
+                    n += 1
+                except Exception as e2:
+                    print(f'🖼 правка картинки: сбой {e2.__class__.__name__}: {e2}')
+                continue
             if 'not modified' not in str(e) + body:
                 print(f'Telegram: не изменено ({_why_tg(e, text)})')
     return n

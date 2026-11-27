@@ -264,7 +264,7 @@ def _row(day, rank: int, c: dict, status: str = '', reason: str = '') -> dict:
 
 def _publish(day, c: dict, rank: int, hist: list[str]) -> dict:
     x = dict(c, rank=rank, hist=list(hist))
-    x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, rank, x['hist'])], queue=False)]
+    x['msgs'] = [list(m) for m in notify.send_pick(_text(day, x, rank, x['hist']))]
     notify.pin([tuple(m) for m in x['msgs']])
     CHANGED[0] = True
     return x
@@ -343,14 +343,14 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
         for x in picks:
             if x.get('msgs'):
                 notify.delete([tuple(m) for m in x['msgs']])
-            x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True, queue=False)]
+            x['msgs'] = [list(m) for m in notify.send_pick(_text(day, x, int(x['rank']), x.get('hist', [])), silent=True)]
             if not x.get('off'):                             # С2а: снятая ⭐ не закрепляется
                 notify.pin([tuple(m) for m in x['msgs']])
         CHANGED[0] = True
         log.append(f'⭐🏒 ставки на сутки: прислано заново {len(picks)}')
     for x in picks:                                          # 12.11: удалённые пользователем ставки — заново, с закрепом
         if not x.get('msgs') or not notify.alive([tuple(m) for m in x['msgs']]):    # 14.11: и не доставленные вовсе
-            x['msgs'] = [list(m) for m in notify.send_blocks([_text(day, x, int(x['rank']), x.get('hist', []))], silent=True, queue=False)]
+            x['msgs'] = [list(m) for m in notify.send_pick(_text(day, x, int(x['rank']), x.get('hist', [])), silent=True)]
             if not x.get('off'):                             # С2а: снятая ⭐ не закрепляется
                 notify.pin([tuple(m) for m in x['msgs']])
             CHANGED[0] = True
@@ -394,7 +394,7 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
                 if x.get('msgs'):
                     notify.edit([tuple(m) for m in x['msgs']], t, None)
                     notify.pin([tuple(m) for m in x['msgs']], on=False)
-                st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_blocks([t])]
+                st['notes'] = list(st.get('notes', [])) + [list(m) for m in notify.send_pick(t)]
                 CHANGED[0] = True
                 log.append(f'⭐🏒 ⭐{r} снята: {was}')
                 continue

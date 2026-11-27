@@ -867,7 +867,8 @@ def run(dry: bool = False) -> str:
                 except Exception as ex:
                     log.append(f'👥 недельный отчёт каперов: сбой {ex.__class__.__name__}')
                 notify.send_card(R.dp_report(d_, f'🎾 Теннис · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
-                                   + [SL.safe(SL.week_block, 'tennis', slP, slE, d0, yday)])
+                                   + [SL.safe(SL.week_block, 'tennis', slP, slE, d0, yday)],
+                                 extra=[__import__('bank').safe_chart(dpk, 'tennis', d0, yday, 'Теннис')])
                 log.append('недельный отчёт отправлен')
             if week_due and not wk_res:                               # 26.11 IMP-12: недельный ушёл (или тихий режим)
                 rt['week_done'] = yday.isoformat()

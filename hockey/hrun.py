@@ -766,7 +766,8 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
                 except Exception as ex:
                     log.append(f'🏒 недельный отчёт каперов: сбой {ex.__class__.__name__}')
                 notify.send_card(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
-                                   + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)])
+                                   + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)],
+                                 extra=[__import__('bank').safe_chart(dp, 'hockey', d0, yday, 'Хоккей')])
                 log.append('🏒 недельный отчёт отправлен')
                 if not week_override:                             # 26.11 IMP-12: своя отметка недельного
                     rt['hk_week_done'] = str(yday)

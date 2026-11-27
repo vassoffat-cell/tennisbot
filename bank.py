@@ -71,3 +71,22 @@ def rows(dp: pd.DataFrame, sport: str, day: dt.date | None, d0: dt.date | None =
     roi = float(f.pnl.sum() / f.st.sum()) if f.st.sum() else 0.0
     out.append(('  ROI', str(len(f)), f'{roi * 100:+.1f}%'.replace('.', ',').replace('-', '−'), '🟢' if roi > 0 else '🔴' if roi < 0 else ''))
     return out
+
+
+def chart(dp: pd.DataFrame, sport: str, d0: dt.date | None, day: dt.date | None, name: str) -> bytes | None:
+    """27.11 этап 3: картинка «банк по дням с 17.11» (накопленный итог), неделя d0…day подсвечена. Нет данных — None."""
+    f = frame(dp, sport)
+    if not len(f):
+        return None
+    g = f.groupby('d').pnl.sum().sort_index()
+    import cards
+    return cards.bank_chart(list(g.items()), f'{name} · банк с {START:%d.%m}, ед.', (d0, day) if d0 and day else None)
+
+
+def safe_chart(dp, sport: str, d0, day, name: str) -> bytes | None:
+    """Сбой графика не ломает недельный отчёт."""
+    try:
+        return chart(dp, sport, d0, day, name)
+    except Exception as ex:
+        print(f'🖼 график банка: сбой {ex.__class__.__name__}: {ex}')
+        return None

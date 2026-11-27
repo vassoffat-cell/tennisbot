@@ -352,6 +352,16 @@ CD.render = lambda b: (_ for _ in ()).throw(ValueError('x'))
 check('🖼 сбой отрисовки — отчёт текстом (без исключения)', NT.send_card(['<b>t</b>']), [])
 CD.render = _r0
 
+# 27.11 этапы 2–3: закреп ⭐ картинкой, правка — замена картинки; график банка; стиль Montserrat
+_pk = CD.render_pick("⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Лига · 🕒 26.11 23:00\n<b>A — B</b>\n<b>ТБ2.5</b> 🔥 — 64% · честный кф 1,56\n💵 1xBet 1,61 · EV +2,9%")
+check('🖼 ⭐ карточка — PNG', _pk[:4], b'\x89PNG')
+check('🖼 ⭐ снята — PNG', CD.render_pick("⚽3 <b>Футбол · ставка дня снята</b> ❌\nA — B\n<s>ТБ2</s> — рынок против: P 72% → 58%")[:4], b'\x89PNG')
+import datetime as _dt
+check('🖼 график банка — PNG', CD.bank_chart([(_dt.date(2026, 11, 17), 0.2), (_dt.date(2026, 11, 18), -0.1)], 'Футбол · банк')[:4], b'\x89PNG')
+check('🖼 шрифт Montserrat, ⭐N → №N', (CD.FONT['r'].name, CD._num('⭐1 Ставка')), ('Montserrat-Regular.ttf', '№1 Ставка'))
+NT.PIN_CARDS, _pc = True, NT.PIN_CARDS
+check('🖼 ⭐ без токена — без исключения', NT.send_pick("⚽1 <b>Футбол · ставка дня</b>\nтекст"), [])
+
 if FAILS:
     print('\n'.join(FAILS))
     print(f'тесты регрессии: провалов {len(FAILS)}')
