@@ -69,7 +69,8 @@ TAGS = {
 }
 TAG_RX = {k: re.compile(v, re.I) for k, v in TAGS.items()}
 GENERIC = {'city', 'united', 'real', 'club', 'sporting', 'athletic', 'town', 'county', 'rovers', 'wanderers', 'albion',
-           'hotspur', 'football', 'calcio', 'deportivo', 'olympique', 'stade', 'inter', 'dynamo', 'dinamo', 'saint'}
+           'hotspur', 'football', 'calcio', 'deportivo', 'olympique', 'stade', 'inter', 'dynamo', 'dinamo', 'saint',
+           'borussia', 'paris', 'eintracht', 'union', 'atletico', 'racing'}   # 28.11: «Borussia» цепляла Дортмунд к Гладбаху
 
 
 def _get(url: str) -> str:

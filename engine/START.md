@@ -54,7 +54,7 @@ GOOGLE_CREDENTIALS_JSON, ALLOWED_USERS, ODDS_API_KEY, ODDSPAPI_KEY, APISPORTS_KE
 | `clv.py` | 📈 цена закрытия (CLV): Betfair из файлов, хоккей — DK + инверсия, снимок цены |
 | `caprep.py` | отчёт ② «каперы» (общий) |
 | `archive.py`, `cards.py`, `cardstore.py` | 🗂 архив меню (лист archive); 🖼 картинки (В9), ветки cards-* (меню) |
-| `ghminutes.py` | ⏱ минуты GitHub → напоминание public / private (Ц19) |
+| `ghminutes.py`, `newsdesk.py` | ⏱ минуты GitHub (Ц19); 📰 отдел «Новости» — ленты, метки, привязка к матчам (Ц23) |
 | `hockey/` | hdata (НХЛ ESPN, КХЛ API-Sports), hmodel (Пуассон, инверсия рынка, пустые ворота), hlines, hrun, hpick, hcappers, hkhl_odds (цены КХЛ, OddsPapi) |
 | `football/` | run.py (цикл), model/dc (Dixon–Coles), flines, ffactors, fespn, fmarket, daypick/dpcore/pick/odds, tips/tipsbook/tipswide (каперы), caprun, slips/ocr, report, свои journal/notify/config |
 | `apps_script/`, `football/apps_script/` | Code.gs ботов (+ `menu_template.gs` — шаблон ТЗ-006) |
@@ -163,8 +163,7 @@ dp_changes, hk_games, hk_lines, hk_day_pick, learning, reports, archive, plan, b
 - **Минуты GitHub (Ц19):** кончились 27.11 → репозиторий public до 01.12, затем private.
 - **КХЛ:** страховка пройдена (54 живых, лл 0,646 < 0,687). Цена — OddsPapi KHL 268 (Pinnacle, 1xBet, Marathon), снимок раз в хоккейные
   сутки с 25.11; ⭐ КХЛ — после шага 2 (02.12 15:30: правило тотала) и решения пользователя.
-- **24–26.11:** Р8 ✅, С28 ✅, IMP-12, С14 отменено, учёба на тени — прироста нет. Подробно — HANDOFF.
-- **27–28.11:** В9 картинки; Ц17; Ц19 без экономии, резервы 2 ч; Р9 и Ц20 — пн: аудит 13:00 → итог 14:00 → сутки; Ц21 — GROWTH.
+- **27–28.11:** В9 картинки; Ц17; Ц19 без экономии, резервы 2 ч; Р9 и Ц20 — пн: аудит 13:00 → итог 14:00 → сутки; Ц21 — GROWTH; Ц22 бюджет; Ц23 «Новости».
 - **Ждём:** пн 30.11 13:00 — аудит, вывод по хоккею (A31, A36, A40, Л7), футбол IMP-03 окончательно; 02.12 — КХЛ шаг 2 (правило тотала, карточка ⭐ КХЛ);
   7.12 — срок A31; 20.12 — готовность тенниса к сезону; A39 — копим n 300; январь — AO.
 - **Теннис:** межсезонье до ≈ 02.01 (тихий режим С18).
