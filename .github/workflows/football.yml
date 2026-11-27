@@ -90,6 +90,7 @@ jobs:
             football
             assets
             hockey/data
+            data/news
       - uses: actions/setup-python@v6
         if: steps.gate.outputs.skip != 'true'
         with:

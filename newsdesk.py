@@ -3,6 +3,8 @@
 Задача: читать новости о травмах, снятиях, дисквалификациях, ротации, мотивации, тренерах, конфликтах и интригах, слухах,
 погоде, финансах — по всем нашим видам спорта и лигам — и связывать каждую новость с нашими матчами ближайших 48 ч.
 
+Ц23а (28.11): «Новости» — полноценная часть системы и может влиять на что угодно при необходимости. Сразу (без лаборатории) —
+только жёсткие факты: перенос/отмена матча и снятие теннисиста → матч вне выбора новой ⭐ (data/news/block.json, cut()).
 Этап 1 (внедрён 28.11): сбор открытых лент (RSS и публичные превью Telegram — проверены облаком, news_probe.py), метки,
 привязка к матчам, журнал data/news/feed.csv.gz и сводка data/news/match_news.json (матч → новости). В выбор ⭐ и тексты
 ботов пока НЕ входит: сначала лаборатория (пн) проверяет на истории, дают ли новости прирост (n, z); показ «📰» в ⭐ и в
@@ -66,7 +68,15 @@ TAGS = {
     'слух': r'rumou?r|transfer|трансфер|слух|переход|инсайд|insider|fichaje|calciomercato|iddia',
     'погода': r'weather|\brain\b|snow|storm|wind|погод|дожд|снег|мороз|ветер|lluvia|pioggia',
     'финансы': r'wage|salary|unpaid|задолж|зарплат|долг[иа]? |bankrupt|банкрот',
+    'перенос': r'postpon|called off|abandon|матч\S* .{0,30}(перенес|отмен)|(перенес|отмен)\S* .{0,20}матч|aplaza|rinviat|ertelen|uitgesteld|afgelast',
 }
+# 28.11 Ц23а (решение пользователя: «Новости» — полноценная часть системы, может влиять на что угодно при необходимости).
+# Жёсткие факты — влияют сразу, без лаборатории: матч перенесён/отменён (названы ОБЕ стороны) или теннисист снялся
+# (фамилия в заголовке). Такой матч — вне выбора новой ⭐ (теннис, футбол, хоккей). Всё прочее — через лабораторию (n, z).
+POSTPONE = re.compile(TAGS['перенос'], re.I)
+WITHDRAW = re.compile(r'withdr[ae]w|withdrawn|walkover|pulls? out|снял(ся|ась)|отказал(ся|ась) от|не сыграет|forfait|se retira', re.I)
+HARD_H = 72                                      # жёсткий факт — новость не старше 72 ч
+BLOCK = ROOT / 'data' / 'news' / 'block.json'
 TAG_RX = {k: re.compile(v, re.I) for k, v in TAGS.items()}
 GENERIC = {'city', 'united', 'real', 'club', 'sporting', 'athletic', 'town', 'county', 'rovers', 'wanderers', 'albion',
            'hotspur', 'football', 'calcio', 'deportivo', 'olympique', 'stade', 'inter', 'dynamo', 'dinamo', 'saint',
@@ -149,7 +159,8 @@ def targets(now: dt.datetime | None = None) -> list[dict]:
         for mid, (p1, p2, st) in json.loads((ROOT / 'data/seal/tennis_names.json').read_text(encoding='utf-8')).items():
             if lo <= pd.Timestamp(st).to_pydatetime() <= hi:
                 out.append(dict(key=f'tn|{mid}', sport='tn', start=st, label=f'{p1} — {p2}',
-                                lat=[p1.split()[-1].lower(), p2.split()[-1].lower()], ru=[], surn=True))
+                                lat=[p1.split()[-1].lower(), p2.split()[-1].lower()], ru=[], surn=True,
+                                sides=[dict(lat=[p1.split()[-1].lower()], ru=[], nm=p1), dict(lat=[p2.split()[-1].lower()], ru=[], nm=p2)]))
     except Exception:
         pass
     try:                                                                      # 🏒 НХЛ и КХЛ: матчи «pre»
@@ -159,8 +170,10 @@ def targets(now: dt.datetime | None = None) -> list[dict]:
         st = pd.to_datetime(g.start, errors='coerce')
         for _, r in g[(st >= lo) & (st <= hi)].iterrows():
             names = _team_names(r.home) + _team_names(r.away)
-            ru = [a for a, b in rus if re.search(b, r.home.lower()) or re.search(b, r.away.lower())]
-            out.append(dict(key=f'hk|{r.id}', sport='hk', start=str(r.start), label=f'{r.home} — {r.away}', lat=names, ru=ru, surn=False))
+            rh = [a for a, b in rus if re.search(b, r.home.lower())]
+            ra = [a for a, b in rus if re.search(b, r.away.lower())]
+            out.append(dict(key=f'hk|{r.id}', sport='hk', start=str(r.start), label=f'{r.home} — {r.away}', lat=names, ru=rh + ra, surn=False,
+                            sides=[dict(lat=_team_names(r.home), ru=rh, nm=r.home), dict(lat=_team_names(r.away), ru=ra, nm=r.away)]))
     except Exception:
         pass
     try:                                                                      # ⚽ теневой портфель: матчи с ценой (кандидаты ⭐)
@@ -171,8 +184,10 @@ def targets(now: dt.datetime | None = None) -> list[dict]:
         for _, r in f[(st >= lo) & (st <= hi)].iterrows():
             h, a = (str(r.match).split(' — ') + [''])[:2]
             names = _team_names(h) + _team_names(a)
-            ru = [re.escape(k) for k, v in alias.items() if v and (v in h.lower() or v in a.lower())]
-            out.append(dict(key=f'fb|{r.espn_id}', sport='fb', start=str(r.start_utc), label=str(r.match), lat=names, ru=ru, surn=False))
+            rh = [re.escape(k) for k, v in alias.items() if v and v in h.lower()]
+            ra = [re.escape(k) for k, v in alias.items() if v and v in a.lower()]
+            out.append(dict(key=f'fb|{r.espn_id}', sport='fb', start=str(r.start_utc), label=str(r.match), lat=names, ru=rh + ra, surn=False,
+                            sides=[dict(lat=_team_names(h), ru=rh, nm=h), dict(lat=_team_names(a), ru=ra, nm=a)]))
     except Exception:
         pass
     return out
@@ -190,6 +205,57 @@ def _names():
         _NM = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(_NM)
     return _NM
+
+
+def _side(text: str, sd: dict, surn: bool) -> bool:
+    """Названа ли сторона матча (команда / теннисист) в тексте."""
+    if any(re.search(rf'\b{re.escape(n)}\b', text) for n in sd['lat'] if len(n) >= 4) or any(re.search(rx, text) for rx in sd['ru']):
+        return True
+    if surn:
+        try:
+            NM = _names()
+            return any(NM._sim(NM.translit(w), s) >= 0.88 for w in re.findall(r'[а-яё]{4,}', text) for s in sd['lat'] if len(s) >= 4)
+        except Exception:
+            return False
+    return False
+
+
+def hard(title: str, summary: str, t: dict) -> str:
+    """Жёсткий факт по матчу t (Ц23а): '' или причина. Строго: перенос — обе стороны; снятие (теннис) — фамилия в заголовке."""
+    ttl, txt = title.lower(), f'{title} {summary}'.lower()
+    sides = t.get('sides') or []
+    if len(sides) == 2 and POSTPONE.search(ttl) and all(_side(txt, sd, t['surn']) for sd in sides):
+        return 'перенос/отмена матча'
+    if t['sport'] == 'tn' and WITHDRAW.search(ttl):
+        for sd in sides:
+            if _side(ttl, sd, True):
+                return f"снятие: {sd['nm']}"
+    return ''
+
+
+def blocks() -> dict:
+    """Матчи вне выбора новой ⭐ (ключ 'tn|id' / 'fb|espn_id' / 'hk|nhl:id' → причина). Нет файла — пусто."""
+    try:
+        return {k: v['why'] for k, v in json.loads(BLOCK.read_text(encoding='utf-8')).items()}
+    except Exception:
+        return {}
+
+
+def cut(cands: list[dict], sport: str, idf: str, log: list[str] | None = None) -> list[dict]:
+    """Убрать из кандидатов ⭐ матчи с жёстким фактом; строка в лог на каждый матч."""
+    bl = blocks()
+    if not bl:
+        return cands
+    out, seen = [], set()
+    for c in cands:
+        why = bl.get(f'{sport}|{c.get(idf)}')
+        if why:
+            if log is not None and str(c.get(idf)) not in seen:
+                log.append(f"📰 ⭐: матч исключён — {c.get('match') or c.get(idf)}: {why}")
+            seen.add(str(c.get(idf)))
+            continue
+        out.append(c)
+    return out
 
 
 def link(item: dict, tg: list[dict]) -> list[str]:
@@ -259,6 +325,23 @@ def run(rt: dict, force: bool = False) -> str:
                 by.setdefault(k, []).append(dict(t=r.title, tags=str(r.tags) if str(r.tags) != 'nan' else '', src=r.src,
                                                  at=r.published or r.fetched, link=r.link))
     lab = {t['key']: t['label'] for t in tg}
+    tmap = {t['key']: t for t in tg}
+    blk: dict[str, dict] = {}                                                 # Ц23а: жёсткие факты (≤ 72 ч, матч не начался)
+    if len(allf):
+        hcut = (now - dt.timedelta(hours=HARD_H)).strftime('%Y-%m-%d %H:%M')
+        rec = allf[allf.matches.fillna('').astype(str).ne('')]
+        for _, r in rec.iterrows():
+            when = str(r.published) if str(r.published) not in ('', 'nan') else str(r.fetched)
+            if when < hcut:
+                continue
+            for k in str(r.matches).split(';'):
+                t = tmap.get(k)
+                if not t or k in blk or pd.Timestamp(t['start']).to_pydatetime() <= now:
+                    continue
+                why = hard(str(r.title), str(r.summary) if str(r.summary) != 'nan' else '', t)
+                if why:
+                    blk[k] = dict(why=why, match=t['label'], news=str(r.title)[:160], src=r.src, at=when, link=r.link)
+    BLOCK.write_text(json.dumps(blk, ensure_ascii=False, indent=1), encoding='utf-8')
     MATCHES.write_text(json.dumps({k: dict(match=lab.get(k, ''), news=v[-10:]) for k, v in by.items() if k in lab},
                                   ensure_ascii=False, indent=1), encoding='utf-8')
     linked = int(new.matches.astype(str).ne('').sum()) if len(new) else 0
@@ -269,4 +352,5 @@ def run(rt: dict, force: bool = False) -> str:
                 tg_cnt[t] = tg_cnt.get(t, 0) + 1
     top = ', '.join(f'{k} {v}' for k, v in sorted(tg_cnt.items(), key=lambda z: -z[1])[:5])
     return (f'📰 новости: лент {ok}/{len(FEEDS)}{" (нет: " + ", ".join(bad) + ")" if bad else ""} · новых {len(new)} · '
-            f'к нашим матчам {linked} (матчей {len([k for k in by if k in lab])} из {len(tg)}) · {top or "меток нет"}')
+            f'к нашим матчам {linked} (матчей {len([k for k in by if k in lab])} из {len(tg)}) · {top or "меток нет"}'
+            + (' · ⛔ вне ⭐: ' + '; '.join(f"{v['match']} ({v['why']})" for v in blk.values()) if blk else ''))

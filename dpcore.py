@@ -269,6 +269,10 @@ def process(rt: dict, store: J.Store, items: list[tuple], off: dict, daily_done:
     raw = _dedupe(offers_fn(items, off, day, log) + [_revive(o) for o in cur.get('shots', []) if pd.Timestamp(o['start_utc']) > now])
     cands = [o for o in PK.choose(raw) if o['market'] not in off and not o.get('veto')]   # 21.11: вето ✔ капера — вне выбора
     cands = SL.reorder(_sk(), cands)                            # 🧠 пониженные сегменты — в конец очереди
+    try:                                                        # 📰 Ц23а: перенос/отмена матча, снятие — матч вне новой ⭐
+        cands = __import__('newsdesk').cut(cands, 'tn', 'espn_id', log)
+    except Exception as ex:
+        log.append(f'📰 ⭐: сбой проверки новостей {ex.__class__.__name__}')
     if not hold:
         snap_prices(rt, cur, cands, now)                        # 📈 последняя цена рынка до начала — для CLV
     if not dry:

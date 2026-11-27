@@ -375,6 +375,23 @@ check('📰 Ц23: русский текст — по справочнику', ND
 _tgp = '<div class="tgme_widget_message_wrap"><div data-post="championat/123"><div class="tgme_widget_message_text js">Медведев снялся с турнира</div><time datetime="2026-11-27T09:00:00+00:00"></time></div></div>'
 _pt = ND.parse_tg(_tgp)[0]
 check('📰 Ц23: Telegram-превью и транслит фамилии', (_pt['link'], ND.link(dict(_pt, sports=['tn']), [dict(key='tn|9', sport='tn', lat=['medvedev', 'sinner'], ru=[], surn=True)])), ('https://t.me/championat/123', ['tn|9']))
+# 📰 Ц23а (28.11): жёсткие факты — перенос (обе стороны), снятие теннисиста (фамилия в заголовке) → матч вне новой ⭐
+_tf = dict(key='fb|7', sport='fb', surn=False, sides=[dict(lat=['brest'], ru=[], nm='Brest'), dict(lat=['lorient'], ru=[], nm='Lorient')])
+_tt = dict(key='tn|8', sport='tn', surn=True, sides=[dict(lat=['medvedev'], ru=[], nm='Daniil Medvedev'), dict(lat=['zverev'], ru=[], nm='Alexander Zverev')])
+check('📰 Ц23а: перенос — только при обеих сторонах', (ND.hard('Brest v Lorient postponed', '', _tf), ND.hard('Brest match postponed', '', _tf),
+      ND.hard('Brest goal cancelled v Lorient', '', _tf)), ('перенос/отмена матча', '', ''))
+check('📰 Ц23а: снятие теннисиста (рус. и англ.)', (ND.hard('Медведев снялся с турнира', '', _tt), ND.hard('Sinner withdraws', '', _tt)),
+      ('снятие: Daniil Medvedev', ''))
+_bk = ND.BLOCK
+try:
+    import tempfile as _tmp
+    ND.BLOCK = Path(_tmp.mkdtemp()) / 'block.json'
+    ND.BLOCK.write_text(__import__('json').dumps({'fb|7': dict(why='перенос/отмена матча')}), encoding='utf-8')
+    _lg: list = []
+    check('📰 Ц23а: cut — матч вне кандидатов ⭐, строка в лог', ([c['espn_id'] for c in ND.cut([dict(espn_id='7', match='Brest — Lorient'),
+          dict(espn_id='5', match='A — B')], 'fb', 'espn_id', _lg)], _lg), (['5'], ['📰 ⭐: матч исключён — Brest — Lorient: перенос/отмена матча']))
+finally:
+    ND.BLOCK = _bk
 check('🖼 сводка каперов — таблица', bool(CD._CAP.match('Green Line — 7/7 · прогнозов 8 · ROI +84%')), True)
 import notify as NT
 _r0 = CD.render

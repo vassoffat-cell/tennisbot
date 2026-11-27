@@ -299,6 +299,10 @@ def process(store: J.Store, rt: dict, items, tp, leagues: tuple, day, lo, hi, no
     if skipped:
         log.append(f'⭐🏒 КХЛ мало свежих матчей (< 5 за 60 дн.) — вне ставки дня: {len(set(skipped))} матч.')
     all_cands = cands
+    try:                                                     # 📰 Ц23а: перенос/отмена матча — матч вне новой ⭐
+        cands = __import__('newsdesk').cut(cands, 'hk', 'id', log)
+    except Exception as ex:
+        log.append(f'📰 ⭐🏒: сбой проверки новостей {ex.__class__.__name__}')
     if HK_LADDER and HK_NEED_PRICE:
         cands = [c for c in cands if int(c['tier']) == TIER_PRICED]
     scan = ''
