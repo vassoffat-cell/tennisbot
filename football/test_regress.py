@@ -428,6 +428,16 @@ check('💳 Ц22: флаг тарифа и доли — одинаковы (ко
 check('💳 Ц22: матч через 2 ч — «скоро», через 5 ч — нет', (_OF._soon(_soon_ev, _dt.datetime.now(_dt.timezone.utc)),
       _OF._soon([{'commence_time': (_dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(hours=5)).isoformat()}], _dt.datetime.now(_dt.timezone.utc))), (True, False))
 check('💳 Ц22: пока не оплачено — бесплатный режим', _OF.PAID_PLAN, False)
+# 🔏 IMP-08 (28.11): кандидат ⭐, выпавший после смены цены, остаётся в снимке суток
+_SL = importlib.util.module_from_spec(importlib.util.spec_from_file_location('seal_root', _RT0 / 'seal.py'))
+importlib.util.spec_from_file_location('seal_root', _RT0 / 'seal.py').loader.exec_module(_SL)
+_sd = Path(_tf.mkdtemp()); _st = (_dt.datetime.utcnow() + _dt.timedelta(hours=5)).strftime('%Y-%m-%d %H:%M')
+_r = lambda mk, pk, ln, p: dict(match_id='nhl:9', start_utc=_st, group='', market=mk, pick=pk, line=ln, p=p)
+_lo, _hi = _dt.datetime.utcnow() - _dt.timedelta(hours=1), _dt.datetime.utcnow() + _dt.timedelta(hours=20)
+_SL.seal('hockey', [], _lo, _hi, _dt.datetime.utcnow(), _sd, 'd', [_r('TOT', 'U', 6.5, 0.55), _r('TOT', 'O', 4.5, 0.74)])
+_SL.seal('hockey', [], _lo, _hi, _dt.datetime.utcnow(), _sd, 'd', [_r('TOT', 'O', 4.5, 0.75)])
+_snap = pd.read_csv(_sd / 'seal' / 'hockey_d.csv', dtype=str)
+check('🔏 IMP-08: строка ⭐ не пропадает из снимка, P обновляется', sorted(zip(_snap.pick, _snap.p)), [('O', '0.75'), ('U', '0.55')])
 # 📰 Ц23б (28.11): важная новость по нашему матчу ближайших 12 ч → прогон бота и свежая цена лиги
 _ndt = _dt.datetime.utcnow()
 _tm = {'fb|7': dict(key='fb|7', sport='fb', label='Brest — Lorient', start=(_ndt + _dt.timedelta(hours=5)).strftime('%Y-%m-%d %H:%M')),

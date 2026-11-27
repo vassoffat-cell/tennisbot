@@ -85,7 +85,12 @@ def seal(sport: str, items: list, lo, hi, now, folder: Path, day, extra: list[di
     f = Path(folder) / 'seal' / f'{sport}_{day}.csv'
     old = pd.read_csv(f, dtype=str, keep_default_na=False) if f.exists() else pd.DataFrame(columns=COLS)
     if len(old):                                                  # начавшиеся (их нет в прогоне) — заморожены; будущие — свежая версия
-        old = old[~old.match_id.isin(set(new.match_id))]
+        # 28.11 (health IMP-08 ❌ 27.11 nhl:401892801 ТМ6,5): кандидат ⭐, выпавший из прогона после смены цены, раньше исчезал из
+        # снимка вместе со старыми строками матча → ⭐ «не в снимке». Теперь строки будущих матчей, которых нет в новом прогоне, остаются.
+        nk = set(zip(new.match_id.astype(str), new.market.astype(str), new.pick.astype(str), new.line.astype(str)))
+        ln = old.line.astype(str).map(lambda v: '' if v in ('', 'nan', 'None') else f'{float(v):g}')
+        keep = [k not in nk for k in zip(old.match_id.astype(str), old.market.astype(str), old.pick.astype(str), ln)]
+        old = old[[(m not in set(new.match_id)) or kp for m, kp in zip(old.match_id, keep)]]
     snap = pd.concat([old.astype(str), new.astype(str)], ignore_index=True).sort_values(['start_utc', 'match_id', 'market', 'pick', 'line'])
     f.parent.mkdir(parents=True, exist_ok=True)
     body = snap.to_csv(index=False)
