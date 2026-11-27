@@ -72,10 +72,11 @@ jobs:
         if: github.event_name == 'schedule' && github.event.schedule != '13 16 * * *'
         run: |
           # 💤 28.11 Р10 (решение пользователя): умный шлюз — резерв пропускается, если полный прогон написал «делать нечего до …»
+          # 28.11 03:23: пропуск только за ≥ 20 мин до дела — planTick_ засчитывает любой прогон с (окно − 15 мин), даже пропущенный
           if [ "${{ github.event.schedule }}" = "37 3-19/2 * * *" ]; then
             ih=$(gh api "repos/${{ github.repository }}/contents/football/data/idle.json" -H 'Accept: application/vnd.github.raw' 2>/dev/null || true)
             iu=$(echo "$ih" | jq -r '.until // empty' 2>/dev/null || true); im=$(echo "$ih" | jq -r '.made // empty' 2>/dev/null || true)
-            if [ -n "$iu" ] && [ -n "$im" ] && [[ "$im" > "$(date -u -d '-8 hours' '+%Y-%m-%d %H:%M')" ]] && [[ "$(date -u '+%Y-%m-%d %H:%M')" < "$iu" ]]; then
+            if [ -n "$iu" ] && [ -n "$im" ] && [[ "$im" > "$(date -u -d '-8 hours' '+%Y-%m-%d %H:%M')" ]] && [[ "$(date -u -d '+20 min' '+%Y-%m-%d %H:%M')" < "$iu" ]]; then
               echo "skip=true" >> "$GITHUB_OUTPUT"; echo "💤 резерв: делать нечего до $iu UTC ($(echo "$ih" | jq -r '.why // ""')) — пропуск"; exit 0
             fi
           fi
