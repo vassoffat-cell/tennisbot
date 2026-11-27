@@ -64,19 +64,19 @@
     "src": "sportexpress",
     "at": "2026-11-25 20:33",
     "link": "https://www.sport-express.ru/football/champions-league/news/pszh-roma-parizhane-sravnyali-schet-2479012/"
+   },
+   {
+    "t": "Фабрицио Романо отреагировал на слухи о возможном трансфере Винисиуса Жуниора в «ПСЖ»",
+    "tags": "травма;слух",
+    "src": "champ_fb",
+    "at": "2026-11-27 20:40",
+    "link": "https://www.championat.com/football/news-6716886-fabricio-romano-otreagiroval-na-sluhi-o-vozmozhnom-transfere-vinisiusa-zhuniora-v-pszh.html"
    }
   ]
  },
  "fb|401879225": {
   "match": "Nottingham Forest — Chelsea",
   "news": [
-   {
-    "t": "Jesus stunner gives Forest early lead vs Chelsea LIVE!",
-    "tags": "",
-    "src": "sky_fb",
-    "at": "2026-11-27 18:30",
-    "link": "https://www.skysports.com/football/nottingham-forest-vs-chelsea/live/559562"
-   },
    {
     "t": "'It's a WORLDIE!' - Igor Jesus stuns Chelsea with stunning volley",
     "tags": "",
@@ -139,6 +139,13 @@
     "src": "sportexpress",
     "at": "2026-11-26 09:24",
     "link": "https://www.sport-express.ru/football/transfers/news/caughtoffside-pszh-nacelilsya-na-estevana-2479211/"
+   },
+   {
+    "t": "😮 ⚽️ «Челси» на полпути к третьему подряд поражению в АПЛ – в первом тайме лондонцы не нанесли ни одного удара в створ ворот «Ноттингема» и набрали всего 0,09 x",
+    "tags": "",
+    "src": "tg_sportsru",
+    "at": "2026-11-27 20:50",
+    "link": "https://t.me/sportsru/132194"
    }
   ]
  },
@@ -262,6 +269,13 @@
     "src": "vi",
     "at": "2026-11-27 19:43",
     "link": "https://www.vi.nl/nieuws/vi-live-willem-ii-tegen-fc-groningen-in-de-eredivisie"
+   },
+   {
+    "t": "Willem II geeft eerste competitiezege in blessuretijd weg tegen FC Groningen",
+    "tags": "травма",
+    "src": "vi",
+    "at": "2026-11-27 21:01",
+    "link": "https://www.vi.nl/nieuws/willem-ii-geeft-eerste-competitiezege-in-blessuretijd-weg-tegen-fc-groningen"
    }
   ]
  },
@@ -307,6 +321,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 14:49",
     "link": "https://www.championat.com/hockey/news-6716446-boumen-zhal-krosbi-potomu-chto-ego-komanda-ne-ochen-silna-ona-slabee-chem-vashington.html"
+   },
+   {
+    "t": "«Торонто» одержал победу над «Бостоном», Марченко — без очков в первом матче после травмы",
+    "tags": "травма",
+    "src": "champ_hk",
+    "at": "2026-11-27 20:44",
+    "link": "https://www.championat.com/hockey/news-6716896-boston-bryuinz-toronto-mejpl-lifs-rezultat-matcha-27-noyabrya-2026-goda-schet-1-3-regulyarnyj-chempionat-nhl-2026-2027.html"
    }
   ]
  },
@@ -366,6 +387,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 17:37",
     "link": "https://www.championat.com/hockey/news-6716678-forvard-ajlenders-palmeri-vtoroj-god-podryad-vybyl-do-konca-sezona-iz-za-travmy-kolena.html"
+   },
+   {
+    "t": "Фанаты «Филадельфии» скандировали «Мы хотим Мичкова!» на старте матча с «Ванкувером»",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 20:57",
+    "link": "https://www.championat.com/hockey/news-6716904-fanaty-filadelfii-skandirovali-my-hotim-michkova-na-starte-matcha-s-vankuverom.html"
    }
   ]
  },
@@ -478,6 +506,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 15:08",
     "link": "https://www.championat.com/hockey/news-6716474-yuta-vyzvala-belorusskogo-forvarda-egora-borikova-iz-ahl.html"
+   },
+   {
+    "t": "«Юта» обыграла «Нэшвилл» в серии буллитов, на счету Сергачёва гол и ассист",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 21:00",
+    "link": "https://www.championat.com/hockey/news-6716908-neshvill-predatorz-yuta-mammot-rezultat-matcha-27-noyabrya-2026-goda-schet-5-6-regulyarnyj-chempionat-nhl-2026-2027.html"
    }
   ]
  },
@@ -490,6 +525,42 @@
     "src": "tg_sportsru",
     "at": "2026-11-27 18:15",
     "link": "https://t.me/sportsru/132190"
+   }
+  ]
+ },
+ "hk|nhl:401892812": {
+  "match": "Detroit Red Wings — Nashville Predators",
+  "news": [
+   {
+    "t": "«Юта» обыграла «Нэшвилл» в серии буллитов, на счету Сергачёва гол и ассист",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 21:00",
+    "link": "https://www.championat.com/hockey/news-6716908-neshvill-predatorz-yuta-mammot-rezultat-matcha-27-noyabrya-2026-goda-schet-5-6-regulyarnyj-chempionat-nhl-2026-2027.html"
+   }
+  ]
+ },
+ "hk|nhl:401892813": {
+  "match": "New Jersey Devils — Winnipeg Jets",
+  "news": [
+   {
+    "t": "«Нью-Джерси» обыграл «Калгари», у Грицюка и Суниева по передаче",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 20:38",
+    "link": "https://www.championat.com/hockey/news-6716892-nyu-dzhersi-devilz-kalgari-flejmz-rezultat-matcha-27-noyabrya-2026-goda-schet-5-3-regulyarnyj-chempionat-nhl-2026-2027.html"
+   }
+  ]
+ },
+ "hk|nhl:401892814": {
+  "match": "New York Rangers — Calgary Flames",
+  "news": [
+   {
+    "t": "«Нью-Джерси» обыграл «Калгари», у Грицюка и Суниева по передаче",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-27 20:38",
+    "link": "https://www.championat.com/hockey/news-6716892-nyu-dzhersi-devilz-kalgari-flejmz-rezultat-matcha-27-noyabrya-2026-goda-schet-5-3-regulyarnyj-chempionat-nhl-2026-2027.html"
    }
   ]
  }
