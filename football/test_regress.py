@@ -362,6 +362,14 @@ check('🖼 шрифт Montserrat, ⭐N → №N', (CD.FONT['r'].name, CD._num('
 NT.PIN_CARDS, _pc = True, NT.PIN_CARDS
 check('🖼 ⭐ без токена — без исключения', NT.send_pick("⚽1 <b>Футбол · ставка дня</b>\nтекст"), [])
 
+# 27.11 меню картинками: ключ заголовка одинаков в сообщении и в архиве (без года, «повтор», значков)
+check('🖼 ключ отчёта: сообщение = архив', NT.card_key(NT.card_title(['<b>📈 Футбол · отчёт · 26.11 · повтор</b> · x'])),
+      NT.card_key(NT.card_title(['<b>📈 Футбол · отчёт · 26.11.2026</b>'])))
+import archive as AR
+NT.CARD_IDS.clear(); NT.CARD_IDS[NT.card_key('⚽ Футбол · ставки дня · 26.11')] = ['F1', 'F2']
+check('🖼 архив: img по заголовку', (AR._img(['<b>⚽ Футбол · ставки дня · 26.11.2026</b>\n…']), AR._img(['<b>Другой</b>'])), ('["F1", "F2"]', ''))
+NT.CARD_IDS.clear()
+
 if FAILS:
     print('\n'.join(FAILS))
     print(f'тесты регрессии: провалов {len(FAILS)}')

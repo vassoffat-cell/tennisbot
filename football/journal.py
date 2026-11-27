@@ -54,7 +54,7 @@ SHEETS = {'auto_forecasts': AUTO_COLS, 'auto_lines': LINE_COLS, 'summary': ['п�
           'reports': ['key', 'kind', 'title', 'text', 'updated'],     # готовые отчёты для кнопки «Аналитика» (бот только читает)
           'tg_cache': ['key', 'text', 'updated'],
           'plan': ['at', 'hi', 'why', 'made'],                    # ТЗ-007 шаг 2: окна прогонов по матчам (UTC) для Apps Script
-          'archive': ['key', 'sport', 'sec', 'cut', 'period', 'title', 'text', 'updated']}   # ТЗ-006: архив отчётов для меню                     # последний список прогноза для кнопки «Прогноз 24 ч»
+          'archive': ['key', 'sport', 'sec', 'cut', 'period', 'title', 'text', 'updated', 'img']}   # ТЗ-006: архив отчётов для меню                     # последний список прогноза для кнопки «Прогноз 24 ч»
 
 
 def now_utc() -> str:

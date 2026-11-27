@@ -19,7 +19,7 @@ from typing import Callable, Iterable
 
 import pandas as pd
 
-COLS = ['key', 'sport', 'sec', 'cut', 'period', 'title', 'text', 'updated']
+COLS = ['key', 'sport', 'sec', 'cut', 'period', 'title', 'text', 'updated', 'img']   # 27.11: img — file_id картинок (В9)
 MAX_CELL = 45000                       # лимит ячейки Google Таблиц — 50 000 знаков
 SEC_RU = {'rep': '📈 Отчёт', 'cap': '👥 Каперы', 'dp': '⭐ Ставки дня', 'hist': '🗂 История', 'learn': '🧠 Самообучение',
           'audit': '🔎 Аудит'}
@@ -43,7 +43,8 @@ def put(store, items: Iterable[tuple], split_fn: Callable[[str], list[str]] | No
         while len(js) > MAX_CELL and len(bl) > 1:
             bl = bl[:-1]
             js = json.dumps(bl + ['…'], ensure_ascii=False)
-        rows.append(dict(key=f'{sp}|{sec}|{cut}|{per}', sport=sp, sec=sec, cut=cut, period=str(per), title=title, text=js, updated=now))
+        rows.append(dict(key=f'{sp}|{sec}|{cut}|{per}', sport=sp, sec=sec, cut=cut, period=str(per), title=title, text=js, updated=now,
+                         img=_img(bl)))
     if not rows:
         return 0
     df = store.read('archive')
@@ -52,15 +53,27 @@ def put(store, items: Iterable[tuple], split_fn: Callable[[str], list[str]] | No
     for r in rows:
         if r['key'] in have:
             i = have[r['key']]
-            df.loc[i, ['title', 'text', 'updated']] = [r['title'], r['text'], r['updated']]
+            img = r['img'] or (str(df.at[i, 'img']) if 'img' in df.columns else '')   # картинка уже была — не терять
+            df.loc[i, ['title', 'text', 'updated', 'img']] = [r['title'], r['text'], r['updated'], img]
             upd.append(i)
         else:
             new.append(r)
     if upd:
-        store.update('archive', df.loc[sorted(set(upd))], ['title', 'text', 'updated'])
+        store.update('archive', df.loc[sorted(set(upd))], ['title', 'text', 'updated', 'img'])
     if new:
         store.append('archive', new)
     return len(rows)
+
+
+def _img(blocks: list[str]) -> str:
+    """27.11 (В9): file_id картинок, если этот отчёт в этом прогоне ушёл картинкой (notify.CARD_IDS по заголовку) — для меню."""
+    try:
+        import notify
+        ids = notify.CARD_IDS.get(notify.card_key(notify.card_title(blocks)))
+        return json.dumps(ids) if ids else ''
+    except Exception:
+        pass
+    return ''
 
 
 def learn_text(sport: str, title: str, d0: dt.date, d1: dt.date, rules: bool) -> list[str]:

@@ -231,6 +231,26 @@ def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: boo
 CARDS = True                    # 27.11 (решение пользователя): отчёты ①②③ — картинкой (cards.py, светлый фон); свёрнутые списки — текстом
 
 
+_FID: list[str] = []
+CARD_IDS: dict[str, list[str]] = {}              # 27.11: заголовок отчёта → file_id картинок (archive.put → лист archive, столбец img)
+
+
+def card_key(title: str) -> str:
+    """Ключ заголовка без значков, «· повтор», года и пробелов: «📈 Футбол · отчёт · 26.11.2026» → «футбол·отчёт·26.11»."""
+    t = re.sub(r'·\s*повтор', '', html.unescape(str(title)))
+    t = re.sub(r'(\d\d\.\d\d)\.\d{4}', r'\1', t)
+    return re.sub(r'[^\w·.–\-]', '', t.lower())
+
+
+def card_title(blocks: list[str]) -> str:
+    """Заголовок отчёта — первый <b>…</b> с началом его строки (одинаково в сообщении и в архиве)."""
+    for b in blocks:
+        m = re.search(r'<b>(.*?)</b>', b or '')
+        if m:
+            return b[:m.start()].split('\n')[-1] + m.group(1)
+    return ''
+
+
 def _photo(chat: int, png: bytes, caption: str, silent: bool, bot: str) -> int | None:
     """sendPhoto с has_spoiler (картинка размыта, пока не нажата — как скрытый текст В3б). Multipart без сторонних библиотек."""
     import uuid
@@ -247,7 +267,12 @@ def _photo(chat: int, png: bytes, caption: str, silent: bool, bot: str) -> int |
                                      headers={'Content-Type': f'multipart/form-data; boundary={b}'})
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
-                return json.loads(r.read().decode())['result']['message_id']
+                res = json.loads(r.read().decode())['result']
+                try:                                           # 27.11: file_id самой большой копии — меню показывает без загрузки
+                    _FID.append(res['photo'][-1]['file_id'])
+                except Exception:
+                    pass
+                return res['message_id']
         except urllib.error.HTTPError as e:
             if e.code < 500 and e.code != 429 or k == TRIES - 1:
                 raise
@@ -280,6 +305,7 @@ def send_card(blocks: list[str], chat_ids: set[int] | None = None, silent: bool 
         return []
     sent = []
     for chat in (chat_ids or C.ALLOWED_USERS):
+        _FID.clear()
         try:
             for k, png in enumerate(pngs):
                 cap = f'<b>{esc(title)}</b>' + (f' · {k + 1}/{len(pngs)}' if len(pngs) > 1 else '')
@@ -290,6 +316,8 @@ def send_card(blocks: list[str], chat_ids: set[int] | None = None, silent: bool 
             print(f'🖼 фото не отправлено ({_why_tg(e)}) — отчёт текстом')
             sent += send_blocks(blocks, {chat}, silent, bot, queue)
             continue
+        if len(_FID) == len(pngs):
+            CARD_IDS.setdefault(card_key(card_title(blocks)), list(_FID))
         if texts:
             sent += send_blocks(texts, {chat}, silent, bot, queue)
     return sent
