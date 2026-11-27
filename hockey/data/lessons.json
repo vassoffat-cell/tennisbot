@@ -129,18 +129,18 @@
  "switch_extra": 0.0,
  "cappers": {
   "kapper_uk": {
-   "n": 11,
-   "w": 8,
-   "e": 6.3,
-   "z": 1.02,
-   "roi": 0.228,
+   "n": 12,
+   "w": 9,
+   "e": 7.0,
+   "z": 1.2,
+   "roi": 0.255,
    "status": "",
    "n_clv": 1,
    "clv": -0.0361,
    "t_clv": 0.0,
    "fire": [
-    5,
-    7
+    6,
+    8
    ],
    "clash": [
     0,
@@ -167,7 +167,7 @@
    ]
   }
  },
- "updated": "2026-11-26",
+ "updated": "2026-11-27",
  "sport": "hockey",
  "history": [],
  "clv_neg": false,
