@@ -1006,3 +1006,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401915805,uefa.europa.conf,uefa,,,2026-11-26 20:00,Hajduk Split,Sint-Truidense,,,0,2,FT,league-phase,0
 401915806,uefa.europa.conf,uefa,,,2026-11-26 20:00,Borac Banja Luka,Atalanta,,Atalanta,2,3,FT,league-phase,0
 401915807,uefa.europa.conf,uefa,,,2026-11-26 20:00,FC Nordsjælland,Panathinaikos,,Panathinaikos,3,2,FT,league-phase,0
+401888240,tur.1,league,TUR,T1,2026-11-27 17:00,Caykur Rizespor,Kasimpasa,Rizespor,Kasimpasa,3,2,FT,2026-27-turkish-super-lig,0
+401888241,tur.1,league,TUR,T1,2026-11-27 17:00,Alanyaspor,Konyaspor,Alanyaspor,Konyaspor,1,2,FT,2026-27-turkish-super-lig,0
