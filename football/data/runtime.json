@@ -1338,7 +1338,7 @@
   "football.yml": 6,
   "daily.yml": 1
  },
- "resend_done": "2026-11-26",
+ "resend_done": "",
  "resend_week_done": "2026-11-11",
  "dp_alarm": {
   "fallback_hi": true
