@@ -428,6 +428,43 @@ check('💳 Ц22: флаг тарифа и доли — одинаковы (ко
 check('💳 Ц22: матч через 2 ч — «скоро», через 5 ч — нет', (_OF._soon(_soon_ev, _dt.datetime.now(_dt.timezone.utc)),
       _OF._soon([{'commence_time': (_dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(hours=5)).isoformat()}], _dt.datetime.now(_dt.timezone.utc))), (True, False))
 check('💳 Ц22: пока не оплачено — бесплатный режим', _OF.PAID_PLAN, False)
+# 📰 Ц23б (28.11): важная новость по нашему матчу ближайших 12 ч → прогон бота и свежая цена лиги
+_ndt = _dt.datetime.utcnow()
+_tm = {'fb|7': dict(key='fb|7', sport='fb', label='Brest — Lorient', start=(_ndt + _dt.timedelta(hours=5)).strftime('%Y-%m-%d %H:%M')),
+       'hk|nhl:1': dict(key='hk|nhl:1', sport='hk', label='A — B', start=(_ndt + _dt.timedelta(hours=30)).strftime('%Y-%m-%d %H:%M'))}
+_hb = ND.HOT
+try:
+    ND.HOT = Path(_tf.mkdtemp()) / 'hot.json'
+    _pub = _ndt.strftime('%Y-%m-%d %H:%M')
+    _rows = [dict(tags='травма', matches='fb|7', title='Brest striker injured', published=_pub),
+             dict(tags='слух', matches='fb|7', title='transfer rumour', published=_pub),
+             dict(tags='травма', matches='hk|nhl:1', title='far match', published=_pub),
+             dict(tags='травма', matches='fb|7', title='old', published='2020-01-01 00:00')]
+    _h, _w, _nt = ND.signals(_rows, _tm, _ndt)
+    check('📰 Ц23б: травма по матчу через 5 ч — сигнал футболу; слух, дальний матч, старая запись — нет',
+          (sorted(_h), _w, _nt), (['fb|7'], ['football.yml'], ['Brest — Lorient (травма)']))
+    ND.HOT.write_text(_js.dumps(_h))
+    check('📰 Ц23б: повторная новость по тому же матчу — без нового запуска', ND.signals(_rows[:1], _tm, _ndt)[1], [])
+finally:
+    ND.HOT = _hb
+_od = Path(_tf.mkdtemp()); _calls = []
+_sv = (_OF.DIR, _OF.odds, _OF.budget_ok, _OF._save_usage, _OF.os.environ.get('ODDS_API_KEY'))
+try:
+    _OF.DIR = _od; _OF.os.environ['ODDS_API_KEY'] = 'x'
+    _OF.odds = lambda k, m: (_calls.append(k) or ([], {'last': '2'}))
+    _OF.budget_ok = lambda c, b: True
+    _OF._save_usage = lambda *a, **k: None
+    _t0 = (_dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(hours=2)).isoformat(timespec='seconds')
+    (_od / 'football_2026-11-28.json').write_text(_js.dumps({'sports': {'soccer_epl': _t0, 'soccer_spain_la_liga': _t0}, 'events': {}}))
+    _OF.day_events('football', ['soccer_epl', 'soccer_spain_la_liga'], ('h2h', 'totals'), '2026-11-28', refresh_hours=24,
+                   force={'soccer_epl': _dt.datetime.now(_dt.timezone.utc).isoformat(timespec='seconds')})
+    check('📰 Ц23б: новость новее цены — обновляется только лига матча', _calls, ['soccer_epl'])
+finally:
+    _OF.DIR, _OF.odds, _OF.budget_ok, _OF._save_usage = _sv[:4]
+    if _sv[4] is None:
+        _OF.os.environ.pop('ODDS_API_KEY', None)
+    else:
+        _OF.os.environ['ODDS_API_KEY'] = _sv[4]
 check('🖼 сводка каперов — таблица', bool(CD._CAP.match('Green Line — 7/7 · прогнозов 8 · ROI +84%')), True)
 import notify as NT
 _r0 = CD.render

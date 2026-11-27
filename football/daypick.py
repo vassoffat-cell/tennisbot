@@ -193,7 +193,19 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
     try:
         active = {s['key'] for s in OD.sports() if s['active']}
         keys = list(dict.fromkeys(SPORT_KEYS[m.comp] for m, _ in todays if SPORT_KEYS.get(m.comp) in active))
-        events, lg = OD.day_events('football', keys, API_MARKETS, day.isoformat(), refresh_hours=24)
+        force = {}
+        try:                                                    # 📰 28.11 Ц23б: важная новость по нашему матчу — свежая цена его лиги
+            import newsdesk as ND
+            hot = ND.hot()
+            for m, _ in todays:
+                h, k = hot.get(f'fb|{m.id}'), SPORT_KEYS.get(m.comp)
+                if h and k:
+                    force[k] = max(force.get(k, ''), h['at'])
+        except Exception:
+            force = {}
+        events, lg = OD.day_events('football', keys, API_MARKETS, day.isoformat(), refresh_hours=24, force=force)
+        if force and any('потрачено' in x for x in lg):
+            log.append(f'📰 кф: свежая цена по новостям — {", ".join(force)}')
         log += lg
     except Exception as e:
         log.append(f'кф: недоступны ({e.__class__.__name__})')

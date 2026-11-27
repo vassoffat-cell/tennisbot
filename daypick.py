@@ -155,7 +155,17 @@ def offers(items: list[tuple], off: dict, day, log: list[str]) -> list[dict]:
     events, r = [], OD.r_ratio()
     try:
         keys = [s['key'] for s in OD.sports() if s['active'] and s['group'] == 'Tennis']
-        events, lg = OD.day_events('tennis', keys, API_MARKETS, day.isoformat(), refresh_hours=24)
+        force = {}
+        try:                                                    # 📰 28.11 Ц23б: важная новость по нашему матчу — свежие цены тенниса
+            import newsdesk as ND
+            hot = ND.hot()
+            at = max([hot[f'tn|{m.id}']['at'] for m, _ in todays if f'tn|{m.id}' in hot] or [''])
+            force = {k: at for k in keys} if at else {}
+        except Exception:
+            force = {}
+        events, lg = OD.day_events('tennis', keys, API_MARKETS, day.isoformat(), refresh_hours=24, force=force)
+        if force and any('потрачено' in x for x in lg):
+            log.append('📰 кф: свежая цена по новостям — теннис')
         log += lg
     except Exception as e:                                   # нет ключа / сеть — работаем без котировок
         log.append(f'кф: недоступны ({e.__class__.__name__})')

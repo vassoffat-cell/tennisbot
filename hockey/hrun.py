@@ -686,8 +686,18 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
     if len(up) and not dry and getattr(C, 'HK_ODDS_LOG', True):
         try:                                              # A31 (16.11): цены 1xBet + Pinnacle НХЛ — сбор для EV/CLV ставки дня
             import odds as OA                             # (рынки h2h, тотал, фора; ≤ 2 снимка в сутки по 3 кредита, кэш data/odds)
+            force = {}
+            try:                                          # 📰 28.11 Ц23б: важная новость по матчу НХЛ — свежая цена
+                import newsdesk as ND
+                hot = ND.hot()
+                at = max([hot[f'hk|{i}']['at'] for i in up.id.astype(str) if f'hk|{i}' in hot] or [''])
+                force = {'icehockey_nhl': at} if at else {}
+            except Exception:
+                force = {}
             evs, ol = OA.day_events('hockey', ['icehockey_nhl'], ('h2h', 'totals', 'spreads'),
-                                    str((now + dt.timedelta(hours=C.TZ_OFFSET_HOURS)).date()), refresh_hours=10)
+                                    str((now + dt.timedelta(hours=C.TZ_OFFSET_HOURS)).date()), refresh_hours=10, force=force)
+            if force and any('потрачено' in x for x in ol):
+                log.append('🏒 📰 кф: свежая цена по новостям')
             log += [f'🏒 {x}' for x in ol] + [f'🏒 A31 цены 1xBet/Pinnacle: матчей НХЛ {len(evs)}']
             if any('потрачено' in x for x in ol):         # 16.11: история снимков (кэш дня перезаписывается) — для CLV и проверки EV
                 import gzip, json as _js

@@ -142,3 +142,11 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Data update $(date -u +%F)"
           ok=0; for i in 1 2 3; do (git pull --rebase -X theirs --autostash origin main || { git rebase --abort; false; }) && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]
+      - name: News reaction (Ц23б)
+        # 28.11: важная новость по нашему матчу ближайших 12 ч → внеплановый прогон бота этого вида (после сохранения данных)
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ -s /tmp/news_pending.txt ]; then for w in $(cat /tmp/news_pending.txt); do gh workflow run "$w" --ref main --repo "${{ github.repository }}" && echo "📰 важная новость — запуск $w"; done; fi
+        env:
+          GH_TOKEN: ${{ github.token }}

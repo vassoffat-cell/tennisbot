@@ -30,6 +30,7 @@ jobs:
             football
             hockey
             data/seal
+            data/news
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
@@ -52,17 +53,29 @@ jobs:
           CAP_TEST: ${{ github.event.inputs.cap_test }}
           CAP_RESEND: ${{ github.event.inputs.cap_resend }}
           GH_TOKEN: ${{ github.token }}                   # 16.11: сторож ключевых часов читает прогоны daily/football (actions: read)
+      - name: News (Ц23)
+        # 28.11: сбор новостей каждый час и в прогоне каперов — резервы тенниса/хоккея теперь пропускаются, когда делать нечего (Р10)
+        continue-on-error: true
+        run: python newsdesk.py
       - name: Save data
         if: always()
         run: |
           git config user.name "cappers-bot"
           git config user.email "cappers-bot@users.noreply.github.com"
-          git add football/data
+          git add football/data data/news
           git diff --cached --quiet && exit 0
           git commit -m "Cappers $(date -u +%F' '%H:%M)"
           ok=0; for i in 1 2 3; do (git pull --rebase -X theirs --autostash origin main || { git rebase --abort; false; }) && git push && ok=1 && break; sleep 5; done; [ $ok = 1 ]
       - name: Day pick reaction
         if: steps.cap.outputs.dispatch != ''
         run: for w in ${{ steps.cap.outputs.dispatch }}; do gh workflow run "$w" --ref main --repo "${{ github.repository }}"; done
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: News reaction (Ц23б)
+        # 28.11: важная новость по нашему матчу ближайших 12 ч → внеплановый прогон бота этого вида (после сохранения данных)
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ -s /tmp/news_pending.txt ]; then for w in $(cat /tmp/news_pending.txt); do gh workflow run "$w" --ref main --repo "${{ github.repository }}" && echo "📰 важная новость — запуск $w"; done; fi
         env:
           GH_TOKEN: ${{ github.token }}

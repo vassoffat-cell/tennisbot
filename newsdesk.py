@@ -77,6 +77,13 @@ POSTPONE = re.compile(TAGS['перенос'], re.I)
 WITHDRAW = re.compile(r'withdr[ae]w|withdrawn|walkover|pulls? out|снял(ся|ась)|отказал(ся|ась) от|не сыграет|forfait|se retira', re.I)
 HARD_H = 72                                      # жёсткий факт — новость не старше 72 ч
 BLOCK = ROOT / 'data' / 'news' / 'block.json'
+# 28.11 Ц23б (пользователь: «поэтому, чтобы помогать, есть система новостей»): важная новость по нашему матчу ближайших HOT_H ч —
+# сигнал системе: внеплановый прогон бота этого вида (как свежая ставка капера) и свежая цена лиги матча (кф в кэше старше новости).
+IMPORTANT = ('травма', 'не сыграет', 'болезнь', 'дисквалификация', 'перенос', 'ротация')
+HOT = ROOT / 'data' / 'news' / 'hot.json'
+STATE = ROOT / 'data' / 'news' / 'state.json'
+HOT_H = 12
+WF = {'fb': 'football.yml', 'tn': 'daily.yml', 'hk': 'daily.yml'}
 TAG_RX = {k: re.compile(v, re.I) for k, v in TAGS.items()}
 GENERIC = {'city', 'united', 'real', 'club', 'sporting', 'athletic', 'town', 'county', 'rovers', 'wanderers', 'albion',
            'hotspur', 'football', 'calcio', 'deportivo', 'olympique', 'stade', 'inter', 'dynamo', 'dinamo', 'saint',
@@ -258,6 +265,55 @@ def cut(cands: list[dict], sport: str, idf: str, log: list[str] | None = None) -
     return out
 
 
+def hot(max_h: float = 24) -> dict:
+    """Матчи с важной новостью (ключ → {at — ISO UTC, why, news}); старше max_h ч — нет."""
+    try:
+        d = json.loads(HOT.read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+    cut = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=max_h)).isoformat(timespec='seconds')
+    return {k: v for k, v in d.items() if str(v.get('at', '')) >= cut}
+
+
+PENDING = Path('/tmp/news_pending.txt')
+
+
+def _pending(wfs: list[str]) -> list[str]:
+    """Запуск ботов — ПОСЛЕ сохранения данных (шаг workflow «News reaction»): иначе бот прочтёт старый hot.json."""
+    try:
+        old = PENDING.read_text().split() if PENDING.exists() else []
+        PENDING.write_text(' '.join(dict.fromkeys(old + wfs)))
+        return wfs
+    except Exception:
+        return []
+
+
+def signals(new_rows: list[dict], tmap: dict, now: dt.datetime) -> tuple[dict, list[str], list[str]]:
+    """Важные новые новости → hot.json и список workflow для внепланового прогона (каждый матч — один раз)."""
+    cur = hot()
+    wfs, notes = [], []
+    for r in new_rows:
+        tg = [t for t in str(r.get('tags', '')).split(';') if t in IMPORTANT]
+        pub = str(r.get('published') or '')
+        if not tg or (pub and pub < (now - dt.timedelta(hours=24)).strftime('%Y-%m-%d %H:%M')):   # старые записи ленты — не сигнал
+            continue
+        for k in [x for x in str(r.get('matches', '')).split(';') if x]:
+            t = tmap.get(k)
+            st = pd.Timestamp(t['start']).to_pydatetime() if t else None
+            if not t or not (now < st <= now + dt.timedelta(hours=HOT_H)):
+                continue
+            first = k not in cur
+            cur[k] = dict(at=dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds'), why=tg[0], match=t['label'],
+                          news=str(r.get('title', ''))[:160], sent=cur.get(k, {}).get('sent', False))
+            if first or not cur[k]['sent']:
+                wf = WF[t['sport']]
+                if wf not in wfs:
+                    wfs.append(wf)
+                cur[k]['sent'] = True
+                notes.append(f"{t['label']} ({tg[0]})")
+    return cur, wfs, notes
+
+
 def link(item: dict, tg: list[dict]) -> list[str]:
     """Ключи наших матчей, о которых новость (по имени команды / фамилии; русский текст — по справочникам и транслиту)."""
     text = f"{item['title']} {item['summary']}".lower()
@@ -278,14 +334,19 @@ def link(item: dict, tg: list[dict]) -> list[str]:
     return hits
 
 
-def run(rt: dict, force: bool = False) -> str:
-    """Раз в час: все ленты → новые записи с метками и привязкой к матчам → журнал + сводка по матчам. Сбой ленты — пропуск."""
+def run(rt: dict | None = None, force: bool = False) -> str:
+    """Раз в час: все ленты → новые записи с метками и привязкой к матчам → журнал + сводка по матчам. Сбой ленты — пропуск.
+    28.11: время прошлого сбора — в data/news/state.json (общий для прогонов тенниса/хоккея и каперов)."""
     now = dt.datetime.utcnow()
-    st = rt.setdefault('newsdesk', {})
+    DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        st = json.loads(STATE.read_text(encoding='utf-8'))
+    except Exception:
+        st = dict((rt or {}).get('newsdesk') or {})
     if not force and st.get('at') and (now - dt.datetime.fromisoformat(st['at'])).total_seconds() < EVERY_MIN * 60:
         return ''
     st['at'] = now.isoformat(timespec='seconds')
-    DIR.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(json.dumps(st), encoding='utf-8')
     old = pd.read_csv(FEED, dtype=str) if FEED.exists() else pd.DataFrame()
     seen = set(old['id']) if len(old) else set()
     tg = targets(now)
@@ -342,6 +403,9 @@ def run(rt: dict, force: bool = False) -> str:
                 if why:
                     blk[k] = dict(why=why, match=t['label'], news=str(r.title)[:160], src=r.src, at=when, link=r.link)
     BLOCK.write_text(json.dumps(blk, ensure_ascii=False, indent=1), encoding='utf-8')
+    hot_d, wfs, notes = signals(rows, tmap, now)                              # Ц23б: важная новость → прогон бота и свежая цена
+    HOT.write_text(json.dumps(hot_d, ensure_ascii=False, indent=1), encoding='utf-8')
+    sent = _pending(wfs) if wfs else []
     MATCHES.write_text(json.dumps({k: dict(match=lab.get(k, ''), news=v[-10:]) for k, v in by.items() if k in lab},
                                   ensure_ascii=False, indent=1), encoding='utf-8')
     linked = int(new.matches.astype(str).ne('').sum()) if len(new) else 0
@@ -353,4 +417,9 @@ def run(rt: dict, force: bool = False) -> str:
     top = ', '.join(f'{k} {v}' for k, v in sorted(tg_cnt.items(), key=lambda z: -z[1])[:5])
     return (f'📰 новости: лент {ok}/{len(FEEDS)}{" (нет: " + ", ".join(bad) + ")" if bad else ""} · новых {len(new)} · '
             f'к нашим матчам {linked} (матчей {len([k for k in by if k in lab])} из {len(tg)}) · {top or "меток нет"}'
-            + (' · ⛔ вне ⭐: ' + '; '.join(f"{v['match']} ({v['why']})" for v in blk.values()) if blk else ''))
+            + (' · ⛔ вне ⭐: ' + '; '.join(f"{v['match']} ({v['why']})" for v in blk.values()) if blk else '')
+            + (f" · 🔔 важно: {'; '.join(notes)} → прогон {' '.join(sent) or 'не запущен'} после сохранения" if notes else ''))
+
+
+if __name__ == '__main__':                       # 28.11: сбор и из прогона каперов (каждый час 15:22–02:22) — без лишних запусков
+    print(run() or '📰 новости: сбор был < 55 мин назад')

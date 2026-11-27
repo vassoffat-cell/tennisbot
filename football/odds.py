@@ -250,7 +250,8 @@ def _soon(events: list[dict], now: dt.datetime) -> bool:
     return False
 
 
-def day_events(bot: str, sport_keys: list[str], markets: tuple[str, ...], day: str, refresh_hours: float = 6.0) -> tuple[list[dict], list[str]]:
+def day_events(bot: str, sport_keys: list[str], markets: tuple[str, ...], day: str, refresh_hours: float = 6.0,
+               force: dict[str, str] | None = None) -> tuple[list[dict], list[str]]:
     """Котировки 1xBet/Pinnacle по турнирам дня. Кэш data/odds/{bot}_{day}.json; повтор не чаще refresh_hours;
     каждая лига — только если хватает кредитов. Возвращает (матчи с котировками, журнал)."""
     if not os.getenv('ODDS_API_KEY'):
@@ -265,8 +266,8 @@ def day_events(bot: str, sport_keys: list[str], markets: tuple[str, ...], day: s
         ttl = refresh_hours * 3600
         if PAID_PLAN and _soon(cache['events'].get(key, []), now):   # Ц22: матч лиги скоро — цена не старше FRESH_MIN
             ttl = min(ttl, FRESH_MIN * 60)
-        if got and (now - dt.datetime.fromisoformat(got)).total_seconds() < ttl:
-            continue
+        if got and (now - dt.datetime.fromisoformat(got)).total_seconds() < ttl and not (force and str(force.get(key, '')) > got):
+            continue                                            # 28.11 Ц23б: важная новость новее цены лиги — цена обновляется
         if not budget_ok(len(markets), bot):
             log.append(f'кф: {key} пропущен — бережём кредиты (доля {bot}: осталось {quota_left(bot)})')
             continue
