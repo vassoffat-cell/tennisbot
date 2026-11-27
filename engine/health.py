@@ -61,6 +61,8 @@ def minutes_check() -> list[tuple[str, str, str, str]]:
     Оценка по прогонам: каждый прогон — длительность, округлённая вверх до минуты (так считает GitHub); Billing API из облака
     недоступен, поэтому это [РАСЧЁТ], не [ФАКТ]. Лимит 2 000 — при перерасходе пользователь докупает (23.11 13:44): ⚠️, не ❌."""
     import math
+    if not gh(f'repos/{REPO}').get('private', True):           # 27.11 Ц19: public — стандартные раннеры бесплатны, лимита нет
+        return [('минуты GitHub (Ц19: на исходе → public до 1-го)', 'private ≤ 2 000', 'public — без лимита', '✅')]
     now = datetime.now(timezone.utc)
     m0 = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     wfs = [w['path'].split('/')[-1] for w in gh(f'repos/{REPO}/actions/workflows?per_page=100').get('workflows', [])]
@@ -75,7 +77,7 @@ def minutes_check() -> list[tuple[str, str, str, str]]:
     left_days = (nxt - now).total_seconds() / 86400
     fc = used + last3 / 3 * left_days
     return [('минуты GitHub: месяц / прогноз (расчёт по прогонам)', '≤ 2 000',
-             f'{used} / ≈ {fc:.0f} (темп {last3 / 3:.0f}/сутки)', '✅' if fc <= 2000 else '⚠️')]
+             f'{used} / ≈ {fc:.0f} (темп {last3 / 3:.0f}/сутки)', '✅' if fc <= 2000 and used < 1850 else '⚠️')]   # ⚠️ → перевести в public (Ц19)
 
 
 def oddspapi_check() -> list[tuple[str, str, str, str]]:

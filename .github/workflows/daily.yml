@@ -113,6 +113,7 @@ jobs:
           RESEND_PICKS: ${{ github.event.inputs.resend_picks }}
           RESEND_WEEK: ${{ github.event.inputs.resend_week }}
           RESEARCH: ${{ github.event.inputs.research }}
+          GITHUB_TOKEN: ${{ github.token }}       # 27.11 Ц19: ghminutes — минуты месяца и режим репозитория (только чтение)
       - name: Save OddsPapi usage (research)
         # 25.11 (Ц6б, проверка 09): разовая проба тратит квоту OddsPapi — её учёт сохраняется, иначе КХЛ возьмёт запросы из резерва тенниса
         if: always() && github.event.inputs.research != ''

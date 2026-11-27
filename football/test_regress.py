@@ -347,6 +347,9 @@ check('🖼 картинка: PNG есть, заголовок', (len(_png) == 1
 check('🖼 свёрнутый список — текстом вместе с заголовком', [t.split('\n')[0] for t in _tx], ['▸ Матчи (1)'])
 _pr = CD._parse_row(' Двойной шан (71%) 240/343  70,0 🟡')
 check('🖼 метка, слипшаяся с «240/343», — число в колонку (27.11)', (_pr['label'], _pr['vals'], _pr['flag']), ('Двойной шанс (71%)', ['240/343', '70,0'], '🟡'))
+import ghminutes as GM
+check('⏱ Ц19: private ≥ 1850 → «public» один раз в месяц', (GM.message(True, 1900, 27, {}, '2026-11')[0], GM.message(True, 1900, 27, {'public': '2026-11'}, '2026-11'), GM.message(True, 1200, 27, {}, '2026-11')), ('public', None, None))
+check('⏱ Ц19: public 1–3 числа → «private»; 4-го — нет', (GM.message(False, 0, 1, {}, '2026-12')[0], GM.message(False, 0, 4, {}, '2026-12')), ('private', None))
 check('🖼 сводка каперов — таблица', bool(CD._CAP.match('Green Line — 7/7 · прогнозов 8 · ROI +84%')), True)
 import notify as NT
 _r0 = CD.render
