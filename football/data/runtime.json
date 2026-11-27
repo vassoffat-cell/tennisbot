@@ -449,7 +449,7 @@
   "исход": 50.8,
   "линии": 70.0
  },
- "tips_book": "2026-11-27 16:21",
+ "tips_book": "2026-11-27 16:26",
  "tips_book_v": 22,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -1356,7 +1356,8 @@
   "stavki_na_sport_betting1:slip:414032462:0",
   "groznyi_ruslan:13095:0",
   "kapper_uk:22852:0",
-  "kapper_uk:22851:0"
+  "kapper_uk:22851:0",
+  "xs_stavkii:8031:0"
  ],
  "resend_1111": 1,
  "resend_1111b": 1,
@@ -1470,7 +1471,7 @@
  },
  "arch_v1": 1,
  "arch_v2": 8,
- "chk_cap": "2026-11-27T16:21:45",
+ "chk_cap": "2026-11-27T16:26:34",
  "chk_run": "2026-11-27T16:22:33",
  "plan_at": [
   "2026-11-27 17:15",
