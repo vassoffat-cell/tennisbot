@@ -3420,14 +3420,43 @@
  ],
  "hk_last_daily": "2026-11-26",
  "hk_dp": {
-  "date": "2026-11-26",
-  "picks": [],
-  "notes": [
-   [
-    570704006,
-    1131
-   ]
+  "date": "2026-11-27",
+  "picks": [
+   {
+    "id": "nhl:401892805",
+    "league": "NHL",
+    "start_utc": "2026-11-27 21:00",
+    "start_local": "28.11 02:00",
+    "home": "San Jose Sharks",
+    "away": "Vegas Golden Knights",
+    "slot": 22,
+    "market": "1X2",
+    "pick": "A",
+    "line": "",
+    "label": "П2",
+    "p": 0.5549,
+    "p_low": 0.5549,
+    "tier": 4,
+    "k": 1.87,
+    "ev": 0.0377,
+    "book": "onexbet",
+    "fire": 0,
+    "clash": 0,
+    "fire_i": 0,
+    "clash_i": 0,
+    "sl_pen": 0,
+    "scan": "🔎 Сутки: 18 матчей · 227 линий · на ставку дня — 18\nНХЛ 15 · КХЛ 3 · 🔏 925cd0f3",
+    "rank": 1,
+    "hist": [],
+    "msgs": [
+     [
+      570704006,
+      1165
+     ]
+    ]
+   }
   ],
+  "notes": [],
   "hdr2": true,
   "hdr3": true,
   "hdr4": true
@@ -3483,7 +3512,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-27T07:22:08",
+ "chk_run": "2026-11-27T07:31:28",
  "plan_at": [
   "2026-11-27 16:00",
   "2026-11-27 17:00",
