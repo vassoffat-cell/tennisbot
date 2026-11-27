@@ -979,6 +979,12 @@ def run(dry: bool = False) -> str:
         log.append(PL.update(store, rt, C.DATA, list(auto.start_utc) + (list(hg[hg.league.astype(str) == 'NHL'].start_utc) if len(hg) else [])))
     except Exception as e:
         log.append(f'📅 план: сбой {e.__class__.__name__}: {e}')
+    if not dry:                                                        # 📰 Ц23: отдел «Новости» — ленты, метки, привязка к матчам (раз в час)
+        try:
+            import newsdesk
+            log.append(newsdesk.run(rt))
+        except Exception as e:
+            log.append(f'📰 новости: сбой {e.__class__.__name__}')
     if not dry:                                                        # ⏱ Ц19: минуты GitHub → напоминание public / private
         try:
             import ghminutes

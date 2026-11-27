@@ -80,6 +80,21 @@ def minutes_check() -> list[tuple[str, str, str, str]]:
              f'{used} / ≈ {fc:.0f} (темп {last3 / 3:.0f}/сутки)', '✅' if fc <= 2000 and used < 1850 else '⚠️')]   # ⚠️ → перевести в public (Ц19)
 
 
+def news_check() -> list[tuple[str, str, str, str]]:
+    """28.11 Ц23: отдел «Новости» — журнал растёт (тихая пустота = сбой, CODEX 2а); доля новостей, привязанных к нашим матчам."""
+    from pathlib import Path
+    f = Path(__file__).resolve().parent.parent / 'data' / 'news' / 'feed.csv.gz'
+    try:
+        import pandas as _pd
+        d = _pd.read_csv(f, dtype=str)
+    except Exception:
+        return [('📰 новости: записей за 26 ч', '> 0', 'журнала нет', '❌')]
+    cut = (datetime.now(timezone.utc) - timedelta(hours=26)).strftime('%Y-%m-%d %H:%M')
+    r = d[d.fetched.astype(str) >= cut]
+    k = int(r.matches.fillna('').astype(str).ne('').sum())
+    return [('📰 новости: записей за 26 ч / к нашим матчам (Ц23)', '> 0', f'{len(r)} / {k}', '✅' if len(r) else '❌')]
+
+
 def oddspapi_check() -> list[tuple[str, str, str, str]]:
     """25.11 (Ц6б): месячный учёт OddsPapi — всего / теннис / КХЛ; теннис в приоритете, КХЛ — только из остатка."""
     import json
@@ -486,6 +501,7 @@ def main(hours: int = 26) -> None:
         ok = (not hit) if bad else bool(hit)
         rows.append((name, 'нет' if bad else 'есть', (hit[0] if hit else '—') + (f' (+{len(hit) - 1})' if len(hit) > 1 else ''), '✅' if ok else '❌'))
     rows += cappers(since)
+    rows += news_check()
     rows += punctual(cache)
     rows += seal_today()
     rows += plan_check(since)

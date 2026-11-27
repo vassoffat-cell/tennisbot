@@ -235,7 +235,7 @@ check('книга: текст поста не режется на 200 знака
 import types as _types  # noqa: E402
 import daypick as FDP   # noqa: E402
 import pick as FPK      # noqa: E402
-_st = pd.Timestamp.now(tz='UTC').tz_localize(None).normalize() + pd.Timedelta(hours=20)
+_st = pd.Timestamp.now(tz='UTC').tz_localize(None).floor('h') + pd.Timedelta(hours=6)   # 28.11: было «сегодня 20:00 UTC» — после 20:00 UTC тест падал (матч уже начался)
 _m = _types.SimpleNamespace(id='999001', comp='uefa.europa', start=_st, home='Marseille', away='Levski Sofia')
 _row = dict(espn_id='999001', comp='uefa.europa', comp_name='Лига Европы', start_utc=_st.strftime('%Y-%m-%d %H:%M'), start_local='', home='Marseille', away='Levski Sofia')
 _ev = dict(id='e1', sport_key='soccer_uefa_europa_league', home_team='Marseille', away_team='Levski Sofia', commence_time=_st.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -364,6 +364,17 @@ check('🖼 метка, слипшаяся с «240/343», — число в к�
 import ghminutes as GM
 check('⏱ Ц19: private ≥ 1850 → «public» один раз в месяц', (GM.message(True, 1900, 27, {}, '2026-11')[0], GM.message(True, 1900, 27, {'public': '2026-11'}, '2026-11'), GM.message(True, 1200, 27, {}, '2026-11')), ('public', None, None))
 check('⏱ Ц19: public 1–3 числа → «private»; 4-го — нет', (GM.message(False, 0, 1, {}, '2026-12')[0], GM.message(False, 0, 4, {}, '2026-12')), ('private', None))
+import newsdesk as ND  # noqa: E402
+_rss = '<rss><channel><item><title><![CDATA[Arsenal: Saka ruled out with hamstring injury]]></title><link>https://x/1</link><pubDate>Fri, 27 Nov 2026 10:00:00 GMT</pubDate><description>Blow before derby</description></item></channel></rss>'
+_it = ND.parse_rss(_rss)[0]
+check('📰 Ц23: RSS — заголовок, время, метки', (_it['title'][:7], _it['published'], ND.tags(_it['title'] + ' ' + _it['summary'])), ('Arsenal', '2026-11-27 10:00', ['травма', 'не сыграет', 'мотивация']))
+_it['sports'] = ['fb']
+_tg = [dict(key='fb|1', sport='fb', lat=['arsenal', 'chelsea'], ru=['арсенал'], surn=False), dict(key='hk|2', sport='hk', lat=['arsenal'], ru=[], surn=False)]
+check('📰 Ц23: привязка к матчу своего вида', ND.link(_it, _tg), ['fb|1'])
+check('📰 Ц23: русский текст — по справочнику', ND.link(dict(title='Травма в «Арсенале»', summary='', sports=['fb']), _tg), ['fb|1'])
+_tgp = '<div class="tgme_widget_message_wrap"><div data-post="championat/123"><div class="tgme_widget_message_text js">Медведев снялся с турнира</div><time datetime="2026-11-27T09:00:00+00:00"></time></div></div>'
+_pt = ND.parse_tg(_tgp)[0]
+check('📰 Ц23: Telegram-превью и транслит фамилии', (_pt['link'], ND.link(dict(_pt, sports=['tn']), [dict(key='tn|9', sport='tn', lat=['medvedev', 'sinner'], ru=[], surn=True)])), ('https://t.me/championat/123', ['tn|9']))
 check('🖼 сводка каперов — таблица', bool(CD._CAP.match('Green Line — 7/7 · прогнозов 8 · ROI +84%')), True)
 import notify as NT
 _r0 = CD.render
