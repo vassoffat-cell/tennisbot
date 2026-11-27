@@ -233,6 +233,72 @@ def send_blocks(blocks: list[str], chat_ids: set[int] | None = None, silent: boo
     return sent
 
 
+CARDS = True                    # 27.11 (решение пользователя): отчёты ①②③ — картинкой (cards.py, светлый фон); свёрнутые списки — текстом
+
+
+def _photo(chat: int, png: bytes, caption: str, silent: bool, bot: str) -> int | None:
+    """sendPhoto с has_spoiler (картинка размыта, пока не нажата — как скрытый текст В3б). Multipart без сторонних библиотек."""
+    import uuid
+    b = uuid.uuid4().hex
+    fields = {'chat_id': str(chat), 'caption': hide(caption), 'parse_mode': 'HTML', 'has_spoiler': 'true',
+              'disable_notification': 'true' if silent else 'false'}
+    body = b''.join(f'--{b}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode() for k, v in fields.items())
+    body += (f'--{b}\r\nContent-Disposition: form-data; name="photo"; filename="card.png"\r\nContent-Type: image/png\r\n\r\n'.encode()
+             + png + f'\r\n--{b}--\r\n'.encode())
+    _SENT.add(bot)
+    _CNT[bot] = _CNT.get(bot, 0) + 1
+    for k in range(TRIES):
+        req = urllib.request.Request(API.format(token=BOTS[bot](), method='sendPhoto'), data=body,
+                                     headers={'Content-Type': f'multipart/form-data; boundary={b}'})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return json.loads(r.read().decode())['result']['message_id']
+        except urllib.error.HTTPError as e:
+            if e.code < 500 and e.code != 429 or k == TRIES - 1:
+                raise
+            time.sleep(3 * (k + 1))
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError):
+            if k == TRIES - 1:
+                raise
+            time.sleep(3 * (k + 1))
+    return None
+
+
+def send_card(blocks: list[str], chat_ids: set[int] | None = None, silent: bool = False,
+              bot: str = 'main', queue: bool = True) -> list[tuple[int, int]]:
+    """27.11: отчёт картинкой (cards.render) + свёрнутые списки текстом. Сбой отрисовки или отправки фото — тот же отчёт текстом
+    (ничего не теряется; текст при сбое уходит в очередь повтора Д4)."""
+    blocks = [b for b in blocks if b]
+    if not CARDS or not blocks:
+        return send_blocks(blocks, chat_ids, silent, bot, queue)
+    try:
+        import cards
+        pngs, texts, title = cards.render(blocks)
+    except Exception as e:
+        print(f'🖼 картинка: сбой {e.__class__.__name__}: {e} — отчёт текстом')
+        return send_blocks(blocks, chat_ids, silent, bot, queue)
+    if not pngs:
+        return send_blocks(blocks, chat_ids, silent, bot, queue)
+    if not BOTS[bot]() or not (chat_ids or C.ALLOWED_USERS):
+        print(f'🖼 {title}: картинок {len(pngs)} ({sum(len(p) for p in pngs) // 1024} КБ) + текстом {len(texts)}')
+        return []
+    sent = []
+    for chat in (chat_ids or C.ALLOWED_USERS):
+        try:
+            for k, png in enumerate(pngs):
+                cap = f'<b>{esc(title)}</b>' + (f' · {k + 1}/{len(pngs)}' if len(pngs) > 1 else '')
+                mid = _photo(chat, png, cap, silent, bot)
+                if mid is not None:
+                    sent.append((chat, mid))
+        except Exception as e:
+            print(f'🖼 фото не отправлено ({_why_tg(e)}) — отчёт текстом')
+            sent += send_blocks(blocks, {chat}, silent, bot, queue)
+            continue
+        if texts:
+            sent += send_blocks(texts, {chat}, silent, bot, queue)
+    return sent
+
+
 def redeliver(path) -> str:
     """14.11: очередь недоставленных (файл path, рядом с cover.json): повтор каждого прогона с пометкой «↩️ доставлено
     повторно»; до 12 попыток (≈ сутки), затем — запись в журнал. Новые недоставленные этого прогона — в очередь."""

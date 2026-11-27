@@ -975,14 +975,14 @@ def run(dry: bool = False) -> str:
                 log.append(f'📈 CLV football: сбой {ex.__class__.__name__}: {ex}')
             slP, slE, slR = SL.cycle('football', 'Футбол', store, dpk, store.read('dp_changes'), loc.date(), log)
             if not only_week:
-                notify.send_blocks(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, kprev=kprev, off=off,
+                notify.send_card(R.build(af, ld, dpk, f'📈 Футбол · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, kprev=kprev, off=off,
                                            notes=notes, daily_day=yday, extra=cov, late=late, split=True))
                 try:
-                    notify.send_blocks([caprep.report('football', yday, yday, f'{yday:%d.%m}' + rep_tag), tipsbook.card(),
+                    notify.send_card([caprep.report('football', yday, yday, f'{yday:%d.%m}' + rep_tag), tipsbook.card(),
                                         SL.safe(SL.cap_block, 'football', slR)])
                 except Exception as ex:
                     log.append(f'👥 отчёт каперов: сбой {type(ex).__name__}')
-                notify.send_blocks(R.dp_report(dpk, f'⚽ Футбол · ставки дня · {yday:%d.%m}' + rep_tag, yday)
+                notify.send_card(R.dp_report(dpk, f'⚽ Футбол · ставки дня · {yday:%d.%m}' + rep_tag, yday)
                                    + [SL.safe(SL.day_block, 'football', slP, slE, yday, slR)])
             if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
                 rt['last_daily'] = today
@@ -998,13 +998,13 @@ def run(dry: bool = False) -> str:
                     yday = dt.date.fromisoformat(wk); rt['resend_week_done'] = wk
                 d0 = yday - dt.timedelta(days=6)
                 a_, l_, d_ = R.week(af, ld, dpk, d0, yday)
-                notify.send_blocks(R.build(a_, l_, d_, f'📅 Футбол · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
+                notify.send_card(R.build(a_, l_, d_, f'📅 Футбол · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
                                            period='за неделю', split=True) + R.week_lines(ld, d0, yday))
                 try:
-                    notify.send_blocks([caprep.report('football', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
+                    notify.send_card([caprep.report('football', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
                 except Exception as ex:
                     log.append(f'👥 недельный отчёт каперов: сбой {type(ex).__name__}')
-                notify.send_blocks(R.dp_report(d_, f'⚽ Футбол · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
+                notify.send_card(R.dp_report(d_, f'⚽ Футбол · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
                                    + [SL.safe(SL.week_block, 'football', slP, slE, d0, yday)])
                 log.append('недельный отчёт отправлен')
                 if not wk_res:                                        # 26.11 IMP-12: своя отметка недельного

@@ -832,14 +832,14 @@ def run(dry: bool = False) -> str:
             slP, slE, slR = SL.cycle('tennis', 'Теннис', store, dpk, store.read('dp_changes'), loc.date(), log)
             quiet_d = _tn_empty(auto, dpk, yday, yday)
             if not only_week and not quiet_d:
-                notify.send_blocks(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,
+                notify.send_card(R.build(auto, ldf, dpk, f'📈 Теннис · отчёт · {yday:%d.%m}' + rep_tag, kcal=kcal, extra=cov, late=late,
                                            kprev=kprev, off=off, notes=notes, daily_day=yday, split=True))
                 try:
                     import caprep
-                    notify.send_blocks([caprep.report('tennis', yday, yday, f'{yday:%d.%m}' + rep_tag), SL.safe(SL.cap_block, 'tennis', slR)])
+                    notify.send_card([caprep.report('tennis', yday, yday, f'{yday:%d.%m}' + rep_tag), SL.safe(SL.cap_block, 'tennis', slR)])
                 except Exception as ex:
                     log.append(f'👥 отчёт каперов: сбой {ex.__class__.__name__}')
-                notify.send_blocks(R.dp_report(dpk, f'🎾 Теннис · ставки дня · {yday:%d.%m}' + rep_tag, yday)
+                notify.send_card(R.dp_report(dpk, f'🎾 Теннис · ставки дня · {yday:%d.%m}' + rep_tag, yday)
                                    + [SL.safe(SL.day_block, 'tennis', slP, slE, yday, slR)])
             if daily_due:                                             # повтор не сдвигает плановый отчёт (14.11)
                 rt['last_daily'] = today
@@ -859,14 +859,14 @@ def run(dry: bool = False) -> str:
             if week_due and _tn_empty(auto, dpk, d0, yday):            # 16.11 «тихий режим»: неделя без матчей — без пустого отчёта
                 log.append('недельный отчёт: тихий режим — неделя без матчей')
             elif week_due:
-                notify.send_blocks(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
+                notify.send_card(R.build(a_, l_, d_, f'📅 Теннис · неделя {d0:%d.%m}–{yday:%d.%m}', kcal=kcal, off=off,
                                            period='за неделю', split=True) + R.week_lines(ldf, d0, yday))
                 try:
                     import caprep
-                    notify.send_blocks([caprep.report('tennis', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
+                    notify.send_card([caprep.report('tennis', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}')])
                 except Exception as ex:
                     log.append(f'👥 недельный отчёт каперов: сбой {ex.__class__.__name__}')
-                notify.send_blocks(R.dp_report(d_, f'🎾 Теннис · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
+                notify.send_card(R.dp_report(d_, f'🎾 Теннис · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
                                    + [SL.safe(SL.week_block, 'tennis', slP, slE, d0, yday)])
                 log.append('недельный отчёт отправлен')
             if week_due and not wk_res:                               # 26.11 IMP-12: недельный ушёл (или тихий режим)

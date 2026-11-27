@@ -742,14 +742,14 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
                 log.append(f'📈 CLV hockey: сбой {ex.__class__.__name__}: {ex}')
             slP, slE, slR = SL.cycle('hockey', 'Хоккей', store, dp if dp is not None else store.read('hk_day_pick'), None, cur, log)
             if not wk_pend:
-                notify.send_blocks(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
+                notify.send_card(report(gf, ld, f'📈 Хоккей · отчёт · {yday:%d.%m}' + tag, yday, kcal, kprev, off, tp=tp, dp=dp, split=True))
                 try:
                     import caprep
-                    notify.send_blocks([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START),
+                    notify.send_card([caprep.report('hockey', yday, yday, f'{yday:%d.%m}' + tag, day_start=HK_DAY_START),
                                         SL.safe(SL.cap_block, 'hockey', slR)])
                 except Exception as ex:
                     log.append(f'🏒 отчёт каперов: сбой {ex.__class__.__name__}')
-                notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday)
+                notify.send_card(dp_report(dp, f'🏒 Хоккей · ставки дня · {yday:%d.%m}' + tag, yday)
                                    + [SL.safe(SL.day_block, 'hockey', slP, slE, yday, slR)])
                 if not replay:
                     rt['hk_last_daily'] = str(yday)
@@ -758,14 +758,14 @@ def run(store: J.Store, rt: dict, log: list[str], force: bool = False, dry: bool
                 if week_override:
                     yday = week_override
                 d0 = yday - dt.timedelta(days=6)
-                notify.send_blocks(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp,
+                notify.send_card(report(gf, ld, f'📅 Хоккей · неделя {d0:%d.%m}–{yday:%d.%m}', yday, kcal, kprev, off, d0=d0, tp=tp, dp=dp,
                                           split=True))
                 try:
                     import caprep
-                    notify.send_blocks([caprep.report('hockey', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}', day_start=HK_DAY_START)])
+                    notify.send_card([caprep.report('hockey', d0, yday, f'неделя {d0:%d.%m}–{yday:%d.%m}', day_start=HK_DAY_START)])
                 except Exception as ex:
                     log.append(f'🏒 недельный отчёт каперов: сбой {ex.__class__.__name__}')
-                notify.send_blocks(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
+                notify.send_card(dp_report(dp, f'🏒 Хоккей · ставки дня · неделя {d0:%d.%m}–{yday:%d.%m}', yday, d0)
                                    + [SL.safe(SL.week_block, 'hockey', slP, slE, d0, yday)])
                 log.append('🏒 недельный отчёт отправлен')
                 if not week_override:                             # 26.11 IMP-12: своя отметка недельного

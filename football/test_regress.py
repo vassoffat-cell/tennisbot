@@ -331,11 +331,26 @@ for _f, _k in (('autorun.py', "rt['week_done'] = yday.isoformat()"), ('football/
           ('or week_pend) and not _rep_hold' in _s) if 'hrun' not in _f else ('if wk_pend:\n        due = True' in _s), True)
 _s = (_R / 'hockey/hrun.py').read_text()
 check('IMP-12 хоккей: повтор недельного не шлёт суточный и не сдвигает калибровку',
-      ('if not wk_pend:\n                notify.send_blocks(report(' in _s) and ('(due and not wk_pend)' in _s), True)
+      ('if not wk_pend:\n                notify.send_card(report(' in _s) and ('(due and not wk_pend)' in _s), True)
 
 # 26.11 решение пользователя: правило «одна ⭐ на 2 ч» (С14) отменено во всех видах — одновременные матчи можно
 for _f in ('dpcore.py', 'football/dpcore.py', 'hockey/hpick.py'):
     check(f'С14 отменено: в {_f} нет проверки отрезка', 'SEGMENT_H' not in (_R / _f).read_text(), True)
+
+# 27.11 картинки отчётов (cards.py): таблица и ставки — в картинку, свёрнутые списки — текстом; сбой отрисовки — текст
+import cards as CD
+_dp = ["<b>⚽ Футбол · ставки дня · 26.11.2026</b>\n<pre>Линия (цель)      Кол-во      %\n────\n💼 Банк с 17.11, ед.\n сутки                 3  +0,46 🟢\n всего                13  −0,34 🔴</pre>",
+       "<b>⚽ Ставки дня · 26.11</b> — угадано 1/1\n✅ ⚽1 <b>ТБ2.5</b> · Crystal Palace — Real Sociedad · 64% · кф 1,61 · EV +2,9%",
+       "▸ Матчи (1)\n<blockquote expandable>✅ A — B · 1:0</blockquote>"]
+_png, _tx, _ti = CD.render(_dp)
+check('🖼 картинка: PNG есть, заголовок', (len(_png) == 1 and _png[0][:4] == b'\x89PNG', _ti), (True, '⚽ Футбол · ставки дня · 26.11.2026'))
+check('🖼 свёрнутый список — текстом вместе с заголовком', [t.split('\n')[0] for t in _tx], ['▸ Матчи (1)'])
+check('🖼 сводка каперов — таблица', bool(CD._CAP.match('Green Line — 7/7 · прогнозов 8 · ROI +84%')), True)
+import notify as NT
+_r0 = CD.render
+CD.render = lambda b: (_ for _ in ()).throw(ValueError('x'))
+check('🖼 сбой отрисовки — отчёт текстом (без исключения)', NT.send_card(['<b>t</b>']), [])
+CD.render = _r0
 
 if FAILS:
     print('\n'.join(FAILS))

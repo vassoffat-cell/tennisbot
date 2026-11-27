@@ -87,6 +87,7 @@ jobs:
         with:
           sparse-checkout: |
             football
+            assets
             hockey/data
       - uses: actions/setup-python@v6
         if: steps.gate.outputs.skip != 'true'
