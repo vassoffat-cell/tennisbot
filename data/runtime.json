@@ -3451,12 +3451,81 @@
       1250
      ]
     ]
+   },
+   {
+    "id": "nhl:401892816",
+    "league": "NHL",
+    "start_utc": "2026-11-29 00:00",
+    "start_local": "29.11 05:00",
+    "home": "Carolina Hurricanes",
+    "away": "Ottawa Senators",
+    "slot": 20,
+    "market": "1X2",
+    "pick": "H",
+    "line": "",
+    "label": "П1",
+    "p": 0.5959,
+    "p_low": 0.5959,
+    "tier": 4,
+    "k": 1.7,
+    "ev": 0.013,
+    "book": "onexbet",
+    "fire": 0,
+    "clash": 0,
+    "fire_i": 0,
+    "clash_i": 0,
+    "sl_pen": 0,
+    "rank": 2,
+    "hist": [
+     "➕ новая линия дня в 13:28: EV +1,3% · 2-я из 3"
+    ],
+    "msgs": [
+     [
+      570704006,
+      1253
+     ]
+    ]
+   },
+   {
+    "id": "nhl:401892811",
+    "league": "NHL",
+    "start_utc": "2026-11-28 23:00",
+    "start_local": "29.11 04:00",
+    "home": "Florida Panthers",
+    "away": "Tampa Bay Lightning",
+    "slot": 23,
+    "market": "TOT",
+    "pick": "O",
+    "line": 5.5,
+    "label": "ТБ5.5",
+    "p": 0.5756,
+    "p_low": 0.5756,
+    "tier": 4,
+    "k": 1.75,
+    "ev": 0.0073,
+    "book": "onexbet",
+    "fire": 0,
+    "clash": 0,
+    "fire_i": 0,
+    "clash_i": 0,
+    "sl_pen": 0,
+    "rank": 3,
+    "hist": [
+     "➕ новая линия дня в 13:28: EV +0,7% · 3-я из 3"
+    ],
+    "msgs": [
+     [
+      570704006,
+      1255
+     ]
+    ]
    }
   ],
   "notes": [],
   "hdr2": true,
   "hdr3": true,
-  "hdr4": true
+  "hdr4": true,
+  "vol": 16
  },
  "resend_done": "2026-11-26",
  "hk_resend_done": "2026-11-26",
@@ -3509,7 +3578,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-28T07:42:05",
+ "chk_run": "2026-11-28T08:29:45",
  "plan_at": [
   "2026-11-28 18:00",
   "2026-11-28 20:00",
@@ -3540,6 +3609,6 @@
  "newsdesk": {
   "at": "2026-11-27T20:21:00"
  },
- "idle_prev": "2026-11-28 13:22",
- "idle_until": "2026-11-28 07:42"
+ "idle_prev": "2026-11-28 07:42",
+ "idle_until": "2026-11-28 14:28"
 }
