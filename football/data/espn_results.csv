@@ -1022,4 +1022,5 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401934487,fra.coupe_de_france,cup,FRA,F1,2026-11-28 12:30,Rives 82,Versailles 78,,,0,1,FT,eighth-round,0
 401882796,esp.1,league,ESP,SP1,2026-11-28 13:00,Real Betis,Rayo Vallecano,Betis,Vallecano,0,1,FT,2026-27-laliga,0
 401888236,tur.1,league,TUR,T1,2026-11-28 13:00,Samsunspor,Genclerbirligi,Samsunspor,Genclerbirligi,3,1,FT,2026-27-turkish-super-lig,0
-401934493,fra.coupe_de_france,cup,FRA,F1,2026-11-28 13:00,Tremblay,Red Star FC 93,,,0,0,FT,eighth-round,0
+401934493,fra.coupe_de_france,cup,FRA,F1,2026-11-28 13:00,Tremblay,Red Star FC 93,,,0,1,FT,eighth-round,0
+401875081,ita.1,league,ITA,I1,2026-11-28 14:00,Frosinone,Parma,Frosinone,Parma,3,0,FT,2026-27-italian-serie-a,0
