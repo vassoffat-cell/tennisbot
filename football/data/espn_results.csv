@@ -1032,3 +1032,7 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401884723,ger.1,league,GER,D1,2026-11-28 14:30,Mainz,1. FC Union Berlin,Mainz,Union Berlin,2,1,FT,2026-27-german-bundesliga,0
 401879226,eng.1,league,ENG,E0,2026-11-28 15:00,Manchester United,Brentford,Man United,Brentford,0,4,FT,2026-27-english-premier-league,0
 401879227,eng.1,league,ENG,E0,2026-11-28 15:00,Leeds United,Coventry City,Leeds,Coventry,3,0,FT,2026-27-english-premier-league,0
+401882790,esp.1,league,ESP,SP1,2026-11-28 15:15,Málaga,Athletic Club,Malaga,Ath Bilbao,3,4,FT,2026-27-laliga,0
+401875537,ned.1,league,NED,N1,2026-11-28 15:30,Excelsior,Telstar,Excelsior,Telstar,1,0,FT,regular-season,0
+401885388,por.1,league,POR,P1,2026-11-28 15:30,Moreirense,Santa Clara,Moreirense,Santa Clara,0,2,FT,2026-27-portuguese-primeira-liga,0
+401885392,por.1,league,POR,P1,2026-11-28 15:30,Arouca,Rio Ave,Arouca,Rio Ave,0,0,FT,2026-27-portuguese-primeira-liga,0
