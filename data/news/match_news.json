@@ -46,32 +46,6 @@
    }
   ]
  },
- "hk|khl:430732": {
-  "match": "Sochi — Shanghai",
-  "news": [
-   {
-    "t": "«Сочи» поместил нападающего Кирилла Воронина в список отказов",
-    "tags": "",
-    "src": "champ_hk",
-    "at": "2026-11-27 19:15",
-    "link": "https://www.championat.com/hockey/news-6716800-sochi-pomestil-napadayuschego-kirilla-voronina-v-spisok-otkazov.html"
-   },
-   {
-    "t": "Роман Ротенберг — о Никите Гусеве на Кубке Первого канала: рассчитываем на всех лучших",
-    "tags": "тренер",
-    "src": "champ_hk",
-    "at": "2026-11-27 16:08",
-    "link": "https://www.championat.com/hockey/news-6716594-roman-rotenberg-o-nikite-guseve-na-kubke-pervogo-kanala-rasschityvaem-na-vseh-luchshih.html"
-   },
-   {
-    "t": "🔥 «Вот такое сотворил!» Защитник «Сочи» забил гол, которому позавидуют даже в НХЛ Кэмерон Ли объехал Федотова, на пятачке издевательски «раздел» Серикова, ещё н",
-    "tags": "",
-    "src": "tg_championat",
-    "at": "2026-11-27 06:58",
-    "link": "https://t.me/championat/89731"
-   }
-  ]
- },
  "hk|nhl:401892818": {
   "match": "Philadelphia Flyers — New York Islanders",
   "news": [
@@ -333,39 +307,6 @@
    }
   ]
  },
- "hk|khl:430733": {
-  "match": "Spartak Moscow — Nizhny Novgorod",
-  "news": [
-   {
-    "t": "❗️ 👊 Полицейские начали штурмовать трибуны стадиона «Торпедо» во время драки фанатов хозяев с болельщиками «СКА Хабаровск» Зрители бросались снежками друг в дру",
-    "tags": "",
-    "src": "tg_sportsru",
-    "at": "2026-11-27 18:15",
-    "link": "https://t.me/sportsru/132190"
-   },
-   {
-    "t": "«Спартак» — «Торпедо»: во сколько начало матча КХЛ, где смотреть трансляцию",
-    "tags": "",
-    "src": "champ_hk",
-    "at": "2026-11-28 06:50",
-    "link": "https://www.championat.com/hockey/news-6717158-spartak-torpedo-vo-skolko-nachalo-matcha-khl-sezona-2026-2027-gde-smotret-pryamuyu-translyaciyu-28-noyabrya-2026.html"
-   },
-   {
-    "t": "⚡️ 😵 Болельщик «Торпедо» снял трусы во время вчерашней потасовки, несмотря на ноябрьские холода @ultras_action ⚽️ Все рекорды сезона – в приложении ГОЛ",
-    "tags": "",
-    "src": "tg_sportsru",
-    "at": "2026-11-28 09:57",
-    "link": "https://t.me/sportsru/132204"
-   },
-   {
-    "t": "«Спартак» — «Торпедо»: онлайн-трансляция матча КХЛ начнётся в 17:00 мск",
-    "tags": "",
-    "src": "champ_hk",
-    "at": "2026-11-28 11:00",
-    "link": "https://www.championat.com/hockey/news-6717160-spartak-torpedo-onlajn-translyaciya-matcha-khl-sezona-2026-2027-nachnetsya-v-17-00-msk.html"
-   }
-  ]
- },
  "hk|nhl:401892812": {
   "match": "Detroit Red Wings — Nashville Predators",
   "news": [
@@ -611,20 +552,6 @@
   "match": "Real Madrid — Alavés",
   "news": [
    {
-    "t": "❤️ 🇵🇹 Жозе Моуринью после пресс-конференции решил представить залу своего двоюродного брата: – Это мой кузен! Он один из лучших журналистов Португалии, но устро",
-    "tags": "",
-    "src": "tg_sportsru",
-    "at": "2026-11-28 08:02",
-    "link": "https://t.me/sportsru/132199"
-   },
-   {
-    "t": "Жозе Моуринью рассказал о состоянии травмированных игроков перед матчем с «Алавесом»",
-    "tags": "травма;тренер",
-    "src": "champ_fb",
-    "at": "2026-11-28 08:38",
-    "link": "https://www.championat.com/football/news-6717346-zhoze-mourinyu-rasskazal-o-sostoyanii-travmirovannyh-igrokov-pered-matchem-s-alavesom.html"
-   },
-   {
     "t": "Жозе Моуринью: вижу, что раздевалка сплочена, у всех есть общая цель",
     "tags": "тренер",
     "src": "champ_fb",
@@ -679,19 +606,26 @@
     "src": "sportexpress",
     "at": "2026-11-28 10:12",
     "link": "https://www.sport-express.ru/football/transfers/news/milan-gotov-predlozhit-bolee-60-millionov-evro-za-endrika-2480025/"
+   },
+   {
+    "t": "Baeten verkiest GTA boven PSV, Verbeek gaat los: 'Tot 's ochtends vier uur?'",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 14:55",
+    "link": "https://www.vi.nl/nieuws/baeten-verkiest-gta-boven-psv-verbeek-gaat-los-tot-s-ochtends-vier-uur"
+   },
+   {
+    "t": "«Он вне времени». Тренер «Алавеса» Санчес Флорес — о Моуринью",
+    "tags": "тренер",
+    "src": "champ_fb",
+    "at": "2026-11-28 15:06",
+    "link": "https://www.championat.com/football/news-6717872-on-vne-vremeni-trener-alavesa-sanches-flores-o-mourinyu.html"
    }
   ]
  },
  "fb|401874977": {
   "match": "Internazionale — Genoa",
   "news": [
-   {
-    "t": "Sport.es раскрыл условия, на которых Бальде может перейти в «Ливерпуль» из «Барселоны»",
-    "tags": "слух",
-    "src": "champ_fb",
-    "at": "2026-11-28 10:00",
-    "link": "https://www.championat.com/football/news-6717456-sport-es-raskryl-usloviya-na-kotoryh-balde-mozhet-perejti-v-liverpul-iz-barselony.html"
-   },
    {
     "t": "Игрок «Крыльев» Чесноков — о «Динамо»: интересно проверить свои силы с лидером чемпионата",
     "tags": "",
@@ -754,33 +688,19 @@
     "src": "sportexpress",
     "at": "2026-11-27 14:51",
     "link": "https://www.sport-express.ru/football/germany/news/forvard-shtutgarta-ermedin-demirovich-otreagiroval-na-soobscheniya-ob-interese-yuventusa-i-milana-2479757/"
+   },
+   {
+    "t": "Глушенков после победы над ЦСКА: «Я не стендап-комик, но тоже могу что-то сказать»",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-28 15:31",
+    "link": "https://www.sport-express.ru/football/rfpl/news/glushenkov-posle-pobedy-nad-cska-ya-ne-stendap-komik-no-tozhe-mogu-chto-to-skazat-2480133/"
    }
   ]
  },
  "fb|401879226": {
   "match": "Manchester United — Brentford",
   "news": [
-   {
-    "t": "Тренер «Ман Юнайтед» Почеттино ответил, общался ли он с Фергюсоном после прибытия в клуб",
-    "tags": "тренер",
-    "src": "champ_fb",
-    "at": "2026-11-28 11:22",
-    "link": "https://www.championat.com/football/news-6717564-trener-man-yunajted-pochettino-otvetil-obschalsya-li-s-fergyusonom-posle-pribytiya-v-klub.html"
-   },
-   {
-    "t": "Man Utd vs Brentford team news LIVE!",
-    "tags": "",
-    "src": "sky_fb",
-    "at": "2026-11-28 13:00",
-    "link": "https://www.skysports.com/football/manchester-united-vs-brentford/live/559561"
-   },
-   {
-    "t": "«Гамбург» — «Бавария»: во сколько начало матча Бундеслиги",
-    "tags": "",
-    "src": "sportexpress",
-    "at": "2026-11-28 12:40",
-    "link": "https://www.sport-express.ru/football/news/gamburg-bavariya-vo-skolko-nachalo-matcha-bundesligi-gde-smotret-translyaciyu-28-noyabrya-2026-2479980/"
-   },
    {
     "t": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 ❤️ «МЮ» открыл на «Олд Траффорд» центр психологической помощи, присоединившись к акции АПЛ «Вместе против суицида» – теперь любой желающий может прийти ",
     "tags": "",
@@ -829,6 +749,27 @@
     "src": "sportexpress",
     "at": "2026-11-27 15:25",
     "link": "https://www.sport-express.ru/football/copa-libertadores/news/eks-zaschitnik-manchester-yunayted-i-spartaka-markos-roho-mozhet-ustanovit-rekord-kubka-libertadores-2479767/"
+   },
+   {
+    "t": "Это&#039;О ответил Дюгарри на слова о коррупции в ФИФА и африканских федерациях",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-28 14:38",
+    "link": "https://www.championat.com/football/news-6717842-eto-o-otvetil-dyugarri-na-slova-o-korrupcii-fifa-i-afrikanskih-federacij.html"
+   },
+   {
+    "t": "⚡️ ⚡️ ⚡️ ⚡️ «Юнайтед» пропустил от «Брентфорда» на 19-й минуте первого матча Почеттино на «Олд Траффорд» ⚽ Следим за матчем в приложении ГОЛ",
+    "tags": "не сыграет",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 15:19",
+    "link": "https://t.me/sportsru/132220"
+   },
+   {
+    "t": "⚡️ ⚡️ ⚡️ ⚡️ «Юнайтед» пропустил от «Брентфорда» на 19-й минуте первого матча Почеттино на «Олд Траффорд» ⚽ Следим за матчем в приложении ГОЛ",
+    "tags": "не сыграет",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 15:35",
+    "link": "https://t.me/sportsru/132223"
    }
   ]
  },
@@ -895,6 +836,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 08:40",
     "link": "https://www.championat.com/hockey/news-6717340-vasilij-podkolzin-rasskazal-kak-v-edmontone-reagiruyut-na-seriyu-porazhenij.html"
+   },
+   {
+    "t": "«Нет никаких оправданий для такой игры». Бэбкок — о пятом поражении «Эдмонтона» подряд",
+    "tags": "тренер",
+    "src": "champ_hk",
+    "at": "2026-11-28 14:59",
+    "link": "https://www.championat.com/hockey/news-6717858-net-nikakih-opravdanij-dlya-takoj-igry-bebkok-o-pyatom-porazhenii-edmontona-podryad.html"
    }
   ]
  },
@@ -928,6 +876,41 @@
     "src": "marca",
     "at": "2026-11-28 13:59",
     "link": "https://www.marca.com/futbol/rayo/2026/11/28/camello-perdera-encuentro-levante.html"
+   },
+   {
+    "t": "A Isi y Audero 'no les gustan' las modas",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 15:42",
+    "link": "https://www.marca.com/futbol/rayo/2026/11/28/isi-audero-les-gustan-modas.html"
+   },
+   {
+    "t": "Isco: \"Quedó demostrado en el derbi y hoy que da igual que seas el capitán, no se puede hablar con ellos\"",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 15:38",
+    "link": "https://www.marca.com/futbol/betis/2026/11/28/isco-quedo-demostrado-derbi-hoy-da-igual-seas-capitan-hablar.html"
+   },
+   {
+    "t": "El Rayo parte al Betis",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 15:03",
+    "link": "https://www.marca.com/futbol/primera-division/cronica/2026/11/28/rayo-parte-betis.html"
+   },
+   {
+    "t": "«Бетис» уступил «Райо Вальекано» в матче 14-го тура Ла Лиги",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-28 15:02",
+    "link": "https://www.championat.com/football/news-6717854-betis-rajo-valekano-rezultat-matcha-28-noyabrya-2026-schet-0-1-14-j-tur-la-ligi-2026-2027.html"
+   },
+   {
+    "t": "«Райо Вальекано» всухую обыграл «Бетис» в матче чемпионата Испании",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-28 14:59",
+    "link": "https://www.sport-express.ru/football/spain/news/betis-rayo-valekano-schet-i-rezultat-matcha-14-tura-chempionata-ispanii-28-noyabrya-2026-2480122/"
    }
   ]
  },
@@ -1015,6 +998,13 @@
     "src": "sportexpress",
     "at": "2026-11-28 11:10",
     "link": "https://www.sport-express.ru/football/transfers/news/psv-zainteresovan-v-arende-poluzaschitnika-milana-yashari-2480036/"
+   },
+   {
+    "t": "Baeten verkiest GTA boven PSV, Verbeek gaat los: 'Tot 's ochtends vier uur?'",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 14:55",
+    "link": "https://www.vi.nl/nieuws/baeten-verkiest-gta-boven-psv-verbeek-gaat-los-tot-s-ochtends-vier-uur"
    }
   ]
  },
@@ -1041,6 +1031,13 @@
     "src": "sportexpress",
     "at": "2026-11-28 12:40",
     "link": "https://www.sport-express.ru/football/news/gamburg-bavariya-vo-skolko-nachalo-matcha-bundesligi-gde-smotret-translyaciyu-28-noyabrya-2026-2479980/"
+   },
+   {
+    "t": "💀 ⚽️ Капитан «Баварии» Киммих забыл, что у команды и так некем играть, и получил красную карточку за то, что схватил соперника из «Гамбурга» за волосы ⚽ Следим ",
+    "tags": "",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 15:29",
+    "link": "https://t.me/sportsru/132222"
    }
   ]
  },
@@ -1086,6 +1083,13 @@
     "src": "marca",
     "at": "2026-11-28 11:41",
     "link": "https://www.marca.com/futbol/primera-division/2026/11/28/elche-atletico-madrid-horario-ver-hoy-tv-canal-partido-laliga-hypermotion.html"
+   },
+   {
+    "t": "Baeten verkiest GTA boven PSV, Verbeek gaat los: 'Tot 's ochtends vier uur?'",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 14:55",
+    "link": "https://www.vi.nl/nieuws/baeten-verkiest-gta-boven-psv-verbeek-gaat-los-tot-s-ochtends-vier-uur"
    }
   ]
  },
@@ -1225,32 +1229,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 11:50",
     "link": "https://www.championat.com/hockey/news-6717604-ajmurzin-polozhenie-ska-v-turnirnoj-tablice-nepozvolitelno.html"
-   }
-  ]
- },
- "hk|khl:430734": {
-  "match": "Tractor Chelyabinsk — Magnitogorsk",
-  "news": [
-   {
-    "t": "«Трактор» — «Металлург»: онлайн-трансляция матча КХЛ начнётся в 14:00 мск",
-    "tags": "",
-    "src": "champ_hk",
-    "at": "2026-11-28 08:00",
-    "link": "https://www.championat.com/hockey/news-6717152-traktor-metallurg-onlajn-translyaciya-matcha-khl-sezona-2026-2027-nachnetsya-v-14-00-msk.html"
    },
    {
-    "t": "«Трактор» — «Металлург»: во сколько начало матча КХЛ, где смотреть трансляцию",
+    "t": "Нападающий «Барыса» Асетов объяснил спад команды к середине сезона КХЛ",
     "tags": "",
     "src": "champ_hk",
-    "at": "2026-11-28 06:20",
-    "link": "https://www.championat.com/hockey/news-6717150-traktor-metallurg-vo-skolko-nachalo-matcha-khl-sezona-2026-2027-gde-smotret-pryamuyu-translyaciyu-28-noyabrya-2026.html"
-   },
-   {
-    "t": "«Металлург» прервал победную серию, проиграв «Трактору» по буллитам",
-    "tags": "",
-    "src": "champ_hk",
-    "at": "2026-11-28 13:40",
-    "link": "https://www.championat.com/hockey/news-6717726-traktor-metallurg-rezultat-matcha-28-noyabrya-2026-goda-schet-4-3-b-regulyarnyj-chempionat-khl-2026-2027.html"
+    "at": "2026-11-28 14:38",
+    "link": "https://www.championat.com/hockey/news-6717830-napadayuschij-barysa-asetov-obyasnil-spad-komandy-k-seredine-sezona-khl.html"
    }
   ]
  },
