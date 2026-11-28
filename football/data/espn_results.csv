@@ -1024,3 +1024,11 @@ id,comp,kind,country,div,date,home,away,home_fd,away_fd,hg,ag,status,stage,ko
 401888236,tur.1,league,TUR,T1,2026-11-28 13:00,Samsunspor,Genclerbirligi,Samsunspor,Genclerbirligi,3,1,FT,2026-27-turkish-super-lig,0
 401934493,fra.coupe_de_france,cup,FRA,F1,2026-11-28 13:00,Tremblay,Red Star FC 93,,,0,1,FT,eighth-round,0
 401875081,ita.1,league,ITA,I1,2026-11-28 14:00,Frosinone,Parma,Frosinone,Parma,3,0,FT,2026-27-italian-serie-a,0
+401934480,fra.coupe_de_france,cup,FRA,F1,2026-11-28 14:00,Epinal,SC Amiens,,Amiens,2,0,FT,eighth-round,0
+401934502,fra.coupe_de_france,cup,FRA,F1,2026-11-28 14:00,Pontarlier,Siroco Les Abymes,,,6,1,FT,eighth-round,0
+401884719,ger.1,league,GER,D1,2026-11-28 14:30,SC Paderborn 07,Schalke 04,Paderborn,Schalke 04,8,1,FT,2026-27-german-bundesliga,0
+401884721,ger.1,league,GER,D1,2026-11-28 14:30,FC Cologne,SV Elversberg,FC Koln,Elversberg,5,0,FT,2026-27-german-bundesliga,0
+401884722,ger.1,league,GER,D1,2026-11-28 14:30,Hamburg SV,Bayern Munich,Hamburg,Bayern Munich,0,0,FT,2026-27-german-bundesliga,0
+401884723,ger.1,league,GER,D1,2026-11-28 14:30,Mainz,1. FC Union Berlin,Mainz,Union Berlin,2,1,FT,2026-27-german-bundesliga,0
+401879226,eng.1,league,ENG,E0,2026-11-28 15:00,Manchester United,Brentford,Man United,Brentford,0,4,FT,2026-27-english-premier-league,0
+401879227,eng.1,league,ENG,E0,2026-11-28 15:00,Leeds United,Coventry City,Leeds,Coventry,3,0,FT,2026-27-english-premier-league,0
