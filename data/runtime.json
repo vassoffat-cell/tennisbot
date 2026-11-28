@@ -3417,106 +3417,38 @@
  ],
  "hk_last_daily": "2026-11-27",
  "hk_dp": {
-  "date": "2026-11-27",
+  "date": "2026-11-28",
   "picks": [
    {
-    "id": "nhl:401892805",
+    "id": "nhl:401892820",
     "league": "NHL",
-    "start_utc": "2026-11-27 21:00",
-    "start_local": "28.11 02:00",
-    "home": "San Jose Sharks",
-    "away": "Vegas Golden Knights",
-    "slot": 22,
-    "market": "1X2",
-    "pick": "A",
-    "line": "",
-    "label": "П2",
-    "p": 0.5549,
-    "p_low": 0.5549,
-    "tier": 4,
-    "k": 1.87,
-    "ev": 0.0377,
-    "book": "onexbet",
-    "fire": 0,
-    "clash": 0,
-    "fire_i": 0,
-    "clash_i": 0,
-    "sl_pen": 0,
-    "scan": "🔎 Сутки: 18 матчей · 227 линий · на ставку дня — 18\nНХЛ 15 · КХЛ 3 · 🔏 925cd0f3",
-    "rank": 1,
-    "hist": [],
-    "msgs": [
-     [
-      570704006,
-      1190
-     ]
-    ]
-   },
-   {
-    "id": "nhl:401892801",
-    "league": "NHL",
-    "start_utc": "2026-11-27 20:00",
-    "start_local": "28.11 01:00",
-    "home": "Washington Capitals",
-    "away": "Florida Panthers",
-    "slot": 24,
-    "market": "TOT",
-    "pick": "U",
-    "line": 6.5,
-    "label": "ТМ6.5",
-    "p": 0.5623,
-    "p_low": 0.5623,
-    "tier": 4,
-    "k": 1.82,
-    "ev": 0.0233,
-    "book": "marathonbet",
-    "fire": 0,
-    "clash": 0,
-    "fire_i": 0,
-    "clash_i": 0,
-    "sl_pen": 0,
-    "rank": 2,
-    "hist": [
-     "➕ новая линия дня в 12:41: EV +2,3% · 2-я из 3"
-    ],
-    "msgs": [
-     [
-      570704006,
-      1192
-     ]
-    ]
-   },
-   {
-    "id": "nhl:401892796",
-    "league": "NHL",
-    "start_utc": "2026-11-27 18:00",
-    "start_local": "27.11 23:00",
-    "home": "New Jersey Devils",
-    "away": "Calgary Flames",
+    "start_utc": "2026-11-29 02:00",
+    "start_local": "29.11 07:00",
+    "home": "Colorado Avalanche",
+    "away": "San Jose Sharks",
     "slot": 20,
     "market": "1X2",
     "pick": "H",
     "line": "",
     "label": "П1",
-    "p": 0.6105,
-    "p_low": 0.6105,
+    "p": 0.589,
+    "p_low": 0.589,
     "tier": 4,
-    "k": 1.67,
-    "ev": 0.0195,
+    "k": 1.73,
+    "ev": 0.019,
     "book": "onexbet",
     "fire": 0,
     "clash": 0,
     "fire_i": 0,
     "clash_i": 0,
     "sl_pen": 0,
-    "rank": 3,
-    "hist": [
-     "➕ новая линия дня в 12:41: EV +1,9% · 3-я из 3"
-    ],
+    "scan": "🔎 Сутки: 16 матчей · 202 линии · на ставку дня — 16\nНХЛ 13 · КХЛ 3 · 🔏 ffb12bb6",
+    "rank": 1,
+    "hist": [],
     "msgs": [
      [
       570704006,
-      1194
+      1250
      ]
     ]
    }
@@ -3524,8 +3456,7 @@
   "notes": [],
   "hdr2": true,
   "hdr3": true,
-  "hdr4": true,
-  "vol": 18
+  "hdr4": true
  },
  "resend_done": "2026-11-26",
  "hk_resend_done": "2026-11-26",
@@ -3578,7 +3509,7 @@
  "arch_v1": 1,
  "hk_arch_v1": 8,
  "arch_v2": 7,
- "chk_run": "2026-11-28T07:23:15",
+ "chk_run": "2026-11-28T07:42:05",
  "plan_at": [
   "2026-11-28 18:00",
   "2026-11-28 20:00",
@@ -3609,6 +3540,6 @@
  "newsdesk": {
   "at": "2026-11-27T20:21:00"
  },
- "idle_prev": "2026-11-28 12:41",
- "idle_until": "2026-11-28 13:22"
+ "idle_prev": "2026-11-28 13:22",
+ "idle_until": "2026-11-28 07:42"
 }
