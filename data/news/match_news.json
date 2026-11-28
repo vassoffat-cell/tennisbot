@@ -503,6 +503,13 @@
     "src": "champ_hk",
     "at": "2026-11-27 23:57",
     "link": "https://www.championat.com/hockey/news-6716990-kolorado-obygral-minnesotu-v-matche-nhl-otygravshis-so-schyota-0-3.html"
+   },
+   {
+    "t": "«Чикаго» поместил нападающего Кейна в список травмированных",
+    "tags": "травма",
+    "src": "champ_hk",
+    "at": "2026-11-28 12:16",
+    "link": "https://www.championat.com/hockey/news-6717646-chikago-pomestil-napadayuschego-kejna-v-spisok-travmirovannyh.html"
    }
   ]
  },
@@ -550,6 +557,13 @@
     "src": "tg_sportsru",
     "at": "2026-11-28 10:10",
     "link": "https://t.me/sportsru/132205"
+   },
+   {
+    "t": "«Он проявил самодовольство». Ротен считает, что Шевалье не выбьет Сафонова из старта «ПСЖ»",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-28 13:05",
+    "link": "https://www.championat.com/football/news-6717700-on-proyavil-samodovolstvo-roten-schitaet-chto-shevale-ne-vybet-safonova-iz-starta-pszh.html"
    }
   ]
  },
@@ -651,13 +665,6 @@
   "match": "Internazionale — Genoa",
   "news": [
    {
-    "t": "«Интер Майами» с Месси проиграл «Коламбусу», вылетев из плей-офф МЛС и закончив сезон",
-    "tags": "мотивация",
-    "src": "champ_fb",
-    "at": "2026-11-28 03:11",
-    "link": "https://www.championat.com/football/news-6717068-inter-majami-s-messi-proigral-kolambusu-vyletev-iz-plej-off-mls-i-zakonchiv-sezon.html"
-   },
-   {
     "t": "«Интер Майами» с Месси в составе уступил «Коламбусу» и вылетел из плей-офф МЛС",
     "tags": "мотивация",
     "src": "sportexpress",
@@ -719,26 +726,19 @@
     "src": "champ_fb",
     "at": "2026-11-28 10:45",
     "link": "https://www.championat.com/football/news-6717526-fulhem-gotov-udvoit-zarplatu-bejssi-myu-vsyo-ravno-predlagaet-bolshe-teamtalk.html"
+   },
+   {
+    "t": "💰 🤓 Зубастик Роналдо спустя 30 лет раскрыл тайну, почему перешел из «Барселоны» в «Интер» в 1997-м: – В Каталонии я зарабатывал два миллиона в год, а «Интер» пр",
+    "tags": "",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 13:05",
+    "link": "https://t.me/sportsru/132210"
    }
   ]
  },
  "fb|401879226": {
   "match": "Manchester United — Brentford",
   "news": [
-   {
-    "t": "«Лидс Юнайтед» продлил контракт с Ао Танакой до 2029 года",
-    "tags": "",
-    "src": "champ_fb",
-    "at": "2026-11-28 02:57",
-    "link": "https://www.championat.com/football/news-6717060-lids-yunajted-prodlil-kontrakt-s-ao-tanakoj-do-2029-goda.html"
-   },
-   {
-    "t": "Тренер «МЮ» Почеттино ответил, сыграет ли Бруну Фернандеш в матче с «Брентфордом»",
-    "tags": "тренер",
-    "src": "champ_fb",
-    "at": "2026-11-28 02:54",
-    "link": "https://www.championat.com/football/news-6717064-trener-myu-pochettino-otvetil-sygraet-li-brunu-fernandesh-v-matche-s-brentfordom.html"
-   },
    {
     "t": "VI Live: herkansing voor Pochettino met Man Utd, ook Bayern, Real en PSG spelen",
     "tags": "",
@@ -787,6 +787,27 @@
     "src": "champ_fb",
     "at": "2026-11-28 11:22",
     "link": "https://www.championat.com/football/news-6717564-trener-man-yunajted-pochettino-otvetil-obschalsya-li-s-fergyusonom-posle-pribytiya-v-klub.html"
+   },
+   {
+    "t": "Man Utd vs Brentford team news LIVE!",
+    "tags": "",
+    "src": "sky_fb",
+    "at": "2026-11-28 13:00",
+    "link": "https://www.skysports.com/football/manchester-united-vs-brentford/live/559561"
+   },
+   {
+    "t": "«Гамбург» — «Бавария»: во сколько начало матча Бундеслиги",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-28 12:40",
+    "link": "https://www.sport-express.ru/football/news/gamburg-bavariya-vo-skolko-nachalo-matcha-bundesligi-gde-smotret-translyaciyu-28-noyabrya-2026-2479980/"
+   },
+   {
+    "t": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 ❤️ «МЮ» открыл на «Олд Траффорд» центр психологической помощи, присоединившись к акции АПЛ «Вместе против суицида» – теперь любой желающий может прийти ",
+    "tags": "",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 12:35",
+    "link": "https://t.me/sportsru/132208"
    }
   ]
  },
@@ -806,6 +827,13 @@
     "src": "bbc_fb",
     "at": "2026-11-28 11:53",
     "link": "https://www.bbc.co.uk/sport/football/articles/cwzd9yj44190o?at_medium=RSS&at_campaign=rss"
+   },
+   {
+    "t": "Leeds vs Coventry team news LIVE!",
+    "tags": "",
+    "src": "sky_fb",
+    "at": "2026-11-28 13:00",
+    "link": "https://www.skysports.com/football/leeds-united-vs-coventry-city/live/559560"
    }
   ]
  },
@@ -884,6 +912,13 @@
     "src": "marca",
     "at": "2026-11-28 11:13",
     "link": "https://www.marca.com/futbol/primera-division/2026/11/28/hora-malaga-athletic-horario-ver-tv-canal-partido-laliga-ea-sports.html"
+   },
+   {
+    "t": "Málaga - Athletic en directo | Última hora de LALIGA EA Sports en vivo hoy",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 12:27",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/01-0101-20261128-182-174.html"
    }
   ]
  },
@@ -936,6 +971,20 @@
     "src": "vi",
     "at": "2026-11-28 06:30",
     "link": "https://www.vi.nl/nieuws/vi-live-herkansing-voor-pochettino-met-man-utd-ook-bayern-real-en-psg-spelen"
+   },
+   {
+    "t": "BATE degradeert en maakt plaats voor club uit dorp met 270 inwoners",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 13:07",
+    "link": "https://www.vi.nl/nieuws/bate-degradeert-en-maakt-plaats-voor-club-uit-dorp-met-270-inwoners"
+   },
+   {
+    "t": "«Гамбург» — «Бавария»: во сколько начало матча Бундеслиги",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-28 12:40",
+    "link": "https://www.sport-express.ru/football/news/gamburg-bavariya-vo-skolko-nachalo-matcha-bundesligi-gde-smotret-translyaciyu-28-noyabrya-2026-2479980/"
    }
   ]
  },
