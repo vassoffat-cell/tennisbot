@@ -76,13 +76,6 @@
   "match": "Philadelphia Flyers — New York Islanders",
   "news": [
    {
-    "t": "«Айлендерс» отдали форварда Даниила Прохорова в аренду московскому «Динамо»",
-    "tags": "",
-    "src": "champ_hk",
-    "at": "2026-11-27 17:58",
-    "link": "https://www.championat.com/hockey/news-6716708-ajlenders-otdali-forvarda-daniila-prohorova-v-arendu-moskovskomu-dinamo.html"
-   },
-   {
     "t": "Форвард «Айлендерс» Палмьери второй год подряд выбыл до конца сезона из-за травмы колена",
     "tags": "травма",
     "src": "champ_hk",
@@ -144,6 +137,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 06:30",
     "link": "https://www.championat.com/football/news-6717144-28-noyabrya-glavnye-novosti-sporta-futbol-hokkej-basketbol-nba-nhl-apl-mls.html"
+   },
+   {
+    "t": "«Может, лучше поговорим о победе?» Капитан «Филадельфии» — на вопрос о Мичкове",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-28 11:19",
+    "link": "https://www.championat.com/hockey/news-6717572-mozhet-luchshe-pogovorim-o-pobede-kapitan-filadelfii-na-vopros-o-michkove.html"
    }
   ]
  },
@@ -470,6 +470,13 @@
     "src": "tg_championat",
     "at": "2026-11-28 09:12",
     "link": "https://t.me/championat/89756"
+   },
+   {
+    "t": "«Может, лучше поговорим о победе?» Капитан «Филадельфии» — на вопрос о Мичкове",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-28 11:19",
+    "link": "https://www.championat.com/hockey/news-6717572-mozhet-luchshe-pogovorim-o-pobede-kapitan-filadelfii-na-vopros-o-michkove.html"
    }
   ]
  },
@@ -616,6 +623,27 @@
     "src": "tg_championat",
     "at": "2026-11-28 09:12",
     "link": "https://t.me/championat/89756"
+   },
+   {
+    "t": "Real Madrid - Alavés: horario, dónde ver hoy en TV y canal del partido de LaLiga EA Sports",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 11:56",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/real-madrid-alaves-horario-ver-hoy-tv-canal-partido-laliga-ea-sports.html"
+   },
+   {
+    "t": "Elche - Atlético de Madrid: horario, dónde ver hoy en TV y canal del partido de LaLiga EA Sports",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 11:41",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/elche-atletico-madrid-horario-ver-hoy-tv-canal-partido-laliga-hypermotion.html"
+   },
+   {
+    "t": "«Реал» намерен подписать Мак Аллистера при одном условии — Football Insider",
+    "tags": "слух",
+    "src": "champ_fb",
+    "at": "2026-11-28 11:31",
+    "link": "https://www.championat.com/football/news-6717586-real-nameren-podpisat-mak-allistera-pri-odnom-uslovii-football-insider.html"
    }
   ]
  },
@@ -745,6 +773,20 @@
     "src": "champ_fb",
     "at": "2026-11-28 10:45",
     "link": "https://www.championat.com/football/news-6717526-fulhem-gotov-udvoit-zarplatu-bejssi-myu-vsyo-ravno-predlagaet-bolshe-teamtalk.html"
+   },
+   {
+    "t": "«МЮ» — «Брентфорд»: онлайн-трансляция матча 12-го тура АПЛ-2026/2027 начнётся в 18:00",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-28 12:00",
+    "link": "https://www.championat.com/football/news-6717216-manchester-yunajted-brentford-onlajn-translyaciya-matcha-12-go-tura-apl-2026-2027-nachnetsya-v-18-00.html"
+   },
+   {
+    "t": "Тренер «Ман Юнайтед» Почеттино ответил, общался ли он с Фергюсоном после прибытия в клуб",
+    "tags": "тренер",
+    "src": "champ_fb",
+    "at": "2026-11-28 11:22",
+    "link": "https://www.championat.com/football/news-6717564-trener-man-yunajted-pochettino-otvetil-obschalsya-li-s-fergyusonom-posle-pribytiya-v-klub.html"
    }
   ]
  },
@@ -757,6 +799,13 @@
     "src": "champ_fb",
     "at": "2026-11-28 02:57",
     "link": "https://www.championat.com/football/news-6717060-lids-yunajted-prodlil-kontrakt-s-ao-tanakoj-do-2029-goda.html"
+   },
+   {
+    "t": "Will 2024 version of Palmer ever re-emerge for Chelsea?",
+    "tags": "",
+    "src": "bbc_fb",
+    "at": "2026-11-28 11:53",
+    "link": "https://www.bbc.co.uk/sport/football/articles/cwzd9yj44190o?at_medium=RSS&at_campaign=rss"
    }
   ]
  },
@@ -802,6 +851,20 @@
     "src": "marca",
     "at": "2026-11-28 07:06",
     "link": "https://www.marca.com/futbol/primera-division/2026/11/28/betis-rayo-ritmo-pare-previa-analisis-pronostico-prediccion.html"
+   },
+   {
+    "t": "A qué hora es Real Betis - Rayo Vallecano: horario, dónde ver en TV y canal del partido de LaLiga EA Sports",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 11:12",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/hora-real-betis-rayo-vallecano-horario-ver-tv-canal-partido-laliga-ea-sports.html"
+   },
+   {
+    "t": "Betis - Rayo en directo | Última hora de LALIGA EA Sports en vivo hoy",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 10:39",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/01-0101-20261128-185-184.html"
    }
   ]
  },
@@ -814,6 +877,13 @@
     "src": "marca",
     "at": "2026-11-28 07:06",
     "link": "https://www.marca.com/futbol/primera-division/2026/11/28/malaga-athletic-enesima-final-rosaleda-previa-analisis-pronostico-prediccion.html"
+   },
+   {
+    "t": "A qué hora es Málaga - Athletic: horario, dónde ver en TV y canal del partido de LaLiga EA Sports",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 11:13",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/hora-malaga-athletic-horario-ver-tv-canal-partido-laliga-ea-sports.html"
    }
   ]
  },
@@ -847,6 +917,13 @@
     "src": "vi",
     "at": "2026-11-28 10:15",
     "link": "https://www.vi.nl/video/go-ahead-heeft-moeite-vele-balbezit-om-te-zetten-in-kansen"
+   },
+   {
+    "t": "Steph Catley celebrates milestone as Matildas battle past Colombia in feisty Canberra friendly",
+    "tags": "",
+    "src": "guardian_fb",
+    "at": "2026-11-28 11:19",
+    "link": "https://www.theguardian.com/football/2026/nov/28/steph-catley-celebrates-milestone-as-matildas-battle-past-colombia-in-feisty-canberra-friendly"
    }
   ]
  },
@@ -890,6 +967,20 @@
     "src": "vi",
     "at": "2026-11-28 06:30",
     "link": "https://www.vi.nl/nieuws/vi-live-herkansing-voor-pochettino-met-man-utd-ook-bayern-real-en-psg-spelen"
+   },
+   {
+    "t": "Real Madrid - Alavés: horario, dónde ver hoy en TV y canal del partido de LaLiga EA Sports",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 11:56",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/real-madrid-alaves-horario-ver-hoy-tv-canal-partido-laliga-ea-sports.html"
+   },
+   {
+    "t": "Elche - Atlético de Madrid: horario, dónde ver hoy en TV y canal del partido de LaLiga EA Sports",
+    "tags": "",
+    "src": "marca",
+    "at": "2026-11-28 11:41",
+    "link": "https://www.marca.com/futbol/primera-division/2026/11/28/elche-atletico-madrid-horario-ver-hoy-tv-canal-partido-laliga-hypermotion.html"
    }
   ]
  },
@@ -968,6 +1059,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 10:33",
     "link": "https://www.championat.com/hockey/news-6717522-maklyukov-atmosfera-v-ska-nikakaya-uzhasnaya-nizhe-nekuda-ne-tuda-kuda-to-dvizhemsya.html"
+   },
+   {
+    "t": "Аймурзин: положение СКА в турнирной таблице непозволительно",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-28 11:50",
+    "link": "https://www.championat.com/hockey/news-6717604-ajmurzin-polozhenie-ska-v-turnirnoj-tablice-nepozvolitelno.html"
    }
   ]
  },
@@ -1001,6 +1099,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 10:33",
     "link": "https://www.championat.com/hockey/news-6717522-maklyukov-atmosfera-v-ska-nikakaya-uzhasnaya-nizhe-nekuda-ne-tuda-kuda-to-dvizhemsya.html"
+   },
+   {
+    "t": "Аймурзин: положение СКА в турнирной таблице непозволительно",
+    "tags": "",
+    "src": "champ_hk",
+    "at": "2026-11-28 11:50",
+    "link": "https://www.championat.com/hockey/news-6717604-ajmurzin-polozhenie-ska-v-turnirnoj-tablice-nepozvolitelno.html"
    }
   ]
  },
