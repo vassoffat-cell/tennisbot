@@ -50,13 +50,6 @@
   "match": "Philadelphia Flyers — New York Islanders",
   "news": [
    {
-    "t": "Форвард «Айлендерс» Палмьери второй год подряд выбыл до конца сезона из-за травмы колена",
-    "tags": "травма",
-    "src": "champ_hk",
-    "at": "2026-11-27 17:37",
-    "link": "https://www.championat.com/hockey/news-6716678-forvard-ajlenders-palmeri-vtoroj-god-podryad-vybyl-do-konca-sezona-iz-za-travmy-kolena.html"
-   },
-   {
     "t": "Фанаты «Филадельфии» скандировали «Мы хотим Мичкова!» на старте матча с «Ванкувером»",
     "tags": "",
     "src": "champ_hk",
@@ -118,6 +111,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 11:19",
     "link": "https://www.championat.com/hockey/news-6717572-mozhet-luchshe-pogovorim-o-pobede-kapitan-filadelfii-na-vopros-o-michkove.html"
+   },
+   {
+    "t": "Черкас: Мичков ещё ничего не добился. Он средний игрок НХЛ, если не ниже",
+    "tags": "тренер",
+    "src": "champ_hk",
+    "at": "2026-11-28 16:44",
+    "link": "https://www.championat.com/hockey/news-6718028-cherkas-michkov-eschyo-nichego-ne-dobilsya-on-srednij-igrok-nhl-esli-ne-nizhe.html"
    }
   ]
  },
@@ -526,6 +526,13 @@
     "src": "champ_fb",
     "at": "2026-11-28 13:05",
     "link": "https://www.championat.com/football/news-6717700-on-proyavil-samodovolstvo-roten-schitaet-chto-shevale-ne-vybet-safonova-iz-starta-pszh.html"
+   },
+   {
+    "t": "«ПСЖ» — «Лорьян»: онлайн-трансляция матча 12-го тура Лиги 1 начнётся в 22:45 мск",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-28 16:45",
+    "link": "https://www.championat.com/football/news-6717284-pszh-loryan-onlajn-translyaciya-matcha-12-go-tura-ligi-1-2026-2027-nachnetsya-v-22-45-msk-28-noyabrya-2026.html"
    }
   ]
  },
@@ -551,27 +558,6 @@
  "fb|401882789": {
   "match": "Real Madrid — Alavés",
   "news": [
-   {
-    "t": "Жозе Моуринью: вижу, что раздевалка сплочена, у всех есть общая цель",
-    "tags": "тренер",
-    "src": "champ_fb",
-    "at": "2026-11-28 08:13",
-    "link": "https://www.championat.com/football/news-6717314-zhoze-mourinyu-ya-vizhu-chto-razdevalka-splochena-u-vseh-est-obschaya-cel.html"
-   },
-   {
-    "t": "Жозе Моуринью: Премьер-лига во многом закалила Дина Хёйсена",
-    "tags": "тренер",
-    "src": "champ_fb",
-    "at": "2026-11-28 07:52",
-    "link": "https://www.championat.com/football/news-6717282-zhoze-mourinyu-premer-liga-vo-mnogom-zakalila-dina-hyojsena.html"
-   },
-   {
-    "t": "🤩 Момент дня в МЛС! Невероятный сейв защитника «Ванкувера» на последних секундах матча Лаборда вышел на поле в самой концовке и в героическом прыжке спас победу",
-    "tags": "",
-    "src": "tg_championat",
-    "at": "2026-11-28 09:12",
-    "link": "https://t.me/championat/89756"
-   },
    {
     "t": "Real Madrid - Alavés: horario, dónde ver hoy en TV y canal del partido de LaLiga EA Sports",
     "tags": "",
@@ -620,19 +606,33 @@
     "src": "champ_fb",
     "at": "2026-11-28 15:06",
     "link": "https://www.championat.com/football/news-6717872-on-vne-vremeni-trener-alavesa-sanches-flores-o-mourinyu.html"
+   },
+   {
+    "t": "Opstelling PSV: Bosz kiest voor drie nieuwe namen",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 16:43",
+    "link": "https://www.vi.nl/nieuws/opstelling-psv-bosz-kiest-voor-drie-nieuwe-namen"
+   },
+   {
+    "t": "«Реал» — «Алавес»: онлайн-трансляция матча 14-го тура Ла Лиги — 2026/2027 начнётся в 23:00",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-28 17:00",
+    "link": "https://www.championat.com/football/news-6717218-real-madrid-alaves-onlajn-translyaciya-matcha-14-go-tura-la-ligi-2026-2027-nachnetsya-v-23-00.html"
+   },
+   {
+    "t": "🔥 🔥 🔥 🔥 🔥 ОГРОМНЫЙ КОНКУРС С 10 ПРИЗАМИ ДЛЯ ВСЕХ ФАНАТОВ ФУТБОЛА! ❤️ 🥇 1 место – футболка «Реала» с автографом Луки Модрича 🥈 2 место – бутса с автографом Рафин",
+    "tags": "",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 16:30",
+    "link": "https://t.me/sportsru/132229"
    }
   ]
  },
  "fb|401874977": {
   "match": "Internazionale — Genoa",
   "news": [
-   {
-    "t": "Игрок «Крыльев» Чесноков — о «Динамо»: интересно проверить свои силы с лидером чемпионата",
-    "tags": "",
-    "src": "champ_fb",
-    "at": "2026-11-28 09:59",
-    "link": "https://www.championat.com/football/news-6717478-igrok-krylev-chesnokov-o-dinamo-interesno-proverit-svoi-sily-s-liderom-chempionata.html"
-   },
    {
     "t": "«Интер» нацелился на защитника «Арсенала» — Calciomercato",
     "tags": "слух",
@@ -695,6 +695,13 @@
     "src": "sportexpress",
     "at": "2026-11-28 15:31",
     "link": "https://www.sport-express.ru/football/rfpl/news/glushenkov-posle-pobedy-nad-cska-ya-ne-stendap-komik-no-tozhe-mogu-chto-to-skazat-2480133/"
+   },
+   {
+    "t": "«Наполи» заинтересован в трансфере полузащитника «Коринтианса» Андре",
+    "tags": "слух",
+    "src": "sportexpress",
+    "at": "2026-11-28 16:05",
+    "link": "https://www.sport-express.ru/football/transfers/news/napoli-zainteresovan-v-transfere-poluzaschitnika-korintiansa-andre-2480146/"
    }
   ]
  },
@@ -702,74 +709,74 @@
   "match": "Manchester United — Brentford",
   "news": [
    {
-    "t": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 ❤️ «МЮ» открыл на «Олд Траффорд» центр психологической помощи, присоединившись к акции АПЛ «Вместе против суицида» – теперь любой желающий может прийти ",
+    "t": "Laatste plaats dreigt voor Man United na desastreus thuisdebuut Pochettino",
     "tags": "",
-    "src": "tg_sportsru",
-    "at": "2026-11-28 12:35",
-    "link": "https://t.me/sportsru/132208"
-   },
-   {
-    "t": "Manchester United v Brentford, Leeds v Coventry and more: Saturday football clockwatch – live",
-    "tags": "",
-    "src": "guardian_fb",
-    "at": "2026-11-28 14:19",
-    "link": "https://www.theguardian.com/football/live/2026/nov/28/manchester-united-v-brentford-leeds-v-coventry-and-more-saturday-football-clockwatch-live"
-   },
-   {
-    "t": "Manchester Utd vs Brentford: Team news from Old Trafford",
-    "tags": "",
-    "src": "sky_fb",
-    "at": "2026-11-28 14:12",
-    "link": "https://www.skysports.com/watch/video/13617506/manchester-utd-vs-brentford-team-news-from-old-trafford"
-   },
-   {
-    "t": "Pochettino arrives at Old Trafford for first home game in charge of Man Utd",
-    "tags": "",
-    "src": "sky_fb",
-    "at": "2026-11-28 13:33",
-    "link": "https://www.skysports.com/watch/video/13617493/manchester-utd-vs-brentford-mauricio-pochettino-arrives-at-old-trafford-for-first-home-game-in-charge"
-   },
-   {
-    "t": "Zirkzee krijgt ook bij vuurdoop Pochettino op Old Trafford het vertrouwen",
-    "tags": "тренер",
     "src": "vi",
-    "at": "2026-11-28 14:07",
-    "link": "https://www.vi.nl/nieuws/pochettino-houdt-vast-aan-zirkzee-en-passeert-mbeumo-en-cunha"
+    "at": "2026-11-28 16:53",
+    "link": "https://www.vi.nl/nieuws/laatste-plaats-dreigt-voor-man-united-na-desastreus-thuisdebuut-pochettino"
    },
    {
-    "t": "«Манчестер Юнайтед» — «Брентфорд»: во сколько начало матча АПЛ",
+    "t": "Nieuwe dieptepunt Man Utd: zes opeenvolgende speelhelften met twee tegengoals",
     "tags": "",
-    "src": "sportexpress",
-    "at": "2026-11-28 13:15",
-    "link": "https://www.sport-express.ru/football/news/manchester-yunayted-brentford-vo-skolko-nachalo-matcha-apl-gde-smotret-translyaciyu-28-noyabrya-2026-2479978/"
+    "src": "vi",
+    "at": "2026-11-28 15:45",
+    "link": "https://www.vi.nl/nieuws/nieuwe-dieptepunt-man-utd-zes-opeenvolgende-speelhelften-met-twee-tegengoals"
    },
    {
-    "t": "Экс-защитник «МЮ» и «Спартака» Рохо может установить рекорд Кубка Либертадорес",
-    "tags": "",
-    "src": "sportexpress",
-    "at": "2026-11-27 15:25",
-    "link": "https://www.sport-express.ru/football/copa-libertadores/news/eks-zaschitnik-manchester-yunayted-i-spartaka-markos-roho-mozhet-ustanovit-rekord-kubka-libertadores-2479767/"
-   },
-   {
-    "t": "Это&#039;О ответил Дюгарри на слова о коррупции в ФИФА и африканских федерациях",
+    "t": "«Манчестер Юнайтед» со счётом 0:4 проиграл «Брентфорду» в 12-м туре АПЛ",
     "tags": "",
     "src": "champ_fb",
-    "at": "2026-11-28 14:38",
-    "link": "https://www.championat.com/football/news-6717842-eto-o-otvetil-dyugarri-na-slova-o-korrupcii-fifa-i-afrikanskih-federacij.html"
+    "at": "2026-11-28 16:54",
+    "link": "https://www.championat.com/football/news-6718044-manchester-yunajted-brentford-rezultat-matcha-28-noyabrya-2026-schet-0-4-12-j-tur-apl-sezona-2026-2027.html"
    },
    {
-    "t": "⚡️ ⚡️ ⚡️ ⚡️ «Юнайтед» пропустил от «Брентфорда» на 19-й минуте первого матча Почеттино на «Олд Траффорд» ⚽ Следим за матчем в приложении ГОЛ",
-    "tags": "не сыграет",
-    "src": "tg_sportsru",
-    "at": "2026-11-28 15:19",
-    "link": "https://t.me/sportsru/132220"
+    "t": "«Манчестер Юнайтед» со счетом 0:4 проиграл «Брентфорду» в АПЛ",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-28 16:55",
+    "link": "https://www.sport-express.ru/football/england/news/manchester-yunayted-brentford-lids-koventri-schet-i-rezultaty-matchey-12-tura-apl-28-noyabrya-2026-2480165/"
    },
    {
-    "t": "⚡️ ⚡️ ⚡️ ⚡️ «Юнайтед» пропустил от «Брентфорда» на 19-й минуте первого матча Почеттино на «Олд Траффорд» ⚽ Следим за матчем в приложении ГОЛ",
+    "t": "«МЮ» горит 0:2 «Брентфорду» после первого тайма. На сэра Алекса больно смотреть. На Почеттино на самом деле тоже 💔 «Юнайтед» стал первой командой в истории АПЛ,",
+    "tags": "",
+    "src": "tg_championat",
+    "at": "2026-11-28 15:54",
+    "link": "https://t.me/championat/89771"
+   },
+   {
+    "t": "😱 «Бавария» скатала уже пятую ничью за 11 туров. И может отстать от «Боруссии» на 4 очка Мюнхенцы не справились с «Гамбургом» и впервые за 2,5 месяца вообще не ",
+    "tags": "",
+    "src": "tg_championat",
+    "at": "2026-11-28 16:22",
+    "link": "https://t.me/championat/89772"
+   },
+   {
+    "t": "😱 РАЗГРОМИЩЕ! «МЮ» снова проиграл! 0:4, дома, «Брентфорду» 🤷‍♂️ Безвыигрышная серия «Юнайтед» в АПЛ — уже 10 матчей! Предпоследнее место вполне может стать посл",
+    "tags": "",
+    "src": "tg_championat",
+    "at": "2026-11-28 16:53",
+    "link": "https://t.me/championat/89773"
+   },
+   {
+    "t": "⚡️ ⚡️ ⚡️ ⚡️ «Ман Юнайтед» УНИЧТОЖЕН на «Энфилде» в первом матче при Маурисио Почеттино! Манкунианцы с пятью поражениями в 11 турах уверенно направляются в сторо",
+    "tags": "",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 16:53",
+    "link": "https://t.me/sportsru/132230"
+   },
+   {
+    "t": "💀 🏴󠁧󠁢󠁥󠁮󠁧󠁿 За последние три матча АПЛ «МЮ» пропустил 12 голов, а всего в этом сезоне 40 − больше всех из клубов топ-лиг Европы ⚽️ Все рекорды сезона – в приложен",
     "tags": "не сыграет",
     "src": "tg_sportsru",
-    "at": "2026-11-28 15:35",
-    "link": "https://t.me/sportsru/132223"
+    "at": "2026-11-28 16:58",
+    "link": "https://t.me/sportsru/132231"
+   },
+   {
+    "t": "💀 🏴󠁧󠁢󠁥󠁮󠁧󠁿 «МЮ» впервые с 1937 года проиграл дома «Брентфорду» – в том сезоне манкунианцы вылетели из высшего дивизиона ❤️ Лучшие фрибеты за регистрацию",
+    "tags": "мотивация",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 17:03",
+    "link": "https://t.me/sportsru/132232"
    }
   ]
  },
@@ -803,6 +810,27 @@
     "src": "guardian_fb",
     "at": "2026-11-28 14:19",
     "link": "https://www.theguardian.com/football/live/2026/nov/28/manchester-united-v-brentford-leeds-v-coventry-and-more-saturday-football-clockwatch-live"
+   },
+   {
+    "t": "Ipswich Town v Aston Villa: Premier League – live",
+    "tags": "",
+    "src": "guardian_fb",
+    "at": "2026-11-28 17:00",
+    "link": "https://www.theguardian.com/football/live/2026/nov/28/ipswich-town-v-aston-villa-premier-league-live"
+   },
+   {
+    "t": "Sean Longstaff double fires Leeds past overwhelmed Coventry",
+    "tags": "",
+    "src": "guardian_fb",
+    "at": "2026-11-28 16:54",
+    "link": "https://www.theguardian.com/football/2026/nov/28/leeds-coventry-premier-league-match-report"
+   },
+   {
+    "t": "Leeds climb into top six with dominant Coventry win",
+    "tags": "",
+    "src": "sky_fb",
+    "at": "2026-11-28 16:50",
+    "link": "https://www.skysports.com/football/leeds-united-vs-coventry-city/report/559560"
    }
   ]
  },
@@ -944,6 +972,13 @@
     "src": "sportexpress",
     "at": "2026-11-28 11:22",
     "link": "https://www.sport-express.ru/football/spain/news/atletiko-gotov-prodat-lukmana-za-35-40-millionov-evro-roma-sledit-za-forvardom-2480056/"
+   },
+   {
+    "t": "Мусаев рассказал, как реагирует на слухи о переходе Вивероса в ЦСКА",
+    "tags": "слух",
+    "src": "champ_fb",
+    "at": "2026-11-28 16:56",
+    "link": "https://www.championat.com/football/news-6718070-musaev-rasskazal-kak-reagiruet-na-sluhi-o-perehode-viverosa-v-cska.html"
    }
   ]
  },
@@ -1005,6 +1040,13 @@
     "src": "vi",
     "at": "2026-11-28 14:55",
     "link": "https://www.vi.nl/nieuws/baeten-verkiest-gta-boven-psv-verbeek-gaat-los-tot-s-ochtends-vier-uur"
+   },
+   {
+    "t": "Opstelling PSV: Bosz kiest voor drie nieuwe namen",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 16:43",
+    "link": "https://www.vi.nl/nieuws/opstelling-psv-bosz-kiest-voor-drie-nieuwe-namen"
    }
   ]
  },
@@ -1038,6 +1080,41 @@
     "src": "tg_sportsru",
     "at": "2026-11-28 15:29",
     "link": "https://t.me/sportsru/132222"
+   },
+   {
+    "t": "Bayern blijft mede door haren trekkende Kimmich kwakkelen en biedt Dortmund kans",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 16:23",
+    "link": "https://www.vi.nl/nieuws/bayern-blijft-mede-door-haren-trekkende-kimmich-kwakkelen-en-biedt-dortmund-kans"
+   },
+   {
+    "t": "«Бавария» без Кейна и Олисе не смогла победить «Гамбург», Киммиха удалили в первом тайме",
+    "tags": "",
+    "src": "champ_fb",
+    "at": "2026-11-28 16:23",
+    "link": "https://www.championat.com/football/news-6717936-gamburg-bavariya-rezultat-matcha-28-noyabrya-2026-schet-0-0-11-j-tur-bundesligi-sezona-2026-2027.html"
+   },
+   {
+    "t": "«Бавария» в меньшинстве сыграла вничью с «Гамбургом»",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-28 16:43",
+    "link": "https://www.sport-express.ru/football/germany/news/bavariya-gamburg-keln-elfersberg-rezultaty-matchey-11-tura-bundesligi-28-noyabrya-2026-2480160/"
+   },
+   {
+    "t": "😱 «Бавария» скатала уже пятую ничью за 11 туров. И может отстать от «Боруссии» на 4 очка Мюнхенцы не справились с «Гамбургом» и впервые за 2,5 месяца вообще не ",
+    "tags": "",
+    "src": "tg_championat",
+    "at": "2026-11-28 16:22",
+    "link": "https://t.me/championat/89772"
+   },
+   {
+    "t": "😭 🇩🇪 «Бавария» без лидеров потеряла очки с «Гамбургом» и вдобавок лишилась Киммиха на следующий матч из-за удаления ⚽️ Смотрите статистику матча в приложении ГО",
+    "tags": "дисквалификация",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 16:24",
+    "link": "https://t.me/sportsru/132227"
    }
   ]
  },
@@ -1090,6 +1167,13 @@
     "src": "vi",
     "at": "2026-11-28 14:55",
     "link": "https://www.vi.nl/nieuws/baeten-verkiest-gta-boven-psv-verbeek-gaat-los-tot-s-ochtends-vier-uur"
+   },
+   {
+    "t": "Opstelling PSV: Bosz kiest voor drie nieuwe namen",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 16:43",
+    "link": "https://www.vi.nl/nieuws/opstelling-psv-bosz-kiest-voor-drie-nieuwe-namen"
    }
   ]
  },
@@ -1130,6 +1214,27 @@
     "src": "sportexpress",
     "at": "2026-11-27 15:25",
     "link": "https://www.sport-express.ru/football/copa-libertadores/news/eks-zaschitnik-manchester-yunayted-i-spartaka-markos-roho-mozhet-ustanovit-rekord-kubka-libertadores-2479767/"
+   },
+   {
+    "t": "Дивеев: не нравится, как играет «Спартак». Думаю, он посыпется после перерыва",
+    "tags": "мотивация",
+    "src": "champ_fb",
+    "at": "2026-11-28 16:32",
+    "link": "https://www.championat.com/football/news-6718036-diveev-ne-nravitsya-kak-igraet-spartak-dumayu-on-posypetsya-posle-pereryva.html"
+   },
+   {
+    "t": "Защитник «Зенита» Дивеев: «Спартак» и ЦСКА уже не претендуют на чемпионство в РПЛ»",
+    "tags": "мотивация",
+    "src": "sportexpress",
+    "at": "2026-11-28 16:18",
+    "link": "https://www.sport-express.ru/football/rfpl/news/zaschitnik-zenita-diveev-spartak-i-cska-uzhe-ne-pretenduyut-na-chempionstvo-v-rpl-2480153/"
+   },
+   {
+    "t": "🔥 🔥 🔥 🔥 🔥 ОГРОМНЫЙ КОНКУРС С 10 ПРИЗАМИ ДЛЯ ВСЕХ ФАНАТОВ ФУТБОЛА! ❤️ 🥇 1 место – футболка «Реала» с автографом Луки Модрича 🥈 2 место – бутса с автографом Рафин",
+    "tags": "",
+    "src": "tg_sportsru",
+    "at": "2026-11-28 16:30",
+    "link": "https://t.me/sportsru/132229"
    }
   ]
  },
@@ -1142,6 +1247,20 @@
     "src": "vi",
     "at": "2026-11-28 08:48",
     "link": "https://www.vi.nl/nieuws/emery-prijst-bij-villa-verpieterende-garnacho-zijn-instelling-is-fantastisch"
+   },
+   {
+    "t": "Ipswich Town v Aston Villa: Premier League – live",
+    "tags": "",
+    "src": "guardian_fb",
+    "at": "2026-11-28 17:00",
+    "link": "https://www.theguardian.com/football/live/2026/nov/28/ipswich-town-v-aston-villa-premier-league-live"
+   },
+   {
+    "t": "Emersonn returns in attack for Ipswich vs Aston Villa LIVE!",
+    "tags": "",
+    "src": "sky_fb",
+    "at": "2026-11-28 15:00",
+    "link": "https://www.skysports.com/football/ipswich-town-vs-aston-villa/live/559559"
    }
   ]
  },
@@ -1189,6 +1308,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 13:58",
     "link": "https://www.championat.com/hockey/news-6717782-sapego-o-trebovaniyah-razina-v-ska-stolko-vremeni-proshlo-vsyo-dolzhno-ot-zubov-otletat.html"
+   },
+   {
+    "t": "Черкас: Мичков ещё ничего не добился. Он средний игрок НХЛ, если не ниже",
+    "tags": "тренер",
+    "src": "champ_hk",
+    "at": "2026-11-28 16:44",
+    "link": "https://www.championat.com/hockey/news-6718028-cherkas-michkov-eschyo-nichego-ne-dobilsya-on-srednij-igrok-nhl-esli-ne-nizhe.html"
    }
   ]
  },
@@ -1236,6 +1362,13 @@
     "src": "champ_hk",
     "at": "2026-11-28 14:38",
     "link": "https://www.championat.com/hockey/news-6717830-napadayuschij-barysa-asetov-obyasnil-spad-komandy-k-seredine-sezona-khl.html"
+   },
+   {
+    "t": "Форвард «Нефтехимика» Николишин ответил, чем Гришин отличается от других тренеров",
+    "tags": "тренер",
+    "src": "champ_hk",
+    "at": "2026-11-28 15:54",
+    "link": "https://www.championat.com/hockey/news-6717950-forvard-neftehimika-nikolishin-otvetil-chem-grishin-otlichaetsya-ot-drugih-trenerov.html"
    }
   ]
  },
@@ -1260,6 +1393,37 @@
     "src": "sportexpress",
     "at": "2026-11-27 14:51",
     "link": "https://www.sport-express.ru/football/germany/news/forvard-shtutgarta-ermedin-demirovich-otreagiroval-na-soobscheniya-ob-interese-yuventusa-i-milana-2479757/"
+   }
+  ]
+ },
+ "fb|401884719": {
+  "match": "SC Paderborn 07 — Schalke 04",
+  "news": [
+   {
+    "t": "Schalke 04 totaal voor joker gezet door mede-promovendus, Sosa helpt Köln uithalen",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 16:30",
+    "link": "https://www.vi.nl/nieuws/schalke-04-totaal-voor-joker-gezet-door-mede-promovendus-sosa-helpt-koln-uithalen"
+   },
+   {
+    "t": "«Падерборн» на своем поле разгромил «Шальке» со счетом 8:1",
+    "tags": "",
+    "src": "sportexpress",
+    "at": "2026-11-28 16:53",
+    "link": "https://www.sport-express.ru/football/germany/news/paderborn-shalke-macnc-union-rezultaty-matchey-11-tura-bundesligi-28-noyabrya-2026-2480163/"
+   }
+  ]
+ },
+ "fb|401884721": {
+  "match": "FC Cologne — SV Elversberg",
+  "news": [
+   {
+    "t": "Schalke 04 totaal voor joker gezet door mede-promovendus, Sosa helpt Köln uithalen",
+    "tags": "",
+    "src": "vi",
+    "at": "2026-11-28 16:30",
+    "link": "https://www.vi.nl/nieuws/schalke-04-totaal-voor-joker-gezet-door-mede-promovendus-sosa-helpt-koln-uithalen"
    }
   ]
  }
