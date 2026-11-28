@@ -501,7 +501,7 @@
   "исход": 50.8,
   "линии": 70.0
  },
- "tips_book": "2026-11-28 13:11",
+ "tips_book": "2026-11-28 13:25",
  "tips_book_v": 22,
  "tips_wide_v": 3,
  "ocr_photos_v1": 1,
@@ -1408,7 +1408,10 @@
   "xs_stavkii:8075:3",
   "stavki_na_sport_betting1:slip:418534784:0",
   "stavki_na_sport_betting1:slip:418479571:0",
-  "stavki_na_sport_betting1:slip:418463306:0"
+  "stavki_na_sport_betting1:slip:418463306:0",
+  "kapper_uk:22811:0",
+  "stavki_na_sport_betting1:slip:340546486:0",
+  "xs_stavkii:7939:1"
  ],
  "resend_1111": 1,
  "resend_1111b": 1,
@@ -1539,7 +1542,7 @@
  },
  "arch_v1": 1,
  "arch_v2": 8,
- "chk_cap": "2026-11-28T13:11:52",
+ "chk_cap": "2026-11-28T13:25:38",
  "chk_run": "2026-11-28T13:19:20",
  "plan_at": [
   "2026-11-28 14:00",
