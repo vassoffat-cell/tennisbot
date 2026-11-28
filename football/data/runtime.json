@@ -116,8 +116,160 @@
   "history": [],
   "shots": [],
   "screenshots": 0,
-  "extras": [],
-  "log": [],
+  "extras": [
+   {
+    "espn_id": "401874977",
+    "comp_name": "Серия A",
+    "start_utc": "2026-11-28 19:45",
+    "start_local": "29.11 00:45",
+    "home": "Internazionale",
+    "away": "Genoa",
+    "market": "1X2",
+    "pick": "H",
+    "line": null,
+    "label": "П1",
+    "p": 0.7671222973499705,
+    "p_src": "pinnacle",
+    "book": "onexbet",
+    "k_1x": 1.35,
+    "p_model": 0.6800865650427285,
+    "p_push": 0.0,
+    "k": 1.35,
+    "k_src": "api",
+    "source": "api",
+    "sigma": 0.38,
+    "p_mkt": 0.7592790615600826,
+    "mkt_src": "pinnacle",
+    "k_best": 1.35,
+    "book_best": "onexbet",
+    "tips_for": 0,
+    "fire_i": false,
+    "clash_i": false,
+    "fire": false,
+    "clash": false,
+    "veto": false,
+    "edge": null,
+    "group": "fallback",
+    "sl_pen": 0,
+    "slot": 1,
+    "tier": 2,
+    "rank": 2,
+    "key": [
+     "401874977",
+     "1X2",
+     "H",
+     ""
+    ],
+    "match": "Internazionale — Genoa",
+    "why": "EV +3,6% · 2-я 🎯 из 3",
+    "at": "13:30",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 13:30: EV +3,6% · 2-я 🎯 из 3"
+    ],
+    "text": "⚽2 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Серия A · 🕒 00:45\n<b>Internazionale — Genoa</b>\n<b>П1</b> — 77% · честный кф 1,30\n💵 1xBet 1,35 · EV +3,6% · ставка ¼ ед.\n➕ новая линия дня в 13:30: EV +3,6% · 2-я 🎯 из 3",
+    "msgs": [
+     [
+      570704006,
+      1552
+     ]
+    ]
+   },
+   {
+    "espn_id": "401875081",
+    "comp_name": "Серия A",
+    "start_utc": "2026-11-28 14:00",
+    "start_local": "28.11 19:00",
+    "home": "Frosinone",
+    "away": "Parma",
+    "market": "1X2",
+    "pick": "H",
+    "line": null,
+    "label": "П1",
+    "p": 0.6755904207005707,
+    "p_src": "pinnacle",
+    "book": "onexbet",
+    "k_1x": 1.53,
+    "p_model": 0.4618238386739937,
+    "p_push": 0.0,
+    "k": 1.53,
+    "k_src": "api",
+    "source": "api",
+    "sigma": 0.38,
+    "p_mkt": 0.6560454671751094,
+    "mkt_src": "pinnacle",
+    "k_best": 1.53,
+    "book_best": "onexbet",
+    "tips_for": 0,
+    "fire_i": false,
+    "clash_i": false,
+    "fire": false,
+    "clash": false,
+    "veto": false,
+    "edge": null,
+    "group": "fallback",
+    "sl_pen": 0,
+    "slot": 1,
+    "tier": 2,
+    "rank": 3,
+    "key": [
+     "401875081",
+     "1X2",
+     "H",
+     ""
+    ],
+    "match": "Frosinone — Parma",
+    "why": "EV +3,4% · 3-я 🎯 из 3",
+    "at": "13:30",
+    "edits": 0,
+    "hist": [
+     "➕ новая линия дня в 13:30: EV +3,4% · 3-я 🎯 из 3"
+    ],
+    "text": "⚽3 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🏆 Серия A · 🕒 19:00\n<b>Frosinone — Parma</b>\n<b>П1</b> — 68% · честный кф 1,48\n💵 1xBet 1,53 · EV +3,4% · ставка ¼ ед.\n➕ новая линия дня в 13:30: EV +3,4% · 3-я 🎯 из 3",
+    "msgs": [
+     [
+      570704006,
+      1554
+     ]
+    ]
+   }
+  ],
+  "log": [
+   {
+    "date": "2026-11-28",
+    "time": "13:30",
+    "reason": "новая: EV +3,6% · 2-я 🎯 из 3",
+    "rank": 2,
+    "espn_id": "401874977",
+    "market": "1X2",
+    "pick": "H",
+    "line": "",
+    "label": "П1",
+    "match": "Internazionale — Genoa",
+    "p": 0.7671,
+    "k": 1.35,
+    "to_label": "—",
+    "to_key": "401874977|1X2|H|",
+    "slot": 1
+   },
+   {
+    "date": "2026-11-28",
+    "time": "13:30",
+    "reason": "новая: EV +3,4% · 3-я 🎯 из 3",
+    "rank": 3,
+    "espn_id": "401875081",
+    "market": "1X2",
+    "pick": "H",
+    "line": "",
+    "label": "П1",
+    "match": "Frosinone — Parma",
+    "p": 0.6756,
+    "k": 1.53,
+    "to_label": "—",
+    "to_key": "401875081|1X2|H|",
+    "slot": 1
+   }
+  ],
   "notes": [],
   "nokb": true,
   "sep": true,
@@ -176,7 +328,9 @@
   },
   "first_label": "П2",
   "first_match": "Elche — Atlético Madrid",
-  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 30 матчей · 337 линий · на ставку дня — 7\nБундеслига 5 · Лига 1 5 · Ла Лига 4 · Примейра 4 · ещё 5 · 🔏 4f71c107\n🏆 Ла Лига · 🕒 22:30\n<b>Elche — Atlético Madrid</b>\n<b>П2</b> — 69% · честный кф 1,46\n💵 1xBet 1,52 · EV +4,2% · ставка ¼ ед."
+  "text": "⚽1 <b>Футбол · ставка дня</b> · 🎯 уверенная\n🔎 Сутки: 30 матчей · 337 линий · на ставку дня — 7\nБундеслига 5 · Лига 1 5 · Ла Лига 4 · Примейра 4 · ещё 5 · 🔏 4f71c107\n🏆 Ла Лига · 🕒 22:30\n<b>Elche — Atlético Madrid</b>\n<b>П2</b> — 69% · честный кф 1,46\n💵 1xBet 1,52 · EV +4,2% · ставка ¼ ед.",
+  "vol": 30,
+  "played": false
  },
  "model_version": 2,
  "reported": [
@@ -1342,12 +1496,18 @@
    "src": "pinnacle",
    "at": "2026-11-27 18:23",
    "key": "401875536|1X2|H|"
+  },
+  "2026-11-28|1": {
+   "p": 0.6661,
+   "src": "pinnacle",
+   "at": "2026-11-28 08:30",
+   "key": "401882793|1X2|A|"
   }
  },
  "arch_v1": 1,
  "arch_v2": 8,
  "chk_cap": "2026-11-27T22:15:51",
- "chk_run": "2026-11-28T07:23:58",
+ "chk_run": "2026-11-28T08:31:01",
  "plan_at": [
   "2026-11-28 11:00",
   "2026-11-28 12:30",
@@ -1568,6 +1728,6 @@
   "401934489"
  ],
  "week_done": "2026-11-24",
- "idle_prev": "2026-11-28 11:00",
- "idle_until": "2026-11-28 07:23"
+ "idle_prev": "2026-11-28 07:23",
+ "idle_until": "2026-11-28 11:00"
 }
